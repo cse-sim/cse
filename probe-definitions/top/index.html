@@ -1,0 +1,5791 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation Website for CSE">
+      
+      
+        <meta name="author" content="CSE Authors">
+      
+      
+        <link rel="canonical" href="https://cse-sim.github.io/cse/probe-definitions/top/">
+      
+      
+        <link rel="prev" href="../terminal/">
+      
+      
+        <link rel="next" href="../towerPlant/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.3">
+    
+    
+      
+        <title>top - CSE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.d7758b05.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="https://unpkg.com/katex@0/dist/katex.min.css">
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/extra_styles.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="CSE Documentation" class="md-header__button md-logo" aria-label="CSE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CSE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              top
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/cse-sim/cse" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cse
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="CSE Documentation" class="md-nav__button md-logo" aria-label="CSE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CSE Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/cse-sim/cse" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cse
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../introduction/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Operation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-structure/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Input Structure
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../input-data/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Input Data
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Input Data
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/top-members/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    TOP Members
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/holiday/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HOLIDAY
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/descond/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DESCOND
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/material/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MATERIAL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/construction/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CONSTRUCTION
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/foundation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FOUNDATION
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/fndblock/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FNDBLOCK
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/layer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LAYER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/glazetype/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GLAZETYPE
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/meter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    METER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwmeter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWMETER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/afmeter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AFMETER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/loadmeter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LOADMETER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/zone/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ZONE
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/gain/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GAIN
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/surface/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SURFACE
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/window/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    WINDOW
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/shade/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SHADE
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/sgdist/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SGDIST
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/door/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DOOR
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/perimeter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PERIMETER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/terminal/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    TERMINAL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/izxfer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    IZXFER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/doas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DOAS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/rsys/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RSYS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/ductseg/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DUCTSEG
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/performancemap/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PERFORMANCEMAP
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwdayuse/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWDAYUSE
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwuse/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWUSE
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwsys/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWSYS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwheater/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWHEATER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwloopheater/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWLOOPHEATER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwheatrec/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWHEATREC
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwtank/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWTANK
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwpump/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWPUMP
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwloop/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWLOOP
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwlooppump/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWLOOPPUMP
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwloopseg/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWLOOPSEG
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwloopbranch/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWLOOPBRANCH
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwsolarsys/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWSOLARSYS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwsolarcollector/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWSOLARCOLLECTOR
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/pvarray/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PVARRAY
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/shadex/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SHADEX
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/battery/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BATTERY
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/airhandler/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AIRHANDLER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/heatplant/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HEATPLANT
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/boiler/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BOILER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/coolplant/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    COOLPLANT
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/chiller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CHILLER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/towerplant/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    TOWERPLANT
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/reportfile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    REPORTFILE
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/report/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    REPORT
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/reportcol/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    REPORTCOL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/exportfile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EXPORTFILE
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/export/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EXPORT
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/exportcol/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EXPORTCOL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/importfile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    IMPORTFILE
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../output-reports/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Output Reports
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Probe Definitions
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Probe Definitions
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AFMETER/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AFMETER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ahRes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ahRes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airHandler/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    airHandler
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Battery/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Battery
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../boiler/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    boiler
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chiller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    chiller
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../construction/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    construction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coolPlant/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    coolPlant
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DESCOND/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DESCOND
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWDayUse/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWDayUse
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWHeater/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWHeater
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWHeatRec/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWHeatRec
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWLoop/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWLoop
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWLoopBranch/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWLoopBranch
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWLoopHeater/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWLoopHeater
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWLoopPump/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWLoopPump
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWLoopSeg/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWLoopSeg
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWMETER/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWMETER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWPump/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWPump
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWSolarCollector/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWSolarCollector
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWSolarSys/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWSolarSys
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWSYS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWSYS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWSYSRES/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWSYSRES
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWTank/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWTank
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWUse/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWUse
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DUCTSEGRes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DUCTSEGRes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DuctSeg/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DuctSeg
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    doas
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../door/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    door
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../export/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    export
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exportCol/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    exportCol
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exportFile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    exportFile
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../foundation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    foundation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../foundationBlock/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    foundationBlock
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gain/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    gain
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glazeType/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    glazeType
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../heatPlant/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    heatPlant
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../holiday/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    holiday
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Inverse/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Inverse
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../impFileFldNames/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    impFileFldNames
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../importFile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    importFile
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../izXfer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    izXfer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kiva/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    kiva
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LOADMETER/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LOADMETER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../layer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    layer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mass/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mass
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../material/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    material
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../meter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    meter
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PERFORMANCEMAP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PERFORMANCEMAP
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PipeSeg/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PipeSeg
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PMGRIDAXIS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PMGRIDAXIS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PMLOOKUPDATA/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PMLOOKUPDATA
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PVArray/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PVArray
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../perimeter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    perimeter
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RSYS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RSYS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RSYSRes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RSYSRes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../report/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    report
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reportCol/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    reportCol
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reportFile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    reportFile
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SHADEX/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SHADEX
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sgdist/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    sgdist
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shade/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    shade
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../surface/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    surface
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../terminal/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    terminal
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    top
+    
+  </span>
+  
+
+      </a>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../towerPlant/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    towerPlant
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../weather/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    weather
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../weatherFile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    weatherFile
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../weatherNextHour/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    weatherNextHour
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../window/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    window
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xsurf/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    xsurf
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zhx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    zhx
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../znRes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    znRes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zone/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    zone
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>top</h1>
+
+<p><a href="" id="p_top"></a></p>
+<p>TOP: user inputs (&amp; some derived): overall control</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bAutoSizeCmd</td>
+<td>BOO</td>
+<td>input time</td>
+<td><ul>
+<li>non-0 if any [AUTOSIZE][autosize] commands seen in input, set via arg to cul() from cse.cpp. 6-95.</li>
+<li>both FALSE for input check only:</li>
+</ul></td>
+</tr>
+<tr>
+<td>chAutoSize</td>
+<td>choice:NOYES</td>
+<td>Start of run</td>
+<td>whether to do autosizing, default per bAutoSizeCmd</td>
+</tr>
+<tr>
+<td>chSimulate</td>
+<td>choice:NOYES</td>
+<td>input time</td>
+<td><ul>
+<li>whether to do main simulation, default TRUE, can input FALSE for autosizing only. 6-95.</li>
+<li>runtime phase: see .autoSizing below.</li>
+</ul></td>
+</tr>
+<tr>
+<td>begDay</td>
+<td>DOY</td>
+<td>input time</td>
+<td>1st 1-based Julian day of year of run</td>
+</tr>
+<tr>
+<td>endDay</td>
+<td>DOY</td>
+<td>input time</td>
+<td>last ditto, inclusive</td>
+</tr>
+<tr>
+<td>nDays</td>
+<td>number</td>
+<td>Start of run</td>
+<td>derived: # days in run</td>
+</tr>
+<tr>
+<td>jan1DoW</td>
+<td>choice:DOW</td>
+<td>input time</td>
+<td>January 1 day of week, sun=1  SUBTRACT 1 FOR MOST INTERNAL USES</td>
+</tr>
+<tr>
+<td>year</td>
+<td>number</td>
+<td>Start of run</td>
+<td>derived: tdpak generic non-leap year, -1 = jan 1 is Monday ... -7 = jan 1 is Sunday.</td>
+</tr>
+<tr>
+<td>wuDays</td>
+<td>SI_GEZ</td>
+<td>input time</td>
+<td>number of warmUp days</td>
+</tr>
+<tr>
+<td>nSubSteps</td>
+<td>SI_GZ</td>
+<td>input time</td>
+<td><ul>
+<li># subhours per hour, determines subhour duration.</li>
+<li>typically 4 for (old) ZNMODELCH_CNE (combined coefficent) models</li>
+<li>5 - 30 for convective/radiant models</li>
+<li>some models require substep duration to be integral minutes (e.g. HPWH)</li>
+<li>see tp_SetCheckTimesteps()</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<p>TOP: inputs: location/air properties/ground properties</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>wfName</td>
+<td>CULSTR</td>
+<td>Start of phase</td>
+<td>weather file path string</td>
+</tr>
+<tr>
+<td>TDVfName</td>
+<td>CULSTR</td>
+<td>Start of phase</td>
+<td>TDV (time dependent value) file path string</td>
+</tr>
+<tr>
+<td>elevation</td>
+<td>LEN</td>
+<td>Start of run</td>
+<td>site elevation (for determining air density) (ft). defaults from weather file 1-95.</td>
+</tr>
+<tr>
+<td>refTemp</td>
+<td>TEMP</td>
+<td>Start of phase</td>
+<td>temp for computing the hum ratio (w) used in air-density calculations, default 70 F</td>
+</tr>
+<tr>
+<td>refRH</td>
+<td>FRAC_GZ</td>
+<td>Start of phase</td>
+<td>relative humidity (as fraction) ditto, default .6 (60%).</td>
+</tr>
+</tbody>
+</table>
+<p>ground properties</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>grndRefl</td>
+<td>number</td>
+<td>Start of monthly-hourly</td>
+<td><ul>
+<li>ground surface reflectivity, re solar gain.</li>
+<li>dflt .2. Used: cgsolar.cpp and Kiva. [wnGrndRefl][wngrndrefl] Overrides.</li>
+</ul></td>
+</tr>
+<tr>
+<td>grndEmit</td>
+<td>number</td>
+<td>input time</td>
+<td>ground surface emittance, re long wave exchange in Kiva. dflt .8.</td>
+</tr>
+<tr>
+<td>grndRf</td>
+<td>number</td>
+<td>input time</td>
+<td>ground surface roughnes, ft, re exterior convection in Kiva. dflt 0.1.</td>
+</tr>
+<tr>
+<td>soilDiff</td>
+<td>FLOAT_GZ</td>
+<td>input time</td>
+<td><ul>
+<li>local soil diffusivity, ft2/hr, re annual deep ground temp cycle estimation</li>
+<li>see CalcGroundTemp().  dflt=0.025.</li>
+</ul></td>
+</tr>
+<tr>
+<td>soilCond</td>
+<td>FLOAT_GZ</td>
+<td>input time</td>
+<td>local soil conductivity, Btuh-ft/ft2-F, re Kiva calcs.  dflt=1.0.</td>
+</tr>
+<tr>
+<td>soilSpHt</td>
+<td>FLOAT_GZ</td>
+<td>input time</td>
+<td>local soil specific heat, Btu/lb-F, re Kiva calcs.  dflt=0.1.</td>
+</tr>
+<tr>
+<td>soilDens</td>
+<td>FLOAT_GZ</td>
+<td>input time</td>
+<td>local soil density, lb/ft3, re Kiva calcs.  dflt=115.</td>
+</tr>
+<tr>
+<td>farFieldWidth</td>
+<td>FLOAT_GZ</td>
+<td>input time</td>
+<td>far-field boundary distance, ft, re Kiva calcs.  dflt=130.</td>
+</tr>
+<tr>
+<td>deepGrndCnd</td>
+<td>choice:DG</td>
+<td>input time</td>
+<td><ul>
+<li>deep ground boundary type</li>
+<li>C_DGCH_WATERTABLE: Water Table</li>
+<li>C_DGCH_ZEROFLUX: Zero-Flux (default)</li>
+</ul></td>
+</tr>
+<tr>
+<td>deepGrndDepth</td>
+<td>FLOAT_GZ</td>
+<td>input time</td>
+<td>deep-ground boundary distance, ft, re Kiva calcs.  dflt=130.</td>
+</tr>
+<tr>
+<td>deepGrndT</td>
+<td>number</td>
+<td>input time</td>
+<td>deep-ground boundary temperature, F, re Kiva calcs.  dflt=annual average db.</td>
+</tr>
+</tbody>
+</table>
+<p>TOP: inputs: check tolerances and precisions</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tol</td>
+<td>FLOAT_GZ</td>
+<td>input time</td>
+<td>(relative) tolerance used in many hvac calculations, default .001f or as changed</td>
+</tr>
+<tr>
+<td>humTolF</td>
+<td>FRAC_GZ</td>
+<td>input time</td>
+<td>w change to consider as important as 1F temp re convergedness</td>
+</tr>
+<tr>
+<td>ebTolMon</td>
+<td>FLOAT_GZ</td>
+<td>input time</td>
+<td>monthly tolerance</td>
+</tr>
+<tr>
+<td>ebTolDay</td>
+<td>FLOAT_GZ</td>
+<td>input time</td>
+<td>daily ..</td>
+</tr>
+<tr>
+<td>ebTolHour</td>
+<td>FLOAT_GZ</td>
+<td>input time</td>
+<td>hourly ..</td>
+</tr>
+<tr>
+<td>ebTolSubhr</td>
+<td>FLOAT_GZ</td>
+<td>input time</td>
+<td>subhourly ..</td>
+</tr>
+<tr>
+<td>unMetTzTol</td>
+<td>FLOAT_GEZ</td>
+<td>input time</td>
+<td>unmet zone air temp tolerance, F (default = 1 F)</td>
+</tr>
+<tr>
+<td>unMetTzTolWarnHrs</td>
+<td>FLOAT_GEZ</td>
+<td>input time</td>
+<td><ul>
+<li>unmet warning threshold, hr (default 150)</li>
+<li>Warning(s) issued when zone heating or cooling unmet tzTol hrs exceed threshold</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<p>TOP: inputs: Kiva calculation settings</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>grndMinDim</td>
+<td>FLOAT_GZ</td>
+<td>input time</td>
+<td>minimum cell dimension in Kiva, ft, default .066f</td>
+</tr>
+<tr>
+<td>grndMaxGrthCoeff</td>
+<td>FLOAT_GZ</td>
+<td>input time</td>
+<td>maximum cell growth in Kiva, default 1.5f</td>
+</tr>
+<tr>
+<td>grndTimeStep</td>
+<td>choice:TS</td>
+<td>input time</td>
+<td><ul>
+<li>Kiva time step</li>
+<li>C_TSCH_H: Hourly (default)</li>
+<li>C_TSCH_SH: Sub-hourly</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>TOP: inputs: ASHWAT calculation trigger thresholds</li>
+<li>full ASHWAT calcs are performed when *any* of the following changes</li>
+<li>by the the trigger amount</li>
+<li>else prior results used</li>
+</ul>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AWTrigT</td>
+<td>FLOAT_GZ</td>
+<td>input time</td>
+<td>inside or outside environmental temperature, F (default = 1)</td>
+</tr>
+<tr>
+<td>AWTrigSlr</td>
+<td>FLOAT_GZ</td>
+<td>input time</td>
+<td>incident solar, fraction (default = .05)</td>
+</tr>
+<tr>
+<td>AWTrigH</td>
+<td>FLOAT_GZ</td>
+<td>input time</td>
+<td>total surface coefficient (conv+rad), fraction (default=.1)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>TOP: inputs: AirNet convergence and error criteria</li>
+<li>a zone is deem converged iff</li>
+<li>AMFnet &lt;= max( tolAbs, tolRel*AMFTot)</li>
+</ul>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ANTolAbs</td>
+<td>FLOAT_GZ</td>
+<td>input time</td>
+<td>absolute tolerance, lbm/sec, dflt=.00125 (about 1 cfm)</td>
+</tr>
+<tr>
+<td>ANTolRel</td>
+<td>FLOAT_GZ</td>
+<td>input time</td>
+<td>relative tolerance, dflt = .0001</td>
+</tr>
+<tr>
+<td>ANPressWarn</td>
+<td>FLOAT_GZ</td>
+<td>input time</td>
+<td>AirNet pressure that triggers a warning, lb/ft2</td>
+</tr>
+<tr>
+<td>ANPressErr</td>
+<td>FLOAT_GZ</td>
+<td>input time</td>
+<td>AirNet pressure that triggers a run-ending error, lb/ft2</td>
+</tr>
+</tbody>
+</table>
+<p>TOP: inputs: other</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bldgAzm</td>
+<td>ANGLE</td>
+<td>input time</td>
+<td>angle to add to all zone/surface azms</td>
+</tr>
+<tr>
+<td>skyModel</td>
+<td>choice:SKYMOD</td>
+<td>input time</td>
+<td>sky model: C_.._ISO or _ANISO</td>
+</tr>
+<tr>
+<td>skyModelLW</td>
+<td>choice:SKYMODLW</td>
+<td>input time</td>
+<td>long-wave sky model</td>
+</tr>
+<tr>
+<td>exShadeModel</td>
+<td>choice:EXSHMODEL</td>
+<td>input time</td>
+<td><ul>
+<li>exterior shading model (other than overhang/fins)</li>
+<li>C_EXSHMODELCH_NONE: none ([SHADEX][shadex] etc ignored)</li>
+<li>C_EXSHMODELCH_PENUMBRA: use Penumbra GPU calcs</li>
+</ul></td>
+</tr>
+<tr>
+<td>slrInterpMeth</td>
+<td>SLRINTERPMETH</td>
+<td>input time</td>
+<td>solar interpolation method</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>humMeth</td>
+<td>choice:HUMTH</td>
+<td>input time</td>
+<td>humidity calculation method: Rob (w = wa/wb) or Phil (central difference), 6-92</td>
+</tr>
+<tr>
+<td>dflExH</td>
+<td>UH_GZ</td>
+<td>input time</td>
+<td>default ext (air film) cond for os &amp; gz. 2-91</td>
+</tr>
+<tr>
+<td>workDayMask</td>
+<td>USI</td>
+<td>input time</td>
+<td><ul>
+<li>mask with bits set for "work" days, clear for "non-work" days, default Mon..Fri, 5-95.</li>
+<li>For $isWorkDay, and passed thru binres file to OPK eg for ET.</li>
+<li>bits: Sun=1,Mon=2,Tu=4,W=8,Th=16,F=32,Sat=64,holidays=128,</li>
+<li>heatDsnDay=256, coolDsnDays=512 (but no autosizing data in bin res file yet 6-95).</li>
+<li>CAUTION: hard-coded encoding MATCHES cncult.cpp default, ResfH.workDayMask,</li>
+<li>brfr.h:getWorkDayMask() default, opk\progr.h/cpp:ProGrSub::workDayMask.</li>
+</ul></td>
+</tr>
+<tr>
+<td>DT</td>
+<td>choice:NOYES</td>
+<td>input time</td>
+<td>YES (default) to enable daylight saving time</td>
+</tr>
+<tr>
+<td>DTBegDay</td>
+<td>DOY</td>
+<td>Start of run</td>
+<td>Daylight saving start day, 1-365, default 1st Sun (Sun after 1st Sat?) in April</td>
+</tr>
+<tr>
+<td>DTEndDay</td>
+<td>DOY</td>
+<td>Start of run</td>
+<td>Daylight saving end day, 1-365, defaulted by cncult2.cpp code to last Sun in October</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>wind speed adjustment, see cgwthr.cpp</li>
+<li>appl sees Top.[windF][windf] * max( wthrfile.wndSpd, Top.[windSpeedMin][windspeedmin]);</li>
+</ul>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>windSpeedMin</td>
+<td>FLOAT_GEZ</td>
+<td>input time</td>
+<td>minimum, mph (default=.5)</td>
+</tr>
+<tr>
+<td>windF</td>
+<td>FLOAT_GEZ</td>
+<td>input time</td>
+<td>factor (default=1)</td>
+</tr>
+<tr>
+<td>terrainClass</td>
+<td>number</td>
+<td>input time</td>
+<td>terrain class (1-5) re wind speed adjustment</td>
+</tr>
+<tr>
+<td>radBeamF</td>
+<td>FLOAT_GEZ</td>
+<td>input time</td>
+<td>Beam radiation fctr. appl sees ANISO( <fileval>) * radBeamF. cgwthr.cpp.</fileval></td>
+</tr>
+<tr>
+<td>radDiffF</td>
+<td>FLOAT_GEZ</td>
+<td>input time</td>
+<td>Diffuse radiation fctr. appl sees ANISO( <fileval>) * radDiffF.</fileval></td>
+</tr>
+<tr>
+<td>ventAvail</td>
+<td>VENTAVAILVC</td>
+<td>Start of hour</td>
+<td><ul>
+<li>all-zone ventilation availability (default=C_VENTAVAILCH_WHOLEBLDG)</li>
+<li>C_VENTAVAILCH_NONE: none</li>
+<li>C_VENTAVAILCH_WHOLEBLDG: airnet windows / fans</li>
+<li>C_VENTAVAILCH_ZONAL: airnet windows / fans (controlled by zone)</li>
+<li>C_VENTAVAILCH_RSYSOAV: [RSYS][rsys] outside air vent (central mechanical)</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fVent</td>
+<td>number</td>
+<td>End of subhour</td>
+<td><ul>
+<li>consensus whole building vent fraction (if not RSYSOAV)</li>
+<li>= fraction of full vent flow to use</li>
+<li>determined by zone that wants the least vent</li>
+<li>or -1 for zonal vent control</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hConvMod</td>
+<td>choice:NOYES</td>
+<td>Start of run</td>
+<td><ul>
+<li>enable/disable convection convective coefficient pressure modification factor (tp_hConvF below)</li>
+<li>mostly for debugging.</li>
+</ul></td>
+</tr>
+<tr>
+<td>verbose</td>
+<td>number</td>
+<td>Start of phase</td>
+<td><ul>
+<li>screen messages: autosizing: 0 none, 1 some (dflt?), 2-5 more</li>
+<li>-1: suppress progress messages ("Input", "Warmup", etc.) via setScreenQuiet()</li>
+</ul></td>
+</tr>
+<tr>
+<td>dbgPrintMask</td>
+<td>number</td>
+<td>Start of hour</td>
+<td>debug print mask, controls DbPrintf() etc., schedulable via std capabilities</td>
+</tr>
+<tr>
+<td>dbgPrintMaskC</td>
+<td>number</td>
+<td>input time</td>
+<td>debug print mask constant portion (value known during setup)</td>
+</tr>
+<tr>
+<td>dbgFlag</td>
+<td>number</td>
+<td>Start of subhour</td>
+<td>debug flag value for passing testing info to code; normally no effect</td>
+</tr>
+<tr>
+<td>doCoverage</td>
+<td>choice:NOYES</td>
+<td>input time</td>
+<td><ul>
+<li>track expression processing code coverage / report to log</li>
+<li>(testing/development aid)</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<p>TOP: inputs: autoSizing</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>auszTol</td>
+<td>FRAC_GZ</td>
+<td>input time</td>
+<td>autosizing result tolerance, dfl .005</td>
+</tr>
+<tr>
+<td>heatDsTDbO</td>
+<td>TEMP</td>
+<td>Start of hour</td>
+<td><ul>
+<li>heat design outdoor temp, dfl per ET1 wthr file hdr.</li>
+<li>Impl may be incomplete for non-constant.</li>
+</ul></td>
+</tr>
+<tr>
+<td>heatDsTWbO</td>
+<td>TEMP</td>
+<td>Start of hour</td>
+<td>heating design outdoor wetbulb temp, dfl for 70% RH @ heatDsTDbO.</td>
+</tr>
+<tr>
+<td>coolDsMo[index]</td>
+<td>number Array [13]</td>
+<td>input time</td>
+<td>SI[13] cooling design month(s) 1-12 + 0 terminator. Default per ET1 wthr file hdr.</td>
+</tr>
+<tr>
+<td>coolDsDay[index]</td>
+<td>DOY Array [13]</td>
+<td>input time</td>
+<td>DOY[13] design day(s) read from weather file + 0 terminator</td>
+</tr>
+<tr>
+<td>coolDsCond[index]</td>
+<td>TI Array [13]</td>
+<td>input time</td>
+<td>TI[ 13] DESCOND idx(s) + 0 terminator</td>
+</tr>
+</tbody>
+</table>
+<p>TOP: inputs: reporting and exporting</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>exePath</td>
+<td>CULSTR</td>
+<td>Start of run</td>
+<td>full path to current .exe</td>
+</tr>
+<tr>
+<td>exeInfo</td>
+<td>CULSTR</td>
+<td>Start of run</td>
+<td><ul>
+<li>info about current .exe (from header)</li>
+<li>build timestame, linker version, code size</li>
+</ul></td>
+</tr>
+<tr>
+<td>exeCodeSize</td>
+<td>number</td>
+<td>Start of run</td>
+<td>code size, bytes (from exe header)</td>
+</tr>
+<tr>
+<td>progVersion</td>
+<td>CULSTR</td>
+<td>Start of run</td>
+<td>program version identifier as string (for probing); set from ::ProgVersion</td>
+</tr>
+<tr>
+<td>HPWHVersion</td>
+<td>CULSTR</td>
+<td>Start of run</td>
+<td>Ecotope HPWH (heat pump water heater) model version</td>
+</tr>
+<tr>
+<td>cmdLineArgs</td>
+<td>CULSTR</td>
+<td>Start of run</td>
+<td><ul>
+<li>command line args for current input file</li>
+<li>updated during session if multiple input files specified on command line</li>
+</ul></td>
+</tr>
+<tr>
+<td>runSerial</td>
+<td>number</td>
+<td>input time</td>
+<td>run #, 000-999, per (future 11-91) status file (meanwhile, see cnguts:cnRunSerial 7-92).</td>
+</tr>
+<tr>
+<td>runTitle</td>
+<td>CULSTR</td>
+<td>input time</td>
+<td>user text for report titles, footers, export title 11-22-91.</td>
+</tr>
+<tr>
+<td>runDateTime</td>
+<td>CULSTR</td>
+<td>Start of run</td>
+<td><ul>
+<li>run date &amp; time string, set by cncult2.cpp:topStarPrf2(), used in reports &amp; bin res file, 9-94.</li>
+<li>inputs for binary results files, for NREL, rob 11-93.  *r cuz settable from cmd line switches.</li>
+</ul></td>
+</tr>
+<tr>
+<td>brs</td>
+<td>choice:NOYES</td>
+<td>Start of run</td>
+<td>YES to generate basic binary results file, default NO. From input file or cmd line switch.</td>
+</tr>
+<tr>
+<td>brHrly</td>
+<td>choice:NOYES</td>
+<td>Start of run</td>
+<td><ul>
+<li>YES to generate hourly binary results file, default NO. From input file or cmd line.</li>
+<li>brf and brfHrly are intended to be independent, except monthly-hourly averages</li>
+<li>in basic file may only be computed if brfHrly is also on, 11-20-93.</li>
+</ul></td>
+</tr>
+<tr>
+<td>brFileName</td>
+<td>CULSTR</td>
+<td>input time</td>
+<td><ul>
+<li>file name for binary results, extension .brs and/or .bhr added. default: input file name.</li>
+<li>settable in DLL version only, only by command line switches. Default is file output (if brs/brHrly) only.</li>
+</ul></td>
+</tr>
+<tr>
+<td>brMem</td>
+<td>BOO</td>
+<td>Start of run</td>
+<td>Put binary results in Windows global memory and return handles; do not write file.</td>
+</tr>
+<tr>
+<td>brDiscardable</td>
+<td>BOO</td>
+<td>Start of run</td>
+<td>Put binary results in discardable memory as well as file, return handles. overrides brfMem.</td>
+</tr>
+</tbody>
+</table>
+<p>TOP: inputs: report page formatting</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repHdrL</td>
+<td>CULSTR</td>
+<td>input time</td>
+<td>user-spec'd text for left end of report header line</td>
+</tr>
+<tr>
+<td>repHdrR</td>
+<td>CULSTR</td>
+<td>input time</td>
+<td>.. right</td>
+</tr>
+<tr>
+<td>repCpl</td>
+<td>number</td>
+<td>input time</td>
+<td>report characters per line</td>
+</tr>
+<tr>
+<td>repLpp</td>
+<td>number</td>
+<td>input time</td>
+<td>total number of lines per page (paper size)</td>
+</tr>
+<tr>
+<td>repTopM</td>
+<td>number</td>
+<td>input time</td>
+<td>top margin in lines; # newlines written above header</td>
+</tr>
+<tr>
+<td>repBotM</td>
+<td>number</td>
+<td>input time</td>
+<td>bottom margin in lines; not actually output</td>
+</tr>
+<tr>
+<td>repTestPfx</td>
+<td>CULSTR</td>
+<td>input time</td>
+<td><ul>
+<li>prefix pre-pended to e.g. footer lines re hiding lines re automated testing</li>
+<li>"" for normal runs, "!" re 3-2010 test framework.  new 3-28-10</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<p>TOP: setup: exterior (non-overhang/fin) shading</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>exshNShade</td>
+<td>number</td>
+<td>Start of run</td>
+<td># of shading surfaces in model</td>
+</tr>
+<tr>
+<td>exshNRec</td>
+<td>number</td>
+<td>Start of run</td>
+<td># of receiving surfaces in model (may also be shading)</td>
+</tr>
+</tbody>
+</table>
+<p>TOP: setup: location info from weather file. Uses include solar calculations. 1-95.</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>latitude</td>
+<td>number</td>
+<td>Start of run</td>
+<td>degrees north</td>
+</tr>
+<tr>
+<td>longitude</td>
+<td>number</td>
+<td>Start of run</td>
+<td>degress west</td>
+</tr>
+<tr>
+<td>timeZone</td>
+<td>number</td>
+<td>Start of run</td>
+<td><ul>
+<li>hours west (fraction ok)</li>
+<li>also [elevation][elevation] is above (user-inputtable).</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>TOP: setup: air properties approximated @[elevation][elevation], [refTemp][reftemp], [refRH][refrh], set in cucult2:topPsychro().</li>
+<li>UNITS/FIELDS needed for floats for proper probe behavior ***</li>
+</ul>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>presAtm</td>
+<td>number</td>
+<td>Start of run</td>
+<td><ul>
+<li>nominal atmospheric pressure at Top.[elevation][elevation] (in Hg)</li>
+<li>(constant for simulation)</li>
+</ul></td>
+</tr>
+<tr>
+<td>refW</td>
+<td>HUMRAT_GZ</td>
+<td>Start of run</td>
+<td><ul>
+<li>humidity ratio for [refTemp][reftemp], [refRH][refrh] (ratio)</li>
+<li>psyHumRat2( Top.[refTemp][reftemp], Top.[refRH][refrh]) dfl ~.0066</li>
+</ul></td>
+</tr>
+<tr>
+<td>refWX</td>
+<td>DBL</td>
+<td>Start of run</td>
+<td>1/(1.+rp_refW)</td>
+</tr>
+<tr>
+<td>airSH</td>
+<td>SPECHEAT</td>
+<td>Start of run</td>
+<td><ul>
+<li>air specific heat (Btu/lbDryAir-F) @ tp_refW</li>
+<li>.240 + .444*tp_refW   dfl ~.24293</li>
+</ul></td>
+</tr>
+<tr>
+<td>airVK</td>
+<td>number</td>
+<td>Start of run</td>
+<td><ul>
+<li>specific volume per temp(ft3/lb-F): multiply by abs temp.</li>
+<li>PsyRAir*(1.f+tp_refW/PsyMwRatio)/PsyPBar;  dfl ~.02547</li>
+</ul></td>
+</tr>
+<tr>
+<td>airRhoK</td>
+<td>number</td>
+<td>Start of run</td>
+<td><ul>
+<li>density*temp (lb-F/ft3): divide by abs temp to get density.</li>
+<li>1/airVK.  dfl ~39.25</li>
+</ul></td>
+</tr>
+<tr>
+<td>airVshK</td>
+<td>number</td>
+<td>Start of run</td>
+<td><ul>
+<li>volumetric specific heat/temp (Btu/ft3-F): div by abs temp for heat capacity per ft3</li>
+<li>airRhoK*tp_airSH  dfl ~9.535  NEEDS UNITS</li>
+</ul></td>
+</tr>
+<tr>
+<td>airXK</td>
+<td>number</td>
+<td>Start of run</td>
+<td><ul>
+<li>divide by abs temp for specific heat of flow (Btuh/cfm-F)</li>
+<li>airVshK, times 60 to match time units. dfl ~572.1</li>
+</ul></td>
+</tr>
+<tr>
+<td>hConvF</td>
+<td>number</td>
+<td>Start of run</td>
+<td><ul>
+<li>convective coefficient pressure modification factor</li>
+<li>=(.24 + .76*PresAtm/PresAtmSeaLevel)</li>
+<li>used in some surface transfer models, reduces convection as function of [elevation][elevation]</li>
+<li>source = ASHRAE 1199-RP Barnaby et al. 2004</li>
+<li>and: enthalpy/lb is airSh * absTemp + 1061 * w.  (Btu/lb)</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<p>TOP: setup time: autosizing</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>nDesDays</td>
+<td>number</td>
+<td>Start of run</td>
+<td>number of design days: 1 for heating + number of non-0 coolDsMo's.</td>
+</tr>
+<tr>
+<td>auszSmTol</td>
+<td>FLOAT_GZ</td>
+<td>Start of run</td>
+<td>autosizing small tolerance, eg auszTol/10 (.001)</td>
+</tr>
+<tr>
+<td>auszTol2</td>
+<td>FLOAT_GZ</td>
+<td>Start of run</td>
+<td>half of given tolerance -- added to values; used in convergence tests.</td>
+</tr>
+<tr>
+<td>auszHiTol2</td>
+<td>FLOAT_GZ</td>
+<td>Start of run</td>
+<td>1 + half of tolerance, eg 1 + auszTol/2.</td>
+</tr>
+</tbody>
+</table>
+<p>TOP: setup time: reports info for this run</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>vrSum</td>
+<td>number</td>
+<td>Start of run</td>
+<td><ul>
+<li>vrh for Summary report (not written to as of 11/22/91)</li>
+<li>int VrErr       vrh for ERR report... is not in Top... must be open for messages during Top init.</li>
+<li>int VrLog       vrh for LOG report... ditto. open in case want to write to it during input.</li>
+<li>int VrInp       vrh for INPut listing report ... ditto, is being written during input and thus Top init.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>TOP: runtime: reports info for this run</li>
+<li>Date-dependent report/exports, including all zone-specific reports, etc:  ZEB, ZST, MTR, etc:</li>
+<li>cncult4.cpp makes DVRI record for each requested such report and generates unspool requests for it;</li>
+<li>cgresult.cpp generates text to active reports each interval using the following lists it generates daily:</li>
+<li>Reports/exports active today, ordered for subscripting by IVLCH-1, heads of .nextNow lists in DvrIB (next 6 items):</li>
+</ul>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dvriY</td>
+<td>TI</td>
+<td>Start of day</td>
+<td>0 or DvriB subscript of 1st rpFreq=YEAR report or export</td>
+</tr>
+<tr>
+<td>dvriM</td>
+<td>TI</td>
+<td>Start of day</td>
+<td>.. MONTH report/export currently active</td>
+</tr>
+<tr>
+<td>dvriD</td>
+<td>TI</td>
+<td>Start of day</td>
+<td>.. DAY report/export to write to today</td>
+</tr>
+<tr>
+<td>dvriH</td>
+<td>TI</td>
+<td>Start of day</td>
+<td>.. Hourly ..</td>
+</tr>
+<tr>
+<td>dvriS</td>
+<td>TI</td>
+<td>Start of day</td>
+<td>.. Subhourly ..</td>
+</tr>
+<tr>
+<td>dvriHS</td>
+<td>TI</td>
+<td>Start of day</td>
+<td><ul>
+<li>.. Hourly and Subhourly.  A vr can only be in one list, so this list is</li>
+<li>checked at hourly and subhourly intervals in addition to -H or -S. */</li>
+</ul></td>
+</tr>
+<tr>
+<td>hrxFlg</td>
+<td>number</td>
+<td>Start of day</td>
+<td>nz if any hour reporting or exporting today:    dvriH | -HS</td>
+</tr>
+<tr>
+<td>shrxFlg</td>
+<td>number</td>
+<td>Start of day</td>
+<td>nz if any subhour reporting or exporting today: dvriS | -HS</td>
+</tr>
+</tbody>
+</table>
+<p>TOP: runtime: probe-able timing info</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tmrInput</td>
+<td>DBL</td>
+<td>End of day</td>
+<td>input processing time, sec</td>
+</tr>
+<tr>
+<td>tmrAusz</td>
+<td>DBL</td>
+<td>End of day</td>
+<td>autosizing time, sec</td>
+</tr>
+<tr>
+<td>tmrRun</td>
+<td>DBL</td>
+<td>End of day</td>
+<td>main simulation time, sec</td>
+</tr>
+<tr>
+<td>tmrTotal</td>
+<td>DBL</td>
+<td>End of day</td>
+<td>total execution time (not including reports), sec</td>
+</tr>
+<tr>
+<td>tmrAirNet</td>
+<td>DBL</td>
+<td>End of day</td>
+<td>add'l timers active iff DETAILED_TIMING</td>
+</tr>
+<tr>
+<td>tmrAirNetSolve</td>
+<td>DBL</td>
+<td>End of day</td>
+<td></td>
+</tr>
+<tr>
+<td>tmrAWTot</td>
+<td>DBL</td>
+<td>End of day</td>
+<td></td>
+</tr>
+<tr>
+<td>tmrAWCalc</td>
+<td>DBL</td>
+<td>End of day</td>
+<td></td>
+</tr>
+<tr>
+<td>tmrCond</td>
+<td>DBL</td>
+<td>End of day</td>
+<td></td>
+</tr>
+<tr>
+<td>tmrKiva</td>
+<td>DBL</td>
+<td>End of day</td>
+<td></td>
+</tr>
+<tr>
+<td>tmrBC</td>
+<td>DBL</td>
+<td>End of day</td>
+<td></td>
+</tr>
+<tr>
+<td>tmrZone</td>
+<td>DBL</td>
+<td>End of day</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>TOP: runtime: re subHour and sub-subhour (aka ticks)</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>subhrDur</td>
+<td>number</td>
+<td>Start of run</td>
+<td>duration of subhour, hr (= 1/tp_nSubSteps)</td>
+</tr>
+<tr>
+<td>nSubhrTicks</td>
+<td>SI_GZ</td>
+<td>Start of run</td>
+<td><ul>
+<li># of subhour ticks for e.g. HPWH simulation</li>
+<li>1 per minute or as generalized</li>
+</ul></td>
+</tr>
+<tr>
+<td>tickDurMin</td>
+<td>DBL</td>
+<td>Start of run</td>
+<td><ul>
+<li>duration of subhr tick, min</li>
+<li>= 1 min or as generalized</li>
+<li>used for e.g. HPWH simulation</li>
+</ul></td>
+</tr>
+<tr>
+<td>tickDurHr</td>
+<td>DBL</td>
+<td>Start of run</td>
+<td>duration of subhr tick, hr</td>
+</tr>
+</tbody>
+</table>
+<p>TOP: runtime: simulation date/time variables</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>monStr</td>
+<td>CULSTR</td>
+<td>Unknown</td>
+<td><ul>
+<li>Month being simulated</li>
+<li>autoSizing: "heating design day", or month for cooling.</li>
+</ul></td>
+</tr>
+<tr>
+<td>dateStr</td>
+<td>CULSTR</td>
+<td>Start of day</td>
+<td><ul>
+<li>Date being simulated as string</li>
+<li>autoSizing: eg "heating design day" or "Jul cooling design day".</li>
+</ul></td>
+</tr>
+<tr>
+<td>date</td>
+<td>IDATE</td>
+<td>Start of day</td>
+<td><ul>
+<li>Date: .month is 1-12, .mday 1-31, .wday 0-6. set/used: cnguts. used:cuparse;cgsolar;cgresult;cgenbal.</li>
+<li>autoSizing: cool: near-mid-month day as used for solar calcs; heat: Dec 21. jDay ditto.</li>
+</ul></td>
+</tr>
+<tr>
+<td>jDay</td>
+<td>DOY</td>
+<td>Start of day</td>
+<td>Day of year now simulating, 1..365. set: tp_MainSimI; used:cnguts;cuparse;cgwthr;cgsolar;cgresult.</td>
+</tr>
+<tr>
+<td>xJDay</td>
+<td>DOY</td>
+<td>Start of day</td>
+<td>extended jDay: same for main sim, 512 heat autosizing, 529-540 cooling autosizing.</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>iHr</td>
+<td>number</td>
+<td>Start of hour</td>
+<td>Hour of day, 0-23.  set/used: tp_MainSim()</td>
+</tr>
+<tr>
+<td>iSubhr</td>
+<td>number</td>
+<td>Start of subhour</td>
+<td>subhour of hour being simulated, 0.. .  set cnguts.cpp</td>
+</tr>
+<tr>
+<td>shoy</td>
+<td>SHOY</td>
+<td>Start of subhour</td>
+<td>extended subhour of year, for reporting peaks: subhr + 4 * (hr + 24*xJDay). set/used: cnguts.</td>
+</tr>
+<tr>
+<td>isDT</td>
+<td>BOO</td>
+<td>Start of hour</td>
+<td><ul>
+<li>1 if daylight saving time in effect, 0 if not.  Unspecified time/date variables are daylight.</li>
+<li>Standard Time variables, for weather file interface and solar calcs.  Note std time date changes an hour later than daylight.</li>
+</ul></td>
+</tr>
+<tr>
+<td>iHrST</td>
+<td>number</td>
+<td>Start of hour</td>
+<td>Standard time Hour of day now simulating, 0-23.  set/used cnguts, used cgsolar.cpp.</td>
+</tr>
+<tr>
+<td>jDayST</td>
+<td>DOY</td>
+<td>Start of hour</td>
+<td>Standard time day of year, 1..365.  changes @ 1am --&gt;*h.  set/used cnguts, used cgsolar.cpp.</td>
+</tr>
+</tbody>
+</table>
+<p>TOP: autosizing phase/date variables</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>autoSizing</td>
+<td>BOO</td>
+<td>Start of phase</td>
+<td>TRUE if setting up for or doing autosizing, 0 for main simulation setup/run</td>
+</tr>
+<tr>
+<td>pass1</td>
+<td>BOO</td>
+<td>Start of day</td>
+<td>TRUE autoSizing pass 1 (A or B) thru dsn days: find big-enuf sizes with open-ended models</td>
+</tr>
+<tr>
+<td>pass1A</td>
+<td>BOO</td>
+<td>Start of day</td>
+<td>TRUE for pass 1A of each dsn day: use idealized const-supply-temp models</td>
+</tr>
+<tr>
+<td>pass1B</td>
+<td>BOO</td>
+<td>Start of day</td>
+<td>TRUE for pass 1B of each dsn day: use real models</td>
+</tr>
+<tr>
+<td>pass2</td>
+<td>BOO</td>
+<td>Start of day</td>
+<td>TRUE autoSizing for pass 2 thru dsn days: determine loads, reduce oversize sizes.</td>
+</tr>
+<tr>
+<td>sizing</td>
+<td>BOO</td>
+<td>Start of day</td>
+<td>TRUE when can increase sizes. eg FALSE during pass 2: warming up.</td>
+</tr>
+<tr>
+<td>dsDayI</td>
+<td>number</td>
+<td>Start of day</td>
+<td>index of design day being simulated: 0 heat, 1-12 coolDsMo[..-1]. set in cnausz.cpp. 6-95.</td>
+</tr>
+<tr>
+<td>dsDay</td>
+<td>number</td>
+<td>Start of day</td>
+<td>0 main sim, 1 heating autoSize design day, 2 cooling ausz</td>
+</tr>
+<tr>
+<td>auszMon</td>
+<td>number</td>
+<td>Start of day</td>
+<td>cool design day month 1-12 or generic month 0 for heat. 6-95.</td>
+</tr>
+</tbody>
+</table>
+<p>TOP: runtime time/day classification</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ivl</td>
+<td>choice:IVL</td>
+<td>Start of subhour</td>
+<td><ul>
+<li>interval now starting or ending (C_IVLCH_Y, _M, etc),</li>
+<li>doEndIvl/doBegIvl to doIvlExprs, doIvlAccum, mtr_Accum1, cgaccum, doIvlPrior, etc</li>
+</ul></td>
+</tr>
+<tr>
+<td>isBegOf</td>
+<td>choice:IVL</td>
+<td>Start of subhour</td>
+<td>0 or interval now starting (for exprssion eval) (C_IVLCH_Y, _M, etc; 0 except during expr eval) ...</td>
+</tr>
+<tr>
+<td>isEndOf</td>
+<td>choice:IVL</td>
+<td>Start of subhour</td>
+<td><ul>
+<li>ditto ending. ... set in cnguts.cpp, tested in cueval.cpp.</li>
+<li>autoSizing gets no end-month nor end-year unless caller sets isLastDay &amp; does extra final rep 6-95.</li>
+</ul></td>
+</tr>
+<tr>
+<td>isBegRun</td>
+<td>BOO</td>
+<td>Start of subhour</td>
+<td><ul>
+<li>1st subhr of warmup, not set for run unless no warmup.</li>
+<li>autoSizing: true if 1st subr of 1st repetition of dsn day.</li>
+</ul></td>
+</tr>
+<tr>
+<td>isBegMainSim</td>
+<td>BOO</td>
+<td>Start of subhour</td>
+<td>1st subhr of main sim (not warmup, not autosize)</td>
+</tr>
+<tr>
+<td>isFirstMon</td>
+<td>BOO</td>
+<td>Unknown</td>
+<td><ul>
+<li>TRUE if 1st month of main sim. set: doBeg/EndIvl. used: doIvlAccum.</li>
+<li>** autoSizing: moot; probably always on, depending how ivl comes out.</li>
+</ul></td>
+</tr>
+<tr>
+<td>isLastDay</td>
+<td>BOO</td>
+<td>Start of day</td>
+<td><ul>
+<li>Last day of main sim</li>
+<li>** autoSizing: only set if (poss future 7-95) caller sets &amp; does extra last rep of dsn day,</li>
+<li>else end-month and end-year exprs, reports, etc skipped (all moot?).</li>
+<li>See comment in doEndIvl(). ******* Clarify this comment when get clear re final reps 6-95.</li>
+</ul></td>
+</tr>
+<tr>
+<td>isLastWarmupDay</td>
+<td>BOO</td>
+<td>Start of day</td>
+<td><ul>
+<li>TRUE iff last day of main sim warmup. set: cgMainsimI. used: cgwthr.cpp. 1-95.</li>
+<li>autoSizing: not set; coding so moot.</li>
+</ul></td>
+</tr>
+<tr>
+<td>isBegHour</td>
+<td>BOO</td>
+<td>Start of subhour</td>
+<td>TRUE if subhour 0 of hour.  set cnztu.cpp/cnguts.cpp, used cnguts.cpp, .</td>
+</tr>
+<tr>
+<td>isEndHour</td>
+<td>BOO</td>
+<td>Start of subhour</td>
+<td>TRUE if last subhour of hour. set cnguts.cpp, used cnguts, cgresult.cpp.</td>
+</tr>
+<tr>
+<td>isBegDay</td>
+<td>BOO</td>
+<td>Start of hour</td>
+<td>TRUE if hour 0. set: doBegIvl.  used: doBegIvl,doIvlAccum; cgresult.cpp</td>
+</tr>
+<tr>
+<td>isEndDay</td>
+<td>BOO</td>
+<td>Start of hour</td>
+<td>TRUE if hour 23. set: doBegIvl. used: doEndIvl,doIvlAccum; cgresult.cpp</td>
+</tr>
+<tr>
+<td>isBegMonth</td>
+<td>BOO</td>
+<td>Start of day</td>
+<td>1st day of month/run/warmup or 1st rep of dsn day.</td>
+</tr>
+<tr>
+<td>isEndMonth</td>
+<td>BOO</td>
+<td>Start of day</td>
+<td><ul>
+<li>Mon/run, not warmup, last day.</li>
+<li>** autoSizing: moot; only set if caller sets isLastDay &amp; does final extra rep of dsn day.</li>
+</ul></td>
+</tr>
+<tr>
+<td>isSolarCalcDay</td>
+<td>BOO</td>
+<td>Start of day</td>
+<td>TRUE if 1st day of month/run or 1st rep of dsn day: do 24 hours of solar calcs today. cnguts.</td>
+</tr>
+<tr>
+<td>isWarmup</td>
+<td>BOO</td>
+<td>Start of day</td>
+<td><ul>
+<li>TRUE if main sim warmup. set/used: cgMainsimI. used: doBegIvl,doEndIvl,doIvlAccum,doIvlReports; exman,impf.</li>
+<li>autoSizing: keep moot for now; may be on except for (future 6-95) extra last day eg for reports.</li>
+</ul></td>
+</tr>
+<tr>
+<td>dowh</td>
+<td>number</td>
+<td>Start of day</td>
+<td><ul>
+<li>autoSizing: 8 heat 9 cool, else 7 if observed holiday, else day of week 0-6, for $dowh.</li>
+<li>weekend/holiday flags for probes / $variables (ul/cuparse.cpp).  Set in cnguts.cpp.</li>
+</ul></td>
+</tr>
+<tr>
+<td>isHoliday</td>
+<td>BOO</td>
+<td>Start of day</td>
+<td>TRUE on observed holiday: Monday after certain true holidays on weekend. Same as old isHoliObs, 7-92.</td>
+</tr>
+<tr>
+<td>isHoliTrue</td>
+<td>BOO</td>
+<td>Start of day</td>
+<td>TRUE (non-0) on true date of holiday</td>
+</tr>
+<tr>
+<td>isWeHol</td>
+<td>BOO</td>
+<td>Start of day</td>
+<td>weekend or holiday</td>
+</tr>
+<tr>
+<td>isWeekend</td>
+<td>BOO</td>
+<td>Start of day</td>
+<td>Saturday or Sunday</td>
+</tr>
+<tr>
+<td>isBegWeek</td>
+<td>BOO</td>
+<td>Start of day</td>
+<td>Non-WeHol after WeHol</td>
+</tr>
+<tr>
+<td>isWeekday</td>
+<td>BOO</td>
+<td>Start of day</td>
+<td>Mon-Fri</td>
+</tr>
+<tr>
+<td>isWorkDay</td>
+<td>BOO</td>
+<td>Start of day</td>
+<td>workday per Top.workDayMask (default Mon-Fri), 5-95</td>
+</tr>
+<tr>
+<td>isNonWorkDay</td>
+<td>BOO</td>
+<td>Start of day</td>
+<td>non-workDay ditto 5-95</td>
+</tr>
+<tr>
+<td>isBegWorkWeek</td>
+<td>BOO</td>
+<td>Start of day</td>
+<td>workday after non-workday ditto 5-95</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>TOP: runtime: autosizing</li>
+<li>above: autoSizing, tp_dsDayI, tp_dsDay, auszMon.</li>
+</ul>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>auszNotDone</td>
+<td>BOO</td>
+<td>Start of day</td>
+<td>combined results of autoSize pass endtests</td>
+</tr>
+<tr>
+<td>auszDsDayItr</td>
+<td>number</td>
+<td>Start of day</td>
+<td><ul>
+<li>current design day iteration (1 based)</li>
+<li>(0 when not autosizing)</li>
+</ul></td>
+</tr>
+<tr>
+<td>auszDsDayItrMax</td>
+<td>number</td>
+<td>Start of day</td>
+<td>design day iteration limit for current pass</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>irradiance. Weather file values are energy integrated over hour.</li>
+<li>program needs [both] interval average [and end-interval (subhour only)] values. SOLAVNEND.</li>
+<li>power (Btuh/ft2)===energy (Btu/ft2) for 1 hour.</li>
+</ul>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>radBeamHrAv</td>
+<td>number</td>
+<td>Start of hour</td>
+<td>beam irradiance on tracking surface, hour energy = average power, from weather file</td>
+</tr>
+<tr>
+<td>radDiffHrAv</td>
+<td>number</td>
+<td>Start of hour</td>
+<td>diffuse irradiance on horizontal surface, hour energy = average power, from weather file</td>
+</tr>
+<tr>
+<td>radBeamShAv</td>
+<td>number</td>
+<td>Start of subhour</td>
+<td>.. current beam subhour average power, interpolated, Btuh/ft2</td>
+</tr>
+<tr>
+<td>radDiffShAv</td>
+<td>number</td>
+<td>Start of subhour</td>
+<td>.. current diffuse subhour power, interpolated by cgwthr.cpp, Btuh/ft2</td>
+</tr>
+</tbody>
+</table>
+<p>other weather: weather file contains instantaneous values for <a class="autorefs autorefs-internal" href="../../input-structure/#end-and-endxxxx">END</a> OF HOUR; program needs only end-interval values.</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tDbOHr</td>
+<td>TEMP</td>
+<td>Start of hour</td>
+<td>outdoor dry bulb temp at end of hour, from wthr file, deg F.</td>
+</tr>
+<tr>
+<td>tDbOPvHr</td>
+<td>TEMP</td>
+<td>Start of hour</td>
+<td>.. previous hour (used to compute -HrAv and -Sh)</td>
+</tr>
+<tr>
+<td>tDbOHrAv</td>
+<td>TEMP</td>
+<td>Start of hour</td>
+<td>.. average over hour (used re hourly masses, bin res files, $variable)</td>
+</tr>
+<tr>
+<td>tDbOSh</td>
+<td>TEMP</td>
+<td>Start of subhour</td>
+<td>.. end subhour, interpolated (used re zone temp heat balance)</td>
+</tr>
+<tr>
+<td>tDbOPvSh</td>
+<td>TEMP</td>
+<td>Start of subhour</td>
+<td>.. end previous subhr (used to compute -ShAv)</td>
+</tr>
+<tr>
+<td>tDbOShAv</td>
+<td>TEMP</td>
+<td>Start of subhour</td>
+<td>.. average over subhour (used re subhourly masses)</td>
+</tr>
+<tr>
+<td>tWbOHr</td>
+<td>TEMP</td>
+<td>Start of hour</td>
+<td>outdoor wet bulb temp at END OF hour, from wthr file wb depression, deg F.</td>
+</tr>
+<tr>
+<td>tWbOPvHr</td>
+<td>TEMP</td>
+<td>Start of hour</td>
+<td>.. previous hour (used to compute -HrAv, -Sh)</td>
+</tr>
+<tr>
+<td>tWbOHrAv</td>
+<td>TEMP</td>
+<td>Start of hour</td>
+<td>.. hour average (for $ variable)</td>
+</tr>
+<tr>
+<td>tWbOSh</td>
+<td>TEMP</td>
+<td>Start of subhour</td>
+<td>.. end subhour, interpolated (used re zone temp heat balance)</td>
+</tr>
+<tr>
+<td>tDpOHr</td>
+<td>TEMP</td>
+<td>Start of hour</td>
+<td>outdoor dew point temp at END OF hour, from wthr file</td>
+</tr>
+<tr>
+<td>tDpOPvHr</td>
+<td>TEMP</td>
+<td>Start of hour</td>
+<td>.. previous hour (used to compute -HrAv)</td>
+</tr>
+<tr>
+<td>tDpOHrAv</td>
+<td>TEMP</td>
+<td>Start of hour</td>
+<td>.. hour average</td>
+</tr>
+<tr>
+<td>tDpOSh</td>
+<td>TEMP</td>
+<td>Start of subhour</td>
+<td>.. end subhour (derived from tDbOSh and wOSh)</td>
+</tr>
+<tr>
+<td>tSkyHr</td>
+<td>TEMP</td>
+<td>Start of hour</td>
+<td>sky temperature, F</td>
+</tr>
+<tr>
+<td>tSkyPvHr</td>
+<td>TEMP</td>
+<td>Start of hour</td>
+<td>.. previous hour (used to compute -Sh)</td>
+</tr>
+<tr>
+<td>tSkySh</td>
+<td>TEMP</td>
+<td>Start of subhour</td>
+<td>.. end subhr, interpolated)</td>
+</tr>
+<tr>
+<td>windSpeedHr</td>
+<td>number</td>
+<td>Start of hour</td>
+<td><ul>
+<li>wind speed, mph, at end hour</li>
+<li>= Top.[windF][windf] * max( wthrfile.wndspd, Top.[windSpeedMin][windspeedmin]);</li>
+</ul></td>
+</tr>
+<tr>
+<td>windSpeedPvHr</td>
+<td>number</td>
+<td>Start of hour</td>
+<td>.. previous hour (used to compute -HrAv, -Sh)</td>
+</tr>
+<tr>
+<td>windSpeedHrAv</td>
+<td>number</td>
+<td>Start of hour</td>
+<td>.. hour average (for $ variable)</td>
+</tr>
+<tr>
+<td>windSpeedSh</td>
+<td>number</td>
+<td>Start of subhour</td>
+<td>.. end subhour, mph, interpolated: for $variable and ..</td>
+</tr>
+<tr>
+<td>windSpeedSquaredSh</td>
+<td>number</td>
+<td>Start of subhour</td>
+<td>.. end subhour squared (re zone infiltration), mph^2</td>
+</tr>
+<tr>
+<td>windSpeedSqrtSh</td>
+<td>number</td>
+<td>Start of subhour</td>
+<td>.. end subhour sqrt (re outside surface convection), mph^.5</td>
+</tr>
+<tr>
+<td>windSpeedPt8Sh</td>
+<td>number</td>
+<td>Start of subhour</td>
+<td>.. end subhour ^.8 (re outside surface convection), mph^.8</td>
+</tr>
+<tr>
+<td>windDirDegHr</td>
+<td>number</td>
+<td>Start of hour</td>
+<td>wind direction at END HOUR from wthr file, degrees, 0=N, 90=E. (used for $variable)</td>
+</tr>
+</tbody>
+</table>
+<p>additional derived weather info</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>wOHr</td>
+<td>HUMRAT_GZ</td>
+<td>Start of hour</td>
+<td>outdoor humidity ratio at end current hour, computed from tDbO and tWbO (used for $ variable)</td>
+</tr>
+<tr>
+<td>wOPvHr</td>
+<td>HUMRAT_GZ</td>
+<td>Start of hour</td>
+<td>.. previous hour (used to compute -HrAv)</td>
+</tr>
+<tr>
+<td>wOHrAv</td>
+<td>HUMRAT_GZ</td>
+<td>Start of hour</td>
+<td>.. hour average (for $ variable)</td>
+</tr>
+<tr>
+<td>wOSh</td>
+<td>HUMRAT_GZ</td>
+<td>Start of subhour</td>
+<td>.. at end current subhour: used throughout zones and systems models in program</td>
+</tr>
+<tr>
+<td>wOShChangeBase</td>
+<td>HUMRAT_GZ</td>
+<td>Start of subhour</td>
+<td>outdoor humidity ratio saved for tp_wOShChange detection</td>
+</tr>
+<tr>
+<td>hOSh</td>
+<td>number</td>
+<td>Start of subhour</td>
+<td>outdoor enthalpy at end subhour. used at in AH::doEco, TOWERPLANT::towModel. 9-92.</td>
+</tr>
+<tr>
+<td>airxOSh</td>
+<td>number</td>
+<td>Start of subhour</td>
+<td>air flow heat transfer @tDbOSh (vhc*60) (Btuh/cfm-F).</td>
+</tr>
+<tr>
+<td>rhoMoistOSh</td>
+<td>number</td>
+<td>Start of subhour</td>
+<td>outdoor moist air density at end of subhour, lbm/ft3</td>
+</tr>
+<tr>
+<td>rhoDryOSh</td>
+<td>number</td>
+<td>Start of subhour</td>
+<td>outdoor dry air density at end of subhour, lbm/ft3</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>TOP: runtime: iteration control flags</li>
+<li>each of the following is TRUE if the indicated class should be checKed for call-flagged or compute-flagged objects.</li>
+<li>used in cnztu.cpp:hvacIterSubhr; set anywhere individual object call- and compute- flags are set.</li>
+</ul>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>wOShChange</td>
+<td>BOO</td>
+<td>Start of subhour</td>
+<td>TRUE iff non-negligible change in outdoor humidity ratio</td>
+</tr>
+<tr>
+<td>iter</td>
+<td>number</td>
+<td>Start of subhour</td>
+<td>hvac terminal / air handler / plant iteration counter for cnztu.cpp:hvacIterSubhr.</td>
+</tr>
+</tbody>
+</table>
+<p>TOP: runtime: whole-building heating and cooling peaks</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>qcPeak</td>
+<td>number</td>
+<td>Start of hour</td>
+<td>maximum cooling load for an hour for entire building. Negative (if not 0).</td>
+</tr>
+<tr>
+<td>qcPeakH</td>
+<td>number</td>
+<td>Start of hour</td>
+<td>hour 1-24 of peak cooling load</td>
+</tr>
+<tr>
+<td>qcPeakD</td>
+<td>number</td>
+<td>Start of hour</td>
+<td>day of month 1-31 of peak load</td>
+</tr>
+<tr>
+<td>qcPeakM</td>
+<td>number</td>
+<td>Start of hour</td>
+<td>month 1-12 of peak load</td>
+</tr>
+<tr>
+<td>qhPeak</td>
+<td>number</td>
+<td>Start of hour</td>
+<td>maximum heating load for entire building during an hour</td>
+</tr>
+<tr>
+<td>qhPeakH</td>
+<td>number</td>
+<td>Start of hour</td>
+<td>hour 1-24 of peak heating load</td>
+</tr>
+<tr>
+<td>qhPeakD</td>
+<td>number</td>
+<td>Start of hour</td>
+<td>day of month 1-31 of peak load</td>
+</tr>
+<tr>
+<td>qhPeakM</td>
+<td>number</td>
+<td>Start of hour</td>
+<td>month 1-12 of peak load</td>
+</tr>
+</tbody>
+</table>
+<p>TOP: runtime: AIRNET solution</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>airNetActive</td>
+<td>BOO</td>
+<td>Start of phase</td>
+<td>TRUE iff AirNet is active (calcs s/b done)</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ck5aa5</td>
+<td>number</td>
+<td>Start of run</td>
+<td>stuffed with 0x5aa5 from topCult for verifying initialization &amp; matching versions</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      &copy 2025 The CSE Authors. All rights reserved.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "toc.follow", "navigation.instant", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f1b6f286.min.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/katex.min.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/contrib/auto-render.min.js"></script>
+      
+        <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
+      
+        <script src="../../assets/javascript/extra_js.js"></script>
+      
+    
+  </body>
+</html>

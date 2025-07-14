@@ -1,0 +1,8613 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation Website for CSE">
+      
+      
+        <meta name="author" content="CSE Authors">
+      
+      
+        <link rel="canonical" href="https://cse-sim.github.io/cse/probe-definitions/airHandler/">
+      
+      
+        <link rel="prev" href="../ahRes/">
+      
+      
+        <link rel="next" href="../Battery/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.3">
+    
+    
+      
+        <title>airHandler - CSE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.d7758b05.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="https://unpkg.com/katex@0/dist/katex.min.css">
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/extra_styles.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="CSE Documentation" class="md-header__button md-logo" aria-label="CSE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CSE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              airHandler
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/cse-sim/cse" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cse
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="CSE Documentation" class="md-nav__button md-logo" aria-label="CSE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CSE Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/cse-sim/cse" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cse
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../introduction/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Operation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-structure/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Input Structure
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../input-data/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Input Data
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Input Data
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/top-members/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    TOP Members
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/holiday/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HOLIDAY
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/descond/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DESCOND
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/material/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MATERIAL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/construction/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CONSTRUCTION
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/foundation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FOUNDATION
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/fndblock/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FNDBLOCK
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/layer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LAYER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/glazetype/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GLAZETYPE
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/meter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    METER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwmeter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWMETER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/afmeter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AFMETER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/loadmeter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LOADMETER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/zone/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ZONE
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/gain/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GAIN
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/surface/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SURFACE
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/window/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    WINDOW
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/shade/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SHADE
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/sgdist/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SGDIST
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/door/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DOOR
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/perimeter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PERIMETER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/terminal/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    TERMINAL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/izxfer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    IZXFER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/doas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DOAS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/rsys/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RSYS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/ductseg/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DUCTSEG
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/performancemap/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PERFORMANCEMAP
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwdayuse/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWDAYUSE
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwuse/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWUSE
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwsys/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWSYS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwheater/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWHEATER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwloopheater/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWLOOPHEATER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwheatrec/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWHEATREC
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwtank/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWTANK
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwpump/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWPUMP
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwloop/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWLOOP
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwlooppump/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWLOOPPUMP
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwloopseg/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWLOOPSEG
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwloopbranch/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWLOOPBRANCH
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwsolarsys/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWSOLARSYS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/dhwsolarcollector/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWSOLARCOLLECTOR
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/pvarray/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PVARRAY
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/shadex/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SHADEX
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/battery/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BATTERY
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/airhandler/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AIRHANDLER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/heatplant/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HEATPLANT
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/boiler/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BOILER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/coolplant/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    COOLPLANT
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/chiller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CHILLER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/towerplant/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    TOWERPLANT
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/reportfile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    REPORTFILE
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/report/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    REPORT
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/reportcol/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    REPORTCOL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/exportfile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EXPORTFILE
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/export/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EXPORT
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/exportcol/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EXPORTCOL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../input-data/importfile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    IMPORTFILE
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../output-reports/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Output Reports
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Probe Definitions
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Probe Definitions
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AFMETER/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AFMETER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ahRes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ahRes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    airHandler
+    
+  </span>
+  
+
+      </a>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Battery/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Battery
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../boiler/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    boiler
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chiller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    chiller
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../construction/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    construction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coolPlant/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    coolPlant
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DESCOND/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DESCOND
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWDayUse/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWDayUse
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWHeater/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWHeater
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWHeatRec/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWHeatRec
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWLoop/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWLoop
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWLoopBranch/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWLoopBranch
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWLoopHeater/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWLoopHeater
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWLoopPump/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWLoopPump
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWLoopSeg/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWLoopSeg
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWMETER/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWMETER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWPump/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWPump
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWSolarCollector/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWSolarCollector
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWSolarSys/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWSolarSys
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWSYS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWSYS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWSYSRES/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWSYSRES
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWTank/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWTank
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DHWUse/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DHWUse
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DUCTSEGRes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DUCTSEGRes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DuctSeg/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DuctSeg
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    doas
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../door/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    door
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../export/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    export
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exportCol/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    exportCol
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exportFile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    exportFile
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../foundation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    foundation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../foundationBlock/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    foundationBlock
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gain/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    gain
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glazeType/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    glazeType
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../heatPlant/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    heatPlant
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../holiday/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    holiday
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Inverse/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Inverse
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../impFileFldNames/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    impFileFldNames
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../importFile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    importFile
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../izXfer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    izXfer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kiva/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    kiva
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LOADMETER/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LOADMETER
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../layer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    layer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mass/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mass
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../material/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    material
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../meter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    meter
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PERFORMANCEMAP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PERFORMANCEMAP
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PipeSeg/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PipeSeg
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PMGRIDAXIS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PMGRIDAXIS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PMLOOKUPDATA/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PMLOOKUPDATA
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PVArray/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PVArray
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../perimeter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    perimeter
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RSYS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RSYS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RSYSRes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RSYSRes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../report/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    report
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reportCol/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    reportCol
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reportFile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    reportFile
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SHADEX/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SHADEX
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sgdist/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    sgdist
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shade/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    shade
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../surface/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    surface
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../terminal/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    terminal
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../top/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    top
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../towerPlant/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    towerPlant
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../weather/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    weather
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../weatherFile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    weatherFile
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../weatherNextHour/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    weatherNextHour
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../window/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    window
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xsurf/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    xsurf
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zhx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    zhx
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../znRes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    znRes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zone/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    zone
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>airHandler</h1>
+
+<p><a href="" id="p_airhandler"></a></p>
+<p>input -- in addition to AUTOSIZE ahhcCaptRat, ahccCaptRat, sfanVfDs, rfanVfDs: these set FsAS field status bit.</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahTsDsH</td>
+<td>TEMP</td>
+<td>Start of hour</td>
+<td>heating design supply temperature, for sizing coil vs fan. defaulted hourly to ahTsMx.</td>
+</tr>
+<tr>
+<td>ahTsDsC</td>
+<td>TEMP</td>
+<td>Start of hour</td>
+<td>cooling design supply temperature, for sizing coil vs fan. defaulted hourly to ahTsMn.</td>
+</tr>
+<tr>
+<td>fxCapH</td>
+<td>FLOAT_GZ</td>
+<td>Start of phase</td>
+<td>capacity factor for autoSized heat coils (default 1.1 = 10% oversized)</td>
+</tr>
+<tr>
+<td>fxCapC</td>
+<td>FLOAT_GZ</td>
+<td>Start of phase</td>
+<td>capacity factor for autoSized cool coils (default 1.1 = 10% oversized)</td>
+</tr>
+<tr>
+<td>fxVfFan</td>
+<td>FLOAT_GZ</td>
+<td>Start of phase</td>
+<td><ul>
+<li>volume flow factor for autoSized fan(s) (default 1.1 = 10% oversized)</li>
+<li>setup</li>
+</ul></td>
+</tr>
+<tr>
+<td>asRfan</td>
+<td>BOO</td>
+<td>Start of run</td>
+<td>TRUE to autoSize return/relief fan (to same capacity as supply fan)</td>
+</tr>
+<tr>
+<td>asFlow</td>
+<td>BOO</td>
+<td>Start of run</td>
+<td><ul>
+<li>true if autoSizing supply fan and/or flow of any connected terminal:</li>
+<li>change to const supply temp model in part A.</li>
+<li>runtime</li>
+</ul></td>
+</tr>
+<tr>
+<td>hcAs</td>
+<td></td>
+<td></td>
+<td>autoSizing working data members re heat coil</td>
+</tr><tr>
+<td colspan="4" style="border-top: 0px">
+<details class="note">
+<summary>AUSZ</summary>
+<div>
+
+
+---setup time members
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hcAs.az_active</td>
+<td>BOO</td>
+<td>Start of run</td>
+<td>TRUE iff autoSizing this member</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>---runtime</li>
+<li>set at initialization</li>
+</ul>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hcAs.az_a</td>
+<td>number</td>
+<td>End of subhour</td>
+<td><ul>
+<li>1a size (load) -- max of warmup-converged design days</li>
+<li>pass 1 part b and pass 2: enlarge size if necess, real models.</li>
+</ul></td>
+</tr>
+<tr>
+<td>hcAs.az_b</td>
+<td>number</td>
+<td>End of subhour</td>
+<td><ul>
+<li>1b rated size plus increases during simulation incl pass 2 -- max of design days</li>
+<li>for pass 2 (increase size if necess, measure load, reduce oversize sizes) and for main sim load reports</li>
+</ul></td>
+</tr>
+<tr>
+<td>hcAs.ldPk</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>largest load this design day iteration or in main sim</td>
+</tr>
+<tr>
+<td>hcAs.ldPkAs</td>
+<td>number</td>
+<td>End of day</td>
+<td>autoSize peak load: max of warmup-converged design days</td>
+</tr>
+<tr>
+<td>hcAs.ldPkAs1</td>
+<td>number</td>
+<td>End of day</td>
+<td><ul>
+<li>autoSize pass 1 peak load, re reporting overloads of devices that only</li>
+<li>exceed limit on pass 1, eg supply fan when sizing terminals, 7-6-95.</li>
+</ul></td>
+</tr>
+<tr>
+<td>hcAs.plrPk</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>largest plr this design day iteration or in main sim</td>
+</tr>
+<tr>
+<td>hcAs.plrPkAs</td>
+<td>number</td>
+<td>End of day</td>
+<td>autoSize peak plr: max of warmup-converged design days</td>
+</tr>
+<tr>
+<td>hcAs.xPk</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>rated size (*px) when plrPk set</td>
+</tr>
+<tr>
+<td>hcAs.xPkAs</td>
+<td>number</td>
+<td>End of day</td>
+<td>rated size (xPk) when plrPkAs set - use when reducing oversize in case x has changed. 6-97.</td>
+</tr>
+<tr>
+<td>hcAs.az_notDone</td>
+<td>BOO</td>
+<td>End of day</td>
+<td><ul>
+<li>re convergence: nz says this AUSZ requires additional iterations</li>
+<li>set to 0 at beg of each iteration; incrd anywhere is calcs if not converged</li>
+<li>see also Top.tp_auszNotDone = overall notdone flag</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</td>
+</tr>
+<tr>
+<td>ccAs</td>
+<td></td>
+<td></td>
+<td>.. re cool coil (total only. sens cap: see .SHRRat. sens load: see .qcs)</td>
+</tr><tr>
+<td colspan="4" style="border-top: 0px">
+<details class="note">
+<summary>AUSZ</summary>
+<div>
+
+
+---setup time members
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ccAs.az_active</td>
+<td>BOO</td>
+<td>Start of run</td>
+<td>TRUE iff autoSizing this member</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>---runtime</li>
+<li>set at initialization</li>
+</ul>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ccAs.az_a</td>
+<td>number</td>
+<td>End of subhour</td>
+<td><ul>
+<li>1a size (load) -- max of warmup-converged design days</li>
+<li>pass 1 part b and pass 2: enlarge size if necess, real models.</li>
+</ul></td>
+</tr>
+<tr>
+<td>ccAs.az_b</td>
+<td>number</td>
+<td>End of subhour</td>
+<td><ul>
+<li>1b rated size plus increases during simulation incl pass 2 -- max of design days</li>
+<li>for pass 2 (increase size if necess, measure load, reduce oversize sizes) and for main sim load reports</li>
+</ul></td>
+</tr>
+<tr>
+<td>ccAs.ldPk</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>largest load this design day iteration or in main sim</td>
+</tr>
+<tr>
+<td>ccAs.ldPkAs</td>
+<td>number</td>
+<td>End of day</td>
+<td>autoSize peak load: max of warmup-converged design days</td>
+</tr>
+<tr>
+<td>ccAs.ldPkAs1</td>
+<td>number</td>
+<td>End of day</td>
+<td><ul>
+<li>autoSize pass 1 peak load, re reporting overloads of devices that only</li>
+<li>exceed limit on pass 1, eg supply fan when sizing terminals, 7-6-95.</li>
+</ul></td>
+</tr>
+<tr>
+<td>ccAs.plrPk</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>largest plr this design day iteration or in main sim</td>
+</tr>
+<tr>
+<td>ccAs.plrPkAs</td>
+<td>number</td>
+<td>End of day</td>
+<td>autoSize peak plr: max of warmup-converged design days</td>
+</tr>
+<tr>
+<td>ccAs.xPk</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>rated size (*px) when plrPk set</td>
+</tr>
+<tr>
+<td>ccAs.xPkAs</td>
+<td>number</td>
+<td>End of day</td>
+<td>rated size (xPk) when plrPkAs set - use when reducing oversize in case x has changed. 6-97.</td>
+</tr>
+<tr>
+<td>ccAs.az_notDone</td>
+<td>BOO</td>
+<td>End of day</td>
+<td><ul>
+<li>re convergence: nz says this AUSZ requires additional iterations</li>
+<li>set to 0 at beg of each iteration; incrd anywhere is calcs if not converged</li>
+<li>see also Top.tp_auszNotDone = overall notdone flag</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</td>
+</tr>
+<tr>
+<td>fanAs</td>
+<td></td>
+<td></td>
+<td><ul>
+<li>.. re fan(s) -- autosized rfan slaves to sfan.</li>
+<li>values saved at entry to hvacIterSubhr for conditional backtracking during autoSizing.</li>
+</ul></td>
+</tr><tr>
+<td colspan="4" style="border-top: 0px">
+<details class="note">
+<summary>AUSZ</summary>
+<div>
+
+
+---setup time members
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fanAs.az_active</td>
+<td>BOO</td>
+<td>Start of run</td>
+<td>TRUE iff autoSizing this member</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>---runtime</li>
+<li>set at initialization</li>
+</ul>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fanAs.az_a</td>
+<td>number</td>
+<td>End of subhour</td>
+<td><ul>
+<li>1a size (load) -- max of warmup-converged design days</li>
+<li>pass 1 part b and pass 2: enlarge size if necess, real models.</li>
+</ul></td>
+</tr>
+<tr>
+<td>fanAs.az_b</td>
+<td>number</td>
+<td>End of subhour</td>
+<td><ul>
+<li>1b rated size plus increases during simulation incl pass 2 -- max of design days</li>
+<li>for pass 2 (increase size if necess, measure load, reduce oversize sizes) and for main sim load reports</li>
+</ul></td>
+</tr>
+<tr>
+<td>fanAs.ldPk</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>largest load this design day iteration or in main sim</td>
+</tr>
+<tr>
+<td>fanAs.ldPkAs</td>
+<td>number</td>
+<td>End of day</td>
+<td>autoSize peak load: max of warmup-converged design days</td>
+</tr>
+<tr>
+<td>fanAs.ldPkAs1</td>
+<td>number</td>
+<td>End of day</td>
+<td><ul>
+<li>autoSize pass 1 peak load, re reporting overloads of devices that only</li>
+<li>exceed limit on pass 1, eg supply fan when sizing terminals, 7-6-95.</li>
+</ul></td>
+</tr>
+<tr>
+<td>fanAs.plrPk</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>largest plr this design day iteration or in main sim</td>
+</tr>
+<tr>
+<td>fanAs.plrPkAs</td>
+<td>number</td>
+<td>End of day</td>
+<td>autoSize peak plr: max of warmup-converged design days</td>
+</tr>
+<tr>
+<td>fanAs.xPk</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>rated size (*px) when plrPk set</td>
+</tr>
+<tr>
+<td>fanAs.xPkAs</td>
+<td>number</td>
+<td>End of day</td>
+<td>rated size (xPk) when plrPkAs set - use when reducing oversize in case x has changed. 6-97.</td>
+</tr>
+<tr>
+<td>fanAs.az_notDone</td>
+<td>BOO</td>
+<td>End of day</td>
+<td><ul>
+<li>re convergence: nz says this AUSZ requires additional iterations</li>
+<li>set to 0 at beg of each iteration; incrd anywhere is calcs if not converged</li>
+<li>see also Top.tp_auszNotDone = overall notdone flag</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</td>
+</tr>
+<tr>
+<td>bVfDs</td>
+<td>AFLOW_GEZ</td>
+<td>End of subhour</td>
+<td><ul>
+<li>sfan.vfDs. see COIL::bCaptRat for ahhc and ahcc.</li>
+<li>results: see ahhc.captRat_As, ahcc.captRat_As, ahcc.capsRat_As, sfan.vfDs_As, rfan.vfDs_As, ditto _AsNov's.</li>
+<li>values at time of cool coil peak load in main run or des day, for loads reports and input to -PkAs mbrs below</li>
+</ul></td>
+</tr>
+<tr>
+<td>qcPkS</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>sensible load @ peak total load</td>
+</tr>
+<tr>
+<td>qcPkL</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>latent cool coil load ditto</td>
+</tr>
+<tr>
+<td>qcPkH</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>hour 1-24 of peak total cool coil load</td>
+</tr>
+<tr>
+<td>qcPkD</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>day of month 1-31 of peak load, not used for autoSizing</td>
+</tr>
+<tr>
+<td>qcPkM</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>month 1-12 of peak load, or 0 for Heat design month</td>
+</tr>
+<tr>
+<td>qcPkTDbO</td>
+<td>TEMP</td>
+<td>End of subhour</td>
+<td>outdoor temp at time of peak load</td>
+</tr>
+<tr>
+<td>qcPkWO</td>
+<td>HUMRAT</td>
+<td>End of subhour</td>
+<td>outdoor hum rat at time of peak load. w's must follow t's for reports.</td>
+</tr>
+<tr>
+<td>qcPkTen</td>
+<td>TEMP</td>
+<td>End of subhour</td>
+<td>entering air temp</td>
+</tr>
+<tr>
+<td>qcPkWen</td>
+<td>HUMRAT</td>
+<td>End of subhour</td>
+<td>hum rat</td>
+</tr>
+<tr>
+<td>qcPkTex</td>
+<td>TEMP</td>
+<td>End of subhour</td>
+<td>exiting air temp (b4 remix w bypass air)</td>
+</tr>
+<tr>
+<td>qcPkWex</td>
+<td>HUMRAT</td>
+<td>End of subhour</td>
+<td><ul>
+<li>hum rat (b4 remix w bypass air)</li>
+<li>above for autoSize pass 2 cvg'd des day with largest peak cool coil load, saved for size rpts in input rec thru main run.</li>
+</ul></td>
+</tr>
+<tr>
+<td>qcPkSAs</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>sensible load @ peak total load</td>
+</tr>
+<tr>
+<td>qcPkLAs</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>latent cool coil load ditto</td>
+</tr>
+<tr>
+<td>qcPkHAs</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>hour 1-24 of peak total cool coil load</td>
+</tr>
+<tr>
+<td>qcPkDAs</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>day of month 1-31 of peak load, not used for autoSizing</td>
+</tr>
+<tr>
+<td>qcPkMAs</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>month 1-12 of peak load, or 0 for Heat design month</td>
+</tr>
+<tr>
+<td>qcPkTDbOAs</td>
+<td>TEMP</td>
+<td>End of subhour</td>
+<td>outdoor temp at time of peak load</td>
+</tr>
+<tr>
+<td>qcPkWOAs</td>
+<td>HUMRAT</td>
+<td>End of subhour</td>
+<td>outdoor hum rat at time of peak load. w's must follow t's for reports.</td>
+</tr>
+<tr>
+<td>qcPkTenAs</td>
+<td>TEMP</td>
+<td>End of subhour</td>
+<td>entering air temp</td>
+</tr>
+<tr>
+<td>qcPkWenAs</td>
+<td>HUMRAT</td>
+<td>End of subhour</td>
+<td>hum rat</td>
+</tr>
+<tr>
+<td>qcPkTexAs</td>
+<td>TEMP</td>
+<td>End of subhour</td>
+<td>exiting air temp (b4 remix w bypass air)</td>
+</tr>
+<tr>
+<td>qcPkWexAs</td>
+<td>HUMRAT</td>
+<td>End of subhour</td>
+<td>hum rat (b4 remix w bypass air)</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahTsSp</td>
+<td>TEMP_TSCM</td>
+<td>Start of hour</td>
+<td><ul>
+<li>supply temperature setpoint or control method: RA, WZ, CZ, ZN, ZN2, or number, hourly,</li>
+<li>RQD if ah has economizer or coil, else disallowed.</li>
+<li>NUMBER: a number or numeric expression can express functions of time, outdoor temp, etc.</li>
+<li>RA: controlled by return air temp.  raMn, raMx, tsMn, tsMx must be input.</li>
+<li>WZ/CZ: Warmest Zone/Coolest Zone: set ts to meet load of control zone</li>
+<li>requiring the lowest/highest ts with its VAV damper 90-100% open.</li>
+<li>ZN: choose WZ or CZ per whether terminal ahCtu's t'stat is calling for heat or cold, else ah off.</li>
+<li>defaults [ahFanCycles][ahfancycles] YES. intended for single zone systems, RESYS, PTAC.</li>
+<li>ZN2: choose WZ or CZ per whether terminal ahCtu's t'stat is calling for heat or cold, else fan only.</li>
+<li>intended for single zone const vol systems, PSZ.</li>
+<li>ZN, ZN2 are the ONLY methods where demand determines whether zones are being heated or cooled;</li>
+<li>in other cases, if system can heat or cool zone, supply temp must be scheduled, reset by</li>
+<li>outside temp, etc.  Optional separate setpoint inputs for setback/setup operation are below.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahFanCycles</td>
+<td>NOYESVC</td>
+<td>Start of hour</td>
+<td><ul>
+<li>YES if fan (and coil) cycles with zone thermostat; hourly;</li>
+<li>default: YES when ahTsSp==ZN (not ZN2), else NO (defaulted dynamicaly in AH::begHour).</li>
+<li>see BOO fcc for runtime testing.  6-15-92.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<p>min and max supply temps, always allowed, RQD when ahTsSp==RA (runtime ck), or (5-95) when ahTsSP==ZN &amp;&amp; ahFanCyles==YES.</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahTsMn</td>
+<td>TEMP_GZ</td>
+<td>Start of hour</td>
+<td>hourly, default 40.</td>
+</tr>
+<tr>
+<td>ahTsMx</td>
+<td>TEMP_GZ</td>
+<td>Start of hour</td>
+<td>hourly, default 250.</td>
+</tr>
+</tbody>
+</table>
+<p>RQD when ahTsSp is RA, else ignored;</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahTsRaMn</td>
+<td>TEMP_GZ</td>
+<td>Start of hour</td>
+<td>return air temp at which tsSp is at ahTsMx. hourly.</td>
+</tr>
+<tr>
+<td>ahTsRaMx</td>
+<td>TEMP_GZ</td>
+<td>Start of hour</td>
+<td>.. ahTsMn. hourly.  If return air moves outside this range, tsSp does not change further.</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahCtu</td>
+<td>TI</td>
+<td>Start of run</td>
+<td><ul>
+<li>terminal for determining whether to heat or cool under ZN, ZN2 tsu sp control.</li>
+<li>defaults to served terminal if only one, else RQD when ahTsSp is ZN or ZN2.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahWzCzns[index]</td>
+<td>TI Array [16]</td>
+<td>Start of phase</td>
+<td>zone names monitored for warmest zone and coolest zone Ts Sp control, respectively.</td>
+</tr>
+<tr>
+<td>ahCzCzns[index]</td>
+<td>TI Array [16]</td>
+<td>Start of phase</td>
+<td><ul>
+<li>Each input may be ALL, ALL_BUT, and/or zone names, comma-separated.  default ALL.</li>
+<li>internally: TI_ALL; or TI_ALLBUT + zone subsrs; or zone subscrs; max 15, 0-terminated.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>minimun oa flow is regulated to a given cfm (VOLUME) or a fraction of the current flow (FRACTION),</li>
+<li>in either case multiplied by a schedulable fraction (eg to shut off vent air during warmup).</li>
+<li>if oaMnCm is VOL:   min_oa_flow = [oaMnFrac][oamnfrac] * [oaVfDsMn][oavfdsmn]</li>
+<li>FRAC:  min_oa_flow = [oaMnFrac][oamnfrac] * [oaVfDsMn][oavfdsmn] * curr_flow / supply_fan_design_cap</li>
+</ul>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oaMnCm</td>
+<td>choice:OAMN</td>
+<td>Start of phase</td>
+<td>min OA flow Control Method, choice of VOL or FRAC, default VOL, constant.</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oaMnFrac</td>
+<td>number</td>
+<td>Start of hour</td>
+<td>fraction 0-1 of minimum OA to use now, hourly, default 1.0. eg to shut off oa during warmup.</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oaVfDsMn</td>
+<td>AFLOW_GEZ</td>
+<td>Start of run</td>
+<td><ul>
+<li>design minimum outside air flow (cfm actual air), constant,  dfl .15 * area.</li>
+<li>for FRACTION control, this is multiplied by  curr_flow/supply_fan_design_cap.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oaEcoTy</td>
+<td>choice:ECOTY</td>
+<td>Start of phase</td>
+<td><ul>
+<li>choice of NONE, NONINTEGRATED, TWO_STAGE, INTEGRATED.  constant. default NONE.</li>
+<li>NONE means OA flow is the minimum, above.</li>
+<li>INTEGRATED means economizer and coil do their respective things, independently.</li>
+<li>NONINTEGRATED means coil does not run when economizer is enabled</li>
+<li>(per oaLimT, oaLimE, oaMxFrac, right?)</li>
+<li>TWO_STAGE: not needed for compliance, defer implementation til I understand coils:</li>
+<li>economizer off when coil cycles on ("requires calculating % coil runtime</li>
+<li>in subhour using minimum unloading step as capacity").</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>following 2 variables disallowed if economizer type is NONE</li>
+<li>*declare "#define oaMxFrac (1.0)"   // maximum outdoor air as a fraction of current flow: hard-code to 1.0, 10-25-92.</li>
+</ul>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oaLimT</td>
+<td>TEMP_RA</td>
+<td>Start of hour</td>
+<td><ul>
+<li>economizer oa temp hi limit: number -50 to 999, or RA for current return air temp,</li>
+<li>hourly, dfl RA.  oa flow reduced to minimum when oa temp &gt; oaLimT.</li>
+</ul></td>
+</tr>
+<tr>
+<td>oaLimE</td>
+<td>ENTH_RA</td>
+<td>Start of hour</td>
+<td>economizer oa enthalpy hi limit: number or RA, constant, dfl 999 (enth limit disabled).</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oaOaLeak</td>
+<td>number</td>
+<td>Start of phase</td>
+<td><ul>
+<li>outside air damper leakage to mixed air, fraction of supply fan design cfm if have economizer,</li>
+<li>else fraction of [oaVfDsMn][oavfdsmn].  Const, default .05 if return fan, .10 if relief fan or no r/r fan.</li>
+<li>Puts a floor on oa flow and thus a ceiling on ra flow, to mixed air.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oaRaLeak</td>
+<td>number</td>
+<td>Start of phase</td>
+<td><ul>
+<li>return air damper leakage to mixed air, fraction supply fan design cfm,</li>
+<li>constant, default .05 if relief fan or no r/r fan, .10 if return fan.</li>
+<li>(note I took out proposed default 0 if no economizer 3-6-92 **)</li>
+<li>Puts a floor on ra flow and thus a ceiling on oa flow, to mixed air.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oaZoneLeakF</td>
+<td>number</td>
+<td>Start of hour</td>
+<td><ul>
+<li>assumed zone leakage fraction; for zone airnet ONLY</li>
+<li>retFlow = supFlow * (1. - oaZoneLeakF * po)</li>
+<li>default: 0 if return/relief fan else .5</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<p>heat recovery</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oaHx</td>
+<td></td>
+<td></td>
+<td>outdoor air heat recovery HEATEXCHANGER substruct</td>
+</tr><tr>
+<td colspan="4" style="border-top: 0px">
+<details class="note">
+<summary>HEATEXCHANGER</summary>
+<div>
+
+
+Heat exchanger inputs
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oaHx.VfDs</td>
+<td>AFLOW_GZ</td>
+<td>Start of run</td>
+<td><ul>
+<li>Design supply volumetric flow rate of the heat exchanger</li>
+<li>defaults to supply fan VfDs</li>
+</ul></td>
+</tr>
+<tr>
+<td>oaHx.f2</td>
+<td>FLOAT_GZ</td>
+<td>Start of run</td>
+<td>Flow fraction for second set of inputs (default 0.75)</td>
+</tr>
+<tr>
+<td>oaHx.senEffH[index]</td>
+<td>number Array [2]</td>
+<td>Start of run</td>
+<td><ul>
+<li>Heat exchanger heating sensible effectiveness</li>
+<li>[ 0]: at design 100% flow</li>
+<li>[ 1]: at hx_F2</li>
+</ul></td>
+</tr>
+<tr>
+<td>oaHx.latEffH[index]</td>
+<td>number Array [2]</td>
+<td>Start of run</td>
+<td><ul>
+<li>Heat exchanger heating latent effectiveness</li>
+<li>[ 0]: at design 100% flow</li>
+<li>[ 1]: at hx_F2</li>
+</ul></td>
+</tr>
+<tr>
+<td>oaHx.senEffC[index]</td>
+<td>number Array [2]</td>
+<td>Start of run</td>
+<td><ul>
+<li>Heat exchanger cooling sensible effectiveness</li>
+<li>[ 0]: at design 100% flow</li>
+<li>[ 1]: at hx_F2</li>
+</ul></td>
+</tr>
+<tr>
+<td>oaHx.latEffC[index]</td>
+<td>number Array [2]</td>
+<td>Start of run</td>
+<td><ul>
+<li>Heat exchanger cooling latent effectiveness</li>
+<li>[ 0]: at design 100% flow</li>
+<li>[ 1]: at hx_F2</li>
+</ul></td>
+</tr>
+<tr>
+<td>oaHx.bypass</td>
+<td>choice:NOYES</td>
+<td>Start of run</td>
+<td>HX can be bypassed when not adventatgeous</td>
+</tr>
+<tr>
+<td>oaHx.auxPwr</td>
+<td>FLOAT_GEZ</td>
+<td>Start of subhour</td>
+<td>Auxiliary power, W</td>
+</tr>
+<tr>
+<td>oaHx.auxMtri</td>
+<td>TI</td>
+<td>Start of run</td>
+<td>Meter for auxiliary power</td>
+</tr>
+</tbody>
+</table>
+
+Outputs
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oaHx.supInAF</td>
+<td></td>
+<td></td>
+<td><ul>
+<li>Supply inlet air flow (splits to hx_hxInAF</li>
+<li>and hx_bypassAF based on hx_bypassFrac)</li>
+</ul></td>
+</tr><tr>
+<td colspan="4" style="border-top: 0px">
+<details class="note">
+<summary>AIRFLOW</summary>
+<div>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oaHx.supInAF.tdb</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td>air dry-bulb temp, F</td>
+</tr>
+<tr>
+<td>oaHx.supInAF.w</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td>air humidity ratio, lb moisture/lb dry air</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oaHx.supInAF.amf</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>mass flow rate, lb/hr dry air</li>
+<li>*s *e DBL as_tdb        // from AIRSTATE</li>
+<li>*s *e DBL as_w</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</td>
+</tr>
+<tr>
+<td>oaHx.hxInAF</td>
+<td></td>
+<td></td>
+<td>HX supply inlet air flow</td>
+</tr><tr>
+<td colspan="4" style="border-top: 0px">
+<details class="note">
+<summary>AIRFLOW</summary>
+<div>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oaHx.hxInAF.tdb</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td>air dry-bulb temp, F</td>
+</tr>
+<tr>
+<td>oaHx.hxInAF.w</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td>air humidity ratio, lb moisture/lb dry air</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oaHx.hxInAF.amf</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>mass flow rate, lb/hr dry air</li>
+<li>*s *e DBL as_tdb        // from AIRSTATE</li>
+<li>*s *e DBL as_w</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</td>
+</tr>
+<tr>
+<td>oaHx.hxOutAF</td>
+<td></td>
+<td></td>
+<td>HX supply outlet air flow</td>
+</tr><tr>
+<td colspan="4" style="border-top: 0px">
+<details class="note">
+<summary>AIRFLOW</summary>
+<div>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oaHx.hxOutAF.tdb</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td>air dry-bulb temp, F</td>
+</tr>
+<tr>
+<td>oaHx.hxOutAF.w</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td>air humidity ratio, lb moisture/lb dry air</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oaHx.hxOutAF.amf</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>mass flow rate, lb/hr dry air</li>
+<li>*s *e DBL as_tdb        // from AIRSTATE</li>
+<li>*s *e DBL as_w</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</td>
+</tr>
+<tr>
+<td>oaHx.bypassAF</td>
+<td></td>
+<td></td>
+<td>Bypass air flow</td>
+</tr><tr>
+<td colspan="4" style="border-top: 0px">
+<details class="note">
+<summary>AIRFLOW</summary>
+<div>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oaHx.bypassAF.tdb</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td>air dry-bulb temp, F</td>
+</tr>
+<tr>
+<td>oaHx.bypassAF.w</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td>air humidity ratio, lb moisture/lb dry air</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oaHx.bypassAF.amf</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>mass flow rate, lb/hr dry air</li>
+<li>*s *e DBL as_tdb        // from AIRSTATE</li>
+<li>*s *e DBL as_w</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</td>
+</tr>
+<tr>
+<td>oaHx.exhInAF</td>
+<td></td>
+<td></td>
+<td>Exhaust inlet air flow</td>
+</tr><tr>
+<td colspan="4" style="border-top: 0px">
+<details class="note">
+<summary>AIRFLOW</summary>
+<div>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oaHx.exhInAF.tdb</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td>air dry-bulb temp, F</td>
+</tr>
+<tr>
+<td>oaHx.exhInAF.w</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td>air humidity ratio, lb moisture/lb dry air</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oaHx.exhInAF.amf</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>mass flow rate, lb/hr dry air</li>
+<li>*s *e DBL as_tdb        // from AIRSTATE</li>
+<li>*s *e DBL as_w</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</td>
+</tr>
+<tr>
+<td>oaHx.supOutAF</td>
+<td></td>
+<td></td>
+<td><ul>
+<li>Supply outlet air flow (mixes to hx_hxInAF</li>
+<li>and hx_bypassAF based on hx_bypassFrac)</li>
+<li>*s *e *nest AIRFLOW hx_exhOutAF // Exhaust outlet air flow, not yet needed</li>
+</ul></td>
+</tr><tr>
+<td colspan="4" style="border-top: 0px">
+<details class="note">
+<summary>AIRFLOW</summary>
+<div>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oaHx.supOutAF.tdb</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td>air dry-bulb temp, F</td>
+</tr>
+<tr>
+<td>oaHx.supOutAF.w</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td>air humidity ratio, lb moisture/lb dry air</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oaHx.supOutAF.amf</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>mass flow rate, lb/hr dry air</li>
+<li>*s *e DBL as_tdb        // from AIRSTATE</li>
+<li>*s *e DBL as_w</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oaHx.bypassFrac</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>Fraction of supply inlet air bypassing heat exchanger</td>
+</tr>
+<tr>
+<td>oaHx.tSet</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td>Setpoint temperature for air exiting heat exchanger</td>
+</tr>
+<tr>
+<td>oaHx.sensEff</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>Sensible efficacy</td>
+</tr>
+<tr>
+<td>oaHx.latEff</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>Latent efficacy</td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahSOLeak</td>
+<td>number</td>
+<td>Start of phase</td>
+<td>Supply duct leakage to outdoors, 0-.1 of sfanVfDs, default .01.  use 0 if duct indoors.</td>
+</tr>
+<tr>
+<td>ahROLeak</td>
+<td>number</td>
+<td>Start of phase</td>
+<td>Return duct leakage from outdoors, 0-.1, of sfanVfDs, default .01, use 0 if duct indoors.</td>
+</tr>
+<tr>
+<td>ahSOLoss</td>
+<td>number</td>
+<td>Start of phase</td>
+<td>Supply duct loss/gain to outdoors, 0-.1, default .02? (Taylor 0.5F), use 0 if duct indoors.</td>
+</tr>
+<tr>
+<td>ahROLoss</td>
+<td>number</td>
+<td>Start of phase</td>
+<td>Return duct heat loss/gain to outdoors, 0-.1, default .02? (ditto), use 0 if duct indoors.</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahSch</td>
+<td>AHSCHVC</td>
+<td>Start of hour</td>
+<td><ul>
+<li>supply fan and thus air handler schedule: choice of ON or OFF, hourly variable; default ON.</li>
+<li>ON: fan runs at varying volume (except under ahFanCyles, when fan cycles on and off at full flow).</li>
+<li>OFF: Taylor setback/setup control in effect, if specified, when/if implemented.</li>
+<li>WARMUP, OPTIMUM_START: we may add these here later when implemented.</li>
+<li>see also heat and cool coil schedules.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sfan</td>
+<td></td>
+<td></td>
+<td><ul>
+<li>supply fan FAN substruct (as declared above)</li>
+<li>following supply fan inputs are stored in FAN subrecord sfan:</li>
+<li>FANTYCH [sfanType][sfantype]        // supply fan type/position: choice of DRAWTHRU (default) or BLOWTHRU.  constant.</li>
+<li>AFLOW_GZ [sfanVfDs][sfanvfds]       // design volume flow (cfm actual air), constant, RQD.</li>
+<li>FLOAT  [sfanVfMxF][sfanvfmxf]       // factor by which fan will exceed vfDs (at reduced pressure). default 1.3. constant.</li>
+<li>PRESAIR_GZ [sfanPress][sfanpress]   // design pressure, "H2O, constant, default 3.</li>
+<li>//At most one of the next 2 may be given:</li>
+<li>FRAC sfanFanEff     // Fan efficiency at vfDs and press, constant, default .65 or from power if given.</li>
+<li>BHP_GZ [sfanShaftBhp][sfanshaftbhp]     // Fan shaft brake horsepower at vfDs and press, constant, default from eff.</li>
+<li>FRAC [sfanMotEff][sfanmoteff]       // motor/drive efficiency, constant, default .9.</li>
+<li>MOTPOSCH [sfanMotPos][sfanmotpos]   // motor/drive position: choice of INFLO (default), INRETURN, or EXTERNAL.</li>
+<li>INRETURN will be deferred/omitted if difficult (chip per taylor 3-4-92).</li>
+<li>[FANPLCH sfanPlCtrl // part-load control method, choice of VARSPEED (default), CYCLE, etc as above.]</li>
+<li>PYCUBIC2 sfanCurvePy    // part-load energy consumption curve coefficients 6-92, default linear.</li>
+<li>MTR sfanMtri        // MTR to which energy use is charged 4-11-92</li>
+</ul></td>
+</tr><tr>
+<td colspan="4" style="border-top: 0px">
+<details class="note">
+<summary>FAN</summary>
+<div>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sfan.fanTy</td>
+<td>choice:FANTY</td>
+<td>Start of phase</td>
+<td><ul>
+<li>fan position choice, according to application as follows; constant.</li>
+<li>air handler supply:  DRAWTHRU (default) or BLOWTHRU</li>
+<li>ah return/relief:  NONE (default), RETURN, or RELIEF</li>
+<li>terminal:  NONE (default), SERIES, or PARALLEL</li>
+<li>zone exhaust fan:  NONE or EXHAUST (no types, just whether exists)</li>
+<li>AirNet ([IZXFER][izxfer]):    ditto</li>
+</ul></td>
+</tr>
+<tr>
+<td>sfan.vfDs</td>
+<td>AFLOW_GZ</td>
+<td>End of subhour</td>
+<td>design volumetric flow (cfm actual air).  constant, RQD except as noted. *s cuz varies when autoSizing.</td>
+</tr>
+<tr>
+<td>sfan.vfDs_As</td>
+<td>AFLOW</td>
+<td>Start of phase</td>
+<td>autoSized ditto for ah sfan and rfan for naming consistency. 6-95.</td>
+</tr>
+<tr>
+<td>sfan.vfDs_AsNov</td>
+<td>AFLOW</td>
+<td>Start of phase</td>
+<td><ul>
+<li>raw autoSized ditto b4 overSize added, for report/probes. 7-95.</li>
+<li>cnausz.cpp code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.</li>
+</ul></td>
+</tr>
+<tr>
+<td>sfan.vfMxF</td>
+<td>number</td>
+<td>Start of phase</td>
+<td><ul>
+<li>factor by which fan flow will exceed vfDs (at reduced pressure). default 1.3. constant.</li>
+<li>Error if &lt; 1.0; typically &lt;= 1.5.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sfan.press</td>
+<td>PRESAIR_GEZ</td>
+<td>Start of run</td>
+<td><ul>
+<li>system design pressure, "H2O (inches of water), constant, used in defaulting power / efficiency.</li>
+<li>default: supply 3, r/r .75, tu .3, zx ???.</li>
+<li>0 allowed 5-1-92 to eliminate fan heat for test/calibration purposes.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+
+only one of eff and shaftPwr may be given:
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sfan.eff</td>
+<td>FRAC_GZ</td>
+<td>Start of run</td>
+<td><ul>
+<li>fan (hydraulic) efficiency at vfDs and press (any temp), constant,</li>
+<li>default from power if given, else .65.  (1-eff) of fan shaft power is converted to heat in airstream.</li>
+</ul></td>
+</tr>
+<tr>
+<td>sfan.shaftPwr</td>
+<td>BHP_GZ</td>
+<td>Start of run</td>
+<td><ul>
+<li>fan shaft power at vfDs and press (any temp). constant. default: from eff</li>
+<li>Btuh internally, entered in BHP (user name 'shaftBhp') (cvpak converts).</li>
+<li>^^^^make user name 'shaftBhp'.  field type name??</li>
+</ul></td>
+</tr>
+<tr>
+<td>sfan.elecPwr</td>
+<td>FLOAT_GZ</td>
+<td>Start of run</td>
+<td><ul>
+<li>motor input power, W/cfm (based on vfDs); shaftPwr and elecPwr cannot both be</li>
+<li>input</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sfan.motTy</td>
+<td>choice:MOTTY</td>
+<td>Start of run</td>
+<td><ul>
+<li>motor type (C_MOTTYCH_PSC or C_MOTTYCH_BPM)</li>
+<li>[RSYS][rsys] only minimal use 4-12, could effect defaults</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sfan.motEff</td>
+<td>FRAC_GZ</td>
+<td>Start of phase</td>
+<td>motor/drive efficiency, constant, default .9.</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sfan.motPos</td>
+<td>choice:MOTPOS</td>
+<td>Start of phase</td>
+<td><ul>
+<li>motor/drive position: choice of INFLO (default), INRETURN, EXTERNAL.  constant.</li>
+<li>INRETURN is for supply fans only and will be deferred/omitted if difficult</li>
+<li>chip per taylor 3-4-92).</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sfan.curvePy</td>
+<td></td>
+<td></td>
+<td>fan part-load energy consumption curve cubic polynomial coefficients with x0</td>
+</tr><tr>
+<td colspan="4" style="border-top: 0px">
+<details class="note">
+<summary>PYCUBIC2</summary>
+<div>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sfan.curvePy.k[index]</td>
+<td>number Array [6]</td>
+<td>Start of phase</td>
+<td>FLOAT k[6]. [0..3] are coeff, [4] is minimum x, [5] is terminator needed by cul.cpp.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sfan.mtri</td>
+<td>TI</td>
+<td>Start of phase</td>
+<td>subscript of meter (MTR) to which energy consumption is charged</td>
+</tr>
+<tr>
+<td>sfan.endUse</td>
+<td>choice:ENDUSE</td>
+<td>Start of phase</td>
+<td><ul>
+<li>end use to which energy consumption is charged</li>
+<li>not used for all fans (many implicitly default to "fan")</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sfan.ausz</td>
+<td>BOO</td>
+<td>Start of run</td>
+<td><ul>
+<li>non-0 if fan being autoSized (AH sfan, rfan): input contained [AUTOSIZE][autosize] _fanVfDs. 7-1-95.</li>
+<li>see also AH::fanAs, asRfan, asFlow. 7-1-95. */</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>FAN setup time members, set by cnfan.cpp:FAN::setup. May be resetup during autoSize run.</li>
+<li>also cMx may be init by setup, to be non-0.</li>
+</ul>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sfan.outPower</td>
+<td>number</td>
+<td>Start of subhour</td>
+<td><ul>
+<li>motor output power (work done by fan), member 7-95 for one setup check in cncult5.cpp</li>
+<li>inPower = shaftPwr/motEff  is computed as needed.</li>
+</ul></td>
+</tr>
+<tr>
+<td>sfan.airPower</td>
+<td>number</td>
+<td>Start of subhour</td>
+<td><ul>
+<li>fan heat to air (Btuh) at vfDs (&amp; pressure): work done by fan, plus motor/drive inefficiency if in flow.</li>
+<li>Note work done by fan is modelled as HEAT ADDED TO AIR AT FAN per Chip/Niles (3-92, undocumented)</li>
+<li>heat to air around motor (in return air etc) at design flow is: (inPower - airPower). this is 0 if motor in air flow.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+
+FAN runtime members, set by cnah.cpp:FAN::pute( cFlow, temp)
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sfan.cMx</td>
+<td>CFLOW</td>
+<td>End of subhour</td>
+<td>max heat cap flow (Btuh/F) at curr air temp &amp; run press &amp; ref w: .vfMx * air vsh * 60 (min/hr)</td>
+</tr>
+<tr>
+<td>sfan.c</td>
+<td>CFLOW</td>
+<td>End of subhour</td>
+<td>current average flow in heat cap units (Btuh/F): input saved for probing by last call to FAN::pute()</td>
+</tr>
+<tr>
+<td>sfan.t</td>
+<td>TEMP</td>
+<td>End of subhour</td>
+<td>current air temp, input saved ditto, used in converting BtuF/F to cfm</td>
+</tr>
+<tr>
+<td>sfan.frOn</td>
+<td>number</td>
+<td>End of subhour</td>
+<td><ul>
+<li>fraction of time fan is on, saved input</li>
+<li>made local to pute()to save members 10-92:</li>
+<li>*s *e FRAC relFlow  // fraction of design flow</li>
+<li>*s *e FRAC relLoad  // fraction of full load per part load curve for fan type (1.0 if over design flow: assume pressure drops)</li>
+</ul></td>
+</tr>
+<tr>
+<td>sfan.p</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>(motor) power consumption for subhour -- inPower * relLoad.  *subhrDur for meter.</td>
+</tr>
+<tr>
+<td>sfan.q</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>heat (power) to air this subhour: airPower * relLoad.  Member needed in addition to c and dT??</td>
+</tr>
+<tr>
+<td>sfan.dT</td>
+<td>TEMPDIFF</td>
+<td>End of subhour</td>
+<td>temp difference due to fan: q/c</td>
+</tr>
+<tr>
+<td>sfan.qAround</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>heat to air around motor, if not in air flow, for use re supply fan motor in return air</td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rfan</td>
+<td></td>
+<td></td>
+<td><ul>
+<li>return/relief (rr) fan subsruct (decl above)</li>
+<li>if rfan.fanType is NONE, other rr fan members are disallowed.</li>
+<li>following rr fan inputs are stored in FAN subrecord rfan:</li>
+<li>RFANTYCH [rfanType][rfantype]       // return fan type/position: choice of NONE (default), RETURN, or RELIEF. constant.</li>
+<li>AFLOW_GZ [rfanVfDs][rfanvfds]       // design volume flow, constant, default [sfanVfDs][sfanvfds]. [ less min outside air -- undone 7-95 ]</li>
+<li>FLOAT  [rfanVfMxF][rfanvfmxf]       // factor by which fan will exceed vfDs (at reduced pressure). dfl 1.3. constant.</li>
+<li>PRESAIR_GZ [rfanPress][rfanpress]   // design pressure, "H2O, constant, default .75.</li>
+<li>//At most one of the next 2 may be given:</li>
+<li>FRAC rfanFanEff     // Fan efficiency at vfDs and press, constant, default .65 or from power if given.</li>
+<li>BHP_GZ [rfanShaftBhp][rfanshaftbhp]     // Fan shaft brake horsepower at vfDs and press, constant, default from eff.</li>
+<li>FRAC [rfanMotEff][rfanmoteff]       // motor/drive efficiency, constant, default .9.</li>
+<li>MOTPOSCH [rfanMotPos][rfanmotpos]   // motor/drive position: choice of INFLO (default) or EXTERNAL.</li>
+<li>[FANPLCH rfanPlCtrl // part-load control method, choice of VARSPEED, CYCLE, etc. default: same as supply fan.]</li>
+<li>PYCUBIC2 rfanCurvePy    // part-load energy consumption curve coefficients 6-92. default: same as supply fan.</li>
+<li>MTR rfanMtri        // MTR to which energy use is charged 4-11-92</li>
+</ul></td>
+</tr><tr>
+<td colspan="4" style="border-top: 0px">
+<details class="note">
+<summary>FAN</summary>
+<div>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rfan.fanTy</td>
+<td>choice:FANTY</td>
+<td>Start of phase</td>
+<td><ul>
+<li>fan position choice, according to application as follows; constant.</li>
+<li>air handler supply:  DRAWTHRU (default) or BLOWTHRU</li>
+<li>ah return/relief:  NONE (default), RETURN, or RELIEF</li>
+<li>terminal:  NONE (default), SERIES, or PARALLEL</li>
+<li>zone exhaust fan:  NONE or EXHAUST (no types, just whether exists)</li>
+<li>AirNet ([IZXFER][izxfer]):    ditto</li>
+</ul></td>
+</tr>
+<tr>
+<td>rfan.vfDs</td>
+<td>AFLOW_GZ</td>
+<td>End of subhour</td>
+<td>design volumetric flow (cfm actual air).  constant, RQD except as noted. *s cuz varies when autoSizing.</td>
+</tr>
+<tr>
+<td>rfan.vfDs_As</td>
+<td>AFLOW</td>
+<td>Start of phase</td>
+<td>autoSized ditto for ah sfan and rfan for naming consistency. 6-95.</td>
+</tr>
+<tr>
+<td>rfan.vfDs_AsNov</td>
+<td>AFLOW</td>
+<td>Start of phase</td>
+<td><ul>
+<li>raw autoSized ditto b4 overSize added, for report/probes. 7-95.</li>
+<li>cnausz.cpp code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.</li>
+</ul></td>
+</tr>
+<tr>
+<td>rfan.vfMxF</td>
+<td>number</td>
+<td>Start of phase</td>
+<td><ul>
+<li>factor by which fan flow will exceed vfDs (at reduced pressure). default 1.3. constant.</li>
+<li>Error if &lt; 1.0; typically &lt;= 1.5.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rfan.press</td>
+<td>PRESAIR_GEZ</td>
+<td>Start of run</td>
+<td><ul>
+<li>system design pressure, "H2O (inches of water), constant, used in defaulting power / efficiency.</li>
+<li>default: supply 3, r/r .75, tu .3, zx ???.</li>
+<li>0 allowed 5-1-92 to eliminate fan heat for test/calibration purposes.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+
+only one of eff and shaftPwr may be given:
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rfan.eff</td>
+<td>FRAC_GZ</td>
+<td>Start of run</td>
+<td><ul>
+<li>fan (hydraulic) efficiency at vfDs and press (any temp), constant,</li>
+<li>default from power if given, else .65.  (1-eff) of fan shaft power is converted to heat in airstream.</li>
+</ul></td>
+</tr>
+<tr>
+<td>rfan.shaftPwr</td>
+<td>BHP_GZ</td>
+<td>Start of run</td>
+<td><ul>
+<li>fan shaft power at vfDs and press (any temp). constant. default: from eff</li>
+<li>Btuh internally, entered in BHP (user name 'shaftBhp') (cvpak converts).</li>
+<li>^^^^make user name 'shaftBhp'.  field type name??</li>
+</ul></td>
+</tr>
+<tr>
+<td>rfan.elecPwr</td>
+<td>FLOAT_GZ</td>
+<td>Start of run</td>
+<td><ul>
+<li>motor input power, W/cfm (based on vfDs); shaftPwr and elecPwr cannot both be</li>
+<li>input</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rfan.motTy</td>
+<td>choice:MOTTY</td>
+<td>Start of run</td>
+<td><ul>
+<li>motor type (C_MOTTYCH_PSC or C_MOTTYCH_BPM)</li>
+<li>[RSYS][rsys] only minimal use 4-12, could effect defaults</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rfan.motEff</td>
+<td>FRAC_GZ</td>
+<td>Start of phase</td>
+<td>motor/drive efficiency, constant, default .9.</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rfan.motPos</td>
+<td>choice:MOTPOS</td>
+<td>Start of phase</td>
+<td><ul>
+<li>motor/drive position: choice of INFLO (default), INRETURN, EXTERNAL.  constant.</li>
+<li>INRETURN is for supply fans only and will be deferred/omitted if difficult</li>
+<li>chip per taylor 3-4-92).</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rfan.curvePy</td>
+<td></td>
+<td></td>
+<td>fan part-load energy consumption curve cubic polynomial coefficients with x0</td>
+</tr><tr>
+<td colspan="4" style="border-top: 0px">
+<details class="note">
+<summary>PYCUBIC2</summary>
+<div>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rfan.curvePy.k[index]</td>
+<td>number Array [6]</td>
+<td>Start of phase</td>
+<td>FLOAT k[6]. [0..3] are coeff, [4] is minimum x, [5] is terminator needed by cul.cpp.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rfan.mtri</td>
+<td>TI</td>
+<td>Start of phase</td>
+<td>subscript of meter (MTR) to which energy consumption is charged</td>
+</tr>
+<tr>
+<td>rfan.endUse</td>
+<td>choice:ENDUSE</td>
+<td>Start of phase</td>
+<td><ul>
+<li>end use to which energy consumption is charged</li>
+<li>not used for all fans (many implicitly default to "fan")</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rfan.ausz</td>
+<td>BOO</td>
+<td>Start of run</td>
+<td><ul>
+<li>non-0 if fan being autoSized (AH sfan, rfan): input contained [AUTOSIZE][autosize] _fanVfDs. 7-1-95.</li>
+<li>see also AH::fanAs, asRfan, asFlow. 7-1-95. */</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>FAN setup time members, set by cnfan.cpp:FAN::setup. May be resetup during autoSize run.</li>
+<li>also cMx may be init by setup, to be non-0.</li>
+</ul>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rfan.outPower</td>
+<td>number</td>
+<td>Start of subhour</td>
+<td><ul>
+<li>motor output power (work done by fan), member 7-95 for one setup check in cncult5.cpp</li>
+<li>inPower = shaftPwr/motEff  is computed as needed.</li>
+</ul></td>
+</tr>
+<tr>
+<td>rfan.airPower</td>
+<td>number</td>
+<td>Start of subhour</td>
+<td><ul>
+<li>fan heat to air (Btuh) at vfDs (&amp; pressure): work done by fan, plus motor/drive inefficiency if in flow.</li>
+<li>Note work done by fan is modelled as HEAT ADDED TO AIR AT FAN per Chip/Niles (3-92, undocumented)</li>
+<li>heat to air around motor (in return air etc) at design flow is: (inPower - airPower). this is 0 if motor in air flow.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+
+FAN runtime members, set by cnah.cpp:FAN::pute( cFlow, temp)
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rfan.cMx</td>
+<td>CFLOW</td>
+<td>End of subhour</td>
+<td>max heat cap flow (Btuh/F) at curr air temp &amp; run press &amp; ref w: .vfMx * air vsh * 60 (min/hr)</td>
+</tr>
+<tr>
+<td>rfan.c</td>
+<td>CFLOW</td>
+<td>End of subhour</td>
+<td>current average flow in heat cap units (Btuh/F): input saved for probing by last call to FAN::pute()</td>
+</tr>
+<tr>
+<td>rfan.t</td>
+<td>TEMP</td>
+<td>End of subhour</td>
+<td>current air temp, input saved ditto, used in converting BtuF/F to cfm</td>
+</tr>
+<tr>
+<td>rfan.frOn</td>
+<td>number</td>
+<td>End of subhour</td>
+<td><ul>
+<li>fraction of time fan is on, saved input</li>
+<li>made local to pute()to save members 10-92:</li>
+<li>*s *e FRAC relFlow  // fraction of design flow</li>
+<li>*s *e FRAC relLoad  // fraction of full load per part load curve for fan type (1.0 if over design flow: assume pressure drops)</li>
+</ul></td>
+</tr>
+<tr>
+<td>rfan.p</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>(motor) power consumption for subhour -- inPower * relLoad.  *subhrDur for meter.</td>
+</tr>
+<tr>
+<td>rfan.q</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>heat (power) to air this subhour: airPower * relLoad.  Member needed in addition to c and dT??</td>
+</tr>
+<tr>
+<td>rfan.dT</td>
+<td>TEMPDIFF</td>
+<td>End of subhour</td>
+<td>temp difference due to fan: q/c</td>
+</tr>
+<tr>
+<td>rfan.qAround</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>heat to air around motor, if not in air flow, for use re supply fan motor in return air</td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cch</td>
+<td></td>
+<td></td>
+<td>crankcase heater subrecord 10-92 for AHP's, perhaps DX, must be common to heat and cool.</td>
+</tr><tr>
+<td colspan="4" style="border-top: 0px">
+<details class="note">
+<summary>CCH</summary>
+<div>
+
+
+CCH inputs
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cch.cchCM</td>
+<td>CCHCM</td>
+<td>Start of run</td>
+<td><ul>
+<li>crankcase heater presence and control method choice. Niles cchCtlMtd.</li>
+<li>Default: PTC_CLO if ahhc.coilTy is AHP, else NONE.</li>
+<li>NONE      no crankcase heater present</li>
+<li>CONSTANT  crankcase heater input always pMx.</li>
+<li>PTC   control per oil temp when compr doesn't run (see tMx,tMn,dt); pMn if runs at all in subhour.</li>
+<li>TSTAT     control per outdoor temp when compr is off; 0 if compr runs at all in subhour. See tOn,tOff.</li>
+<li>CONSTANT_CLO,PTC_CLO: same as corres choices above except 0 input during fraction of time</li>
+<li>compr is on. TSTAT_CLO omitted: moot.</li>
+<li>for all [cchCM][cchcm]'s:</li>
+</ul></td>
+</tr>
+<tr>
+<td>cch.pMx</td>
+<td>KW_GZ</td>
+<td>Start of phase</td>
+<td><ul>
+<li>Crankcase resistance heater input power; maximum power if [cchCM][cchcm] is PTC or PTC_CLO.</li>
+<li>default .4kW. entered in kW, internally in Btuh.  Niles pCchMx.</li>
+<li>for PTC &amp; PTC_CLO:</li>
+</ul></td>
+</tr>
+<tr>
+<td>cch.pMn</td>
+<td>KW_GZ</td>
+<td>Start of phase</td>
+<td>min cch input power. default .04kW. entered in kW, internally in Btuh.  Niles pCchMn.</td>
+</tr>
+<tr>
+<td>cch.tMx</td>
+<td>TEMP</td>
+<td>Start of phase</td>
+<td>low temp (max power) setpoint...                            Default 0 F.   Niles tCchPtcMx.</td>
+</tr>
+<tr>
+<td>cch.tMn</td>
+<td>TEMP</td>
+<td>Start of phase</td>
+<td><ul>
+<li>high temp (min power) setpoint for [cchCM][cchcm] = PTC or PTC_CLO.  Default 150 F. Niles tCchPtcMn.</li>
+<li>For PTC or PTC_CLO, when compr does not run, cch input is pMx if oil temp below tMx, pMn above tMn,</li>
+<li>proportional between. If compr runs at all in subhr, input is pMn. See dt, next.</li>
+<li>tMn must be &gt;= tMn. == allowed.</li>
+</ul></td>
+</tr>
+<tr>
+<td>cch.dt</td>
+<td>TEMPDIFF</td>
+<td>Start of phase</td>
+<td><ul>
+<li>how much warmer than outdoor temp crankcase oil is assumed to be, in subhrs when compr does not run.</li>
+<li>Default 20 F. Niles tCchDelta.</li>
+<li>for [cchCM][cchcm] = TSTAT:</li>
+</ul></td>
+</tr>
+<tr>
+<td>cch.tOn</td>
+<td>TEMP</td>
+<td>Start of phase</td>
+<td>outdoor temp cch turn-on setpoint ...                                 Default 72 F. Niles tCchTstOn.</td>
+</tr>
+<tr>
+<td>cch.tOff</td>
+<td>TEMP</td>
+<td>Start of run</td>
+<td><ul>
+<li>outdoor temp cch turn-off setpoint for hours when compr does not run. Default tOn.  Niles tCchTstOff.</li>
+<li>Give tOff &gt; tOn to simulate thermostat differential. == allowed. &lt; yeilds error message.</li>
+<li>If compr runs at all in subhour, crankcase heater is off for entire subhour.</li>
+<li>for all [cchCM][cchcm]'s:</li>
+</ul></td>
+</tr>
+<tr>
+<td>cch.mtri</td>
+<td>TI</td>
+<td>Start of phase</td>
+<td>subscript of meter to which cch energy use is to be recorded, default none.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>CCH setup time</li>
+<li>Rob used p not Niles' e for next 2, 10-92:</li>
+<li>*r ENERGY e47Off    // energy input during off part of one cycle of ARI 47 degree cycling test, kWh. Niles eCchOffCyc47.</li>
+<li>*r ENERGY e47On // .. on ..  Niles eCchOnCyc47.</li>
+</ul>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cch.p47Off</td>
+<td>number</td>
+<td>Start of run</td>
+<td><ul>
+<li>power input during off part of one cycle of ARI 47 degree cycling test, kWh.</li>
+<li>*r POWER p47On  // .. on ..  restore if need found.</li>
+</ul></td>
+</tr>
+<tr>
+<td>cch.p17</td>
+<td>number</td>
+<td>Start of run</td>
+<td>power input to crankcase heater in ARI 17 degree continuous operation test, kW. Niles pCch17.</td>
+</tr>
+<tr>
+<td>cch.p47</td>
+<td>number</td>
+<td>Start of run</td>
+<td><ul>
+<li>ditto 47 degree test. Niles pCch47. p17 and p47 always the same; p47 may be used in code as</li>
+<li>crankcase heater input in any test. ??clarify while coding.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+
+CCH runtime
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cch.frCprOn</td>
+<td>number</td>
+<td>End of subhour</td>
+<td><ul>
+<li>fraction of time compressor ran this subhour, input to power determination.</li>
+<li>copy of ahhc.frCprOn for AHP, frCOn * frFanOn for DX, etc.</li>
+</ul></td>
+</tr>
+<tr>
+<td>cch.tState</td>
+<td>BOO</td>
+<td>End of subhour</td>
+<td>thermostat state for cchCM = TSTAT: must remember to implement hysteresis</td>
+</tr>
+<tr>
+<td>cch.p</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>cch input===output power this subhour</td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahhc</td>
+<td></td>
+<td></td>
+<td><ul>
+<li>ah heat coil subrecord.  If ahhc.coilType is NONE, other hc inputs are disallowed.</li>
+<li>following ah heat coil inputs are stored in ahhc, + many additions:</li>
+<li>HCOILTYCH [ahhcType][ahhctype]      // choice of NONE (default), ELEC, HW (hot water, GAS, OIL, AHP, ... constant.</li>
+<li>OFFAVAILVC ahhcSch  // OFF or AVAIL, hourly, default AVAIL.</li>
+<li>POWER_GZ ahhcCaptRat    // total rated capacity (Btu/hr), constant, RQD.</li>
+<li>TI [ahhcMtr][ahhcmtr]       // MTR to which to charge energy use for non-plant coil types.</li>
+<li>many more now (7-92), update</li>
+</ul></td>
+</tr><tr>
+<td colspan="4" style="border-top: 0px">
+<details class="note">
+<summary>AHHEATCOIL</summary>
+<div>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahhc.coilTy</td>
+<td>choice:COILTY</td>
+<td>Start of run</td>
+<td><ul>
+<li>coil type choice according to application, as follows.  constant.</li>
+<li>air handler cool coil: NONE (default), ELEC, DX, CHW, ...</li>
+<li>air handler heat coil: NONE (default), ELEC, HW, GAS, OIL, AHP, ...</li>
+<li>terminal heat coil: NONE (default if no local heat), ELEC (dflt if local heat), HW,  GAS,OIL??...</li>
+<li>"ELEC COOL COIL" is a testing aid that cools with 100% efficiency &amp; capacity at any temp.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahhc.sched</td>
+<td>OFFAVAILVC</td>
+<td>Start of hour</td>
+<td>AVAIL when coil available, OFF when disabled, hourly, default AVAIL.</td>
+</tr>
+</tbody>
+</table>
+
+sensible cap'y: see COOLCOIL.capsRat.
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahhc.captRat</td>
+<td>POWER_NZ</td>
+<td>End of subhour</td>
+<td><ul>
+<li>*s *e for probes, cuz autoSize changes it. hourly for input purposes.</li>
+<li>total rated cap'y (Btuh), RQD except AHP, ?CHW, hrly vbl for furnaces, const for DX coil.</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahhc.captRat_As</td>
+<td>number</td>
+<td>Start of phase</td>
+<td>captRat determined by autoSizing, w less vbly for easier use in probes in main sim. 6-95.</td>
+</tr>
+<tr>
+<td>ahhc.captRat_AsNov</td>
+<td>number</td>
+<td>Start of phase</td>
+<td><ul>
+<li>raw captRat determined by autoSizing, before overSize added, for reports/probes. 7-95</li>
+<li>cnausz.cpp code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahhc.bCaptRat</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>start-subHr captRat, to undo size increases not in use as converged at end subhr (ahhc,ahcc).</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahhc.eirRat</td>
+<td>number</td>
+<td>Start of hour</td>
+<td><ul>
+<li>rated load energy input ratio===heat input ratio===input/output===1/efficiency for DX,GAS,OIL at least.</li>
+<li>hrly vbl for GAS,OIL; constant for DX, .   effRat: see HEATCOIL.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahhc.mtri</td>
+<td>TI</td>
+<td>Start of phase</td>
+<td>MTR to which to charge coil main energy use, if not through a plant.</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahhc.aux</td>
+<td>POWER_GEZ</td>
+<td>Start of hour</td>
+<td>additional input energy used by auxiliary controls and devices.</td>
+</tr>
+<tr>
+<td>ahhc.auxMtri</td>
+<td>TI</td>
+<td>Start of phase</td>
+<td>Meter for auxiliary energy</td>
+</tr>
+</tbody>
+</table>
+
+coil runtime members
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahhc.q</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>average (not fan-on) output power level for subhour</td>
+</tr>
+<tr>
+<td>ahhc.qPr</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>output at which coil's plant last computed, for call-flagging plant. set: cnhp.cpp. used: cncoil.cpp</td>
+</tr>
+<tr>
+<td>ahhc.p</td>
+<td>number</td>
+<td>End of subhour</td>
+<td><ul>
+<li>input power level this subhour, from plant or to charge to meter (*subhrDur!).</li>
+<li>p = input from plant tentative 9-92; implemented for HW coils.</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahhc.plr</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>current fan-on (or furnace-on) relative load (part load ratio)</td>
+</tr>
+<tr>
+<td>ahhc.plrAv</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>current average relative load (plr * frFanOn)</td>
+</tr>
+<tr>
+<td>ahhc.eir</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>energy input ratio: current input/output, fan on===average. Rob's addition, for probes, 5-92.</td>
+</tr>
+<tr>
+<td>ahhc.capMax</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>maximum capacity this subhour, used to calculate tPossH/C.</td>
+</tr>
+<tr>
+<td>ahhc.pAux</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>aux power this subhour</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>has all members of base class COIL, and...</li>
+<li>heat coil additional input members</li>
+<li>CAUTION: HEATCOIL::setup code used to assume .effRat was 1st derived class member, 7-92.</li>
+<li>for GAS or OIL furnace "coil" in ah</li>
+</ul>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahhc.effRat</td>
+<td>FRAC_GZ</td>
+<td>Start of phase</td>
+<td>efficiency @ rated load: alternate eir input, converted into eirRat in setup.</td>
+</tr>
+<tr>
+<td>ahhc.pyEi</td>
+<td></td>
+<td></td>
+<td><ul>
+<li>cubic polynomial coefficients to correct full-load energy input for part load ratio</li>
+<li>for GAS or OIL heat coil.  Default (per DOE2): .01861, 1.094209, -.112819, 0.</li>
+</ul></td>
+</tr><tr>
+<td colspan="4" style="border-top: 0px">
+<details class="note">
+<summary>PYCUBIC</summary>
+<div>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahhc.pyEi.k[index]</td>
+<td>number Array [5]</td>
+<td>Start of phase</td>
+<td><ul>
+<li>FLOAT k[5].  One extra member needed as terminator by cul.cpp array input logic, 5-92.</li>
+<li>possible future setup optimizations: 1) select ptr to fcn that does not compute terms whose k is 0;</li>
+<li>2) precalculate constants to compute in form  ((x*k[3] + k[2])*x + k[1])*x + k[0]</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</td>
+</tr>
+<tr>
+<td>ahhc.stackEffect</td>
+<td>number</td>
+<td>Start of hour</td>
+<td><ul>
+<li>fraction of unused capacity that must be used (increasing plr) to make up for increased</li>
+<li>infiltration due to hot stack when (indoor) furnace runs but not continuously.  Default 0.</li>
+<li>Expect function of Top.tDbO.</li>
+<li>for HW coil</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahhc.hpi</td>
+<td>TI</td>
+<td>Start of phase</td>
+<td><ul>
+<li>subscript of [HEATPLANT][heatplant] serving HW coil</li>
+<li>heat coil setup time members</li>
+<li>for HW coil</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahhc.nxTu4hp</td>
+<td>TI</td>
+<td>Start of run</td>
+<td>TuB subscr of next TU with HW coil on same HEATPLANT. 1st is HEATPLANT.tu1.</td>
+</tr>
+<tr>
+<td>ahhc.nxAh4hp</td>
+<td>TI</td>
+<td>Start of run</td>
+<td><ul>
+<li>AhB subscr of next AH with HW coil on same [HEATPLANT][heatplant]. 1st is [HEATPLANT][heatplant].ah1.</li>
+<li>heat coil runtime members</li>
+<li>for GAS or OIL furnace "coil" in ah</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahhc.flueLoss</td>
+<td>number</td>
+<td>End of subhour</td>
+<td><ul>
+<li>part-load flue loss this subhour, GAS and OIL only</li>
+<li>for HW or AHP coil</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahhc.qWant</td>
+<td>number</td>
+<td>End of subhour</td>
+<td><ul>
+<li>HW:  desired output===input, doHWCoil to hpCompute, used in determining capF.</li>
+<li>AHP: desired output, doAhpHeatCoil to doAhpHeat</li>
+<li>*s *e POWER q           // current output power: is a COIL member.</li>
+<li>*s *e POWER qPr     // output at which coil's plant last computed, for change-flagged plant: COIL member</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+
+
+AHP steady state heating capacity
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahhc.cap17</td>
+<td>POWER_GZ</td>
+<td>Start of phase</td>
+<td>ARI steady state rated cap @ 17 out, 70 indoor (return) air, Btuh, RQD for AHP, Niles pCapSs17.</td>
+</tr>
+<tr>
+<td>ahhc.capRat1747</td>
+<td>FRAC_GZ</td>
+<td>Start of run</td>
+<td>cap17 / cap47 ratio (re autosizing)</td>
+</tr>
+<tr>
+<td>ahhc.capRat9547</td>
+<td>FLOAT_GZ</td>
+<td>Start of run</td>
+<td><ul>
+<li>total net cap95 (cooling) / net cap47 (heating)</li>
+<li>re consistent htg/clg size iff both autosized</li>
+<li>(else inconsistency ignored)</li>
+<li>default=correlation per A. Conant</li>
+<li>see ashpCap95FromCap47() and ashpCap47FromCap95()</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahhc.cap35</td>
+<td>POWER_GZ</td>
+<td>Start of run</td>
+<td><ul>
+<li>ARI steady state rated cap @ 35F outdoor, Btuh, default per fd35Df, Niles pCapSs35.</li>
+<li>Reflects frost buildup and defrost degradation but no cycling. Unlikely to be known;</li>
+<li>defaults to fd35Df (next) times a value linearly interpolated between cap17 &amp; cap47.</li>
+<li>If given, error if greater than value linearly interpolated between cap17 &amp; cap47.</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahhc.fd35Df</td>
+<td>number</td>
+<td>Start of phase</td>
+<td><ul>
+<li>Default frost/defrost degradation factor at 35 F, default .85, Niles fdf35dft.</li>
+<li>Reduction of output at unchanged input, due to defrosting and due to frost on outdoor coil.</li>
+<li>Used in determining default value for cap35 (preceding); not used if cap35 is given.</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahhc.capIa</td>
+<td>number</td>
+<td>Start of phase</td>
+<td><ul>
+<li>Capacity correction factor for indoor (return) air temperature, default .004, Niles iacCap.</li>
+<li>Expressed as a fraction reduction in capacity per degree above 70F.</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahhc.capSupHeat</td>
+<td>FLOAT_GEZ</td>
+<td>Start of phase</td>
+<td>Output of supplemental coil, Btu/h.</td>
+</tr>
+<tr>
+<td>ahhc.effSupHeat</td>
+<td>FLOAT_GZ</td>
+<td>Start of hour</td>
+<td>Supplemental heat efficiency</td>
+</tr>
+<tr>
+<td>ahhc.supHeatMtri</td>
+<td>TI</td>
+<td>Start of phase</td>
+<td>meter for supplemental heat energy use</td>
+</tr>
+<tr>
+<td>ahhc.tFrMn</td>
+<td>TEMP</td>
+<td>Start of phase</td>
+<td>lowest  temp for frost buildup &amp; defrost effects, default 17F, Niles tFrstMn.</td>
+</tr>
+<tr>
+<td>ahhc.tFrMx</td>
+<td>TEMP</td>
+<td>Start of phase</td>
+<td>highest temp for frost buildup &amp; defrost effects, default 47F, Niles tFrstMx.</td>
+</tr>
+<tr>
+<td>ahhc.tFrPk</td>
+<td>TEMP</td>
+<td>Start of phase</td>
+<td><ul>
+<li>temp for peak frost buildup &amp; defrost effects, default 42F, Niles tFrstPk.</li>
+<li>Frost buildup &amp; defrost capacity reduction comes from frost buildup on outdoor coil,</li>
+<li>plus time spent doing reverse cycle defrosting (heating outdoor coil: cools indoor coil).</li>
+<li>Error if not tFrMn &lt; tFrPk &lt; tFrMx.</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahhc.dfrFMn</td>
+<td>number</td>
+<td>Start of phase</td>
+<td>min frac time in reverse cycle cooling, default .0222 (2/90 min), Niles tmFrcDefMn.</td>
+</tr>
+<tr>
+<td>ahhc.dfrFMx</td>
+<td>number</td>
+<td>Start of phase</td>
+<td><ul>
+<li>max frac time in reverse cycle cooling, default .0889 (8/90 min), Niles tmFrcDefMx.</li>
+<li>Error if dfrFMx &lt;= dfrFMn.</li>
+<li>Fraction of time defrosting is min is at/below tFrMn and at (not above) tFrMx.</li>
+<li>Max used at tFrPk. Linear interp between. 0 time defrosting above tfrMx.</li>
+<li>During defrosting time, cold output (see dfrCap) not heat is delivered to load,</li>
+<li>addl heater (see dfrRh) is operated.</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahhc.dfrCap</td>
+<td>POWER_NZ</td>
+<td>Start of run</td>
+<td><ul>
+<li>cooling capacity (to ah supply air) during defrosting, default 2 * cap17, Niles pDefCool.</li>
+<li>Should include any effects of switchover transient; program will compute lost heating cap.</li>
+<li>Negative internally. (future) should check or default somehow vs ahp cooling inputs if given?</li>
+<li>*f KW_GZ dfrRh          /* input (&amp; output) power of addl reheat coil run during defrost, default 5kW, Niles pDefRh.</li>
+<li>entered as kW, converted to Btuh internally by units stuff. */</li>
+<li>AHHEATCOIL inputs for AHP low temperature cutout</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahhc.tOff</td>
+<td>TEMP</td>
+<td>Start of phase</td>
+<td>low temp cutout setpoint, default 5 F, Niles tOff.</td>
+</tr>
+<tr>
+<td>ahhc.tOn</td>
+<td>TEMP</td>
+<td>Start of phase</td>
+<td><ul>
+<li>low temp cut-back-in setpoint, default 12 F, Niles tOn. tOn==tOff ok, error if &lt;.</li>
+<li>AHHEATCOIL AHP (air source heat pump) heating power input inputs</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahhc.COP17</td>
+<td>FLOAT_GZ</td>
+<td>Start of phase</td>
+<td>COP input @ 17 outdoor, 70 indoor (return). RQD for AHP. Niles pInSs17.</td>
+</tr>
+<tr>
+<td>ahhc.COP47</td>
+<td>FLOAT_GZ</td>
+<td>Start of phase</td>
+<td>COP input @ 47 outdoor, 70 indoor (return). RQD for AHP. Niles pInSs47.</td>
+</tr>
+<tr>
+<td>ahhc.inIa</td>
+<td>number</td>
+<td>Start of phase</td>
+<td><ul>
+<li>indoor (return) air temp power input correction factor, default .004, Niles iacIn.</li>
+<li>Fraction decrease in steady-state input per degree above 70F.</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahhc.cd</td>
+<td>number</td>
+<td>Start of phase</td>
+<td><ul>
+<li>ARI cycling degradation coefficient, default .25, Niles cd.</li>
+<li>Ratio of fraction drop in system COP (incl cch, defrost) to fraction drop in capacity</li>
+<li>when cycling, from steady-state values, in ARI 47 F cycling performance tests.</li>
+<li>A value of .25 means that if the heat pump is cycled to drop its output to</li>
+<li>20% of full capacity (i.e. by the fraction .8), its COP will drop by .8 * .25 = .2.</li>
+<li>meter: COIL.mtri is used; compr input power to category htg, and suppl heater input to catagory hp.</li>
+<li>AHP non-inputtable contants</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+
+AHHEATCOIL AHP setup time members
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahhc.in17</td>
+<td>KW_GZ</td>
+<td>Start of run</td>
+<td>steady state power @ 17 outdoor, 70 indoor (return). RQD for AHP. Niles pInSs17.</td>
+</tr>
+<tr>
+<td>ahhc.in47</td>
+<td>KW_GZ</td>
+<td>Start of run</td>
+<td><ul>
+<li>steady state power @ 47 outdoor, 70 indoor (return). RQD for AHP. Niles pInSs47.</li>
+<li>These reflect full power, no cycling, include compr &amp; crankcase heater.</li>
+<li>Program removes cch input energy. Externally kW, internally Btuh.</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahhc.in17c</td>
+<td>number</td>
+<td>Start of run</td>
+<td>compressor input power @ 17 degrees out, 70 in: in17 with cch power removed. Niles pInSs17.</td>
+</tr>
+<tr>
+<td>ahhc.in47c</td>
+<td>number</td>
+<td>Start of run</td>
+<td>ditto 47 degrees.  Niles pInSs47.</td>
+</tr>
+<tr>
+<td>ahhc.cdm</td>
+<td>number</td>
+<td>Start of run</td>
+<td>modified cd: cycling degradation coefficient adjusted to remove cch. Niles cdm.</td>
+</tr>
+</tbody>
+</table>
+
+AHHEATCOIL AHP runtime input members
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahhc.tIa</td>
+<td>TEMP</td>
+<td>End of subhour</td>
+<td><ul>
+<li>indoor air temp: copy of tmix or whatever ah variable is chosen</li>
+<li>qWant           desired output: HEATCOIL member used.</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahhc.qSupLim</td>
+<td>number</td>
+<td>End of subhour</td>
+<td><ul>
+<li>caller-set heat output limit for when suppl heat in use: kludge when fan cycling</li>
+<li>to prevent raising ts and dropping fanFrOn to where suppl heat cuts out --&gt; ah oscillation</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahhc.frFanOn</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>fraction of time fan runs, 1.0 if not cycling, copy of AH.frFanOn.</li>
+<li>AHHEATCOIL AHP runtime internal members</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahhc.loTLockout</td>
+<td>BOO</td>
+<td>End of subhour</td>
+<td>TRUE if compressor locked out due to low outdoor temp (see tOff, tOn)</td>
+</tr>
+<tr>
+<td>ahhc.supOn</td>
+<td>BOO</td>
+<td>End of subhour</td>
+<td>TRUE if supplementary heat enabled (frFanOn is ~1.0, with hysterisis to keep ah stable).</td>
+</tr>
+<tr>
+<td>ahhc.capCon</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>continuous cpr capac incl frost/defrost @ actual indoor temp, excl def &amp; reg rh. Niles pCapMx.</td>
+</tr>
+<tr>
+<td>ahhc.qDfrhCon</td>
+<td>number</td>
+<td>End of subhour</td>
+<td><ul>
+<li>continuous avg heat ouput to defrost heater @ outdoor temp (not cycling). Niles pDefRhMx.</li>
+<li>made local, only set in cases needed:</li>
+<li>*s *e FRAC hlf      // heating load factor: hp compr heat used/capCon. Excludes reg &amp; dfr rh. frCprOn may be larger.</li>
+<li>*s *e FRAC plf      // part load factor, by which COP falls due to cycling.</li>
+<li>*s *e FRAC frTmDfr  // fraction of time defrosting, this subhour. Niles tmFrDef.</li>
+<li>AHHEATCOIL AHP runtime output members</li>
+<li>q: coil member: heat delivered, by heat pump incl suppl heaters (qSh). Niles pDel.</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahhc.frCprOn</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>fraction of time compressor runs, this subhour. May be used by cch code. Niles tmFrRun.</td>
+</tr>
+<tr>
+<td>ahhc.pCpr</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>power input to compressor (Niles pInComp): copy to .p in coilsEndSubhr.</td>
+</tr>
+<tr>
+<td>ahhc.qSh</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>output of reg (not defrost) supplemental heaters. Included in q of coil.</td>
+</tr>
+<tr>
+<td>ahhc.pSh</td>
+<td>number</td>
+<td>End of subhour</td>
+<td><ul>
+<li>input of reg &amp; dfr supplemental resistance heaters.</li>
+<li>crankcase heater input power: see CCH.p. Niles pCch.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahccBypass</td>
+<td>FRAC_GZ</td>
+<td>Start of phase</td>
+<td><ul>
+<li>fraction of air flow which bypasses cool coil (for better humidity control), constant, dfl 0.</li>
+<li>Bypass is fixed at given fraction; no damper control is modelled.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahcc</td>
+<td></td>
+<td></td>
+<td><ul>
+<li>cool coil subrecord.  If ahcc.coilType is NONE, other cc inputs are disallowed.</li>
+<li>following cool coil inputs are stored in ahcc:</li>
+<li>CCOILTYCH [ahccType][ahcctype]      // choice of NONE (default), ELEC, DX, CHW, ... .  constant.</li>
+<li>OFFAVAILVC ahccSch  // OFF or AVAIL, hourly, default AVAIL.</li>
+<li>POWER_GZ ahccCaptRat    // total rated capacity (Btu/hr), constant, RQD.</li>
+<li>POWER_GZ ahccCapsRat    // sensible rated capacity 1-CaptRat Btu/hr, constant.  Can it default to a % of CaptRat?</li>
+<li>FRAC_GZ [ahccSHRRat][ahccshrrat]        // sensible heat ratio (caps/capt) for cooling coil</li>
+<li>TI [ahccMtr][ahccmtr]       // MTR to which to charge energy use for non-plant-supported coil types.</li>
+<li>many more now -- should update this, 5-92.</li>
+</ul></td>
+</tr><tr>
+<td colspan="4" style="border-top: 0px">
+<details class="note">
+<summary>COOLCOIL</summary>
+<div>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahcc.coilTy</td>
+<td>choice:COILTY</td>
+<td>Start of run</td>
+<td><ul>
+<li>coil type choice according to application, as follows.  constant.</li>
+<li>air handler cool coil: NONE (default), ELEC, DX, CHW, ...</li>
+<li>air handler heat coil: NONE (default), ELEC, HW, GAS, OIL, AHP, ...</li>
+<li>terminal heat coil: NONE (default if no local heat), ELEC (dflt if local heat), HW,  GAS,OIL??...</li>
+<li>"ELEC COOL COIL" is a testing aid that cools with 100% efficiency &amp; capacity at any temp.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahcc.sched</td>
+<td>OFFAVAILVC</td>
+<td>Start of hour</td>
+<td>AVAIL when coil available, OFF when disabled, hourly, default AVAIL.</td>
+</tr>
+</tbody>
+</table>
+
+sensible cap'y: see COOLCOIL.capsRat.
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahcc.captRat</td>
+<td>POWER_NZ</td>
+<td>End of subhour</td>
+<td><ul>
+<li>*s *e for probes, cuz autoSize changes it. hourly for input purposes.</li>
+<li>total rated cap'y (Btuh), RQD except AHP, ?CHW, hrly vbl for furnaces, const for DX coil.</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahcc.captRat_As</td>
+<td>number</td>
+<td>Start of phase</td>
+<td>captRat determined by autoSizing, w less vbly for easier use in probes in main sim. 6-95.</td>
+</tr>
+<tr>
+<td>ahcc.captRat_AsNov</td>
+<td>number</td>
+<td>Start of phase</td>
+<td><ul>
+<li>raw captRat determined by autoSizing, before overSize added, for reports/probes. 7-95</li>
+<li>cnausz.cpp code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahcc.bCaptRat</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>start-subHr captRat, to undo size increases not in use as converged at end subhr (ahhc,ahcc).</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahcc.eirRat</td>
+<td>number</td>
+<td>Start of hour</td>
+<td><ul>
+<li>rated load energy input ratio===heat input ratio===input/output===1/efficiency for DX,GAS,OIL at least.</li>
+<li>hrly vbl for GAS,OIL; constant for DX, .   effRat: see HEATCOIL.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahcc.mtri</td>
+<td>TI</td>
+<td>Start of phase</td>
+<td>MTR to which to charge coil main energy use, if not through a plant.</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahcc.aux</td>
+<td>POWER_GEZ</td>
+<td>Start of hour</td>
+<td>additional input energy used by auxiliary controls and devices.</td>
+</tr>
+<tr>
+<td>ahcc.auxMtri</td>
+<td>TI</td>
+<td>Start of phase</td>
+<td>Meter for auxiliary energy</td>
+</tr>
+</tbody>
+</table>
+
+coil runtime members
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahcc.q</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>average (not fan-on) output power level for subhour</td>
+</tr>
+<tr>
+<td>ahcc.qPr</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>output at which coil's plant last computed, for call-flagging plant. set: cnhp.cpp. used: cncoil.cpp</td>
+</tr>
+<tr>
+<td>ahcc.p</td>
+<td>number</td>
+<td>End of subhour</td>
+<td><ul>
+<li>input power level this subhour, from plant or to charge to meter (*subhrDur!).</li>
+<li>p = input from plant tentative 9-92; implemented for HW coils.</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahcc.plr</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>current fan-on (or furnace-on) relative load (part load ratio)</td>
+</tr>
+<tr>
+<td>ahcc.plrAv</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>current average relative load (plr * frFanOn)</td>
+</tr>
+<tr>
+<td>ahcc.eir</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>energy input ratio: current input/output, fan on===average. Rob's addition, for probes, 5-92.</td>
+</tr>
+<tr>
+<td>ahcc.capMax</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>maximum capacity this subhour, used to calculate tPossH/C.</td>
+</tr>
+<tr>
+<td>ahcc.pAux</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>aux power this subhour</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>additional inputtable members for cooling coil</li>
+<li>CAUTION: cncult5:COOLCOIL::setup code used to assume .cppapsRat was 1st derived class member 5-92.</li>
+<li>total rated capacity: see COIL::captRat. Not used for CHW.</li>
+</ul>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahcc.capsRat</td>
+<td>POWER_NZ</td>
+<td>End of subhour</td>
+<td>dx: sensible rated capacity &lt;= CaptRat Btu/hr, const for input, *s cuz varies during autoSize.</td>
+</tr>
+<tr>
+<td>ahcc.capsRat_As</td>
+<td>number</td>
+<td>Start of phase</td>
+<td>AutoSized ditto for naming consistency. 6-95.</td>
+</tr>
+<tr>
+<td>ahcc.capsRat_AsNov</td>
+<td>number</td>
+<td>Start of phase</td>
+<td>Raw autoSized ditto, b4 oversize added, for report &amp; probing. 7-95.</td>
+</tr>
+<tr>
+<td>ahcc.SHRRat</td>
+<td>FRAC_GZ</td>
+<td>Start of phase</td>
+<td><ul>
+<li>sensible heat ratio (caps/capt) for cooling coil</li>
+<li>cnausz.cpp code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahcc.minTEvap</td>
+<td>TEMP_GZ</td>
+<td>Start of phase</td>
+<td>dx: min evaporator (effective surface) temp (below which compressor cuts out), default 35F. (40F til 8-95)</td>
+</tr>
+<tr>
+<td>ahcc.k1</td>
+<td>FLOAT_LZ</td>
+<td>Start of phase</td>
+<td><ul>
+<li>dx, chw: power of relative air flow to which outside number of transfer units is proportional.</li>
+<li>Used in formula of form: ntuO = ntuoDs*(relCfm)^k1. Default dx: -.3, chw: -.2. Niles k1.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+
+(dx,chw) coil rating (design) conditions. otta make names consistent: change vfR to vfDs?
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahcc.dsTDbCnd</td>
+<td>TEMP_GZ</td>
+<td>Start of phase</td>
+<td>design (rating) (dx) condenser temp (outdoor temp pending water option), default = ARI = 95F.</td>
+</tr>
+<tr>
+<td>ahcc.dsTDbEn</td>
+<td>TEMP_GZ</td>
+<td>Start of phase</td>
+<td>design (rating) (dx,chw) entering air dry bulb temp, default = ARI = 80F.</td>
+</tr>
+<tr>
+<td>ahcc.dsTWbEn</td>
+<td>TEMP_GZ</td>
+<td>Start of phase</td>
+<td>design (rating) (dx) entering air wet bulb temp, default = ARI = 67F.  replaces Taylor's dsEAWB.</td>
+</tr>
+<tr>
+<td>ahcc.vfR</td>
+<td>AFLOW_GZ</td>
+<td>Start of run</td>
+<td>rating (dx,chw) air flow (cfm). default: DX: per vfRperTon. CHW: sfan.vfDs.</td>
+</tr>
+<tr>
+<td>ahcc.vfRperTon</td>
+<td>number</td>
+<td>Start of run</td>
+<td>DX default vfR per ton (12000 Btuh) of captRat. default: 400.</td>
+</tr>
+</tbody>
+</table>
+
+re dx cool coil compressor cycling and energy consumption
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahcc.minUnldPlr</td>
+<td>number</td>
+<td>Start of phase</td>
+<td>part load ratio (fraction of full load) at/above which "compressor unloading" is used. dfl 1.</td>
+</tr>
+<tr>
+<td>ahcc.minFsldPlr</td>
+<td>number</td>
+<td>Start of phase</td>
+<td><ul>
+<li>plr above which "false loading" is used (up to minUnldPlr). dfl minUnldPlr: no false loading.</li>
+<li>eirMinUnldPlr   below: pydxEirUl(minUnldPlr) precomputed at setup.</li>
+<li>*h FLOAT eirRAT     // rated load energy input ratio: is a COIL member</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>inputtable coefficients for dx polynomial correcting fcns. Defaulted to DOE2 "PTAC" values (or as changed) by cncult5 code.</li>
+<li>enter comma-separated list of coefficients in order:</li>
+<li>PYCUBIC:  cubic(x):         constant, coeff x, coeff x^2, coeff x^3.</li>
+<li>PYBIQUAD: biquadratic(x,y): constant, coeff x, coeff x^2, coeff y, coeff y^2, coeff x*y.</li>
+<li>corrects...</li>
+</ul>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahcc.pydxCaptT</td>
+<td></td>
+<td></td>
+<td>dx capt for (off-rated) tWbEn and tDbCnd (entering wetBulb, condenser dryBulb temps)</td>
+</tr><tr>
+<td colspan="4" style="border-top: 0px">
+<details class="note">
+<summary>PYBIQUAD</summary>
+<div>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahcc.pydxCaptT.k[index]</td>
+<td>number Array [7]</td>
+<td>Start of phase</td>
+<td>FLOAT k[7].  One extra member needed as terminator by cul.cpp array input logic, 5-92.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</td>
+</tr>
+<tr>
+<td>ahcc.pydxCaptF</td>
+<td></td>
+<td></td>
+<td>dx capt (off-rated) relative flow; arg is plrVf</td>
+</tr><tr>
+<td colspan="4" style="border-top: 0px">
+<details class="note">
+<summary>PYCUBIC</summary>
+<div>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahcc.pydxCaptF.k[index]</td>
+<td>number Array [5]</td>
+<td>Start of phase</td>
+<td><ul>
+<li>FLOAT k[5].  One extra member needed as terminator by cul.cpp array input logic, 5-92.</li>
+<li>possible future setup optimizations: 1) select ptr to fcn that does not compute terms whose k is 0;</li>
+<li>2) precalculate constants to compute in form  ((x*k[3] + k[2])*x + k[1])*x + k[0]</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</td>
+</tr>
+<tr>
+<td>ahcc.pydxCaptFLim</td>
+<td>number</td>
+<td>Start of phase</td>
+<td>upper limit for value of pydxCaptF, 8-28-95</td>
+</tr>
+<tr>
+<td>ahcc.pydxEirT</td>
+<td></td>
+<td></td>
+<td>dx energy input for tWbEn and tDbCnd</td>
+</tr><tr>
+<td colspan="4" style="border-top: 0px">
+<details class="note">
+<summary>PYBIQUAD</summary>
+<div>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahcc.pydxEirT.k[index]</td>
+<td>number Array [7]</td>
+<td>Start of phase</td>
+<td>FLOAT k[7].  One extra member needed as terminator by cul.cpp array input logic, 5-92.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</td>
+</tr>
+<tr>
+<td>ahcc.pydxEirUl</td>
+<td></td>
+<td></td>
+<td><ul>
+<li>dx energy in for part load in dx compr-unloading range (minUnldPlr &lt;= plr &lt;= 1).</li>
+<li>(Adjusts full-load input (eirRat*capt): I claim eir in name is misnomer, rob 5-92).</li>
+<li>note for minFsldPlr &lt; plr &lt; minUnldPlr, input remains at minUnldPlr's;</li>
+<li>for plr &lt;= minUnldPlr, input does straight line to 0.</li>
+</ul></td>
+</tr><tr>
+<td colspan="4" style="border-top: 0px">
+<details class="note">
+<summary>PYCUBIC</summary>
+<div>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahcc.pydxEirUl.k[index]</td>
+<td>number Array [5]</td>
+<td>Start of phase</td>
+<td><ul>
+<li>FLOAT k[5].  One extra member needed as terminator by cul.cpp array input logic, 5-92.</li>
+<li>possible future setup optimizations: 1) select ptr to fcn that does not compute terms whose k is 0;</li>
+<li>2) precalculate constants to compute in form  ((x*k[3] + k[2])*x + k[1])*x + k[0]</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</td>
+</tr>
+</tbody>
+</table>
+
+inputtable COOLCOIL members for CHW coil, 10-92. all const.
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahcc.cpi</td>
+<td>TI</td>
+<td>Start of phase</td>
+<td>subscript of COOLPLANT serving CHW coil, RQD for chw.</td>
+</tr>
+<tr>
+<td>ahcc.gpmDs</td>
+<td>H2OFLOW_GZ</td>
+<td>Start of phase</td>
+<td>design (i.e. maximum) chilled water flow, gpm, RQD for chw. Niles mwd[g].</td>
+</tr>
+<tr>
+<td>ahcc.ntuoDs</td>
+<td>FLOAT_GZ</td>
+<td>Start of phase</td>
+<td>outside number of transfer units at design air flow (vfR), default 2. Niles ntuOd.</td>
+</tr>
+<tr>
+<td>ahcc.ntuiDs</td>
+<td>FLOAT_GZ</td>
+<td>Start of phase</td>
+<td><ul>
+<li>inside number of transfer units at design water flow (gpmDs), default 2. Niles ntuId.</li>
+<li>also used, above: vfR, dsTDbEn, k1.  Not used for chw: captRat, capsRat, .</li>
+<li>note Niles k2 not used as not simulating flow/exit temp.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+
+COOLCOIL setup time: dx:
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahcc.wsatMinTEvap</td>
+<td>DBL</td>
+<td>Start of run</td>
+<td>hum ratio of saturated air at minTEvap (minimum evaporator temp)</td>
+</tr>
+<tr>
+<td>ahcc.hsatMinTEvap</td>
+<td>DBL</td>
+<td>Start of run</td>
+<td>enthalpy of saturated air at minTEvap</td>
+</tr>
+<tr>
+<td>ahcc.efecOR</td>
+<td>DBL</td>
+<td>Start of run</td>
+<td>(outside) effectiveness at rated conditions (in record for probing only)</td>
+</tr>
+<tr>
+<td>ahcc.ntuR</td>
+<td>DBL</td>
+<td>Start of run</td>
+<td>number of trasfer units (like time constants) at rated conditions</td>
+</tr>
+<tr>
+<td>ahcc.eirMinUnldPlr</td>
+<td>DBL</td>
+<td>Start of run</td>
+<td><ul>
+<li>pydxEirUl(minUnldPlr): precomputed dx input correction for falseLoading; prorate for cycling.</li>
+<li>dx and chw:</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahcc.menR</td>
+<td>DBL</td>
+<td>Start of run</td>
+<td><ul>
+<li>chw/dx coil rating air flow (lb/hr) (for chw, Niles 'mad')</li>
+<li>vfR * air density @ dsTDbEn, @ sea level 1-95</li>
+<li>chw setup time:</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahcc.nxAh4cp</td>
+<td>TI</td>
+<td>Start of run</td>
+<td>0 or subscr of next AH with CHW coil served by same COOLPLANT. 1st is COOLPLANT.ah1.</td>
+</tr>
+<tr>
+<td>ahcc.mwDs</td>
+<td>DBL</td>
+<td>Start of run</td>
+<td><ul>
+<li>MFLOW</li>
+<li>design (max) chilled water flow: .gpmDs converted to lb/hr.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+
+COOLCOIL runtime members
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahcc.wantQflag</td>
+<td>BOO</td>
+<td>End of subhour</td>
+<td><ul>
+<li>nz if cooling desired (texWant &lt; ten) regardless of sched, etc. doCoils--&gt;cpEstimate.</li>
+<li>chw:</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahcc.tewd</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMP</li>
+<li>chw internal: full-water-flow effective temp: prior value used next time called.</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahcc.chwQ</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>POWER</li>
+<li>heat taken from primary loop water, negative: chw load, to [COOLPLANT][coolplant] (same as ahcc.q).</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahcc.tr</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMP</li>
+<li>water return temp to coolplant</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahcc.cpTsPr</td>
+<td>TEMP</td>
+<td>End of subhour</td>
+<td>cp ts for which coil last computed, re compute-flagging coil from plant</td>
+</tr>
+<tr>
+<td>ahcc.trPr</td>
+<td>TEMP</td>
+<td>End of subhour</td>
+<td>coil tr at last coil compute, re call-flagging cp from coil model</td>
+</tr>
+<tr>
+<td>ahcc.fullLoadWet</td>
+<td>BOO</td>
+<td>End of subhour</td>
+<td><ul>
+<li>true if CHW coil wet @ full load,</li>
+<li>with hysterisis cuz CHW coil model has output discontinuity 10-92.</li>
+<li>dx mainly...</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahcc.frCprOn</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>dx: output to crankcase heater (via coilsEndSubhr): fraction of time compressor on.</li>
+<li>Move to COIL or AH if additional applicabilities found:</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahcc.tWbEn</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMP</li>
+<li>dx coil entering air wetBulb temp: doDxCoil to coilsEndSubhr.</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahcc.hen</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>ENTHALPY</li>
+<li>dx,chw coil entering air enthalpy / is member for probeing</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahcc.tDbCnd</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMP</li>
+<li>dx system condenser temp: Top.tDbO or (future) water temp)</li>
+<li>dx... following are members for probe-ability where local variable might [would] otherwise suffice:</li>
+<li>review for unused ones and delete:</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahcc.efecO</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>FRAC</li>
+<li>current (dx coil) effectiveness</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahcc.capt</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>POWER</li>
+<li>current (dx or any cool coil) total capacity</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahcc.caps</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>POWER</li>
+<li>current (dx coil) sensible capacity</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahcc.plrVf</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>FRAC</li>
+<li>current (dx coil) fan-on relative flow (part fan load ratio, cfm, Niles' plrCfm).</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahcc.plrSens</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>FRAC</li>
+<li>current (dx coil) fan-on relative sensible load (part load ratio)</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahcc.qs</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>POWER</li>
+<li>current (dx coil) sensible load</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahcc.ql</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>POWER</li>
+<li>current (dx coil) latent load</li>
+<li>general</li>
+<li>*s *e POWER q       COIL member above: current total load: q = qs + ql</li>
+<li>*s *e POWER p       COIL member above: current (electrical or ?plant) input power</li>
+<li>*s *e FRAC  plr     COIL member above: current fan-on relative load (part load ratio)</li>
+<li>*s *e FLOAT eir     COIL member above: current (dx,elec) energy input ratio: eir = p / q</li>
+<li>*s *e POWER qPr     COIL member; currently 10-92 not used for coolcoil</li>
+<li>*s *e TEMP  tsPr        plant supply temp at which coil last computed, for compute-flagging coil: COIL member</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahcc.xLGain</td>
+<td>ENERGY</td>
+<td>End of subhour</td>
+<td>condensation heat added to air (const enthalpy) to fix supersaturated wen, this subhr.</td>
+</tr>
+<tr>
+<td>ahcc.xLGainYr</td>
+<td>ENERGY</td>
+<td>End of subhour</td>
+<td>.. cumulative over run, for message at end run.</td>
+</tr>
+<tr>
+<td>ahcc.nSubhrsLX</td>
+<td>number</td>
+<td>End of subhour</td>
+<td><ul>
+<li>number of subhours in which supersaturated entering air fixed</li>
+<li>flags for messages at end autoSize (or run, future?)</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahcc.minTLtd</td>
+<td>BOO</td>
+<td>End of subhour</td>
+<td>output limited by minTEvap b4 reaching ahTsMn (DX, 7-95)</td>
+</tr>
+<tr>
+<td>ahcc.cfm2Few</td>
+<td>BOO</td>
+<td>End of subhour</td>
+<td>too little flow to permit sizing coil to meet load at min temp (DX, 7-95)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tu1</td>
+<td>TI</td>
+<td>Start of run</td>
+<td>chain head: TuB ss of 1st terminal for air handler.  Next is TU.nxTu4a.</td>
+</tr>
+<tr>
+<td>zhx1</td>
+<td>TI</td>
+<td>Start of run</td>
+<td>chain head of ah's ZHX's (Zone Hvac Xfers): 0 or ZhxB subscript of first. next: ZHX.nxZhx4a.</td>
+</tr>
+</tbody>
+</table>
+<p>ah runtime, terminals interactions:</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahMode</td>
+<td>AHMODE</td>
+<td>End of subhour</td>
+<td><ul>
+<li>what ah is doing: set to: ahOFF/ahFAN/ahHEATING/ahCOOLING/ahON(normal).</li>
+<li>test: &amp; ahFAN, &amp; ahHEATBIT, &amp; ahCOOLBIT for fan, heatcoil, coolcoil enabled.</li>
+</ul></td>
+</tr>
+<tr>
+<td>tSup</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMP</li>
+<li>supply temp FOR TERMINALS, F.  Set from working copy aTs at ahCompute exit.</li>
+<li>Differs from tsSp1 by duct loss and leakage (as well as coil limitations).</li>
+</ul></td>
+</tr>
+<tr>
+<td>wSup</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>HUMRAT</li>
+<li>supply air humidity ratio for TERMINALS, set from working copy aWs at ah exit</li>
+</ul></td>
+</tr>
+<tr>
+<td>wSupLs</td>
+<td>DBL</td>
+<td>Start of subhour</td>
+<td><ul>
+<li>HUMRAT</li>
+<li>end prior subhr ah_wSup (=ah_wSup in 1st iteration), AH:ah_AfterSubhr to ZNR::ztuMdSets</li>
+</ul></td>
+</tr>
+<tr>
+<td>airxTs</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>HC_VOL</li>
+<li>Btuh/cfm-F volumetric flow heat capacity of air at ts (airVsh, * 60 min/hour).</li>
+</ul></td>
+</tr>
+<tr>
+<td>tsMnFo</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMP</li>
+<li>ctu min flow, coil-off supply temp, calc'd &amp; ret'd by getTsMnFo. See tsMnFoOk.</li>
+</ul></td>
+</tr>
+<tr>
+<td>tsMnFoOk</td>
+<td>BOO</td>
+<td>End of subhour</td>
+<td>TRUE if tsMnFo has been calc'd since last ahEstimate/ahCompute. set/used in getTsMnFo().</td>
+</tr>
+<tr>
+<td>tsMxFo</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMP</li>
+<li>ctu max flow, coil-off supply temp, calc'd &amp; ret'd by getTsMxFo. See tsMxFoOk.</li>
+</ul></td>
+</tr>
+<tr>
+<td>tsMxFoOk</td>
+<td>BOO</td>
+<td>End of subhour</td>
+<td>TRUE if tsMxFo has been calc'd since last ahEstimate/ahCompute. set/used in getTsMxFo().</td>
+</tr>
+</tbody>
+</table>
+<p>input used for this iteration: return air as it left (future) plenum, b4 return duct: weighted average zones</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tr</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMP</li>
+<li>return air temp (wtd avg zones, adj for (future) plenum)</li>
+</ul></td>
+</tr>
+<tr>
+<td>wr</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>HUMRAT</li>
+<li>return air humidity ratio</li>
+</ul></td>
+</tr>
+<tr>
+<td>cr</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>CFLOW</li>
+<li>return air flow (heat cap units); same as total supply air to zones</li>
+</ul></td>
+</tr>
+<tr>
+<td>cMxfcc</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>CFLOW</li>
+<li>max flow used re deterimining frFanOn (member for probes / dbg aid).</li>
+</ul></td>
+</tr>
+<tr>
+<td>frFanOn</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>FRAC</li>
+<li>if fcc, fraction of time coil/fan are on (cr/max poss c), else 1.0 (fan always on).</li>
+</ul></td>
+</tr>
+<tr>
+<td>leakCOn</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>CFLOW</li>
+<li>fan-on rtn duct leak in === sup duct leak out (6-92). mbr for probes / dbg aid.</li>
+<li>at entry to air handler, this iteration -- see Nx's below.</li>
+</ul></td>
+</tr>
+<tr>
+<td>tr1</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMP</li>
+<li>return air temp after return duct loss and leakage</li>
+</ul></td>
+</tr>
+<tr>
+<td>wr1</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>HUMRAT</li>
+<li>hum rat after return duct leakage</li>
+</ul></td>
+</tr>
+<tr>
+<td>cr1</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>CFLOW</li>
+<li>flow ditto, heat cap units (Btuh/F)</li>
+<li>after return fan, if any, this iteration; at entry to economizer.  w: use wr1.  c: use cr1.</li>
+</ul></td>
+</tr>
+<tr>
+<td>tr2</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMP</li>
+<li>temp after rfan, b4 eco, for next iteration: copied to tr3 after conditional exit.</li>
+</ul></td>
+</tr>
+<tr>
+<td>rfanQ</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>return fan power copied at commitment to this iteration (rfan.q is next iter)</td>
+</tr>
+</tbody>
+</table>
+<p>after economizer, before supply fan and coil(s).</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tmix</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMP</li>
+<li>temp after outside air/economizer</li>
+</ul></td>
+</tr>
+<tr>
+<td>wen</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>HUMRAT</li>
+<li>hum after outside air/economizer, and at coil entry</li>
+</ul></td>
+</tr>
+<tr>
+<td>cmix</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>CFLOW</li>
+<li>flow after outside air/eco, thru supply fan, and at supply duct (but not in cool coil)</li>
+<li>at coil entrance: after blowthru supply fan if any; excludes flow that bypasses coil</li>
+</ul></td>
+</tr>
+<tr>
+<td>dtMixEn</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMPDIFF</li>
+<li>eco to coil entry temp diff: supply fan heat if blowthru, else 0</li>
+</ul></td>
+</tr>
+<tr>
+<td>ten</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMP</li>
+<li>coil entry temp: poss fan heat added.  wen: is just above.</li>
+</ul></td>
+</tr>
+<tr>
+<td>cen</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>CFLOW</li>
+<li>flow into coil: cmix less any bypassing air, heat cap units (Btuh/F)</li>
+</ul></td>
+</tr>
+<tr>
+<td>men</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>MFLOW</li>
+<li>same flow in mass units (lb/hr).</li>
+<li>tWbEn: see COOLCOIL.</li>
+<li>hen:   see COOLCOIL.</li>
+<li>at coil exit</li>
+</ul></td>
+</tr>
+<tr>
+<td>tex</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMP</li>
+<li>coil exit temp: coil Q added.</li>
+</ul></td>
+</tr>
+<tr>
+<td>wex</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>HUMRAT</li>
+<li>coil exit humidity ratio</li>
+<li>after coil flow mixed with bypassing air</li>
+</ul></td>
+</tr>
+<tr>
+<td>tex1</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMP</li>
+<li>add fan heat to get tSen.</li>
+<li>wex1: use aWs (below), later copied to ws (above).</li>
+<li>flow: cmix again.</li>
+<li>at ts sensor: after drawthru supply fan if any: ie at air handler exit, before supply duct.  c: is cmix.  w: use aWs.</li>
+</ul></td>
+</tr>
+<tr>
+<td>dtExSen</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMPDIFF</li>
+<li>coil exit to ts sensor temp difference: drawthru fan heat, else 0</li>
+</ul></td>
+</tr>
+<tr>
+<td>tSen</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMP</li>
+<li>temp at supply temp sensor (before supply duct). ahTsSp1 is setpoint for tSen.</li>
+<li>at delivery to individual terminal supply ducts, after shared supply duct leakage and loss if any</li>
+<li>w: use aWs. c: is cr, or sum of terminal c's.</li>
+</ul></td>
+</tr>
+<tr>
+<td>dtSenS</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMPDIFF</li>
+<li>supply duct temp diff, due to [ahSOLeak][ahsoleak] and [ahSOLoss][ahsoloss]</li>
+</ul></td>
+</tr>
+<tr>
+<td>aTs</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMP</li>
+<li>supply temp (air handler output).  aTs is ah working copy used so last value used</li>
+<li>for ztuCompute (ts, above) remains avail thru AH::ahCompute. Elsewhere, same as ts.</li>
+</ul></td>
+</tr>
+<tr>
+<td>aWs</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>HUMRAT</li>
+<li>hum rat of supply air, working copy, used to set ws at ah exit.</li>
+<li>CFLOW cs: expect to need when return flow != supply.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>--- temps etc...  trNx...tr2Nx are values for use as inputs to NEXT iteration, resulting from current ah outputs.</li>
+<li>they are copied to tr...tr2 above at use (commitment to another iteration) by pute4Fs.</li>
+<li>next-iteration return air as it leaves (future) plenum, before return duct: weighted average zones</li>
+</ul>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>trNx</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMP</li>
+<li>return air temp (wtd avg zones, adj for (future) plenum)</li>
+</ul></td>
+</tr>
+<tr>
+<td>wrNx</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>HUMRAT</li>
+<li>return air humidity ratio</li>
+</ul></td>
+</tr>
+<tr>
+<td>crNx</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>CFLOW</li>
+<li>return air flow (heat cap units); same as total supply air to zones</li>
+</ul></td>
+</tr>
+<tr>
+<td>cMxnx</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>CFLOW</li>
+<li>flow for frFanOnNx = 1.0: min( crNx, sfan.cMx-leak).  Member just for probes/dbg aid.</li>
+</ul></td>
+</tr>
+<tr>
+<td>frFanOnNx</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>FRAC</li>
+<li>if fcc, fraction of time coil/fan are on (crNx/max poss flow), else 1.0 (fan always on).</li>
+</ul></td>
+</tr>
+<tr>
+<td>leakCOnNx</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>CFLOW</li>
+<li>fan-on leak into return duct === leak out of supply duct at present 6-92.</li>
+<li>member for probes/debug aid; cd remove setFrFanOn arg.</li>
+<li>at entry to air handler, next iteration</li>
+</ul></td>
+</tr>
+<tr>
+<td>tr1Nx</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMP</li>
+<li>return air temp after return duct loss and leakage</li>
+</ul></td>
+</tr>
+<tr>
+<td>wr1Nx</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>HUMRAT</li>
+<li>hum rat ditto</li>
+</ul></td>
+</tr>
+<tr>
+<td>cr1Nx</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>CFLOW</li>
+<li>flow ditto [formerly named cAh]; heat cap units (Btuh/F)</li>
+<li>after return fan, if any; at entry to economizer; next iteration.  w: use wr1Nx.  c: use cr1Nx.</li>
+</ul></td>
+</tr>
+<tr>
+<td>tr2Nx</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMP</li>
+<li>temp after rfan, b4 eco, for next iteration: copied to tr3 after conditional exit.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<p>ah run, internal, general/miscellaneous</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>uUseAr</td>
+<td>TCUSE</td>
+<td>End of subhour</td>
+<td>'or' of tu.useAr's at refine() entry, for detecting pegged terminals, set in zRat, tentative.</td>
+</tr>
+<tr>
+<td>fcc</td>
+<td>BOO</td>
+<td>End of hour</td>
+<td><ul>
+<li>TRUE if fan cycles: fan runs only fraction of subhour requested by control terminal, else off.</li>
+<li>when on, fan runs full flow and coil usually at a high power.</li>
+<li>set hourly from [ahFanCycles][ahfancycles] else ahTsSp==ZN by AH::begHour.</li>
+<li>when TRUE: frFanOn is fraction time on for fan (and usually coil).</li>
+<li>flows and powers become average, divide by frFanOn for fan-on value.</li>
+<li>ah Temps, w's, plr's, po remain fan-on values.</li>
+<li>when FALSE: fan runs all the time (normal VAV case), frFanOn is 1.0.</li>
+</ul></td>
+</tr>
+<tr>
+<td>isZNorZN2</td>
+<td>BOO</td>
+<td>End of hour</td>
+<td>TRUE if ahTsSp is ZN or ZN2 this hour. 5-95.</td>
+</tr>
+<tr>
+<td>tsSp1</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMP</li>
+<li>ahTsSp as number: WZ/CZ/ZN/ZN2 resolved to temp now needed, set by AH::setTsSp1.</li>
+</ul></td>
+</tr>
+<tr>
+<td>tsFullFlow</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMP</li>
+<li>heating ts for full flow, special re AHP suppl rh stability, usually not set,</li>
+<li>cnah2.cpp:setTsSp1 to cncoil.cpp:doAhpHeatCoil</li>
+</ul></td>
+</tr>
+<tr>
+<td>ecoEnabled</td>
+<td>BOO</td>
+<td>End of subhour</td>
+<td>TRUE if economizer present and currently enabled</td>
+</tr>
+<tr>
+<td>coilLockout</td>
+<td>BOO</td>
+<td>End of subhour</td>
+<td>TRUE if cooling coil disabled by full-open non-integrated economizer</td>
+</tr>
+<tr>
+<td>po</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td>current fraction outside air</td>
+</tr>
+<tr>
+<td>coilUsed</td>
+<td>COILUSED</td>
+<td>End of subhour</td>
+<td>coil in use, doCoils to coilsEndSubhr: cuNONE, cuHEAT, or cuCOOL. 12-3-92.</td>
+</tr>
+</tbody>
+</table>
+<p>ah run, internal, fan/coil overload handling</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fanF</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td>"fan factor" used in determining current max flows. reduce when fan overloads.</td>
+</tr>
+<tr>
+<td>fanFMax</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>fanF value for full flow: max tu vfMx/vfDs, reflecting both vfMxH's &amp; vfMxC's.</li>
+<li>can change hourly, more often during autoSizing 7-95.</li>
+<li>CAUTION: fanF below fanFMax won't NECESSARILY reduce flow for current useAr's.</li>
+</ul></td>
+</tr>
+<tr>
+<td>fanLimited</td>
+<td>BOO</td>
+<td>End of subhour</td>
+<td>TRUE if using full capacity of fan without getting desired flow</td>
+</tr>
+<tr>
+<td>coilLimited</td>
+<td>BOO</td>
+<td>End of subhour</td>
+<td>TRUE if using full capacity of available coil without getting desired delta-T</td>
+</tr>
+<tr>
+<td>tPossH</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMP</li>
+<li>heating coil exit temp probably now possible, for ah estimating, doCoils to setTsSp1.</li>
+</ul></td>
+</tr>
+<tr>
+<td>tPossC</td>
+<td>DBL</td>
+<td>End of subhour</td>
+<td><ul>
+<li>TEMP</li>
+<li>cooling coil exit temp probably now possible, for ah estimating, doCoils to setTsSp1.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<p>changes flag (many ah change conditionals use a -Pr (prior) directly, without a flag)</p>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ahClf</td>
+<td>BOO</td>
+<td>End of subhour</td>
+<td>call-flag: set nz if must call ahCompute so it can test tr,cr etc to see if computation needed.</td>
+</tr>
+<tr>
+<td>ahPtf</td>
+<td>BOO</td>
+<td>End of subhour</td>
+<td><ul>
+<li>compute-flag: set if must call ahCompute and it should unconditionally recompute this AH:</li>
+<li>setters include: exman chaf's for ahTsSp, ahSch, ahhc.sched, ahcc.sched, etc;</li>
+<li>AH::estimate, ahCompute, ah_SetMode, ; ZNR::ztuMdSets, .</li>
+<li>tested: hvacIterSubhr(), AH::ahCompute. cleared: AH::ahCompute.</li>
+</ul></td>
+</tr>
+<tr>
+<td>ahPtf2</td>
+<td>BOO</td>
+<td>End of subhour</td>
+<td><ul>
+<li>secondary flag for compute only after zones computed again, for non-convergence.</li>
+<li>set: AH::iter4Fs. tested: hvacIterSubhr(), AH::ahCompute. cleared: AH::ahCompute.</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      &copy 2025 The CSE Authors. All rights reserved.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "toc.follow", "navigation.instant", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f1b6f286.min.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/katex.min.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/contrib/auto-render.min.js"></script>
+      
+        <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
+      
+        <script src="../../assets/javascript/extra_js.js"></script>
+      
+    
+  </body>
+</html>

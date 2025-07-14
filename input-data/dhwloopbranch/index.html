@@ -12,21 +12,25 @@
         <meta name="author" content="CSE Authors">
       
       
-        <link rel="canonical" href="https://cse-sim.github.io/cse/">
+        <link rel="canonical" href="https://cse-sim.github.io/cse/input-data/dhwloopbranch/">
       
       
+        <link rel="prev" href="../dhwloopseg/">
       
       
-      <link rel="icon" href="assets/images/favicon.png">
+        <link rel="next" href="../dhwsolarsys/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.3">
     
     
       
-        <title>California Simulation Engine - CSE Documentation</title>
+        <title>DHWLOOPBRANCH - CSE Documentation</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.d7758b05.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.d7758b05.min.css">
       
       
 
@@ -47,9 +51,9 @@
     
       <link rel="stylesheet" href="https://unpkg.com/katex@0/dist/katex.min.css">
     
-      <link rel="stylesheet" href="assets/stylesheets/extra_styles.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/extra_styles.css">
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -68,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#overview" class="md-skip">
+        <a href="#dhwloopbranch" class="md-skip">
           Skip to content
         </a>
       
@@ -84,7 +88,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="CSE Documentation" class="md-header__button md-logo" aria-label="CSE Documentation" data-md-component="logo">
+    <a href="../.." title="CSE Documentation" class="md-header__button md-logo" aria-label="CSE Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -104,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              California Simulation Engine
+              DHWLOOPBRANCH
             
           </span>
         </div>
@@ -191,7 +195,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="CSE Documentation" class="md-nav__button md-logo" aria-label="CSE Documentation" data-md-component="logo">
+    <a href="../.." title="CSE Documentation" class="md-nav__button md-logo" aria-label="CSE Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -221,7 +225,7 @@
   
   
     <li class="md-nav__item">
-      <a href="introduction/" class="md-nav__link">
+      <a href="../../introduction/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -242,7 +246,7 @@
   
   
     <li class="md-nav__item">
-      <a href="operation/" class="md-nav__link">
+      <a href="../../operation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -263,7 +267,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-structure/" class="md-nav__link">
+      <a href="../../input-structure/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -281,6 +285,8 @@
       
   
   
+    
+  
   
   
     
@@ -407,16 +413,16 @@
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="input-data/" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -434,7 +440,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             Input Data
@@ -450,7 +456,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/top-members/" class="md-nav__link">
+      <a href="../top-members/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -472,7 +478,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/holiday/" class="md-nav__link">
+      <a href="../holiday/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -494,7 +500,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/descond/" class="md-nav__link">
+      <a href="../descond/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -516,7 +522,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/material/" class="md-nav__link">
+      <a href="../material/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -538,7 +544,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/construction/" class="md-nav__link">
+      <a href="../construction/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -560,7 +566,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/foundation/" class="md-nav__link">
+      <a href="../foundation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -582,7 +588,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/fndblock/" class="md-nav__link">
+      <a href="../fndblock/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -604,7 +610,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/layer/" class="md-nav__link">
+      <a href="../layer/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -626,7 +632,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/glazetype/" class="md-nav__link">
+      <a href="../glazetype/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -648,7 +654,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/meter/" class="md-nav__link">
+      <a href="../meter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -670,7 +676,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwmeter/" class="md-nav__link">
+      <a href="../dhwmeter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -692,7 +698,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/afmeter/" class="md-nav__link">
+      <a href="../afmeter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -714,7 +720,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/loadmeter/" class="md-nav__link">
+      <a href="../loadmeter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -736,7 +742,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/zone/" class="md-nav__link">
+      <a href="../zone/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -758,7 +764,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/gain/" class="md-nav__link">
+      <a href="../gain/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -780,7 +786,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/surface/" class="md-nav__link">
+      <a href="../surface/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -802,7 +808,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/window/" class="md-nav__link">
+      <a href="../window/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -824,7 +830,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/shade/" class="md-nav__link">
+      <a href="../shade/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -846,7 +852,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/sgdist/" class="md-nav__link">
+      <a href="../sgdist/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -868,7 +874,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/door/" class="md-nav__link">
+      <a href="../door/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -890,7 +896,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/perimeter/" class="md-nav__link">
+      <a href="../perimeter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -912,7 +918,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/terminal/" class="md-nav__link">
+      <a href="../terminal/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -934,7 +940,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/izxfer/" class="md-nav__link">
+      <a href="../izxfer/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -956,7 +962,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/doas/" class="md-nav__link">
+      <a href="../doas/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -978,7 +984,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/rsys/" class="md-nav__link">
+      <a href="../rsys/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1000,7 +1006,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/ductseg/" class="md-nav__link">
+      <a href="../ductseg/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1022,7 +1028,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/performancemap/" class="md-nav__link">
+      <a href="../performancemap/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1044,7 +1050,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwdayuse/" class="md-nav__link">
+      <a href="../dhwdayuse/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1066,7 +1072,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwuse/" class="md-nav__link">
+      <a href="../dhwuse/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1088,7 +1094,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwsys/" class="md-nav__link">
+      <a href="../dhwsys/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1110,7 +1116,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwheater/" class="md-nav__link">
+      <a href="../dhwheater/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1132,7 +1138,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwloopheater/" class="md-nav__link">
+      <a href="../dhwloopheater/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1154,7 +1160,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwheatrec/" class="md-nav__link">
+      <a href="../dhwheatrec/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1176,7 +1182,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwtank/" class="md-nav__link">
+      <a href="../dhwtank/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1198,7 +1204,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwpump/" class="md-nav__link">
+      <a href="../dhwpump/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1220,7 +1226,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwloop/" class="md-nav__link">
+      <a href="../dhwloop/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1242,7 +1248,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwlooppump/" class="md-nav__link">
+      <a href="../dhwlooppump/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1264,7 +1270,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwloopseg/" class="md-nav__link">
+      <a href="../dhwloopseg/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1283,10 +1289,31 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="input-data/dhwloopbranch/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    DHWLOOPBRANCH
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1296,6 +1323,161 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#wbname" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbName
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wbmult" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbMult
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wblength" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbLength
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wbsize" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbSize
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wbinsulk" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbInsulK
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wbinsulthk" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbInsulThk
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wbexh" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbExH
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wbexcnd" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbExCnd
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wbadjzn" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbAdjZn
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wbextx" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbExTX
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wbfua" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbFUA
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wbext" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbExT
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wbflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbFlow
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wbfwaste" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbFWaste
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enddhwloopbranch" class="md-nav__link">
+    <span class="md-ellipsis">
+      endDHWLOOPBRANCH
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1308,7 +1490,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwsolarsys/" class="md-nav__link">
+      <a href="../dhwsolarsys/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1330,7 +1512,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwsolarcollector/" class="md-nav__link">
+      <a href="../dhwsolarcollector/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1352,7 +1534,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/pvarray/" class="md-nav__link">
+      <a href="../pvarray/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1374,7 +1556,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/shadex/" class="md-nav__link">
+      <a href="../shadex/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1396,7 +1578,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/battery/" class="md-nav__link">
+      <a href="../battery/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1418,7 +1600,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/airhandler/" class="md-nav__link">
+      <a href="../airhandler/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1440,7 +1622,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/heatplant/" class="md-nav__link">
+      <a href="../heatplant/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1462,7 +1644,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/boiler/" class="md-nav__link">
+      <a href="../boiler/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1484,7 +1666,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/coolplant/" class="md-nav__link">
+      <a href="../coolplant/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1506,7 +1688,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/chiller/" class="md-nav__link">
+      <a href="../chiller/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1528,7 +1710,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/towerplant/" class="md-nav__link">
+      <a href="../towerplant/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1550,7 +1732,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/reportfile/" class="md-nav__link">
+      <a href="../reportfile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1572,7 +1754,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/report/" class="md-nav__link">
+      <a href="../report/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1594,7 +1776,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/reportcol/" class="md-nav__link">
+      <a href="../reportcol/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1616,7 +1798,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/exportfile/" class="md-nav__link">
+      <a href="../exportfile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1638,7 +1820,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/export/" class="md-nav__link">
+      <a href="../export/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1660,7 +1842,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/exportcol/" class="md-nav__link">
+      <a href="../exportcol/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1682,7 +1864,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/importfile/" class="md-nav__link">
+      <a href="../importfile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1711,7 +1893,7 @@
   
   
     <li class="md-nav__item">
-      <a href="output-reports/" class="md-nav__link">
+      <a href="../../output-reports/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1898,7 +2080,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="probe-definitions/" class="md-nav__link ">
+            <a href="../../probe-definitions/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -1932,7 +2114,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/AFMETER/" class="md-nav__link">
+      <a href="../../probe-definitions/AFMETER/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1954,7 +2136,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/ahRes/" class="md-nav__link">
+      <a href="../../probe-definitions/ahRes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1976,7 +2158,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/airHandler/" class="md-nav__link">
+      <a href="../../probe-definitions/airHandler/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1998,7 +2180,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/Battery/" class="md-nav__link">
+      <a href="../../probe-definitions/Battery/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2020,7 +2202,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/boiler/" class="md-nav__link">
+      <a href="../../probe-definitions/boiler/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2042,7 +2224,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/chiller/" class="md-nav__link">
+      <a href="../../probe-definitions/chiller/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2064,7 +2246,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/construction/" class="md-nav__link">
+      <a href="../../probe-definitions/construction/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2086,7 +2268,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/coolPlant/" class="md-nav__link">
+      <a href="../../probe-definitions/coolPlant/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2108,7 +2290,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DESCOND/" class="md-nav__link">
+      <a href="../../probe-definitions/DESCOND/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2130,7 +2312,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWDayUse/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWDayUse/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2152,7 +2334,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWHeater/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWHeater/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2174,7 +2356,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWHeatRec/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWHeatRec/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2196,7 +2378,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWLoop/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWLoop/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2218,7 +2400,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWLoopBranch/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWLoopBranch/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2240,7 +2422,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWLoopHeater/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWLoopHeater/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2262,7 +2444,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWLoopPump/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWLoopPump/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2284,7 +2466,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWLoopSeg/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWLoopSeg/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2306,7 +2488,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWMETER/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWMETER/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2328,7 +2510,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWPump/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWPump/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2350,7 +2532,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWSolarCollector/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWSolarCollector/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2372,7 +2554,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWSolarSys/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWSolarSys/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2394,7 +2576,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWSYS/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWSYS/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2416,7 +2598,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWSYSRES/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWSYSRES/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2438,7 +2620,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWTank/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWTank/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2460,7 +2642,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWUse/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWUse/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2482,7 +2664,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DUCTSEGRes/" class="md-nav__link">
+      <a href="../../probe-definitions/DUCTSEGRes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2504,7 +2686,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DuctSeg/" class="md-nav__link">
+      <a href="../../probe-definitions/DuctSeg/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2526,7 +2708,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/doas/" class="md-nav__link">
+      <a href="../../probe-definitions/doas/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2548,7 +2730,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/door/" class="md-nav__link">
+      <a href="../../probe-definitions/door/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2570,7 +2752,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/export/" class="md-nav__link">
+      <a href="../../probe-definitions/export/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2592,7 +2774,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/exportCol/" class="md-nav__link">
+      <a href="../../probe-definitions/exportCol/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2614,7 +2796,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/exportFile/" class="md-nav__link">
+      <a href="../../probe-definitions/exportFile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2636,7 +2818,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/foundation/" class="md-nav__link">
+      <a href="../../probe-definitions/foundation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2658,7 +2840,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/foundationBlock/" class="md-nav__link">
+      <a href="../../probe-definitions/foundationBlock/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2680,7 +2862,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/gain/" class="md-nav__link">
+      <a href="../../probe-definitions/gain/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2702,7 +2884,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/glazeType/" class="md-nav__link">
+      <a href="../../probe-definitions/glazeType/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2724,7 +2906,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/heatPlant/" class="md-nav__link">
+      <a href="../../probe-definitions/heatPlant/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2746,7 +2928,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/holiday/" class="md-nav__link">
+      <a href="../../probe-definitions/holiday/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2768,7 +2950,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/Inverse/" class="md-nav__link">
+      <a href="../../probe-definitions/Inverse/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2790,7 +2972,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/impFileFldNames/" class="md-nav__link">
+      <a href="../../probe-definitions/impFileFldNames/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2812,7 +2994,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/importFile/" class="md-nav__link">
+      <a href="../../probe-definitions/importFile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2834,7 +3016,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/izXfer/" class="md-nav__link">
+      <a href="../../probe-definitions/izXfer/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2856,7 +3038,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/kiva/" class="md-nav__link">
+      <a href="../../probe-definitions/kiva/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2878,7 +3060,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/LOADMETER/" class="md-nav__link">
+      <a href="../../probe-definitions/LOADMETER/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2900,7 +3082,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/layer/" class="md-nav__link">
+      <a href="../../probe-definitions/layer/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2922,7 +3104,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/mass/" class="md-nav__link">
+      <a href="../../probe-definitions/mass/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2944,7 +3126,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/material/" class="md-nav__link">
+      <a href="../../probe-definitions/material/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2966,7 +3148,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/meter/" class="md-nav__link">
+      <a href="../../probe-definitions/meter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2988,7 +3170,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/PERFORMANCEMAP/" class="md-nav__link">
+      <a href="../../probe-definitions/PERFORMANCEMAP/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3010,7 +3192,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/PipeSeg/" class="md-nav__link">
+      <a href="../../probe-definitions/PipeSeg/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3032,7 +3214,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/PMGRIDAXIS/" class="md-nav__link">
+      <a href="../../probe-definitions/PMGRIDAXIS/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3054,7 +3236,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/PMLOOKUPDATA/" class="md-nav__link">
+      <a href="../../probe-definitions/PMLOOKUPDATA/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3076,7 +3258,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/PVArray/" class="md-nav__link">
+      <a href="../../probe-definitions/PVArray/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3098,7 +3280,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/perimeter/" class="md-nav__link">
+      <a href="../../probe-definitions/perimeter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3120,7 +3302,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/RSYS/" class="md-nav__link">
+      <a href="../../probe-definitions/RSYS/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3142,7 +3324,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/RSYSRes/" class="md-nav__link">
+      <a href="../../probe-definitions/RSYSRes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3164,7 +3346,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/report/" class="md-nav__link">
+      <a href="../../probe-definitions/report/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3186,7 +3368,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/reportCol/" class="md-nav__link">
+      <a href="../../probe-definitions/reportCol/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3208,7 +3390,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/reportFile/" class="md-nav__link">
+      <a href="../../probe-definitions/reportFile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3230,7 +3412,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/SHADEX/" class="md-nav__link">
+      <a href="../../probe-definitions/SHADEX/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3252,7 +3434,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/sgdist/" class="md-nav__link">
+      <a href="../../probe-definitions/sgdist/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3274,7 +3456,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/shade/" class="md-nav__link">
+      <a href="../../probe-definitions/shade/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3296,7 +3478,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/surface/" class="md-nav__link">
+      <a href="../../probe-definitions/surface/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3318,7 +3500,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/terminal/" class="md-nav__link">
+      <a href="../../probe-definitions/terminal/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3340,7 +3522,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/top/" class="md-nav__link">
+      <a href="../../probe-definitions/top/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3362,7 +3544,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/towerPlant/" class="md-nav__link">
+      <a href="../../probe-definitions/towerPlant/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3384,7 +3566,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/weather/" class="md-nav__link">
+      <a href="../../probe-definitions/weather/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3406,7 +3588,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/weatherFile/" class="md-nav__link">
+      <a href="../../probe-definitions/weatherFile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3428,7 +3610,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/weatherNextHour/" class="md-nav__link">
+      <a href="../../probe-definitions/weatherNextHour/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3450,7 +3632,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/window/" class="md-nav__link">
+      <a href="../../probe-definitions/window/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3472,7 +3654,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/xsurf/" class="md-nav__link">
+      <a href="../../probe-definitions/xsurf/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3494,7 +3676,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/zhx/" class="md-nav__link">
+      <a href="../../probe-definitions/zhx/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3516,7 +3698,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/znRes/" class="md-nav__link">
+      <a href="../../probe-definitions/znRes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3538,7 +3720,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/zone/" class="md-nav__link">
+      <a href="../../probe-definitions/zone/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3587,18 +3769,135 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#cse-user-manual" class="md-nav__link">
+  <a href="#wbname" class="md-nav__link">
     <span class="md-ellipsis">
-      CSE User Manual
+      wbName
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#cse-source-code" class="md-nav__link">
+  <a href="#wbmult" class="md-nav__link">
     <span class="md-ellipsis">
-      CSE Source Code
+      wbMult
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wblength" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbLength
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wbsize" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbSize
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wbinsulk" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbInsulK
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wbinsulthk" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbInsulThk
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wbexh" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbExH
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wbexcnd" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbExCnd
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wbadjzn" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbAdjZn
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wbextx" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbExTX
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wbfua" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbFUA
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wbext" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbExT
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wbflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbFlow
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wbfwaste" class="md-nav__link">
+    <span class="md-ellipsis">
+      wbFWaste
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enddhwloopbranch" class="md-nav__link">
+    <span class="md-ellipsis">
+      endDHWLOOPBRANCH
     </span>
   </a>
   
@@ -3623,21 +3922,406 @@
   
 
 
-<h1 -="-" id="overview">Overview</h1>
-<p>CSE is a general purpose building simulation model developed primarily to perform the required calculations for the California Building Energy Code Compliance for Residential buildings (<a href="http://www.bwilcox.com/BEES/BEES.html">CBECC-Res</a>) software.</p>
-<h2 -="-" id="cse-user-manual">CSE User Manual</h2>
-<p>WIP</p>
-<h2 -="-" id="cse-source-code">CSE Source Code</h2>
-<p>The CSE source code is hosted on <a href="https://github.com/cse-sim/cse">GitHub</a>.</p>
+<h1 id="dhwloopbranch">DHWLOOPBRANCH</h1>
+<p>DHWLOOPBRANCH constructs one or more objects representing a branch pipe from the preceding <a class="autorefs autorefs-internal" href="../dhwloopseg/#dhwloopseg">DHWLOOPSEG</a>. A <a class="autorefs autorefs-internal" href="../dhwloopseg/#dhwloopseg">DHWLOOPSEG</a> can have any number of DHWLOOPBRANCHs to represent pipe runs with differing sizes, insulation, or surrounding conditions.</p>
+<h3 id="wbname">wbName</h3>
+<p>Optional name of segment; give after the word “DHWLOOPBRANCH” if desired.</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td><em>63 characters</em></td>
+<td><em>none</em></td>
+<td>No</td>
+<td>constant</td>
+</tr>
+</tbody>
+</table>
+<h3 id="wbmult">wbMult</h3>
+<p>Type: float</p>
+<p>Specifies the number of identical DHWLOOPBRANCHs. Note may be non-integer.</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td><em>x</em> <span class="arithmatex">\(&gt;\)</span> 0</td>
+<td>1</td>
+<td>No</td>
+<td>constant</td>
+</tr>
+</tbody>
+</table>
+<h3 id="wblength">wbLength</h3>
+<p>Type: float</p>
+<p>Length of branch.</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ft</td>
+<td><em>x</em> <span class="arithmatex">\(\ge\)</span> 0</td>
+<td>0</td>
+<td>No</td>
+<td>constant</td>
+</tr>
+</tbody>
+</table>
+<h3 id="wbsize">wbSize</h3>
+<p>Type: float</p>
+<p>Nominal size of pipe. CSE assumes the pipe outside diameter = size + 0.125 in.</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>in</td>
+<td><em>x</em> <span class="arithmatex">\(&gt;\)</span> 0</td>
+<td><em>none</em></td>
+<td>Yes</td>
+<td>constant</td>
+</tr>
+</tbody>
+</table>
+<h3 id="wbinsulk">wbInsulK</h3>
+<p>Type: float</p>
+<p>Pipe insulation conductivity</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Btuh-ft/ft<sup>2</sup>-<sup>o</sup>F</td>
+<td><em>x</em> <span class="arithmatex">\(&gt;\)</span> 0</td>
+<td>0.02167</td>
+<td>No</td>
+<td>constant</td>
+</tr>
+</tbody>
+</table>
+<h3 id="wbinsulthk">wbInsulThk</h3>
+<p>Type: float</p>
+<p>Pipe insulation thickness</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>in</td>
+<td><em>x</em> <span class="arithmatex">\(\ge\)</span> 0</td>
+<td>1</td>
+<td>No</td>
+<td>constant</td>
+</tr>
+</tbody>
+</table>
+<h3 id="wbexh">wbExH</h3>
+<p>Type: float</p>
+<p>Combined radiant/convective exterior surface conductance between insulation (or pipe if no insulation) and surround.</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Btuh/ft<sup>2</sup>-<sup>o</sup>F</td>
+<td><em>x</em> <span class="arithmatex">\(&gt;\)</span> 0</td>
+<td>1.5</td>
+<td>No</td>
+<td>hourly</td>
+</tr>
+</tbody>
+</table>
+<h3 id="wbexcnd">wbExCnd</h3>
+<p>Type: choice</p>
+<p>Specify exterior conditions.</p>
+<table>
+<thead>
+<tr>
+<th>Choice</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ADIABATIC</td>
+<td>Adiabatic on other side</td>
+</tr>
+<tr>
+<td>AMBIENT</td>
+<td>Ambient exterior</td>
+</tr>
+<tr>
+<td>SPECT</td>
+<td>Specify temperature</td>
+</tr>
+<tr>
+<td>ADJZN</td>
+<td>Adjacent zone</td>
+</tr>
+<tr>
+<td>GROUND</td>
+<td>Ground conditions</td>
+</tr>
+</tbody>
+</table>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>See table above</td>
+<td>SPECT</td>
+<td>No</td>
+<td>constant</td>
+</tr>
+</tbody>
+</table>
+<h3 id="wbadjzn">wbAdjZn</h3>
+<p>Type: float</p>
+<p>Boundary conditions for adjacent zones.</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>x <span class="arithmatex">\(&gt;\)</span> 0</td>
+<td>0.0</td>
+<td>No</td>
+<td>runly</td>
+</tr>
+</tbody>
+</table>
+<h3 id="wbextx">wbExTX</h3>
+<p>Type: float</p>
+<p>External boundary conditions.</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>x <span class="arithmatex">\(&gt;\)</span> 0</td>
+<td>70.0</td>
+<td>No</td>
+<td>runly</td>
+</tr>
+</tbody>
+</table>
+<h3 id="wbfua">wbFUA</h3>
+<p>Type: float</p>
+<p>Adjustment factor applied to branch UA.  UA is derived (from <a class="autorefs autorefs-internal" href="#wbsize">wbSize</a>, <a class="autorefs autorefs-internal" href="#wblength">wbLength</a>, <a class="autorefs autorefs-internal" href="#wbinsulk">wbInsulK</a>, <a class="autorefs autorefs-internal" href="#wbinsulthk">wbInsulThk</a>, and <a class="autorefs autorefs-internal" href="#wbexh">wbExH</a>) and then multiplied by wbFUA.  Used to represent e.g. imperfect insulation.  Note that parent <a class="autorefs autorefs-internal" href="../dhwloop/#dhwloop">DHWLOOP</a> <a class="autorefs autorefs-internal" href="../dhwloop/#wlfua">wlFUA</a> does not apply to DHWLOOPBRANCH (only <a class="autorefs autorefs-internal" href="../dhwloopseg/#dhwloopseg">DHWLOOPSEG</a>)</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td><em>x</em> <span class="arithmatex">\(\ge\)</span> 0</td>
+<td>1</td>
+<td>No</td>
+<td>constant</td>
+</tr>
+</tbody>
+</table>
+<h3 id="wbext">wbExT</h3>
+<p>Type: float</p>
+<p>Surrounding equivalent temperature.</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><sup>o</sup>F</td>
+<td><em>x</em> <span class="arithmatex">\(&gt;\)</span> 0</td>
+<td><em>70</em></td>
+<td>No</td>
+<td>hourly</td>
+</tr>
+</tbody>
+</table>
+<h3 id="wbflow">wbFlow</h3>
+<p>Type: float</p>
+<p>Branch flow rate assumed during draw.</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>gpm</td>
+<td><em>x</em> <span class="arithmatex">\(\ge\)</span> 0</td>
+<td>2</td>
+<td>No</td>
+<td>hourly</td>
+</tr>
+</tbody>
+</table>
+<h3 id="wbfwaste">wbFWaste</h3>
+<p>Type: float</p>
+<p>Number of times during the hour when the branch volume is discarded.</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td><em>x</em> <span class="arithmatex">\(\ge\)</span> 0</td>
+<td>0</td>
+<td>No</td>
+<td>hourly</td>
+</tr>
+</tbody>
+</table>
+<h3 id="enddhwloopbranch">endDHWLOOPBRANCH</h3>
+<p>Optionally indicates the end of the DHWLOOPBRANCH definition.</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td><em>none</em></td>
+<td><em>none</em></td>
+<td>No</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Related <a class="autorefs autorefs-internal" href="../../input-structure/#probes">Probes</a>:</strong></p>
+<ul>
+<li>@<a class="autorefs autorefs-internal" href="../../probe-definitions/DHWLoopBranch/#p_dhwloopbranch">DHWLoopBranch</a></li>
+</ul>
 
 
 
 
 
 
-
-  
-  
 
 
 
@@ -3682,10 +4366,10 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": ".", "features": ["content.code.copy", "toc.follow", "navigation.instant", "navigation.indexes"], "search": "assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "toc.follow", "navigation.instant", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="assets/javascripts/bundle.f1b6f286.min.js"></script>
+      <script src="../../assets/javascripts/bundle.f1b6f286.min.js"></script>
       
         <script src="https://unpkg.com/katex@0/dist/katex.min.js"></script>
       
@@ -3693,7 +4377,7 @@
       
         <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
       
-        <script src="assets/javascript/extra_js.js"></script>
+        <script src="../../assets/javascript/extra_js.js"></script>
       
     
   </body>

@@ -1,0 +1,103 @@
+.md-typeset .admonition, .md-typeset details {
+  font-size: 0.9em;
+}
+
+@media screen and (min-width: 76.25em) {
+  .md-nav {
+    transition: unset !important;
+  }
+}
+
+.no-header-table + * table:not([class]) thead {
+  display: none;
+}
+
+.no-header-table + * table:not([class]) tr:first-child td {
+  border-top: none;
+}
+
+.member-table-sibling + * .md-typeset__table {
+  width: 100%;
+}
+
+.member-table-sibling + * table:not([class]) {
+  border-radius: 6px;
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+}
+
+/* General dl styling */
+.md-typeset dl, dl code {
+  font-size: 14.8px;
+}
+
+.md-typeset dl dt,
+.md-typeset dl dd,
+.md-typeset dl dd > p,
+.md-typeset dl dd > div {
+  margin-block: 0;
+}
+
+.md-typeset dl * + dt {
+  margin-top: 1em;
+}
+
+/* Nested dl styling customizations */
+.nested-dl, .nested-dl + .admonition {
+  margin-left: 1.875em;
+}
+
+.nested-dl {
+  grid-template-columns: fit-content(25%) 1fr;
+  display: grid;
+  gap: 0.5em
+}
+
+.nested-dl > dt {
+  grid-column: 1 / 2;
+  margin: 0 !important;
+  text-align: end;
+}
+
+.nested-dl > dd {
+  grid-column: 2 / 3;
+  margin: 0 !important
+}
+
+
+/* Fix code block alignment if a code block appears (first) as the description value for a description item.
+
+Supported term
+:   Some text can come first
+
+    ```Then a text block can appear. We don't want margin-top: 0 for this code block```
+
+Unsupported term
+:   ```code block can't be the first part/block of a description value```
+
+Workaround term requiring margin-top fix
+:   
+    ```code block as description value starts on the next line``` */
+.nested-dl dd > div:first-child > pre:has(code) {
+  margin-top: 0;
+}
+
+.probe-table-sibling + * .md-typeset__table {
+  width: 100%;
+}
+
+.probe-table-sibling + * table:not([class]) {
+  border-radius: 6px;
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.probe-table-sibling + * table:not([class]) th:last-child {
+  width: 40%;
+}
+
+.probe-table-sibling + * table:not([class]) th:first-child {
+  width: 25%;
+}
