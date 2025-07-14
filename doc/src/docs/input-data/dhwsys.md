@@ -992,7 +992,9 @@ Name of METER object, if any, to which DHWSYS electrical energy use is recorded 
   })
 }}
 
-**wsFuelMtr =*mtrName***
+### wsFuelMtr 
+
+Type: *mtrName*
 
 Name of METER object, if any, to which DHWSYS fuel energy use is recorded (under end use DHW). DHWSYS fuel use is usually (always?) 0, so the primary use of this input is to specify the default whFuelMtr choice for DHWHEATERs in this DHWSYS.
 
@@ -1022,7 +1024,9 @@ Name of DHWMETER object, if any, to which hot water quantities (at water heater)
   })
 }}
 
-**wsFXhwMtr =*dhwmtrName***
+### wsFXhwMtr 
+
+Type: *dhwmtrName*
 
 Name of DHWMETER object, if any, to which mixed hot water use (at fixture) quantities are recorded by hot water end use.  DHWDAYUSE and wsUse input can be verified using DHWMETER results.
 

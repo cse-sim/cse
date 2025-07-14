@@ -32,7 +32,9 @@ Specifies the mounting location of the shade.  sxMounting=Site indicates the SHA
   })
 }}
 
-**sxVertices=*list of up to 36 floats***
+### sxVertices
+
+Type: *list of up to 36 floats*
 
 Vertices of a polygon representing the shape of the shading object.
 

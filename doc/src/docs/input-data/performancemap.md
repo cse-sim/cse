@@ -95,7 +95,9 @@ Documents the dimension of the axis, for example "OutdoorDBT", "Speed", or "AirF
   })
 }}
 
-**pmGXValues=*float array***
+### pmGXValues
+
+Type: *float array*
 
 1 to 10 comma-separated values specifying the data points of this axis.  Must be in strictly ascending order.
 
@@ -173,7 +175,9 @@ Documents the current lookup value, e.g. "COP" or "CapacityRatio".
   })
 }}
 
-**pmLUValues=*float array***
+### pmLUValues
+
+Type: *float array*
 
 Comma-separated values specifying the lookup data.  The number of values required is the product of the size of all PMGRIDAXISs in the current PEFORMANCEMAP.  In the example above, there are 4 OutdoorDBTs and 3 speeds, so 12 values must be provided.
 

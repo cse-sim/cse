@@ -170,7 +170,9 @@ Name of METER object, if any, by which system’s electrical energy use is recor
   })
 }}
 
-**rsFuelMtr =*mtrName***
+### rsFuelMtr 
+
+Type: *mtrName*
 
 Name of METER object, if any, by which system’s fuel energy use is recorded (under appropriate end uses).
 

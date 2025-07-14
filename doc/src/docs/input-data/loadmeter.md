@@ -26,7 +26,9 @@ Name of LOADMETER: required for assigning to ZONEs and RSYSs.
   })
 }}
 
-**lmtSubmeters=*list of up to 50 LOADMETERs***
+### lmtSubmeters
+
+Type: *list of up to 50 LOADMETERs*
 
 A comma-separate list of LOADMETERs that are accumulated into this LOADMETER with optional multipliers (see lmtSubmeterMults).  Submeters facilitate flexible categorization of loads results.  In addition, use of lmtSubmeterMults allows load results from a representative model to be scaled and included in overall results.  For example, a typical zone could be used to represent 5 similar spaces.  The loads calculated for the typical zone could be assigned to a dedicated LOADMETER and that LOADMETER accumulated to a main LOADMETER with a multiplier of 5.  Rules --
 
@@ -44,7 +46,9 @@ A comma-separate list of LOADMETERs that are accumulated into this LOADMETER wit
   })
 }}
 
-**lmtSubmeterMults=*list of up to 50 floats***
+### lmtSubmeterMults
+
+Type: *list of up to 50 floats*
 
 Submeter multipliers.
 

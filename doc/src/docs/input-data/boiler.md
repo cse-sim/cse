@@ -66,7 +66,9 @@ Boiler Energy Input Ratio: alternate method of specifying efficiency.
   })
 }}
 
-**blrPyEi=*a, b, c, d***
+### blrPyEi
+
+Type: *a, b, c, d*
 
 Coefficients of cubic polynomial function of part load ratio (load/capacity) to adjust full-load energy input for part load operation. Up to four floats may be given, separated by commas, lowest order (i.e. constant term) coefficient first. If the given coefficients result in a polynomial whose value is not 1.0 when the input variable, part load ratio, is 1.0, a warning message will be printed and the coefficients will be normalized to produce value 1.0 at input 1.0.
 
@@ -80,7 +82,9 @@ Coefficients of cubic polynomial function of part load ratio (load/capacity) to 
   })
 }}
 
-**blrMtr=*name of a METER***
+### blrMtr
+
+Type: *name of a METER*
 
 Meter to which Boiler's input energy is accumulated; if omitted, input energy is not recorded.
 
@@ -160,7 +164,9 @@ Boiler pump hydraulic efficiency
   })
 }}
 
-**blrpMtr=*name of a METER***
+### blrpMtr
+
+Type: *name of a METER*
 
 Meter to which pump electrical input energy is accumulated. If omitted, pump input energy use is not recorded.
 

@@ -180,7 +180,9 @@ Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the 
   })
 }}
 
-**pvVertices=*list of up to 36 floats***
+### pvVertices
+
+Type: *list of up to 36 floats*
 
   Vertices of an optional polygon representing the position and shape of the photovoltaic array.  The polygon is used to calculate the shaded fraction using an advanced shading model.  Only PVARRAYs and [SHADEXs][shadex] are considered in the advanced shading model -- PVARRAYs can be shaded by SHADEXs or other PVARRAYs.  If pvVertices is omitted, the PVARRAY is assumed to be unshaded at all times.  Advanced shading must be enabled via [TOP exShadeModel][top-model-control-items].  Note that the polygon is used only for evaluating shading; array capacity is specified by pvDCSysSize (above).
 

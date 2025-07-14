@@ -184,7 +184,9 @@ Air flow meter report.
   })
 }}
 
-**exAh=ah*Name***
+### exAh
+
+Type: ah*Name*
 
 Specifies air handler(s) to be exported, for *exType*=AH.
 

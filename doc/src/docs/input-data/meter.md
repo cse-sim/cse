@@ -73,7 +73,9 @@ Cost of energy use per Btu.
   })
 }}
 
-**mtrSubmeters=*list of up to 50 METERs***
+### mtrSubmeters
+
+Type: *list of up to 50 METERs*
 
 A comma-separate list of METERs that are accumulated into this METER with optional multipliers (see mtrSubmeterMults).  Submeters facilitate flexible categorization of energy results.  In addition, use of mtrSubmeterMults allows energy results from a representative model to be scaled and included in overall results.  For example, a typical zone could be used to represent 5 similar spaces.  The energy uses of the typical zone could be assigned to a dedicated METER that is accumulated to a main METER with a multiplier of 5.  Rules --
 
@@ -91,7 +93,9 @@ A comma-separate list of METERs that are accumulated into this METER with option
   })
 }}
 
-**mtrSubmeterMults=*list of up to 50 floats***
+### mtrSubmeterMults
+
+Type: *list of up to 50 floats*
 
 Submeter multipliers. Use cases for multipliers include --
 

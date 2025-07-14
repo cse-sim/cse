@@ -72,7 +72,9 @@ Fan flow rate multiplier for autosized fan(s). The default value (1.1) specifies
 
 ## AIRHANDLER Supply Air Temperature Controller
 
-**ahTsSp=_float or choice_**
+### ahTsSp
+
+Type: _float or choice_
 
 Supply temperature setpoint numeric value OR\* choice of control method (WZ, CZ, RA, ZN, or ZN2):
 
@@ -239,7 +241,9 @@ Heating design supply temperature, for sizing coil vs fan.
   })
 }}
 
-**ahCtu=_terminal name_**
+### ahCtu
+
+Type: _terminal name_
 
 Terminal monitored to determine whether to heat or cool under ZN and ZN2 supply temperature setpoint control. Development aid feature; believe there is no need to give this since ahTsSp = ZN or ZN2 should only be used with <!-- (is only allowed with??) --> one zone.
 
@@ -405,7 +409,9 @@ Fan shaft brake horsepower at design flow and pressure.
   })
 }}
 
-**sfanCurvePy=$k_0$, $k_1$, $k_2$, $k_3$, $x_0$**
+### sfanCurvePy
+
+Type: $k_0$, $k_1$, $k_2$, $k_3$, $x_0$
 
 $k_0$ through $k_3$ are the coefficients of a cubic polynomial for the curve relating fan relative energy consumption to relative air flow above the minimum flow $x_0$. Up to five _floats_ may be given, separated by commas. 0 is used for any omitted trailing values. The values are used as follows:
 
@@ -598,7 +604,9 @@ Fan shaft brake horsepower at design flow and pressure.
   })
 }}
 
-**rfanCurvePy=$k_0$, $k_1$, $k_2$, $k_3$, $x_0$**
+### rfanCurvePy
+
+Type: $k_0$, $k_1$, $k_2$, $k_3$, $x_0$
 
 $k_0$ through $k_3$ are the coefficients of a cubic polynomial for the curve relating fan relative energy consumption to relative air flow above the minimum flow $x_0$. Up to five _floats_ may be given, separated by commas. 0 is used for any omitted trailing values. The values are used as follows:
 
@@ -787,7 +795,9 @@ Name of meter to accumulate energy use by this heat coil. The input energy used 
 
 The following input is used only when _ahhcType_ is HW:
 
-**ahhcHeatplant=_Heatplant name_**
+### ahhcHeatplant
+
+Type: _Heatplant name_
 
 Name of HEATPLANT supporting hot water coil.
 
@@ -837,7 +847,9 @@ Rated efficiency (output energy/input energy; 1/ahhcEirR) at full power
   })
 }}
 
-**ahhcPyEi=$k_0$, $k_1$, $k_2$, $k_3$**
+### ahhcPyEi
+
+Type: $k_0$, $k_1$, $k_2$, $k_3$
 
 Coefficients of cubic polynomial function of (subhour average) part-load-ratio (plrAv) to adjust the full-load furnace energy input for part load operation. Enter, separated by commas, in order, the constant part, the coefficient of plrAv, the coefficient of plrAv squared, and the coefficient of plrAv cubed. CSE will normalize the coefficients if necessary to make the polynomial value be 1.0 when the part load ratio is 1.0.
 
@@ -1511,7 +1523,9 @@ where a, b, c, and d are user-inputtable coefficients, $x$ is the variable, and 
 
 The default values for the polynomial coefficients are the DOE2 PTAC values.
 
-**pydxCaptT=a, b, c, d, e, f**
+### pydxCaptT
+
+Type: a, b, c, d, e, f
 
 Coefficients of biquadratic polynomial function of entering air wetbulb and condenser temperatures whose value is used to adjust _ahccCaptRat_ for the actual entering air temperatures. The condenser temperature is the outdoor drybulb, but not less than 70. See discussion in preceding paragraphs.
 
@@ -1525,7 +1539,9 @@ Coefficients of biquadratic polynomial function of entering air wetbulb and cond
   })
 }}
 
-**pydxCaptF=a=a, b, c, d**
+### pydxCaptF
+
+Type: a=a, b, c, d
 
 Coefficients of cubic polynomial function of relative flow (entering air cfm/_ahccVfR_) whose value is used to adjust _ahccCaptRat_ for the actual flow. See discussion in preceding paragraphs.
 
@@ -1555,7 +1571,9 @@ Upper limit for value of pydxCaptF.
   })
 }}
 
-**pydxEirT=_a, b, c, d, e, f_**
+### pydxEirT
+
+Type: _a, b, c, d, e, f_
 
 Coefficients of biquadratic polynomial function of entering air wetbulb and condenser temperatures whose value is used to adjust _ahccEirR_ for the actual entering air temperatures. The condenser temperature is the outdoor air drybulb, but not less than 70. If the entering air wetbulb is less than 60, 60 is used, in this function only. See discussion in preceding paragraphs.
 
@@ -1569,7 +1587,9 @@ Coefficients of biquadratic polynomial function of entering air wetbulb and cond
   })
 }}
 
-**pydxEirUl=_a, b, c, d_**
+### pydxEirUl
+
+Type: _a, b, c, d_
 
 Coefficients of cubic polynomial function of part load ratio used to adjust energy input to part load conditions, in the compressor unloading part load region (1 $\ge$ plr $\ge$ _ahccMinUnldPlr_) as described above. See discussion of polynomials in preceding paragraphs.
 
@@ -1872,7 +1892,9 @@ NONINTEGRATED, Coil does not run when economizer is using all outside air: simul
 TWO_STAGE, Economizer is disabled when coil cycles on. _NOT IMPLEMENTED_ as of July 1992.")
 }}
 
-**oaLimT=_float_ or _RA_**
+### oaLimT
+
+Type: _float_ or _RA_
 
 Economizer outside air temperature high limit. The economizer is disabled (outside air flow is reduced to a minimum) when the outside air temperature is greater than _oaLimT_. A number may be entered, or "RA" to specify the current Return Air temperature. _OaLimT_ may be scheduled to a low value, for example -99, if desired to disable the economizer at certain times.
 
@@ -1886,7 +1908,9 @@ Economizer outside air temperature high limit. The economizer is disabled (outsi
   })
 }}
 
-**oaLimE=_float_ or _RA_**
+### oaLimE
+
+Type: _float_ or _RA_
 
 Economizer outside air enthalpy high limit. The economizer is disabled (outside air flow is reduced to a minimum) when the outside air enthalpy is greater than _oaLimE_. A number may be entered, or "RA" to specify the current Return Air enthalpy. _OaLimE_ may be scheduled to a low value, for example -99, if desired to disable the economizer at certain times.
 
@@ -2342,7 +2366,9 @@ For _cchCM_ = TSTAT, in subhours when compressor does not run, the crankcase hea
   })
 }}
 
-**cchMtr=_name of a METER_**
+### cchMtr
+
+Type: _name of a METER_
 
 METER to record crankcase heater energy use, category "Aux"; not recorded if not given.
 

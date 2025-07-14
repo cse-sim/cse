@@ -41,7 +41,9 @@ Setpoint temperature for water leaving towers.
   })
 }}
 
-**tpMtr=*name of a METER***
+### tpMtr
+
+Type: *name of a METER*
 
 METER object by which TOWERPLANT's fan input energy is to be recorded, in category "Aux". If omitted, energy use is not recorded, and thus cannot be reported. Towerplants have no modeled input energy other than for their fans (the heat rejection pumps are part of the CHILLER and HPLOOP objects).
 
@@ -174,7 +176,9 @@ where *p* is the power consumption as a fraction of full speed power consumption
 
 For each linear polynomial, two *float* expressions are given, separated by a comma. The first expression is the constant, *a*. The second expression is the coefficient of the average speed, *b*. Except for *ctFcLo*, *a* and *b* should add up to 1, to make the relative power consumption 1 when *spd* is 1; otherwise, CSE will issue a warning message and normalize them.
 
-**ctFcOne=*a, b***
+### ctFcOne
+
+Type: *a, b*
 
 Coefficients of linear fan power consumption polynomial $p = a + b \cdot \text{spd}$ for ONESPEED fan. For the one-speed case, the relative average speed *spd* is the fraction of the time the fan is on.
 
@@ -188,7 +192,9 @@ Coefficients of linear fan power consumption polynomial $p = a + b \cdot \text{s
   })
 }}
 
-**ctFcLo=*a, b***
+### ctFcLo
+
+Type: *a, b*
 
 Coefficients of linear fan power consumption polynomial $p = a + b \cdot \text{spd}$ for low speed of TWOSPEED fan, when *spd* $\le$ *ctLoSpd*.
 
@@ -202,7 +208,9 @@ Coefficients of linear fan power consumption polynomial $p = a + b \cdot \text{s
   })
 }}
 
-**ctFcHi=*a, b***
+### ctFcHi
+
+Type: *a, b*
 
 Coefficients of linear fan power consumption polynomial $p = a + b \cdot \text{spd}$ for high speed of TWOSPEED fan, when *spd* &gt; *ctLoSpd*.
 
@@ -216,7 +224,9 @@ Coefficients of linear fan power consumption polynomial $p = a + b \cdot \text{s
   })
 }}
 
-**ctFcVar=*a, b, c, d***
+### ctFcVar
+
+Type: *a, b, c, d*
 
 For VARIABLE speed fan, four *float* values for coefficients of cubic fan power consumption polynomial of the form $p = a + b \cdot \text{spd} + c \cdot \text{spd}^2 + d \cdot \text{spd}^3$.
 

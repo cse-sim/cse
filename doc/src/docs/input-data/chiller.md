@@ -68,7 +68,9 @@ Design condenser temperature: temperature of secondary water entering chiller co
   })
 }}
 
-**chPyCapT=*a, b, c, d, e, f***
+### chPyCapT
+
+Type: *a, b, c, d, e, f*
 
 Coefficients of bi-quadratic polynomial function of supply (ts) and condenser (tcnd) temperatures that specifies how capacity varies with these temperatures. This polynomial is of the form
 
@@ -120,7 +122,9 @@ Alternate input for COP: Full-load Energy Input Ratio (electrical input energy d
   })
 }}
 
-**chPyEirT=*a, b, c, d, e, f***
+### chPyEirT
+
+Type: *a, b, c, d, e, f*
 
 Coefficients of bi-quadratic polynomial function of supply (ts) and condenser (tcnd) temperatures that specifies how energy input varies with these temperatures. This polynomial is of the form
 
@@ -153,7 +157,9 @@ cycling region,  *chMinFsldPlr* &gt; plr $\\ge$ 0
 
 These plr regions are similar to those for a DX coil & compressor in an AIRHANDLER, Section 0.
 
-**chPyEirUl=*a, b, c, d***
+### chPyEirUl
+
+Type: *a, b, c, d*
 
 Coefficients of cubic polynomial function of part load ratio (plr) that specifies how energy input varies with plr in the compressor unloading region (see above). This polynomial is of the form
 
@@ -319,7 +325,9 @@ Chiller primary pump maximum overrun: factor by which flow demanded by coils can
   })
 }}
 
-**chppMtr=*name of a METER***
+### chppMtr
+
+Type: *name of a METER*
 
 Meter to which primary pump electrical input energy is accumulated. If omitted, pump input energy use is not recorded.
 
@@ -401,7 +409,9 @@ Chiller condenser pump hydraulic efficiency
   })
 }}
 
-**chcpMtr=*name of a METER***
+### chcpMtr
+
+Type: *name of a METER*
 
 Meter to which condenser pump electrical input energy is accumulated. If omitted, pump input energy use is not recorded.
 

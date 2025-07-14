@@ -605,7 +605,9 @@ Fan shaft brake horsepower at design flow and pressure.
   })
 }}
 
-**izfanCurvePy=$k_0$, $k_1$, $k_2$, $k_3$, $x_0$**
+### izfanCurvePy
+
+Type: $k_0$, $k_1$, $k_2$, $k_3$, $x_0$
 
 $k_0$ through $k_3$ are the coefficients of a cubic polynomial for the curve relating fan relative energy consumption to relative air flow above the minimum flow $x_0$. Up to five *floats* may be given, separated by commas. 0 is used for any omitted trailing values. The values are used as follows:
 

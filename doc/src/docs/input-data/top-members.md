@@ -72,7 +72,9 @@ Note that "warm-up" days (see wuDays) occur before the start day specified by be
   })
 }}
 
-**workDayMask=*int* TODO**
+### workDayMask
+
+Type: *int* TODO
 
 {{
   member_table({
@@ -1329,7 +1331,9 @@ CSE provides 3 mutually-exclusive methods for specifying cooling design conditio
 - Design days (from weather file).  One or more dates are specified.  Actual days from the weather file are simulated.
 - Monthly design data.  Deprecated method using conditions found in ET1 format weather files.
 
-**coolDsCond=*list of up to 12 DESCONDs***
+### coolDsCond
+
+Type: *list of up to 12 DESCONDs*
 
 Specifies cooling design conditions for cooling autosizing.  A comma-separated list of up to 12 DESCOND names can be provided.  Each day will be simulated repeatedly using weather conditions generated from DESCOND values.
 
@@ -1343,7 +1347,9 @@ Specifies cooling design conditions for cooling autosizing.  A comma-separated l
   })
 }}
 
-**coolDsDay=*list of up to 12 days***
+### coolDsDay
+
+Type: *list of up to 12 days*
 
 Specifies cooling design days for cooling autosizing.  Each day will be simulated repeatedly using weather file conditions for that day.
 
@@ -1357,7 +1363,9 @@ Specifies cooling design days for cooling autosizing.  Each day will be simulate
   })
 }}
 
-**coolDsMo=*list of up to 12 months***
+### coolDsMo
+
+Type: *list of up to 12 months*
 
 Deprecated method for specifying design days for cooling autosizing.  Design conditions are taken from ET1 weather file header, however, the limited availale ET1 files do not contain design condition information.
 

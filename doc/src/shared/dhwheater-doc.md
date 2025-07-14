@@ -727,7 +727,9 @@ Specifies the whElecMtr end use, if any, to which extra backup energy is accumul
   })
 }}
 
-**whFuelMtr =*mtrName***
+### whFuelMtr 
+
+Type: *mtrName*
 
 Name of METER object, if any, by which DHWHEATER fuel energy use is recorded (under end use DHW).
 
@@ -741,7 +743,9 @@ Name of METER object, if any, by which DHWHEATER fuel energy use is recorded (un
   })
 }}
 
-**whTankTInit =*comma-separated list of 12 floats***
+### whTankTInit 
+
+Type: *comma-separated list of 12 floats*
 
 A list of 12 initial values for HPWH tank model layer temperatures, in bottom-to-top order.  If given, these values are used to initialize tank layer temperatures at the beginning of the warmup period.  Initialization is not repeated at the beginning of the main simulation.
 

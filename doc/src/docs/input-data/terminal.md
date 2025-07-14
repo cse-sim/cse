@@ -430,7 +430,9 @@ Name of meter, if any, which accumulates input energy for this coil. End use cat
   })
 }}
 
-**tuhcHeatplant=heat*plantName***
+### tuhcHeatplant
+
+Type: heat*plantName*
 
 Name of HEATPLANT for HW coil; disallowed for other coil types.
 
@@ -562,7 +564,9 @@ Terminal fan/motor/drive combined efficiency.
   })
 }}
 
-**tfanCurvePy=*k0, k1, k2, k3, x0***
+### tfanCurvePy
+
+Type: *k0, k1, k2, k3, x0*
 
 *k0* through *k3* are the coefficients of a cubic polynomial for the curve relating fan relative energy consumption to relative air flow above the minimum flow *x0*. Up to five *floats* may be given, separated by commas. 0 is used for any omitted trailing values. The values are used as follows:
 
