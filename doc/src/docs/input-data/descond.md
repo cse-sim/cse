@@ -121,8 +121,7 @@ DESCOND provides two mutually-exclusive methods for specifying design day direct
 At most one of these methods can be used within a given DESCOND.  If all solar-related values are omitted, the generated design day has 0 irradiance for all hours.
 
 
-**dcTauB=*float*** \
-### dcTauD
+### dcTauB, dcTauD
 
 Type: float
 
@@ -139,8 +138,7 @@ ASHRAE clear sky model beam and diffuse pseudo optical depths.  These values are
 }}
 
 
-**dcEbnSlrNoon=*float*** \
-### dcEdhSlrNoon
+### dcEbnSlrNoon, dcEdhSlrNoon
 
 Type: float
 

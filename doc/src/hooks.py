@@ -551,9 +551,10 @@ text_to_slug = {
     "LIKE": slugify("LIKE clause"),
     "COPY": slugify("COPY clause"),
     "USETYPE": slugify("USETYPE clause"),
-    # TODO: Handling stacked headers?
-    # "dcTauB": slugify("dcTauB, dcTauD"),
-    # "dcTauD": slugify("dcTauB, dcTauD"),
+    "dcTauB": slugify("dcTauB, dcTauD"),
+    "dcTauD": slugify("dcTauB, dcTauD"),
+    "dcEbnSlrNoon": slugify("dcEbnSlrNoon, dcEdhSlrNoon"),
+    "dcEdhSlrNoon": slugify("dcEbnSlrNoon, dcEdhSlrNoon"),
 }
 
 # Walk all docs *.md files to find headings
