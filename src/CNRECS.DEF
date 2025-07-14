@@ -6868,6 +6868,7 @@ RECORD HEATPLANT "heatPlant" *RAT	// heating plant: contains BOILERs, serves HW 
     // autoSizing
     *s *e FLOAT qPk		// peak load re error autosizing overload message
     *s *e FLOAT qPkAs		// peak load on a converged autoSizing design day re error autosizing overload message
+    
  //prior values for runtime change-detection
     *s *e OFFONCH hpModePr
     *s *e POWER qPr
