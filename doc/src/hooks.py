@@ -593,6 +593,8 @@ text_to_slug = {
     "sfExCTaDbAvgYr": slugify(
         "sfExCTGrnd, sfExCTaDbAvg07, sfExCTaDbAvg14, sfExCTaDbAvg31, sfExCTaDbAvgYr"
     ),
+    "cpStage": slugify("cpStageN"),
+    "hpStage": slugify("hpStageN"),
 }
 
 # Walk all docs *.md files to find headings

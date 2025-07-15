@@ -94,11 +94,10 @@ TOWERPLANT that cools the condenser water for the chillers in this COOLPLANT.
   })
 }}
 
-**cpStage1=chillerName, chillerName, chillerName, ...**
 
-**cpStage1=ALL\_BUT, chillerName, chillerName, chillerName, ...**
+### cpStageN
 
-**cpStage2 through cpStage7 same**
+Type: chillerName list, ALL_BUT and chillerName list, or ALL
 
 The commands *cpStage1* through *cpStage7* allow specification of up to seven *STAGES* in which chillers are activated as the load increases. CSE will use the first stage that can meet the load; if no stage will meet the load (output the heat requested by the coils at *cpTsSp*), the last COOLPLANT stage is used.
 
@@ -111,7 +110,7 @@ A comma must be entered between chiller names and after the word ALL\_BUT.
 {{
   member_table({
     "units": "",
-    "legal_range": "1 to 7 names; ALL\_BUT and 1 to 6 names; ALL", 
+    "legal_range": "1 to 7 names;<br>ALL\_BUT and 1 to 6 names;<br>ALL", 
     "default": "*cpStage1* = ALL",
     "required": "No",
     "variability": "constant" 
