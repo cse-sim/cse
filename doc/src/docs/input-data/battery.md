@@ -106,12 +106,6 @@ Type: int
 
 The number of cycles on the battery at the beginning of the run.
 
-<% if show_comments %>
-
-Note: a more robust life model will need not only cycle counts but cycles by depth of discharge to capture "shallow cycling" vs "deep cycling". A further enhancement is to capture "time at temperature". We may want to look into the battery literature and also more into this application to better understand what kind of life model may be a good fit in terms of information requirements vs fidelity.
-
-<% end %>
-
 {{
   member_table({
     "units": "number of cycles",
