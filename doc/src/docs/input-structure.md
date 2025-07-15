@@ -57,16 +57,6 @@ TODO: review hierarchy
                     SHADE
                     SGDIST
                 DOOR
-<% if inactive_CNE_records %>
-            PERIMETER
-            TERMINAL
-        AIRHANDLER
-        HEATPLANT
-            BOILER
-        COOLPLANT
-        TOWERPLANT
-        HPLOOP
-<% end %>
         REPORTFILE
         REPORT
         REPORTCOL
