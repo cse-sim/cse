@@ -13,16 +13,25 @@ Each block is represented as a rectangle in the domain by specifying the X (late
 Each corner point of a FNDBLOCK is defined relative to its reference point. The user may specify reference points to simplify the calculation of corner point coordinates. X and Z point values of zero imply that a point is the same as the reference point. The default for X and Z point values is zero since points will often align with one or both of the reference values. Options for X and Z references are illustrated in the figure below.
 
 ![Foundation block reference choices](../assets/images/fd_refs.png)
+/// caption
+Foundation block reference choices
+///
 
 The default X and Z references for the first corner point is WALLINT and WALLTOP, respectively. The second set of references default to the same reference as the first point.
 
 An example of defining FNDBLOCKs for a basement are shown below.
 
 ![Foundation block example for a basement with partial wall insulation](../assets/images/fd_block_basement.png)
+/// caption
+Foundation block example for a basement with partial wall insulation
+///
 
 The example for a slab foundation shown below illustrates how leveraging default values can simplify user input.
 
 ![Foundation block example for a slab with gap and inerior perimeter insulation](../assets/images/fd_block_slab.png)
+/// caption
+Foundation block example for a slab with gap and inerior perimeter insulation
+///
 
 ### fbMat
 

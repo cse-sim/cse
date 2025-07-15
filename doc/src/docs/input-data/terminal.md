@@ -8,7 +8,10 @@ Each capability can be *set output*, in which the output is constant or determin
 
 Hourly variable expressions may be used as desired to schedule setpoints and flow limits. Figure 1 shows \[need sentence describing the figure.\]
 
-![Insert Figure Title](../assets/images/image1.png)
+![Air handler diagram](../assets/images/image1.png)
+/// caption
+Air handler diagram
+///
 
 ### tuName
 

@@ -3,8 +3,14 @@
 Foundation describes the two-dimensional relationship between ground-contact SURFACEs (i.e., **sfExCnd** = GROUND) and the surrounding ground. A FOUNDATION is referenced by ground-contact floor SURFACEs (see **sfFnd**). FOUNDATIONs are used to describe the two-dimensional features of foundation designs that cannot be captured by the typical one-dimensional CONSTRUCTIONs. The dimensions from the one-dimensional CONSTRUCTIONs associated with ground-contact floors and walls are automatically interpreted into the two-dimensional context.
 
 ![Two-dimensional context for a slab foundation](../assets/images/fd_context_slab.png)
+/// caption
+Two-dimensional context for a slab foundation
+///
 
 ![Two-dimensional context with below grade walls](../assets/images/fd_context_basement.png)
+/// caption
+Two-dimensional context with below grade walls
+///
 
 Any ground-contact wall SURFACEs in contact with the ground must refer to a Floor SURFACE object (see **sfFndFloor**) to indicate which floor shares the same ground boundary condition in the two-dimensional context.
 

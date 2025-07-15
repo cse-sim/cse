@@ -36,6 +36,7 @@ markdown_extensions:
   - def_list
   - pymdownx.arithmatex:
       generic: true
+  - pymdownx.blocks.caption
   - pymdownx.caret
   - pymdownx.critic
   - pymdownx.details
