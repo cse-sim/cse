@@ -113,7 +113,9 @@ Specifies the type of heat recovery device: Vertical, Horizontal, or SetEF.  Hor
   })
 }}
 
-  **wrCSARatedEF=*float***
+### wrCSARatedEF
+
+Type: float
 
 Specifies the heat recovery effectiveness, generally determined using CSA B55.2 rating conditions.  This value is modified during simulation based on water flow rates and temperatures.  If wrType=SetEF, wsCSARatedEF is used without modification.
 

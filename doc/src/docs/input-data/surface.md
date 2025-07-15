@@ -454,7 +454,9 @@ Type: choice
   })
 }}
 
-  **sfInHcMult=*float***
+### sfInHcMult
+
+Type: float
 
   Interior convection coefficient adjustment factor.  When sfInHcModel=INPUT, hc=sfInHcMult.  For other sfInHcModel choices, the model-derived hc is multiplied by sfInHcMult.  When sfInHcModel=UNIFIED, natural (buoyancy-driven) and forced convection coefficient values are combined according to TOP inHcCombinationMethod, then sfInHcMult is applied.
 
@@ -468,7 +470,9 @@ Type: choice
   })
 }}
 
-**sfInHcFrcCoeffs=*float array***
+### sfInHcFrcCoeffs
+
+Type: float array
 
 Specifies 3 coefficients for an alternative inside surface forced convection model (applicable only for sfInHCModel=UNIFIED).  When given, the inside surface forced convection coefficient for this surface is derived as follows:
 

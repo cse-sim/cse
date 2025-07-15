@@ -994,7 +994,9 @@ Cooling distribution system efficiency.  If given, (1-rsDSEC) of RSYS cooling ou
   })
 }}
 
-  **rsOAVType=*choice***
+### rsOAVType
+
+Type: choice
 
   Type of central fan integrated (CFI) outside air ventilation (OAV) included in this RSYS.  OAV systems use the central system fan to circulate outdoor air (e.g. for night ventilation).
 
@@ -1016,7 +1018,9 @@ VARIABLE,   Variable-flow CFI (aka NightBreeze). Flow rate is determined at midn
   })
 }}
 
- **rsOAVVfDs=*float***
+### rsOAVVfDs
+
+Type: float
 
  Design air volume flow rate when RSYS is operating in OAV mode.
 
@@ -1031,7 +1035,9 @@ VARIABLE,   Variable-flow CFI (aka NightBreeze). Flow rate is determined at midn
   })
 }}
 
- **rsOAVVfMinF=*float***
+### rsOAVVfMinF
+
+Type: float
 
  Minimum air volume flow rate fraction when RSYS is operating in OAV mode.  When rsOAVType=VARIABLE, air flow rate is constrained to rsOAVVfMinF * rsOAVVfDs or greater.
 
@@ -1045,7 +1051,9 @@ VARIABLE,   Variable-flow CFI (aka NightBreeze). Flow rate is determined at midn
   })
 }}
 
- **rsOAVFanPwr=*float***
+### rsOAVFanPwr
+
+Type: float
 
  RSYS OAV-mode fan power.
 

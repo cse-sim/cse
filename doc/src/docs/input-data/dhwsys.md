@@ -1040,7 +1040,9 @@ Name of DHWMETER object, if any, to which mixed hot water use (at fixture) quant
   })
 }}
 
-  **wsWriteDrawCSV=*choice***
+### wsWriteDrawCSV
+
+Type: choice
 
   If Yes, a comma-separated file is generated containing 1-minute interval hot water draw values for testing or linkage purposes.
 
