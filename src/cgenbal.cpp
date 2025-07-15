@@ -76,23 +76,39 @@ void cgenbal(		// Check energy balances; issue warning message if out of toleran
 	//   Known causes:
 	//      1) instantaneous DHWHEATER load carry-forward
 	//      2) HPWH internal balance errors (?)
+
 	if (ivl <= C_IVLCH_H)	// if hour or longer
 	{
-		float tolDHWSYS{ 0.01f };
-		float absTolDHWSYS{ 20.f };
-		if (ivl == C_IVLCH_H)
-		{	// short-interval errors common, use sloppy tolerences
-			tolDHWSYS = 0.10;
-			absTolDHWSYS = 100.f;
-		}
-		DHWSYSRES* pWS;
-		RLUP(WsResR, pWS)
+		static constexpr float fTol[] = { 0.01f, 0.10f };
+		static constexpr float absTol[] = { 20.f, 100.f };
+	
+		int checkCount = 0;		// count of checks performed
+		int iTol{ 0 };			// tolerance idx 0=tight, 1=loose
+								//   prior iteration needed for SUMOF
+		DHWSYSRES* pWSR;
+		RLUP(WsResR, pWSR)
 		{
-			const DHWSYSRES_IVL* pWSL = &pWS->Y + ivl - 1;
+			// eyeball current situation -- avoid duplicate and spurious msgs
+			DHWSYSRES::WSRCHK balChkCase = pWSR->wsr_BalChkCase();
+			if (balChkCase == DHWSYSRES::wsrchkCHILD
+				|| (balChkCase == DHWSYSRES::wsrchkSUMOF && checkCount <= 1))
+				continue;	// no check if child (no DHWHEATER, check not meaningful)
+			                // no check if sum_of with single source (sum_of record identical to source)
+
+			++checkCount;
+
+			// iTol: 0=tight, 1=loose
+			//   loose for PreRun and C_IVLCH_H (bigger errors common)
+			//   tight for Simulate and daily/month/year
+			//   use prior value for SUMOF
+			if (balChkCase != DHWSYSRES::wsrchkSUMOF)
+				iTol = balChkCase == DHWSYSRES::wsrchkLOOSE || ivl == C_IVLCH_H;
+
+			const DHWSYSRES_IVL* pWSL = &pWSR->Y + ivl - 1;
 			double wsTot = pWSL->wsr_SumAbs();
 			double wsNet = pWSL->qBal;
-			cgecheck(wsNet, wsTot, tolDHWSYS, absTolDHWSYS, "DHWSYS '%s'", pWS->Name(), ivl,
-					pWS->wsr_ebErrCount);
+			cgecheck(wsNet, wsTot, fTol[ iTol], absTol[ iTol], "DHWSYS '%s'", pWSR->Name(), ivl,
+					pWSR->wsr_ebErrCount);
 		}
 	}
 #endif	// SUPPRESS_ENBAL_CHECKS

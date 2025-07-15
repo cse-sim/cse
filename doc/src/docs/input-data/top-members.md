@@ -938,6 +938,31 @@ $$0.24 + 0.76 \cdot P_{Location}/P_{SeaLevel}$$
   })
 }}
 
+### inHcCombinationMethod
+
+Type: *choice*
+
+Selects the method for combining inside face (zone-facing) forced and natural (buoyancy-driven) convection coefficients for surfaces using the UNIFIED convection model.  This is a development aid not typically used in production runs.
+
+
+{{
+  csv_table("Method,	   hcComb
+SUM,        hcNat + hcFrc
+QUADRATURE, sqrt(hcNat^2 + hcFrc^2)
+WEIGHTED,   hcNat when ACH<0.5<br />hcFrc when ACH>3.0<br />else weighted combination", True)
+}}
+
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*choices above*", 
+    "default": "SUM",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
+
+
 ### soilDiff
 
 Type: float

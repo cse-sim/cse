@@ -210,7 +210,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.922.1+perfmap.e230125d.124 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -1771,7 +1771,7 @@ Energy (kBtu + into the zone, except E = Energy Consumed) for Fri 10-Jul
 
 ! Log for Run 002:
 
-! CSE 0.922.1+perfmap.e230125d.124 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -1794,18 +1794,18 @@ Input for Run 002:
 
 
 
-! CSE 0.922.1+perfmap.e230125d.124 for Win32 console run(s) done: Thu 24-Oct-24   3:32:40 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:26 pm
 
-! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.db504def.130)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 oavtest2
-! Input file:   /Users/neal-kruis/projects/cse/test/oavtest2.cse
-! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/OAVTEST2.REP
+! Input file:   /Users/runner/work/cse/cse/test/oavtest2.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/OAVTEST2.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.24     Calls = 2         T/C = 0.1220
+!                Input:  Time = 0.07     Calls = 2         T/C = 0.0350
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 100.36   Calls = 2         T/C = 50.1775
-!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0020
-!                Total:  Time = 100.60   Calls = 1         T/C = 100.6040
+!           Simulation:  Time = 21.23    Calls = 2         T/C = 10.6145
+!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0010
+!                Total:  Time = 21.30    Calls = 1         T/C = 21.3010

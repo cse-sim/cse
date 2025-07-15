@@ -24,7 +24,7 @@
 
 #include "cnguts.h"
 #include "exman.h"
-#include "hvac.h" // CourierMsgHandler, CourierMsgHandlerBase, MessageLevel
+#include "hvac.h" // Courier
 
 #include "HPWH.hh"	// decls/defns for Ecotope heat pump water heater model
 
@@ -2454,6 +2454,31 @@ RC DHWSYSRES::wsr_Init(		// init (set to 0)
 	return rc;
 }		// DHWSYSRES::wsr_Init
 //-----------------------------------------------------------------------------
+const DHWSYS* DHWSYSRES::wsr_GetDHWSYS() const
+{	return WsR.GetAtSafe(ss);
+}	// DHWSYSRES::wsr_GetDHWSYS
+//-----------------------------------------------------------------------------
+DHWSYSRES::WSRCHK DHWSYSRES::wsr_BalChkCase()	const	// how to balance check this DHWSYSRES
+// returns wsrchkSUMOF: sum-of record, special case
+//         wsrchkCHILD: child DHWSYS (no heater), no check
+//         wsrchkLOOSE: pre-run underway, use loose tolerance
+//         wsrchkTIGHT: simulation underway, use tight tolerance
+
+{
+	WSRCHK ret{ wsrchkTIGHT };
+	const DHWSYS* pWS = wsr_GetDHWSYS();
+	if (!pWS)
+	{
+		assert(wsr_IsSumOf());
+		ret = wsrchkSUMOF;
+	}
+	else if (pWS->ws_HasCentralDHWSYS())
+		ret = wsrchkCHILD;
+	else if (pWS->ws_calcMode!=C_WSCALCMODECH_SIM)
+		ret = wsrchkLOOSE;
+	return ret;
+}		// wsr_BalChkCase
+//-----------------------------------------------------------------------------
 #if 0
 void DHWSYSRES::wsr_Accum(
 	IVLCH ivl,		// destination interval: hour/day/month/year.
@@ -2512,6 +2537,12 @@ float DHWSYSRES_IVL::wsr_EnergyBalance()	// calculate energy balance
 {
 	float otherSum = VSum(&qLossMisc, wsr_NFLOAT - 3);
 	qBal = qOutDHW + qOutHtg - otherSum;
+#if 0 && defined( _DEBUG)
+	if (fabs(qBal) > 200.f)
+	{
+		printf("\nUnbal %s %.0f", Top.When(C_IVLCH_S), qBal);
+	}
+#endif
 	return qBal;
 }		// DHWSYSRES_IVL::wsr
 //-----------------------------------------------------------------------------
@@ -2917,33 +2948,6 @@ RC HPWHLINK::Validate(int /*options*/)
 }	// HPWHLINK::Validate
 #endif
 //-----------------------------------------------------------------------------
-/*static*/ void HPWHLINK::hw_HPWHMessageCallback(
-	const std::string message,
-	void* contextPtr)
-{
-	((HPWHLINK*)contextPtr)->hw_HPWHReceiveMessage(message);
-}		// HPWHLINK::hw_HPWHMessageCallback
-//-----------------------------------------------------------------------------
-void HPWHLINK::hw_HPWHReceiveMessage(const std::string message)
-{
-	// forward to owner
-	hw_pOwner->ReceiveRuntimeMessage( message.c_str());
-
-}		// HPWHLINK::hw_HPWHReceiveMessage
-//-----------------------------------------------------------------------------
-static void HPWHLINK_Callback( // message dispatcher
-    void *pContext,            // pointer to specific RSYS
-    MSGTY msgTy,               // message type: bsxmsgERROR etc
-    const char *msg)           // message text
-{
-  HPWHLINK *pHPWHLINK = reinterpret_cast<HPWHLINK *>(pContext);
-
-  record *pParent = pHPWHLINK->hw_pOwner;
-  const char *msgx = strtprintf("HPWHLINK: %s", msg);
-  pParent->ReceiveMessage(msgTy, msgx);
-
-} // HPWHLINK_Callback
-//-----------------------------------------------------------------------------
 RC HPWHLINK::hw_Init(			// 1st initialization
 	record* pOwner)		// owner object (DHWHEATER, DHWSOLARSYS, ...)
 {
@@ -2962,8 +2966,8 @@ RC HPWHLINK::hw_Init(			// 1st initialization
 
 	hw_fMixUse = hw_fMixRL = 1.f;
 
-	auto MX = std::make_shared<CourierMsgHandler>(HPWHLINK_Callback, this);
-	hw_pHPWH = new HPWH(MX);
+	auto MX = std::make_shared<CSERecordCourier>(pOwner);
+	hw_pHPWH = new HPWH(MX, pOwner->Name());
 
 	hw_pHPWH->setMinutesPerStep(Top.tp_tickDurMin);	// minutesPerStep
 
@@ -3251,13 +3255,11 @@ RC HPWHLINK::hw_InitFinalize(		// final initialization actions
 	float inHtSupply,	// supply fractional height, -1 = don't set
 	float inHtLoopRet)	// loop return fractional height, -1 = don't set
 {
-	RC rc = RCOK;
-
 	// tank inlet placement
     if (inHtSupply >= 0.f)
-    hw_pHPWH->setInletByFraction(inHtSupply);
+		hw_pHPWH->setInletByFraction(inHtSupply);
     if (inHtLoopRet >= 0.f)
-    hw_pHPWH->setInlet2ByFraction(inHtLoopRet);
+		hw_pHPWH->setInlet2ByFraction(inHtLoopRet);
 
     // make map of heat sources = idxs for hw_HPWHUse[]
     // WHY: HPWH model frequently uses 3 heat sources in
@@ -3665,11 +3667,15 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 	RC rc = RCOK;
 
 #if 0 && defined( _DEBUG)
-	if (Top.tp_date.month == 7
-		&& Top.tp_date.mday == 27
-		&& Top.iHr == 10
+	if (Top.tp_date.month == 1
+		&& Top.tp_date.mday == 11
+		&& Top.iHr == 3
 		&& Top.iSubhr == 3)
-		hw_pHPWH->setVerbosity(HPWH::VRB_emetic);
+	{	printf("\nHit %.0f", tk.wtk_startMin);
+		hw_bWriteCSV = 1;
+	}
+	else
+		hw_bWriteCSV = 0;
 #endif
 
 	// draw components for tick
@@ -3902,7 +3908,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 #else
 				WStr s("mon,day,hr,");
 				s += csvGen.cg_Hdgs(dumpUx);
-				// hw_pHPWH->WriteCSVHeading(hw_pFCSV, s.c_str(), nTCouples, hpwhOptions);
+				hw_pHPWH->writeCSVHeading(*hw_pFCSV, s.c_str(), nTCouples, hpwhOptions);
 #endif
 			}
 		}
@@ -3914,7 +3920,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 			WStr s = strtprintf("%d,%d,%d,",
 				Top.tp_date.month, Top.tp_date.mday, Top.iHr + 1);
 			s += csvGen.cg_Values(dumpUx);
-			//hw_pHPWH->WriteCSVRow(*hw_pFCSV, s.c_str(), nTCouples, hpwhOptions);
+			hw_pHPWH->writeCSVRow(*hw_pFCSV, s.c_str(), nTCouples, hpwhOptions);
 #endif
 		}
 	}
@@ -4204,7 +4210,7 @@ int DHWHEATER::wh_IsScalable() const		// can heating capacity be set
 	if (wh_IsHPWHModel())
 	{
 		ret = wh_HPWH.hw_pHPWH
-				? wh_HPWH.hw_pHPWH->isHPWHScalable()
+				? wh_HPWH.hw_pHPWH->isScalable()
 				: -1;
 	}
 	// else
@@ -4618,7 +4624,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 
 	if (!rc && IsSet(DHWHEATER_HEATINGCAP))
 	{	// check whether heating capacity can be adjusted
-		if (!wh_HPWH.hw_pHPWH->isHPWHScalable() || !wh_HPWH.hw_HasCompressor())
+		if (!wh_HPWH.hw_pHPWH->isScalable() || !wh_HPWH.hw_HasCompressor())
 		{	if (wh_heatSrc == C_WHHEATSRCCH_ASHPX)
 				rc |= oer("whHeatingCap is not allowed when whASHPType=%s",
 					getChoiTx(DHWHEATER_ASHPTY, 1));
@@ -4678,6 +4684,18 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 			}
 		}
 	}
+
+		if (IsSet(DHWHEATER_UEF))
+		{
+			// Temporarily turn off warnings (to avoid excessive messages during iteration)
+			auto courier = dynamic_cast<CSERecordCourier*>(wh_HPWH.hw_pHPWH->get_courier().get());
+			courier->set_message_level(MSGTY::msgtyERROR);
+			
+			// Adjust COP coefficients to match UEF
+			wh_HPWH.hw_pHPWH->makeGenericUEF(wh_UEF);
+
+			courier->restore_message_level();
+		}
 
 	// at this point, HPWH has known size and default UA
 	//   (later capacity scaling does not alter size)

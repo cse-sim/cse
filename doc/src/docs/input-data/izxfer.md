@@ -66,9 +66,12 @@ Choices are:
   csv_table("InfilEx,      Infiltration from ambient
   VentEx,       Natural ventilation from ambient
 	FanEx,        Forced ventilation from ambient
-	InfilIz,      Interzone infiltration
-	VentIz,       Interzone natural ventilation
-	FanIz,        Interzone forced ventilation
+	InfilUz,      Unconditioned Interzone infiltration
+	VentUz,       Unconditioned Interzone natural ventilation
+	FanUz,        Unconditioned Interzone forced ventilation
+	InfilCz,      Conditioned Interzone infiltration
+	VentCz,       Conditioned Interzone natural ventilation
+	FanCz,        Conditioned Interzone forced ventilation
 	DuctLk,       Duct leakage
 	HVAC,         HVAC air")
 }}

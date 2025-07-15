@@ -188,7 +188,7 @@ IzXfer Z1-SysO          Zn1: Z1  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
 
 ! Log for Run 001:
 
-! CSE 0.922.1+perfmap.e230125d.124 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -461,7 +461,7 @@ Input for Run 001:
         	//rsEER = rated EER (defaulted per ACM if missing)
         	//rsVfPerTon = cfm per ton (default = 350)
         	rsFanPwrC = 0.58	//W/cfm (default = .365)  Presc=.58
-        	rsFChg = 1		//ACM charge factor (default = 1)
+        	rsFChgC = 1		//ACM charge factor (default = 1)
         
         	rsAFUE =.71
         	rsFanPwrH = 0.58		//W/cfm (default = 0.365)
@@ -741,7 +741,7 @@ Energy Balance (F, kBtu, + into the zone) for Wed 10-Jul
 
 ! Log for Run 002:
 
-! CSE 0.922.1+perfmap.e230125d.124 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -763,18 +763,18 @@ Input for Run 002:
 
 
 
-! CSE 0.922.1+perfmap.e230125d.124 for Win32 console run(s) done: Thu 24-Oct-24   3:33:33 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:12:06 pm
 
-! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.db504def.130)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 herv
-! Input file:   /Users/neal-kruis/projects/cse/test/herv.cse
-! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/HERV.REP
+! Input file:   /Users/runner/work/cse/cse/test/herv.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/HERV.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.25     Calls = 2         T/C = 0.1230
+!                Input:  Time = 0.06     Calls = 2         T/C = 0.0300
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 12.37    Calls = 2         T/C = 6.1830
+!           Simulation:  Time = 2.77     Calls = 2         T/C = 1.3830
 !              Reports:  Time = 0.00     Calls = 2         T/C = 0.0010
-!                Total:  Time = 12.62    Calls = 1         T/C = 12.6240
+!                Total:  Time = 2.83     Calls = 1         T/C = 2.8280

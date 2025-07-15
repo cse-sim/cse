@@ -320,6 +320,28 @@ Interior convection coefficient adjustment factor.  When drInHcModel=INPUT, hc=d
   })
 }}
 
+### drInHcFrcCoeffs
+
+Type: *float array*
+
+Specifies 3 coefficients for an alternative inside surface forced convection model (applicable only for drInHCModel=UNIFIED).  When given, the inside surface forced convection coefficient for this surface is derived as follows:
+
+      hcFrc = hConvF * (drInHcFrcCoeffs[ 1] + drInHcFrcCoeffs[ 2] * ACH ^ drInHcFrcCoeffs[ 3])
+
+where hConvF is the convection adjustment factor (derived from elevation, see Top hConvMod) and ACH is the zone air change rate per hour from the prior simulation step (including heat pump water heater evaporator air flow).  This formulation is dangerously flexible, so caution is advised when selecting coefficient values.
+
+The default hcFrc value (used when drInHcFrCoeff is not provided) is hConvF * znHcFrcF * ACH ^ 0.8.
+
+{{
+  member_table({
+    "units": "Btuh/ft^2^-^o^F",
+    "legal_range": "", 
+    "default": "*inherited from parent surface*",
+    "required": "No",
+    "variability": "subhourly" 
+  })
+}}
+
 ### endDoor
 
 Indicates the end of the door definition. Alternatively, the end of the door definition can be indicated by the declaration of another object or by END.

@@ -133,7 +133,7 @@ Surface U-value (NOT including surface (air film) conductances). For surfaces fo
     "units": "Btuh/ft^2^-^o^F",
     "legal_range": "*x* $>$ 0", 
     "default": "Determined from *sfCon*",
-    "required": "if *sfCon* not given",
+    "required": "if *sfCon* not given and if *sfExCnd* is not GROUND",
     "variability": "constant" 
   })
 }}
@@ -149,10 +149,15 @@ Name of CONSTRUCTION of the surface.
     "units": "",
     "legal_range": "Name of a *CONSTRUCTION*", 
     "default": "*none*",
-    "required": "unless *sfU* given",
+    "required": "if *sfU* not given and if *sfExCnd* is not GROUND",
     "variability": "constant" 
   })
 }}
+
+Note: When *sfExCnd* is GROUND, *sfCon* may be omitted to indicate:
+
+- exposed earth (when *sfType* is FLOOR), or
+- bare foundation wall (when *sfType* is WALL) -- the foundation wall 
 
 ### sfLThkF
 
@@ -451,7 +456,7 @@ Type: choice
 
   **sfInHcMult=*float***
 
-  Interior convection coefficient adjustment factor.  When sfInHcModel=INPUT, hc=sfInHcMult.  For other sfInHcModel choices, the model-derived hc is multiplied by sfInHcMult.
+  Interior convection coefficient adjustment factor.  When sfInHcModel=INPUT, hc=sfInHcMult.  For other sfInHcModel choices, the model-derived hc is multiplied by sfInHcMult.  When sfInHcModel=UNIFIED, natural (buoyancy-driven) and forced convection coefficient values are combined according to TOP inHcCombinationMethod, then sfInHcMult is applied.
 
 {{
   member_table({
@@ -462,6 +467,24 @@ Type: choice
     "variability": "subhourly" 
   })
 }}
+
+**sfInHcFrcCoeffs=*float array***
+
+Specifies 3 coefficients for an alternative inside surface forced convection model (applicable only for sfInHCModel=UNIFIED).  When given, the inside surface forced convection coefficient for this surface is derived as follows:
+
+      hcFrc = hConvF * (sfInHcFrcCoeffs[ 1] + scInHcFrcCoeffs[ 2] * ACH ^ sfInHcFrcCoeffs[ 3])
+
+where hConvF is the convection adjustment factor (derived from elevation, see Top hConvMod) and ACH is the zone air change rate per hour from the prior simulation step (including heat pump water heater evaporator air flow).  This formulation is dangerously flexible, so caution is advised when selecting coefficient values.
+
+The default hcFrc value (used when sfInHcFrCoeff is not provided) is hConvF * znHcFrcF * ACH ^ 0.8.
+
+<%= member_table(
+  units: "Btuh/ft^2^-^o^F",
+  legal_range: "",
+  default: "*see above*",
+  required: "No",
+  variability: "subhourly") %>
+
 
 The items below give values associated with CSE's model for below grade surfaces (sfExCnd=GROUND).  See CSE Engineering Documentation for technical details.
 
@@ -612,9 +635,9 @@ The following tables summarize the defaults and legal ranges of surface members 
   ----------- ------------------------------------------------------------
   sfArea      **required**
 
-  sfCon       **required unless sfU given**
+  sfCon       **required unless sfU given, or if *sfExCnd* = GROUND**
 
-  sfU         **required unless sfCon given**
+  sfU         **required unless sfCon given, or if *sfExCnd* = GROUND**
 
   sfInH       optional, default = 1.5
 

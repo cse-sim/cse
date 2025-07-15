@@ -1348,23 +1348,18 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 	{	
 	case TYSTR:
 	{	const char* pS = *(const char**)pv;
-#if 1 || defined( _DEBUG)
 		isChanged = ex->ext_v == UNSET;
 		if (!isChanged)
 		{
 			const char* s1 = *reinterpret_cast<const CULSTR*>(&ex->ext_v);	// AsCULSTR((const void*)ex->ext_v).CStr();
 			isChanged = strcmp(s1, pS);
-			// isChanged = strcmp((char*)ex->ext_v, AsCULSTR(pv).CStr());
 		}
-#else
-		isChanged = ex->ext_v == UNSET || strcmp((char*)ex->ext_v, AsCULSTR(&pv));
-#endif
 		if (isChanged)
 		{
-			// printf("\nSet: %s", pS);
+			// printf("\nSet: %s from %p", pS, pS);
 			AsCULSTR(&ex->ext_v).Set(pS);
 		}
-		// delete pS?
+		// delete pS;
 		// move pS to CULSTR?
 		// else				// new value same as old
 		//   AsCULSTR(pv).Release();
@@ -1492,7 +1487,7 @@ const char* FC whatEx( USI h)
 	BP b = ex->ext_srcB;
 	if (b)					// if baseAnc specified in exTab: insurance
 		return strtprintf( "%s of %s%s %s",
-			MNAME(b->fir + ex->ext_srcFn),   		// field member name in record (srd.h macro may access special segment)
+			b->fir[ ex->ext_srcFn].fi_GetMName(),   // field member name in record
 			b->what,								// rat name: ZONE etc
 			ex->ext_srcIsType ? " type" : "",   	// "type" if pertinent
 			b->ptr()								// note 1
@@ -1521,7 +1516,7 @@ const char* FC whatNio( USI ancN, TI i, USI off)		// error message insert descri
 	const char* mName = nullptr;
 	for (SFIR *fir = b->fir;  fir && fir->fi_fdTy;  fir++)		// find member name in rat's fields-in-record table
 		if (fir->fi_off==off)
-			mName = MNAME(fir);					// srd.h macro points to name text, possibly in special segment
+			mName = fir->fi_GetMName();			// point to name text
 	if (!mName)
 		mName = strtprintf( MH_E0109, off);		// if member not found, show offset in msg "member at offset %d"
 

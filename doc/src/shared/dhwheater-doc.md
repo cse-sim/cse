@@ -193,7 +193,8 @@ activated via DHWSYS wsCalcMode=PRERUN.  See RACM Appendix B.
 
 Type: float
 
-Water heater Uniform Energy Factor efficiency rating, used when whType=INSTANTANEOUSUEF.
+Water heater Uniform Energy Factor efficiency rating. Required when whType=INSTANTANEOUSUEF. When specified with
+whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adjusted to match the value input here. 
 
 {{
   member_table({
@@ -429,10 +430,14 @@ Scalable_SP,single pass scalable type for autosized standard design
 Scalable_MP,multipass scalable type for autosized standard design
 AquaThermAire,Villara AquaThermAire HPWH
 GenericUEF217,65-gal tank meeting Federal standard minimum requirement
-AWHSTier4Generic40,Any 40-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements
-AWHSTier4Generic50,Any 50-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements
-AWHSTier4Generic65,Any 65-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements
-AWHSTier4Generic80,Any 80-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements
+AWHSTier3Generic40, A 40-gal tank meeting Advanced Water Heating Specification Tier-3 minimum requirements
+AWHSTier3Generic50, A 50-gal tank meeting Advanced Water Heating Specification Tier-3 minimum requirements
+AWHSTier3Generic65, A 65-gal tank meeting Advanced Water Heating Specification Tier-3 minimum requirements
+AWHSTier3Generic80, A 80-gal tank meeting Advanced Water Heating Specification Tier-3 minimum requirements
+AWHSTier4Generic40, A 40-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements
+AWHSTier4Generic50, A 50-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements
+AWHSTier4Generic65, A 65-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements
+AWHSTier4Generic80, A 80-gal tank meeting Advanced Water Heating Specification Tier-4 minimum requirements
 BradfordWhiteAeroThermRE2H50,Bradford White 50-gal AeroTherm2023
 BradfordWhiteAeroThermRE2H65,Bradford White 65-gal AeroTherm2023
 BradfordWhiteAeroThermRE2H80,Bradford White 80-gal AeroTherm2023

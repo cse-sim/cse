@@ -828,9 +828,8 @@ For *floats* and *ints*, the CSE input language recognizes a set of operators ba
 
 *Dates* are stored as *ints* (the value being the Julian day of the year), so all numeric operators could be used. The month abbreviations are implemented as operators that add the first day of the month to the following *int* value; CSE does not disallow their use in other numeric contexts.
 
-For *strings*, *object names*, and *choices*, the CSE input language currently has no operators except the `?:` conditional operator. A concatenation operator is being considered. Note, though, that the choose, choose1, select, and hourval functions described below work with strings, object names, and choice values as well as numbers.
+For *strings*, *object names*, and *choices*, the CSE input language currently has no operators except the `?:` conditional operator and the concat() function. Note, though, that the choose, choose1, select, and hourval functions described below work with strings, object names, and choice values as well as numbers.
 
-<!-- TODO: A string concatenation operator would be very helpful!  2010-07 -->
 ### System Variables
 
 *System Variables* are built-in operands with useful values. To avoid confusion with other words, they begin with a `$`. Descriptions of the CSE system variables follow. Capitalization shown need not be matched. Most system variables change during a simulation run, resulting in the *variations* shown; they cannot be used where the context will not accept variation at least this fast. (The [Input Data Section][input-data] gives the *variability*, or maximum acceptable variation, for each object member.)
@@ -842,8 +841,8 @@ $dayOfMonth, Day of month&comma; 1 - 31.<br>**Variation:** daily.
 $hour, Hour of day&comma; 1 - 24&comma; in local time; 1 corresponds to midnight - 1 AM.<br>**Variation:** hourly.
 $hourST, Hour of day&comma; 1 - 24&comma; in standard time; 1 corresponds to midnight - 1 AM.<br>**Variation:** hourly.
 $subhour, Subhour of hour&comma; 1 - N (number of subhours).<br>**Variation:** subhourly.
-$dayOfWeek, Day of week&comma; 1 - 7; 1 corresponds to Sunday&comma; 2 to Monday&comma; etc.<br>**Variation:** daily.
-$DOWH, Day of week 1-7 except 8 on every observed holiday.<br>**Variation:** daily.
+$dayOfWeek, Day of week&comma; 1 - 7; 1 corresponds to Sunday&comma; 2 to Monday&comma; etc. Note that $dayOfWeek is 4 (Wed) during autosizing.<br>**Variation:** daily.
+$DOWH, Day of week 1-7 except 8 on every observed holiday. Note that $DOWH is 4 (Wed) during autosizing.<br>**Variation:** daily.
 $isHoliday, 1 on days that a holiday is observed (regardless of the true date of the holiday); 0 on other days.<br>**Variation:** daily.
 $isHoliTrue, 1 on days that are the true date of a holiday&comma; otherwise 0.<br>**Variation:** daily.
 $isWeHol, 1 on weekend days or days that are observed as holidays.<br>**Variation:** daily.
@@ -1315,6 +1314,21 @@ Built-in functions perform a number of useful scheduling and conditional operati
 <!--
 TODO: test psychrometric functions 7-22-2011
 -->
+#### `concat`
+
+**Function**
+:    Returns *string* concatenation of arguments
+
+**Syntax**
+:   *string* **concat**( *string s1, string s2, ... string sn*)
+
+**Example**
+:   Assuming Jan 1 falls on Thurs and the simulation day is May 3:<br>
+    **concat**( @Top.dateStr, " falls on a ", select( $isWeekend, "weekend", default "weekday"))
+    returns "Sun 03-May falls on a weekend"
+
+---
+
 #### `import`
 
 **Function**

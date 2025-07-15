@@ -633,7 +633,7 @@ struct ResfHdr
     short spare[13];
     WORD workDayMask;		/* bits set for "work days": Sun=1,Mon=2,Tu=4,W=8,Th=16,F=32,Sat=64,Holiday=128,
 				    autoSizing heat design day=256, cooling dsn days=512 (but no dsn days data in brf yet,6-95).
-				   Encoding MATCHES: CSE TOP::workDayMask, OPK progr.h/cpp:ProGrSub::dayShowMask, brfr.h default.
+				   Encoding MATCHES: CSE TOPRAT::workDayMask, OPK progr.h/cpp:ProGrSub::dayShowMask, brfr.h default.
 				   Added at RESFVER 8, CSE .461, 5-95. */
     BOO isPakd;
 		// + 30 = 148 bytes

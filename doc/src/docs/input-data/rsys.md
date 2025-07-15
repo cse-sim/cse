@@ -458,7 +458,7 @@ For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb te
 
 Type: float
 
-Ratio of rsCAP17 over rsCAP47.
+For rsType=ASHP, ratio of rsCAP17 over rsCAP47.
 
 {{
   member_table({
@@ -467,6 +467,22 @@ Ratio of rsCAP17 over rsCAP47.
     "default": "Based on HSPF or\nother correlations",
     "required": "No",
     "variability": "Start of a run" 
+  })
+}}
+
+### rsFChgH
+
+Type: float
+
+For all heatpump types, heating compressor charge factor.  The heating gross (compressor only) COP is modified by rsFChgH to account for incorrect refrigerant charge.
+
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*x* $>$ 0", 
+    "default": "1 (no effect)",
+    "required": "No",
+    "variability": "constant" 
   })
 }}
 
@@ -750,11 +766,12 @@ Cooling autosizing capacity factor. rsCapC is set to rsFxCapC $\times$ (peak des
   })
 }}
 
+**rsFChgC=*float***\
 ### rsFChg
 
 Type: float
 
-Cooling compressor capacity factor.  The gross cooling capacity is adjusted by the factor rsFChg as specified by California Title 24 procedures.
+Cooling compressor charge factor.  The cooling gross (compressor only) COP is modified by rsFChgC to account for incorrect refrigerant charge.  Note: rsFChg is the prior name for this value and is supported for backwards compatibility.
 
 
 {{

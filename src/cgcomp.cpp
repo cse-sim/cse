@@ -2315,7 +2315,7 @@ struct AIRNET_SOLVER
 {
 	AIRNET_SOLVER( AIRNET* pParent)
 		: an_pParent( pParent), an_nz( 0), an_jac(), an_V1(), an_V2(), an_mdotAbs(nullptr),
-		  an_didLast(nullptr), an_unreasonablePressureCount( 0)
+		  an_didLast(nullptr), an_convergeFailCount( 0)
 	{ }
 	~AIRNET_SOLVER()
 	{
@@ -2338,8 +2338,7 @@ struct AIRNET_SOLVER
 
 	double* an_mdotAbs;		// total abs flow by zone (nz)
 	int* an_didLast;	    // re relax scheme (see code) (nz)
-	int an_unreasonablePressureCount;	// count of unreasonable zone pressure results
-										//   see an_Checkresults
+	int an_convergeFailCount;	// count of an_Calc() convergence failure
 
 
 };		// struct AIRNET_SOLVER
@@ -2403,7 +2402,7 @@ RC AIRNET_SOLVER::an_Calc(			// airnet flow balance
 	//   dflt=.0001
 #endif
 
-	RC rc = RCBAD;
+	RC rc = RCOK;
 	an_pParent->an_resultsClear[iV] = 0;	// set flag for an_ClearResults()
 
 	an_nz = ZrB.GetCount();
@@ -2435,8 +2434,11 @@ RC AIRNET_SOLVER::an_Calc(			// airnet flow balance
 	int zi;
 	int zi0 = ZrB.GetSS0();		// zone subscript offset (re 0-based arrays used here)
 	bool bConverge = false;		// set true when converged
+
+	// iterate to find mass balance for all zones
+	//   iteration limit changed 20->30 to fix occaisional large-project convergence fail 4-29-2025
 	int iter;
-	for (iter = 0; iter < 20; iter++)
+	for (iter = 0; iter < 30; iter++)
 	{
 		an_jac.setZero();
 		rV->setZero();
@@ -2496,7 +2498,7 @@ RC AIRNET_SOLVER::an_Calc(			// airnet flow balance
 			// Solution not converged if netAMF > max( ResAbs, totAMF*ResRel)
 			//  Using larger of the two tolerances means zones with small abs flow converge loosely.
 			//  This avoids extra iterations to converge zones that have minor impact.
-			if (fabs((*rV)(zi)) > ResAbs && fabs((*rV)[zi]) > ResRel * an_mdotAbs[zi])
+			if (fabs((*rV)[zi]) > ResAbs && fabs((*rV)[zi]) > ResRel * an_mdotAbs[zi])
 			{
 				bConverge = false;
 				break;		// this zone not balanced, no need to check further
@@ -2585,7 +2587,11 @@ RC AIRNET_SOLVER::an_Calc(			// airnet flow balance
 	}
 
 	if (!bConverge)
-		err(WRN, "%s: AirNet convergence failure", Top.When(C_IVLCH_S));
+	{	
+		warn("%s: AirNet convergence failure", Top.When(C_IVLCH_S));
+		if (++an_convergeFailCount > 10)
+			rc = err(WRN, "Too many AirNet convergence failures, terminating.");
+	}
 
 	// change tiny pressures to 0
 	//   prevents trouble when doubles assigned to floats
@@ -2595,8 +2601,6 @@ RC AIRNET_SOLVER::an_Calc(			// airnet flow balance
 		if (fabs(zp->zn_pz0W[iV]) < 1.e-20)
 			zp->zn_pz0W[iV] = 0.;
 	}
-
-	rc = RCOK;
 
 	TMRSTOP(TMR_AIRNET);
 	return rc;

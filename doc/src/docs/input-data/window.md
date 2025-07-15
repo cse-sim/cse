@@ -233,7 +233,7 @@ ASHRAE    ,       n/a       ,                      ASHRAE handbook values", True
 
 Type: choice
 
-Selects the model used for exterior surface convection when wnModel = Forward\_Difference.
+Selects the model used for exterior surface convection.
 
 {{
   member_table({
@@ -304,6 +304,28 @@ Interior convection coefficient adjustment factor.  When wnInHcModel=INPUT, hc=w
     "units": "",
     "legal_range": "x $\\ge$ 0", 
     "default": "1",
+    "required": "No",
+    "variability": "subhourly" 
+  })
+}}
+
+### wnInHcFrcCoeffs
+
+Type: *float array*
+
+Specifies 3 coefficients for an alternative inside surface forced convection model (applicable only for wnInHCModel=UNIFIED).  When given, the inside surface forced convection coefficient for this surface is derived as follows:
+
+      hcFrc = hConvF * (wnInHcFrcCoeffs[ 1] + wnInHcFrcCoeffs[ 2] * ACH ^ wnInHcFrcCoeffs[ 3])
+
+where hConvF is the convection adjustment factor (derived from elevation, see Top hConvMod) and ACH is the zone air change rate per hour from the prior simulation step (including heat pump water heater evaporator air flow).  This formulation is dangerously flexible, so caution is advised when selecting coefficient values.
+
+The default hcFrc value (used when wnInHcFrCoeff is not provided) is hConvF * znHcFrcF * ACH ^ 0.8.
+
+{{
+  member_table({
+    "units": "Btuh/ft^2^-^o^F",
+    "legal_range": "", 
+    "default": "*inherited from parent surface*",
     "required": "No",
     "variability": "subhourly" 
   })

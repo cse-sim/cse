@@ -758,7 +758,7 @@ Hourly User-defined Report, Fri 10-Jul
 
 ! Log for Run 001: AirNet fan heat
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console
 
 
 
@@ -870,18 +870,18 @@ Input for Run 001: AirNet fan heat
 
 
 
-! CSE 0.921.0+apple-clang.ab748d58.102 for Win32 console run(s) done: Wed 28-Feb-24  12:11:38 pm
+! CSE 0.925.0+concat.45b7b13a.25 for Win32 console run(s) done: Tue 20-May-25   9:11:48 pm
 
-! Executable:   /users/neal-kruis/projects/cse/builds/clion-release/cse-appleclang-64
-!               ? (enExeInfo fail)  (HPWH 1.23.0+HEAD.f90302f.61)
+! Executable:   /users/runner/work/cse/cse/build/cse-appleclang-64
+!               ? (enExeInfo fail)  (HPWH 1.25.0+HEAD.cc0bb806.445)
 ! Command line: -x!  -b -t1 izfantest
-! Input file:   /Users/neal-kruis/projects/cse/test/izfantest.cse
-! Report file:  /USERS/NEAL-KRUIS/PROJECTS/CSE/TEST/IZFANTEST.REP
+! Input file:   /Users/runner/work/cse/cse/test/izfantest.cse
+! Report file:  /USERS/RUNNER/WORK/CSE/CSE/TEST/IZFANTEST.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.02     Calls = 1         T/C = 0.0240
+!                Input:  Time = 0.03     Calls = 1         T/C = 0.0290
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 1.08     Calls = 1         T/C = 1.0840
+!           Simulation:  Time = 0.97     Calls = 1         T/C = 0.9680
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
-!                Total:  Time = 1.11     Calls = 1         T/C = 1.1100
+!                Total:  Time = 1.00     Calls = 1         T/C = 0.9980

@@ -25,6 +25,7 @@
 #include "exman.h"	// exEvEvf
 #include "cncult.h"	// UENDIVL
 #include "irats.h"	// RiB XiB
+#include "foundation.h"	// Kiva vector (kivas)
 #include "mspak.h"
 #include "timer.h"
 #include "cse.h"
@@ -194,7 +195,7 @@ void FC cgDone()
 
 // Hourly simulator cleanup routine: cnguts stuff done ONCE for both autosize and main simulation phases
 
-// Call when leaving simulator, even in cases where cgAusz() or Top::tp_MainSim() not called due to errors.
+// Call when leaving simulator, even in cases where cgAusz() or TOPRAT::tp_MainSim() not called due to errors.
 
 {
 // clear the "non-phasely" run data -- that which persists thru autosize and main sim
@@ -1027,9 +1028,8 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 		mse->ms_RddInit( 70.);
 
 // Kiva initialization loop
-	KIVA *kv;
-	RLUP(KvR, kv)
-		kv->kv_RddInit();
+	for (auto& kiva : kivas)
+		kiva.kv_RddInit();
 
 // Apply kiva results to initial boundary conditions
 	XSRAT* xr;

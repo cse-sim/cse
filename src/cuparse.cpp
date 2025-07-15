@@ -341,12 +341,7 @@ static SFST itSfs[] =
 	SFST( "acosd",       ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFACOSD, 0),
 	SFST( "atand",       ROK,     0,   FCREG, TYFL,   1, TYFL,  0, 0,     PSFATAND, 0),
 	SFST( "atan2d",      ROK,     0,   FCREG, TYFL,   2, TYFL,TYFL,0,     PSFATAN2D,0),
-#if 0
-// string concatenation: incomplete 2-7-2024
-// initial testing appears to work
-// disable pending testing and generalization (N args, use "+" operator, ...)
-	SFST( "concat",	     ROK,     0,   FCREG, TYSTR,  2, TYSTR,TYSTR,0,   PSCONCAT,0),
-#endif
+    SFST( "concat",	 ROK|MA|VA|VC,0,   FCREG, TYSTR,  2, TYSTR, 0, 0,   PSCONCAT, 0),
 	SFST( "wFromDbWb",   ROK,  EVFRUN, FCREG, TYFL,   2, TYFL,TYFL,0,     PSDBWB2W, 0),	// humrat from tDb, wetbulb. Uses elevation. 
 	SFST( "wFromDbRh",   ROK,  EVFRUN, FCREG, TYFL,   2, TYFL,TYFL,0,     PSDBRH2W, 0),	// humrat from tDb, rel hum. Uses elevation.
 	SFST( "rhFromDbW",   ROK,  EVFRUN, FCREG, TYFL,   2, TYFL,TYFL,0,     PSDBW2RH, 0),	// rel hum from tdb, w
@@ -583,7 +578,7 @@ LOCAL SYTBH symtab = { NULL, 0 };
  LOCAL OPTBL * opp = NULL;	// ptr to opTbl entry for token
  const char * ttTx = NULL;	// saveable ptr to static token descriptive text (opp->tx) for errMsgs. cul.cpp uses.
  LOCAL void * stbk = NULL; 	// symbol table value ptr, set by toke() for already-decl identifiers, type varies...
- SI isWord = 0;     	// nz if word: undef (CUTID), user-def (CUTUF, CUTUV), or reserved (CUTVRB CUTSF etc).
+ bool isWord = false;     	// true iff word: undef (CUTID), user-def (CUTUF, CUTUV), or reserved (CUTVRB CUTSF etc).
 
  /*--- CURRENT EXPRESSION INFO, exOrk to expr and callees. */
  USI evfOk = 0xffff;	// evaluation frequencies allowed bits for current expression, ffff-->no limits.
@@ -3138,7 +3133,6 @@ RC FC konstize(		// if possible, evaluate current (sub)expression (parSp) now an
 {
 	ERVARS1
 	void* p = NULL;
-	char *q=NULL;
 	const char* ms;
 	SI isKon = 0;
 	PSOP jmp;
@@ -3200,10 +3194,14 @@ RC FC konstize(		// if possible, evaluate current (sub)expression (parSp) now an
 			}
 
 			// be sure string not in space to be overwritten
+			char* q = nullptr;
 			if (parSp->ty==TYSTR)
 			{
-				q = cuStrsaveIf(*(char **)p);		// dup if in code, cueval.cpp
-				p = &q;					// p points to pointer
+				q = cuStrsaveIf(*(char **)p);	// dup if in code, cueval.cpp
+				if (q)	// if duped
+				{	// printf("\nDuped");
+					p = &q;					// p points to pointer
+				}
 			}
 			// preserve unfilled jmp at end expression (e.g. in choose() args)
 			jmp = *(parSp->psp2-2);			// possible jump; save code
@@ -4194,7 +4192,7 @@ SI FC toke()	/* local token-getter -- cutok.cpp:cuTok + unary/binary resolution 
       stbk: for previously declared identifiers only:
               block ptr from symbol table:
               ptr to VRBST, UFST, SVST, etc per type.
-    isWord: non-0 if a word even if not CUTID:
+    isWord: true if a word even if not CUTID:
     	       permits specific errMsgs for misused reserved words and
     	       use of reserved words as class and member names (probe)
 	and variables cuTok() sets: cuTok.cpp:cuToktx[], cuIntval, cuFlval. */
@@ -4234,10 +4232,10 @@ SI FC toke()	/* local token-getter -- cutok.cpp:cuTok + unary/binary resolution 
 
 		/* set isWord for all words, reserved or not, for smart error msgs. */
 		if (tokTy != CUTID)
-			isWord = 0;
+			isWord = false;
 		else				// is an identifier
 		{
-			isWord = 1;
+			isWord = true;
 			/* classify already-declared identifiers using symbol table.
 				      3rd arg 0 causes token to match symtab entries different
 				      in capitalization only if flagged "case insensitive" */

@@ -506,8 +506,9 @@ void WDHR::wd_FillFromDESCOND(		// overwrite/adjust hourly data for design condi
 	wd_cldCvr = 0.f;		// assume clear sky
 	wd_tSky = wd_CalcSkyTemp( C_SKYMODLWCH_BERDAHLMARTIN, iHr);
 
-	// peak temps: yesterday = today
-	wd_taDbPk = wd_taDbPvPk = dc.dc_DB;
+	// min/max temps
+	wd_taDbMin = dc.dc_DB - dc.dc_MCDBR;
+	wd_taDbMax = wd_taDbPvMax = dc.dc_DB;		// yesterday = today
 
 	// average temps: yesterday = today; before that, use weather file
 	//   DSTFix??

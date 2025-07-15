@@ -9,7 +9,7 @@ The following example defines a 2D map based on grid variables outdoor dry-bulb 
     PERFORMANCEMAP "PMClg"
 
         PMGRIDAXIS "ClgOutdoorDBT" pmGXType="OutdoorDBT" pmGXValues=60,82,95,115 pmGXRefValue=95
-        PMGRIDAXIS "ClgSpeed" pmGType="Speed" pmGXValues=1,2,3 pmGXRefValue=2
+        PMGRIDAXIS "ClgSpeed" pmGXType="Speed" pmGXValues=1,2,3 pmGXRefValue=2
 
         // Capacity ratio = net total capacity / net rated total capacity
         PMLOOKUPDATA LUClgCapRat pmLUType = "CapRat" pmLUValues =

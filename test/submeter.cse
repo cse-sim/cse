@@ -7129,7 +7129,7 @@ RSYS   "rsys-Heat Pump"
    AUTOSIZE rsCapC
    AUTOSIZE rsCapAuxH
    rsFxCapC = 1.1                       // Cooling sizing factor
-   rsFChg = 0.96                        // Refrigerant charge adjustment factor
+   rsFChgC = 0.96                        // Refrigerant charge adjustment factor
    rsSEER = 14                          // Cooling SEER
    rsEER = 11.7                         // Cooling EER (defaults per ACM if missing)
    rsVfPerTon = 350                     // CFM per Ton (default = 350)

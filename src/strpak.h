@@ -93,7 +93,7 @@ char* strsave( char* &p, const char *s);
 char * FC strtemp( int n);
 char * FC strtempPop( char *anS);
 char * FC strtmp( const char *s);
-char * CDEC strtcat( const char *s, ... );
+char* strtcat( const char *s, ... );
 char * CDEC strntcat( int n, ...);
 char* strt_string_view(std::string_view sv);
 const char* scWrapIf( const char* s1, const char* s2, const char* tween, int lineLength=defaultCpl);
