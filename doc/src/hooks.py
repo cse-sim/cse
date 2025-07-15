@@ -543,6 +543,7 @@ slug_levels = {}
 
 # Prepopulate any custom keywords (key) to any custom autoref slugs (value)
 text_to_slug = {
+    "TOP": slugify("Top members"),
     "END": slugify("END and ENDxxxx"),
     "ENDxxxx": slugify("END and ENDxxxx"),
     "FROZEN": slugify("FREEZE"),
