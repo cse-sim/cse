@@ -482,12 +482,15 @@ where hConvF is the convection adjustment factor (derived from elevation, see To
 
 The default hcFrc value (used when sfInHcFrCoeff is not provided) is hConvF * znHcFrcF * ACH ^ 0.8.
 
-<%= member_table(
-  units: "Btuh/ft^2^-^o^F",
-  legal_range: "",
-  default: "*see above*",
-  required: "No",
-  variability: "subhourly") %>
+{{
+  member_table({
+    "units": "Btuh/ft^2^-^o^F",
+    "legal_range": "",
+    "default": "*see above*",
+    "required": "No",
+    "variability": "subhourly"
+  })
+}}
 
 
 The items below give values associated with CSE's model for below grade surfaces (sfExCnd=GROUND).  See CSE Engineering Documentation for technical details.
