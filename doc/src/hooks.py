@@ -151,6 +151,10 @@ class ProbeWriter:
         self.types = set()
         self.variability_combinations = set()
 
+        # This refers to no frequency directive AFTER any forwarded/inherited
+        # frequency directives are applied.
+        self.members_with_no_frequency_directive = set()
+
     def strip_prefix(self, name: str, prefix: RecordPrefix):
         if not prefix:
             return name
@@ -413,6 +417,11 @@ class ProbeWriter:
         resolved_availability = self.resolve_directive(
             directives, AVAILABILITY_DIRECTIVES, fallback="b"
         )
+
+        if not resolved_frequency:
+            self.members_with_no_frequency_directive.add(
+                f"{member['name'], member['type']}"
+            )
 
         self.variability_combinations.add(
             f"{resolved_frequency},{resolved_availability}"
