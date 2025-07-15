@@ -106,20 +106,6 @@ Type: float
 
 Fraction of gain going to zone. gnFrLat (below) gives portion of this gain that is latent, if any; the remainder is sensible.
 
-<% if not_yet_implemented %>
-
-{{
-  member_table({
-    "units": "",
-    "legal_range": "gnFrZn + gnFrPl + gnFrRtn $\leq$ 1", 
-    "default": "*1 - gnFrPl - gnFrRtn*",
-    "required": "No",
-    "variability": "hourly" 
-  })
-}}
-
-<% else %>
-
 {{
   member_table({
     "units": "",
@@ -130,7 +116,6 @@ Fraction of gain going to zone. gnFrLat (below) gives portion of this gain that 
   })
 }}
 
-<% end %>
 
 ### gnFrPl
 
