@@ -586,8 +586,7 @@ Tank insulation resistance for heat pump water heater.
   })
 }}
 
-**whInHtSupply=*float***\
-### whInHtLoopRet
+### whInHtSupply, whInHtLoopRet
 
 Type: float
 
@@ -683,8 +682,7 @@ Parasitic electricity power, included in electrical energy use of all DHWHEATERs
   })
 }}
 
-**whFAdjElec=*float***\
-### whFAdjFuel
+### whFAdjElec, whFAdjFuel
 
 Type: float
 

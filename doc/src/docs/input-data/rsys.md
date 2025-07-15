@@ -766,8 +766,7 @@ Cooling autosizing capacity factor. rsCapC is set to rsFxCapC $\times$ (peak des
   })
 }}
 
-**rsFChgC=*float***\
-### rsFChg
+### rsFChgC, rsFChg
 
 Type: float
 

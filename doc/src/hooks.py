@@ -596,7 +596,24 @@ text_to_slug = {
     ),
     "cpStage": slugify("cpStageN"),
     "hpStage": slugify("hpStageN"),
+    "whFAdjElec": slugify("whFAdjElec, whFAdjFuel"),
+    "whFAdjFuel": slugify("whFAdjElec, whFAdjFuel"),
+    "whInHtSupply": slugify("whInHtSupply, whInHtLoopRet"),
+    "whInHtLoopRet": slugify("whInHtSupply, whInHtLoopRet"),
+    "rsFChgC": slugify("rsFChgC, rsFChg"),
+    "rsFChg": slugify("rsFChgC, rsFChg"),
+    "wsFaucetCount": slugify(
+        "wsFaucetCount, wsBathCount, wsCWashrCount, wsDWashrCount"
+    ),
+    "wsBathCount": slugify("wsFaucetCount, wsBathCount, wsCWashrCount, wsDWashrCount"),
+    "wsCWashrCount": slugify(
+        "wsFaucetCount, wsBathCount, wsCWashrCount, wsDWashrCount"
+    ),
+    "wsDWashrCount": slugify(
+        "wsFaucetCount, wsBathCount, wsCWashrCount, wsDWashrCount"
+    ),
 }
+
 
 # Walk all docs *.md files to find headings
 for md in docs_dir.rglob("*.md"):

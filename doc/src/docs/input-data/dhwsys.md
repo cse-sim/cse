@@ -116,11 +116,7 @@ Number of identical systems of this type (including all child objects). Any valu
   })
 }}
 
-**wsFaucetCount=*integer***\
-**wsShowerCount=*integer***\
-**wsBathCount=*integer***\
-**wsCWashrCount=*integer***\
-### wsDWashrCount
+### wsFaucetCount, wsBathCount, wsCWashrCount, wsDWashrCount
 
 Type: integer
 
