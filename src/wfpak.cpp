@@ -1306,7 +1306,9 @@ void WDHR::wd_SetDayValues(		// set daily members
 	SETIF( wd_tdvElecAvg,	wdd.wdd_tdvElecAvg)
 	SETIF( wd_tdvElecPvPk,	wdd.wdd_tdvElecPvPk)
 	SETIF( wd_tdvElecAvg01,	wdd.wdd_tdvElecAvg01)
-	wd_SetTdvElecHrRank( wdd);
+	SETIF( wd_tdvElecPkRank,  wdd.wdd_tdvElecPkRank)
+	wd_tdvElecHrRank[ 0] = 0;	// unused
+	VCopy( wd_tdvElecHrRank+1, 24, wdd.wdd_tdvElecHrSTRank);
 #undef SETIF
 }	// WDHR::wd_SetDayValuesIfMissing
 //-----------------------------------------------------------------------------
@@ -1334,15 +1336,19 @@ void WDHR::wd_SetDayValues(		// set current hour daily members
 	SETIF( wd_tdvElecAvg,	wxd.wx_tdvElecAvg)
 	SETIF( wd_tdvElecPvPk,	wxd.wx_tdvElecPvPk)
 	SETIF( wd_tdvElecAvg01,	wxd.wx_tdvElecAvg01)
-	wd_SetTdvElecHrRank( wdd);
+	SETIF( wd_tdvElecPkRank,  wdd.wdd_tdvElecPkRank)
+	wd_tdvElecHrRank[ 0] = 0;	// unused
+	VCopy( wd_tdvElecHrRank+1, 24, wxd.wx_tdvElecHrSTRank);
 #endif
 #undef SETIF
 }	// WDHR::wd_SetDayValues
 //----------------------------------------------------------------------------
+#if 0
 void WDHR::wd_SetTdvElecHrRank( const WDDAY& wdd)
 {	wd_tdvElecHrRank[ 0] = 0;	// unused
 	VCopy( wd_tdvElecHrRank+1, 24, wdd.wdd_tdvElecHrSTRank);
-}	/// WDHR::wd_SetTdvElecHrRank
+}	// WDHR::wd_SetTdvElecHrRank
+#endif
 //----------------------------------------------------------------------------
 void WDHR::wd_ShiftTdvElecHrRankForDST()		// handle DST
 {

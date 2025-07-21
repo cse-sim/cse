@@ -335,6 +335,20 @@ RC TOPRAT::tp_MainSimI()		// Main hourly simulation inner routine
 	// caller: cgMainsim
 	RC rc=RCOK;
 
+
+#if defined( _DEBUG)
+	printf("\nDT=%d   DTBegDay=%s   DTEndDay=%s", DT, tddys(DTBegDay), tddys(DTEndDay));
+	static bool bDTWas = false;
+	for (int jdx = 1; jdx<366; jdx++)
+	{
+		bool bDT = tp_IsDTAtDayBeg(jdx);
+		if (jdx==1 || bDT != bDTWas)
+			printf("  %s: %d", tddys(jdx), bDT);
+		bDTWas = bDT;
+	}
+	printf("\n");
+#endif
+
 // initialization not repeated after warmup
 
 	// set "doing" values before initialization
@@ -1127,33 +1141,6 @@ x		pZR->zr_InitCurr();	// 0 ZNRES.curr
 
 	return rc;
 }                   // cgAfterWarmup
-//-----------------------------------------------------------------------------------------------------------
-void TOPRAT::tp_DTInit()		// Init Top.isDT, Top.jDayST, Top.iHrST at start warmup or run or autosizing design day.
-
-// Uses Top.tp_autoSizing, Top.jDay.
-
-{
-	// called from tp_MainSimI at start warmup and run, or from a cgAuszI callee for each new design day.
-
-	if (DT != C_NOYESCH_YES)		// if no DT to be used in this run
-		isDT = 0;					// DT is now off
-	else
-	{	// note for autoSizing, jDay is already suitably set for month of design day.
-		if (DTEndDay >= DTBegDay)  	// if normal (Northern Hemisphere) (for equal dates, isDT = 0 falls out).
-			isDT =    jDay > DTBegDay && jDay <= DTEndDay; 	// 1 (exactly) if DT in use at hr 0 of 1st day of run, else 0
-		else						// if DT starts later in year than ends: possible in Southern Hemisphere
-			isDT =    jDay >  DTBegDay || jDay <= DTEndDay; 	// 1 if DT in use at hr 0 of 1st day of run
-	}
-	if (isDT)					// if DT in use
-	{
-		iHrST = 23-1;   			// initial standard time will be 11PM (23) after tp_DoDTStuff ++'s it.
-		jDayST = 					// initial standard time date
-			tp_autoSizing ? jDay	// autoSizing ST date same cuz no ++ at midnite (days wrap to self!)
-		  : jDay > 1      ? jDay-1 	// initial main sim ST date is day before run start
-		  :	                365; 	// .. which is Dec 31 (no leap years) if run starts on Jan 1
-	}
-	// else: DT not in use: 1st tp_DoDTStuff call will init ST variables.
-}			// TOPRAT::tp_DTInit
 //-----------------------------------------------------------------------------------------------------------
 LOCAL RC FC doIvlExprs( 		// evaluate and store user-input variable expressions for interval
 
@@ -2959,6 +2946,34 @@ void TOPRAT::tp_DoDateDowStuff()	// do date, day of week, and holiday stuff for 
 	isBegWorkWeek = isWorkDay && yesterNonWork;		// workDay after non-workDay, for $isBegWorkWeek
 }						// TOPRAT::tp_DoDateDowStuff
 //-----------------------------------------------------------------------------------------------------------
+void TOPRAT::tp_DTInit()		// Init Top.isDT, Top.jDayST, Top.iHrST at start warmup or run or autosizing design day.
+
+// Uses Top.tp_autoSizing, Top.jDay.
+
+{
+	// called from tp_MainSimI at start warmup and run, or from a cgAuszI callee for each new design day.
+
+	if (DT != C_NOYESCH_YES)		// if no DT to be used in this run
+		isDT = 0;					// DT is now off
+	else
+	{	// note for autoSizing, jDay is already suitably set for month of design day.
+		if (DTEndDay >= DTBegDay)  	// if normal (Northern Hemisphere) (for equal dates, isDT = 0 falls out).
+			isDT =    jDay > DTBegDay && jDay <= DTEndDay; 	// 1 (exactly) if DT in use at hr 0 of 1st day of run, else 0
+		else						// if DT starts later in year than ends: possible in Southern Hemisphere
+			isDT =    jDay >  DTBegDay || jDay <= DTEndDay; 	// 1 if DT in use at hr 0 of 1st day of run
+	}
+	if (isDT)					// if DT in use
+	{
+		iHrST = 23-1;   			// initial standard time will be 11PM (23) after tp_DoDTStuff ++'s it.
+		jDayST = 					// initial standard time date
+			tp_autoSizing ? jDay	// autoSizing ST date same cuz no ++ at midnite (days wrap to self!)
+		  : jDay > 1      ? jDay-1 	// initial main sim ST date is day before run start
+		  :	                365; 	// .. which is Dec 31 (no leap years) if run starts on Jan 1
+	}
+	// else: DT not in use: 1st tp_DoDTStuff call will init ST variables.
+
+}			// TOPRAT::tp_DTInit
+//-----------------------------------------------------------------------------------------------------------
 void TOPRAT::tp_DoDTStuff()	// update .isDT, possibly .iHr, and STANDARD TIME time & date variables
 
 // uses    .DT, .DTBeg/EndDay, .iHr, .jDay, .tp_date.
@@ -3006,6 +3021,57 @@ void TOPRAT::tp_DoDTStuff()	// update .isDT, possibly .iHr, and STANDARD TIME ti
 	else
 		iHrST++;
 }			// TOPRAT::tp_doDTStuff
+//-----------------------------------------------------------------------------------------------------------
+int TOPRAT::tp_WthrDayHr0(		// idx of initial hour of arbitrary day (DT aware)
+	int jDayX,		// day of year sought (1 - 365/366)
+					// jDayX=-1: Dec-30; jDayX=0: Dec-31; jDaXy=1: Jan-1; jDayX=2: Jan-2
+	int yrDays) const	// # of days in wthr file year
+{
+	int yrHrs = yrDays * 24;
+	int hr0 = (24 * (jDayX - 1) + yrHrs) % yrHrs;
+	if (DT==C_NOYESCH_YES)
+	{
+		if (DTEndDay > DTBegDay)
+		{
+			if (jDayX > DTBegDay && jDayX <= DTEndDay)
+				--hr0;
+		}
+		else if (jDayX > DTBegDay || jDayX <= DTEndDay)
+			--hr0;
+	}
+	return hr0;
+
+}		// TOPRAT::tp_WthrDayHr0
+//-----------------------------------------------------------------------------------------------------------
+bool TOPRAT::tp_IsDTAtDayBeg(	// daylight savings for arbitrary day
+	int jDayX) const	// day of year (1 - 365/366).
+	
+// return true iff daylight savings is in effect at the beginning of jDayX
+{
+	if (DT != C_NOYESCH_YES)
+		return false;		// daylight savings not modeled
+
+	// note: DTBegDay != DTEndDay always due to input checking
+	if (DTEndDay > DTBegDay)
+		return jDayX > DTBegDay && jDayX <= DTEndDay;
+	else
+		return jDayX > DTBegDay || jDayX <= DTEndDay;
+
+}		// TOPRAT::tp_IsDTAtDayBeg
+//-----------------------------------------------------------------------------------------------------------
+int TOPRAT::tp_WthrHoursInDay(		// # of weather data hours in arbitrary day
+	int jDayX) const		// day of year (1 - 365/366)
+{
+	int hrsInDay = 24;
+	if (DT==C_NOYESCH_YES)
+	{	if (jDayX == DTBegDay)
+			hrsInDay = 23;
+		else if (jDayX == DTEndDay)
+			hrsInDay = 25;
+	}
+	return hrsInDay;
+
+}		// TOPRAT::tp_WthrHoursInDay
 //-----------------------------------------------------------------------------------------------------------
 void TOPRAT::tp_tmrSnapshot()		// probe-able copies of timing data
 // call e.g. daily

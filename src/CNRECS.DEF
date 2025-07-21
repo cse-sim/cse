@@ -153,6 +153,9 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *declare "void tp_DoDateDowStuff();"
     *declare "void tp_DTInit();"
     *declare "void tp_DoDTStuff();"
+    *declare "int tp_WthrHoursInDay( int jDayX) const;"
+    *declare "int tp_WthrDayHr0( int jDayX, int yrDays) const;"
+    *declare "bool tp_IsDTAtDayBeg( int jDayX) const;"
     *declare "void tp_tmrSnapshot();"
     *declare "const char* tp_AuszDoing() const;"
     *declare "RC tp_BegDesDay();"
@@ -864,7 +867,6 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*declare "void wd_FillFromDESCOND( const DESCOND& dc, int iHr);"
 	*declare "void wd_SetDayValues( const class WDDAY& wdd, int options=0);"
 	*declare "void wd_SetDayValues( const class WFSTATSDAY& wxd, const class WFSTATSDAY& wxdPv, int options=0);"
-	*declare "void wd_SetTdvElecHrRank( const class WDDAY& wdd);"
 	*declare "void wd_ShiftTdvElecHrRankForDST();"
 	*declare "bool wd_HasTdvData() const;"
 

@@ -300,7 +300,7 @@ int tddiw(			// Determine day of week corresponding to integer date
 //=======================================================================
 int tddyw( 			// Determine day of week for day of year
 
-	DOY doy,		// Day of year
+	DOY doy,		// Day of year (1 - 365/366)
 	int year )		// If >= 0, leap year will be accounted for.
 // Years < 0 are 365 day years beginning on dow = (-year):
 //   Jan 1 of year -1 is Mon., Jan 1 of year -2 is Tues ...
