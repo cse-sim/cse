@@ -495,9 +495,27 @@ class ProbeWriter:
         ]
 
         filename = f"{record["name"]}.md"
+        path = self.destination_dir / filename
 
-        with open(self.destination_dir / filename, "w") as file:
-            file.write("\n\n".join(result))
+        new_content = "".join(result)
+        current_content = ""
+        try:
+            with open(path, "r") as f:
+                current_content = f.read()
+        except FileNotFoundError:
+            # File doesn't exist, so write the new content
+            pass
+        except Exception:
+            # print(f"Error reading file {path}: {e}")
+            return
+
+        if new_content == current_content:
+            # TODO: Add logging, so this can be added to a debug-level output.
+            # print(f"Content of {filename} is already identical, no write performed.")
+            pass
+        else:
+            with open(path, "w") as f:
+                f.write(new_content)
 
     def write_all_probes(self):
         records = list(self.cnrecs.values())
@@ -762,3 +780,17 @@ def on_page_content(html, page, config, files):
                 sibling = sibling.find_next_sibling()
 
     return str(soup)
+
+
+def on_serve(server, config, **kwargs):
+    docs_dir = Path(__file__).parent / "docs"
+    server.unwatch(docs_dir)
+
+    for item in docs_dir.iterdir():
+        if item.is_file() or item.name != "probe-definitions":
+            server.watch(docs_dir / item)
+
+    server.watch(docs_dir / "probe-definitions" / ".nav.yml")
+    server.watch(docs_dir / "probe-definitions" / "index.md")
+
+    return server
