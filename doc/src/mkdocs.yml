@@ -14,6 +14,7 @@ theme:
     - toc.follow
     - navigation.instant
     - navigation.indexes
+    - navigation.footer
   # favicon: assets/favicon.ico
   # logo: assets/logo.svg
   # palette:
