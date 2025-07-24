@@ -24,7 +24,7 @@
     
     
       
-        <title>zone - CSE Documentation</title>
+        <title>Zone - CSE Documentation</title>
       
     
     
@@ -101,7 +101,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              zone
+              Zone
             
           </span>
         </div>
@@ -1883,8 +1883,6 @@
       
         
       
-        
-      
     
     
     
@@ -2023,7 +2021,7 @@
         
   
   <span class="md-ellipsis">
-    boiler
+    Boiler
     
   </span>
   
@@ -2045,7 +2043,7 @@
         
   
   <span class="md-ellipsis">
-    chiller
+    Chiller
     
   </span>
   
@@ -2067,7 +2065,7 @@
         
   
   <span class="md-ellipsis">
-    construction
+    Construction
     
   </span>
   
@@ -2529,7 +2527,7 @@
         
   
   <span class="md-ellipsis">
-    doas
+    Doas
     
   </span>
   
@@ -2551,7 +2549,7 @@
         
   
   <span class="md-ellipsis">
-    door
+    Door
     
   </span>
   
@@ -2573,7 +2571,7 @@
         
   
   <span class="md-ellipsis">
-    export
+    Export
     
   </span>
   
@@ -2639,7 +2637,7 @@
         
   
   <span class="md-ellipsis">
-    foundation
+    Foundation
     
   </span>
   
@@ -2683,7 +2681,7 @@
         
   
   <span class="md-ellipsis">
-    gain
+    Gain
     
   </span>
   
@@ -2749,7 +2747,7 @@
         
   
   <span class="md-ellipsis">
-    holiday
+    Holiday
     
   </span>
   
@@ -2855,28 +2853,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../kiva/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    kiva
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../LOADMETER/" class="md-nav__link">
         
   
@@ -2903,7 +2879,7 @@
         
   
   <span class="md-ellipsis">
-    layer
+    Layer
     
   </span>
   
@@ -2925,7 +2901,7 @@
         
   
   <span class="md-ellipsis">
-    mass
+    Mass
     
   </span>
   
@@ -2947,7 +2923,7 @@
         
   
   <span class="md-ellipsis">
-    material
+    Material
     
   </span>
   
@@ -2969,7 +2945,7 @@
         
   
   <span class="md-ellipsis">
-    meter
+    Meter
     
   </span>
   
@@ -3101,7 +3077,7 @@
         
   
   <span class="md-ellipsis">
-    perimeter
+    Perimeter
     
   </span>
   
@@ -3167,7 +3143,7 @@
         
   
   <span class="md-ellipsis">
-    report
+    Report
     
   </span>
   
@@ -3255,7 +3231,7 @@
         
   
   <span class="md-ellipsis">
-    sgdist
+    Sgdist
     
   </span>
   
@@ -3277,7 +3253,7 @@
         
   
   <span class="md-ellipsis">
-    shade
+    Shade
     
   </span>
   
@@ -3299,7 +3275,7 @@
         
   
   <span class="md-ellipsis">
-    surface
+    Surface
     
   </span>
   
@@ -3321,7 +3297,7 @@
         
   
   <span class="md-ellipsis">
-    terminal
+    Terminal
     
   </span>
   
@@ -3343,7 +3319,7 @@
         
   
   <span class="md-ellipsis">
-    top
+    Top
     
   </span>
   
@@ -3387,7 +3363,7 @@
         
   
   <span class="md-ellipsis">
-    weather
+    Weather
     
   </span>
   
@@ -3453,7 +3429,7 @@
         
   
   <span class="md-ellipsis">
-    window
+    Window
     
   </span>
   
@@ -3475,7 +3451,7 @@
         
   
   <span class="md-ellipsis">
-    xsurf
+    Xsurf
     
   </span>
   
@@ -3497,7 +3473,7 @@
         
   
   <span class="md-ellipsis">
-    zhx
+    Zhx
     
   </span>
   
@@ -3548,7 +3524,7 @@
         
   
   <span class="md-ellipsis">
-    zone
+    Zone
     
   </span>
   
@@ -3602,10 +3578,12 @@
   
 
 
-  <h1>zone</h1>
+  <h1>Zone</h1>
 
-<p><a href="" id="p_zone"></a></p>
-<p>ZNISUB general user inputs</p>
+<hr/>
+<p>title: zone
+---<a href="" id="p_zone"></a>
+ZNISUB general user inputs</p>
 <div class="probe-table-sibling"></div>
 <table>
 <thead>
@@ -4718,14 +4696,14 @@ FAN runtime members, set by cnah.cpp:FAN::pute( cFlow, temp)
 <td>uaSpecT</td>
 <td>DBL</td>
 <td>Start of run</td>
-<td>ua to specified temps (exCnd=specT surfaces), for zn_bcon. set/used only in cnguts.cpp.</td>
+<td>light surface UA to specified temps (exCnd=specT surfaces), for zn_bcon, Btuh/F</td>
 </tr>
 <tr>
 <td>ua</td>
 <td>DBL</td>
 <td>Start of run</td>
 <td><ul>
-<li>Overall loss to ambient (sum uval*area), constant for run, for zn_bcon and zn_aqLdHr. Btuh/F.</li>
+<li>light surface UA to ambient (sum uval*area), constant for run, for zn_bcon and zn_aqLdHr. Btuh/F.</li>
 <li>Accumulation to double found nec for CEC custom budget *EXACT* match: float sometimes</li>
 <li>gave 1 part in 100000 differences (CEC certification test calls for 2-digit match).</li>
 </ul></td>
@@ -4734,7 +4712,7 @@ FAN runtime members, set by cnah.cpp:FAN::pute( cFlow, temp)
 <td>UANom</td>
 <td>DBL</td>
 <td>Start of run</td>
-<td>UA to ambient based on surface UNom (derived with default surf conductances), Btuh/F</td>
+<td>All-surface UA to ambient (sum of surface UNom derived with default surf conductances), Btuh/F</td>
 </tr>
 <tr>
 <td>ductCondUANom</td>
@@ -6145,7 +6123,7 @@ FAN runtime members, set by cnah.cpp:FAN::pute( cFlow, temp)
 </tbody>
 </table>
 <ul>
-<li>*s *e FLOAT i.zn_hcAirX // zn_airX + add'l 4.8 ACH for non-air zones having HVAC loads</li>
+<li>*s *e FLOAT i.zn_hcAirX // zn_airX + add'l 4.8 ACH for non-air zones having HVAC loads, changes/hr</li>
 <li>inputable for testing; used re convection coeff model</li>
 </ul>
 <div class="probe-table-sibling"></div>
@@ -6163,12 +6141,21 @@ FAN runtime members, set by cnah.cpp:FAN::pute( cFlow, temp)
 <td>hcAirXls</td>
 <td>number</td>
 <td>Start of subhour</td>
-<td>prior subhour value of i.zn_hcAirX</td>
+<td>prior subhour value of i.zn_hcAirX, change/hr</td>
+</tr>
+<tr>
+<td>hcAirXComb</td>
+<td>number</td>
+<td>End of subhour</td>
+<td><ul>
+<li>combined zone air change rate for this subhour, changes/hr</li>
+<li>= zn_hcAirXls + zn_hpwhAirX</li>
+</ul></td>
 </tr>
 <tr>
 <td>hcFrc</td>
 <td>number</td>
-<td>Start of subhour</td>
+<td>End of subhour</td>
 <td>inside surface forced convection coefficient, Btuh/ft2-F</td>
 </tr>
 <tr>
@@ -6369,9 +6356,6 @@ FAN runtime members, set by cnah.cpp:FAN::pute( cFlow, temp)
 
 
 
-  
-  
-
 
 
 
@@ -6388,6 +6372,30 @@ FAN runtime members, set by cnah.cpp:FAN::pute( cFlow, temp)
       </main>
       
         <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../znRes/" class="md-footer__link md-footer__link--prev" aria-label="Previous: znRes">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                znRes
+              </div>
+            </div>
+          </a>
+        
+        
+      </nav>
+    
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -6415,7 +6423,7 @@ FAN runtime members, set by cnah.cpp:FAN::pute( cFlow, temp)
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "toc.follow", "navigation.instant", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "toc.follow", "navigation.instant", "navigation.indexes", "navigation.footer"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.f1b6f286.min.js"></script>

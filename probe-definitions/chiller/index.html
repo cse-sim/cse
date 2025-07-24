@@ -26,7 +26,7 @@
     
     
       
-        <title>chiller - CSE Documentation</title>
+        <title>Chiller - CSE Documentation</title>
       
     
     
@@ -103,7 +103,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              chiller
+              Chiller
             
           </span>
         </div>
@@ -1885,8 +1885,6 @@
       
         
       
-        
-      
     
     
     
@@ -2025,7 +2023,7 @@
         
   
   <span class="md-ellipsis">
-    boiler
+    Boiler
     
   </span>
   
@@ -2054,7 +2052,7 @@
         
   
   <span class="md-ellipsis">
-    chiller
+    Chiller
     
   </span>
   
@@ -2077,7 +2075,7 @@
         
   
   <span class="md-ellipsis">
-    construction
+    Construction
     
   </span>
   
@@ -2539,7 +2537,7 @@
         
   
   <span class="md-ellipsis">
-    doas
+    Doas
     
   </span>
   
@@ -2561,7 +2559,7 @@
         
   
   <span class="md-ellipsis">
-    door
+    Door
     
   </span>
   
@@ -2583,7 +2581,7 @@
         
   
   <span class="md-ellipsis">
-    export
+    Export
     
   </span>
   
@@ -2649,7 +2647,7 @@
         
   
   <span class="md-ellipsis">
-    foundation
+    Foundation
     
   </span>
   
@@ -2693,7 +2691,7 @@
         
   
   <span class="md-ellipsis">
-    gain
+    Gain
     
   </span>
   
@@ -2759,7 +2757,7 @@
         
   
   <span class="md-ellipsis">
-    holiday
+    Holiday
     
   </span>
   
@@ -2865,28 +2863,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../kiva/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    kiva
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../LOADMETER/" class="md-nav__link">
         
   
@@ -2913,7 +2889,7 @@
         
   
   <span class="md-ellipsis">
-    layer
+    Layer
     
   </span>
   
@@ -2935,7 +2911,7 @@
         
   
   <span class="md-ellipsis">
-    mass
+    Mass
     
   </span>
   
@@ -2957,7 +2933,7 @@
         
   
   <span class="md-ellipsis">
-    material
+    Material
     
   </span>
   
@@ -2979,7 +2955,7 @@
         
   
   <span class="md-ellipsis">
-    meter
+    Meter
     
   </span>
   
@@ -3111,7 +3087,7 @@
         
   
   <span class="md-ellipsis">
-    perimeter
+    Perimeter
     
   </span>
   
@@ -3177,7 +3153,7 @@
         
   
   <span class="md-ellipsis">
-    report
+    Report
     
   </span>
   
@@ -3265,7 +3241,7 @@
         
   
   <span class="md-ellipsis">
-    sgdist
+    Sgdist
     
   </span>
   
@@ -3287,7 +3263,7 @@
         
   
   <span class="md-ellipsis">
-    shade
+    Shade
     
   </span>
   
@@ -3309,7 +3285,7 @@
         
   
   <span class="md-ellipsis">
-    surface
+    Surface
     
   </span>
   
@@ -3331,7 +3307,7 @@
         
   
   <span class="md-ellipsis">
-    terminal
+    Terminal
     
   </span>
   
@@ -3353,7 +3329,7 @@
         
   
   <span class="md-ellipsis">
-    top
+    Top
     
   </span>
   
@@ -3397,7 +3373,7 @@
         
   
   <span class="md-ellipsis">
-    weather
+    Weather
     
   </span>
   
@@ -3463,7 +3439,7 @@
         
   
   <span class="md-ellipsis">
-    window
+    Window
     
   </span>
   
@@ -3485,7 +3461,7 @@
         
   
   <span class="md-ellipsis">
-    xsurf
+    Xsurf
     
   </span>
   
@@ -3507,7 +3483,7 @@
         
   
   <span class="md-ellipsis">
-    zhx
+    Zhx
     
   </span>
   
@@ -3551,7 +3527,7 @@
         
   
   <span class="md-ellipsis">
-    zone
+    Zone
     
   </span>
   
@@ -3604,11 +3580,13 @@
   
 
 
-  <h1>chiller</h1>
+  <h1>Chiller</h1>
 
-<p><a href="" id="p_chiller"></a></p>
+<hr/>
+<p>title: chiller
+---<a href="" id="p_chiller"></a></p>
 <ul>
-<li>CHILLER Capacity user inputs. Capacity at various temp conditions is cap = chCapDs*chPyCapT(ts,tcnd).</li>
+<li>[CHILLER][chiller] Capacity user inputs. Capacity at various temp conditions is cap = [chCapDs][chcapds]*chPyCapT(ts,tcnd).</li>
 <li>Note Niles chlrType deleted per Taylor (via Bruce), defaults hard-coded to HERM_CENT case.</li>
 </ul>
 <div class="probe-table-sibling"></div>
@@ -3840,7 +3818,7 @@
 <li>at run time, but will issue a warning if the sum of the flows of the connected CHW coils</li>
 <li>exceeds the sum of the [COOLPLANT][coolplant]'s most powerful stage's [chppGpm][chppgpm]*[chppOvrunF][chppovrunf] products.</li>
 <li>Drop this input if not checking coil capacity vs pumping capacity 10-92.</li>
-<li>chppMtr .mtri  name of a [METER][meter] for recording electricity used by pump, category AUX.</li>
+<li>[chppMtr][chppmtr] .mtri  name of a [METER][meter]  for recording electricity used by pump, category AUX.</li>
 </ul></td>
 </tr><tr>
 <td colspan="4" style="border-top: 0px">
@@ -3947,7 +3925,7 @@
 <li>chcpHdlos   ft H2O &gt;= 0 Head loss in condenser chilled water loop, default 45', Niles hdLosCndLp.</li>
 <li>[chcpMotEff][chcpmoteff] frac &gt; 0   Condenser pump motor efficiency, default .88, Niles mtrEfCndPmp.</li>
 <li>[chcpHydEff][chcphydeff] frac &gt; 0   Hydraulic efficiency of condenser pump, default .70, Niles hydEfCndPmp.</li>
-<li>chcpMtr .mtri  name of a [METER][meter] for recording electricity used by pump, category AUX.</li>
+<li>[chcpMtr][chcpmtr]  .mtri  name of a [METER][meter] for recording electricity used by pump, category AUX.</li>
 <li>[CHILLER][chiller] auxiliaries user inputs, similar to those for a [BOILER][boiler] or a COIL.</li>
 </ul></td>
 </tr><tr>
@@ -4198,9 +4176,6 @@
 
 
 
-  
-  
-
 
 
 
@@ -4217,6 +4192,46 @@
       </main>
       
         <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../boiler/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Boiler">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Boiler
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../construction/" class="md-footer__link md-footer__link--next" aria-label="Next: Construction">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Construction
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -4244,7 +4259,7 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "toc.follow", "navigation.instant", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "toc.follow", "navigation.instant", "navigation.indexes", "navigation.footer"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.f1b6f286.min.js"></script>

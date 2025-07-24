@@ -1885,8 +1885,6 @@
       
         
       
-        
-      
     
     
     
@@ -2033,7 +2031,7 @@
         
   
   <span class="md-ellipsis">
-    boiler
+    Boiler
     
   </span>
   
@@ -2055,7 +2053,7 @@
         
   
   <span class="md-ellipsis">
-    chiller
+    Chiller
     
   </span>
   
@@ -2077,7 +2075,7 @@
         
   
   <span class="md-ellipsis">
-    construction
+    Construction
     
   </span>
   
@@ -2539,7 +2537,7 @@
         
   
   <span class="md-ellipsis">
-    doas
+    Doas
     
   </span>
   
@@ -2561,7 +2559,7 @@
         
   
   <span class="md-ellipsis">
-    door
+    Door
     
   </span>
   
@@ -2583,7 +2581,7 @@
         
   
   <span class="md-ellipsis">
-    export
+    Export
     
   </span>
   
@@ -2649,7 +2647,7 @@
         
   
   <span class="md-ellipsis">
-    foundation
+    Foundation
     
   </span>
   
@@ -2693,7 +2691,7 @@
         
   
   <span class="md-ellipsis">
-    gain
+    Gain
     
   </span>
   
@@ -2759,7 +2757,7 @@
         
   
   <span class="md-ellipsis">
-    holiday
+    Holiday
     
   </span>
   
@@ -2865,28 +2863,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../kiva/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    kiva
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../LOADMETER/" class="md-nav__link">
         
   
@@ -2913,7 +2889,7 @@
         
   
   <span class="md-ellipsis">
-    layer
+    Layer
     
   </span>
   
@@ -2935,7 +2911,7 @@
         
   
   <span class="md-ellipsis">
-    mass
+    Mass
     
   </span>
   
@@ -2957,7 +2933,7 @@
         
   
   <span class="md-ellipsis">
-    material
+    Material
     
   </span>
   
@@ -2979,7 +2955,7 @@
         
   
   <span class="md-ellipsis">
-    meter
+    Meter
     
   </span>
   
@@ -3111,7 +3087,7 @@
         
   
   <span class="md-ellipsis">
-    perimeter
+    Perimeter
     
   </span>
   
@@ -3177,7 +3153,7 @@
         
   
   <span class="md-ellipsis">
-    report
+    Report
     
   </span>
   
@@ -3265,7 +3241,7 @@
         
   
   <span class="md-ellipsis">
-    sgdist
+    Sgdist
     
   </span>
   
@@ -3287,7 +3263,7 @@
         
   
   <span class="md-ellipsis">
-    shade
+    Shade
     
   </span>
   
@@ -3309,7 +3285,7 @@
         
   
   <span class="md-ellipsis">
-    surface
+    Surface
     
   </span>
   
@@ -3331,7 +3307,7 @@
         
   
   <span class="md-ellipsis">
-    terminal
+    Terminal
     
   </span>
   
@@ -3353,7 +3329,7 @@
         
   
   <span class="md-ellipsis">
-    top
+    Top
     
   </span>
   
@@ -3397,7 +3373,7 @@
         
   
   <span class="md-ellipsis">
-    weather
+    Weather
     
   </span>
   
@@ -3463,7 +3439,7 @@
         
   
   <span class="md-ellipsis">
-    window
+    Window
     
   </span>
   
@@ -3485,7 +3461,7 @@
         
   
   <span class="md-ellipsis">
-    xsurf
+    Xsurf
     
   </span>
   
@@ -3507,7 +3483,7 @@
         
   
   <span class="md-ellipsis">
-    zhx
+    Zhx
     
   </span>
   
@@ -3551,7 +3527,7 @@
         
   
   <span class="md-ellipsis">
-    zone
+    Zone
     
   </span>
   
@@ -3606,8 +3582,10 @@
 
   <h1>airHandler</h1>
 
-<p><a href="" id="p_airhandler"></a></p>
-<p>input -- in addition to AUTOSIZE ahhcCaptRat, ahccCaptRat, sfanVfDs, rfanVfDs: these set FsAS field status bit.</p>
+<hr/>
+<p>title: airHandler
+---<a href="" id="p_airhandler"></a>
+input -- in addition to <a class="autorefs autorefs-internal" href="../../input-structure/#autosize">AUTOSIZE</a> ahhcCaptRat, ahccCaptRat, <a class="autorefs autorefs-internal" href="../../input-data/airhandler/#sfanvfds">sfanVfDs</a>, <a class="autorefs autorefs-internal" href="../../input-data/airhandler/#rfanvfds">rfanVfDs</a>: these set FsAS field status bit.</p>
 <div class="probe-table-sibling"></div>
 <table>
 <thead>
@@ -4218,9 +4196,9 @@
 <li>RA: controlled by return air temp.  raMn, raMx, tsMn, tsMx must be input.</li>
 <li>WZ/CZ: Warmest Zone/Coolest Zone: set ts to meet load of control zone</li>
 <li>requiring the lowest/highest ts with its VAV damper 90-100% open.</li>
-<li>ZN: choose WZ or CZ per whether terminal ahCtu's t'stat is calling for heat or cold, else ah off.</li>
+<li>ZN: choose WZ or CZ per whether terminal [ahCtu][ahctu]'s t'stat is calling for heat or cold, else ah off.</li>
 <li>defaults [ahFanCycles][ahfancycles] YES. intended for single zone systems, RESYS, PTAC.</li>
-<li>ZN2: choose WZ or CZ per whether terminal ahCtu's t'stat is calling for heat or cold, else fan only.</li>
+<li>ZN2: choose WZ or CZ per whether terminal [ahCtu][ahctu]'s t'stat is calling for heat or cold, else fan only.</li>
 <li>intended for single zone const vol systems, PSZ.</li>
 <li>ZN, ZN2 are the ONLY methods where demand determines whether zones are being heated or cooled;</li>
 <li>in other cases, if system can heat or cool zone, supply temp must be scheduled, reset by</li>
@@ -4246,13 +4224,13 @@
 <td>Start of hour</td>
 <td><ul>
 <li>YES if fan (and coil) cycles with zone thermostat; hourly;</li>
-<li>default: YES when ahTsSp==ZN (not ZN2), else NO (defaulted dynamicaly in AH::begHour).</li>
+<li>default: YES when [ahTsSp][ahtssp]==ZN (not ZN2), else NO (defaulted dynamicaly in AH::begHour).</li>
 <li>see BOO fcc for runtime testing.  6-15-92.</li>
 </ul></td>
 </tr>
 </tbody>
 </table>
-<p>min and max supply temps, always allowed, RQD when ahTsSp==RA (runtime ck), or (5-95) when ahTsSP==ZN &amp;&amp; ahFanCyles==YES.</p>
+<p>min and max supply temps, always allowed, RQD when <a class="autorefs autorefs-internal" href="../../input-data/airhandler/#ahtssp">ahTsSp</a>==RA (runtime ck), or (5-95) when ahTsSP==ZN &amp;&amp; ahFanCyles==YES.</p>
 <div class="probe-table-sibling"></div>
 <table>
 <thead>
@@ -4278,7 +4256,7 @@
 </tr>
 </tbody>
 </table>
-<p>RQD when ahTsSp is RA, else ignored;</p>
+<p>RQD when <a class="autorefs autorefs-internal" href="../../input-data/airhandler/#ahtssp">ahTsSp</a> is RA, else ignored;</p>
 <div class="probe-table-sibling"></div>
 <table>
 <thead>
@@ -4321,7 +4299,7 @@
 <td>Start of run</td>
 <td><ul>
 <li>terminal for determining whether to heat or cool under ZN, ZN2 tsu sp control.</li>
-<li>defaults to served terminal if only one, else RQD when ahTsSp is ZN or ZN2.</li>
+<li>defaults to served terminal if only one, else RQD when [ahTsSp][ahtssp] is ZN or ZN2.</li>
 </ul></td>
 </tr>
 </tbody>
@@ -4440,7 +4418,7 @@
 <li>NONE means OA flow is the minimum, above.</li>
 <li>INTEGRATED means economizer and coil do their respective things, independently.</li>
 <li>NONINTEGRATED means coil does not run when economizer is enabled</li>
-<li>(per oaLimT, oaLimE, oaMxFrac, right?)</li>
+<li>(per [oaLimT][oalimt], [oaLimE][oalime], oaMxFrac, right?)</li>
 <li>TWO_STAGE: not needed for compliance, defer implementation til I understand coils:</li>
 <li>economizer off when coil cycles on ("requires calculating % coil runtime</li>
 <li>in subhour using minimum unloading step as capacity").</li>
@@ -4469,7 +4447,7 @@
 <td>Start of hour</td>
 <td><ul>
 <li>economizer oa temp hi limit: number -50 to 999, or RA for current return air temp,</li>
-<li>hourly, dfl RA.  oa flow reduced to minimum when oa temp &gt; oaLimT.</li>
+<li>hourly, dfl RA.  oa flow reduced to minimum when oa temp &gt; [oaLimT][oalimt].</li>
 </ul></td>
 </tr>
 <tr>
@@ -5189,7 +5167,7 @@ Outputs
 <li>MOTPOSCH [sfanMotPos][sfanmotpos]   // motor/drive position: choice of INFLO (default), INRETURN, or EXTERNAL.</li>
 <li>INRETURN will be deferred/omitted if difficult (chip per taylor 3-4-92).</li>
 <li>[FANPLCH sfanPlCtrl // part-load control method, choice of VARSPEED (default), CYCLE, etc as above.]</li>
-<li>PYCUBIC2 sfanCurvePy    // part-load energy consumption curve coefficients 6-92, default linear.</li>
+<li>PYCUBIC2 [sfanCurvePy][sfancurvepy] // part-load energy consumption curve coefficients 6-92, default linear.</li>
 <li>MTR sfanMtri        // MTR to which energy use is charged 4-11-92</li>
 </ul></td>
 </tr><tr>
@@ -5618,7 +5596,7 @@ FAN runtime members, set by cnah.cpp:FAN::pute( cFlow, temp)
 <li>FRAC [rfanMotEff][rfanmoteff]       // motor/drive efficiency, constant, default .9.</li>
 <li>MOTPOSCH [rfanMotPos][rfanmotpos]   // motor/drive position: choice of INFLO (default) or EXTERNAL.</li>
 <li>[FANPLCH rfanPlCtrl // part-load control method, choice of VARSPEED, CYCLE, etc. default: same as supply fan.]</li>
-<li>PYCUBIC2 rfanCurvePy    // part-load energy consumption curve coefficients 6-92. default: same as supply fan.</li>
+<li>PYCUBIC2 [rfanCurvePy][rfancurvepy] // part-load energy consumption curve coefficients 6-92. default: same as supply fan.</li>
 <li>MTR rfanMtri        // MTR to which energy use is charged 4-11-92</li>
 </ul></td>
 </tr><tr>
@@ -8384,7 +8362,7 @@ COOLCOIL runtime members
 <td><ul>
 <li>TRUE if fan cycles: fan runs only fraction of subhour requested by control terminal, else off.</li>
 <li>when on, fan runs full flow and coil usually at a high power.</li>
-<li>set hourly from [ahFanCycles][ahfancycles] else ahTsSp==ZN by AH::begHour.</li>
+<li>set hourly from [ahFanCycles][ahfancycles] else [ahTsSp][ahtssp]==ZN by AH::begHour.</li>
 <li>when TRUE: frFanOn is fraction time on for fan (and usually coil).</li>
 <li>flows and powers become average, divide by frFanOn for fan-on value.</li>
 <li>ah Temps, w's, plr's, po remain fan-on values.</li>
@@ -8403,7 +8381,7 @@ COOLCOIL runtime members
 <td>End of subhour</td>
 <td><ul>
 <li>TEMP</li>
-<li>ahTsSp as number: WZ/CZ/ZN/ZN2 resolved to temp now needed, set by AH::setTsSp1.</li>
+<li>[ahTsSp][ahtssp] as number: WZ/CZ/ZN/ZN2 resolved to temp now needed, set by AH::setTsSp1.</li>
 </ul></td>
 </tr>
 <tr>
@@ -8526,7 +8504,7 @@ COOLCOIL runtime members
 <td>End of subhour</td>
 <td><ul>
 <li>compute-flag: set if must call ahCompute and it should unconditionally recompute this AH:</li>
-<li>setters include: exman chaf's for ahTsSp, ahSch, ahhc.sched, ahcc.sched, etc;</li>
+<li>setters include: exman chaf's for [ahTsSp][ahtssp], ahSch, ahhc.sched, ahcc.sched, etc;</li>
 <li>AH::estimate, ahCompute, ah_SetMode, ; ZNR::ztuMdSets, .</li>
 <li>tested: hvacIterSubhr(), AH::ahCompute. cleared: AH::ahCompute.</li>
 </ul></td>
@@ -8549,9 +8527,6 @@ COOLCOIL runtime members
 
 
 
-  
-  
-
 
 
 
@@ -8568,6 +8543,46 @@ COOLCOIL runtime members
       </main>
       
         <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../ahRes/" class="md-footer__link md-footer__link--prev" aria-label="Previous: ahRes">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                ahRes
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../Battery/" class="md-footer__link md-footer__link--next" aria-label="Next: Battery">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Battery
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -8595,7 +8610,7 @@ COOLCOIL runtime members
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "toc.follow", "navigation.instant", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "toc.follow", "navigation.instant", "navigation.indexes", "navigation.footer"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.f1b6f286.min.js"></script>

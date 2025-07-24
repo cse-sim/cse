@@ -752,6 +752,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#gtpyshgc" class="md-nav__link">
+    <span class="md-ellipsis">
+      gtPySHGC
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#gtdmshgc" class="md-nav__link">
     <span class="md-ellipsis">
       gtDMSHGC
@@ -2066,8 +2075,6 @@
       
         
       
-        
-      
     
     
     
@@ -2206,7 +2213,7 @@
         
   
   <span class="md-ellipsis">
-    boiler
+    Boiler
     
   </span>
   
@@ -2228,7 +2235,7 @@
         
   
   <span class="md-ellipsis">
-    chiller
+    Chiller
     
   </span>
   
@@ -2250,7 +2257,7 @@
         
   
   <span class="md-ellipsis">
-    construction
+    Construction
     
   </span>
   
@@ -2712,7 +2719,7 @@
         
   
   <span class="md-ellipsis">
-    doas
+    Doas
     
   </span>
   
@@ -2734,7 +2741,7 @@
         
   
   <span class="md-ellipsis">
-    door
+    Door
     
   </span>
   
@@ -2756,7 +2763,7 @@
         
   
   <span class="md-ellipsis">
-    export
+    Export
     
   </span>
   
@@ -2822,7 +2829,7 @@
         
   
   <span class="md-ellipsis">
-    foundation
+    Foundation
     
   </span>
   
@@ -2866,7 +2873,7 @@
         
   
   <span class="md-ellipsis">
-    gain
+    Gain
     
   </span>
   
@@ -2932,7 +2939,7 @@
         
   
   <span class="md-ellipsis">
-    holiday
+    Holiday
     
   </span>
   
@@ -3038,28 +3045,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../probe-definitions/kiva/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    kiva
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../probe-definitions/LOADMETER/" class="md-nav__link">
         
   
@@ -3086,7 +3071,7 @@
         
   
   <span class="md-ellipsis">
-    layer
+    Layer
     
   </span>
   
@@ -3108,7 +3093,7 @@
         
   
   <span class="md-ellipsis">
-    mass
+    Mass
     
   </span>
   
@@ -3130,7 +3115,7 @@
         
   
   <span class="md-ellipsis">
-    material
+    Material
     
   </span>
   
@@ -3152,7 +3137,7 @@
         
   
   <span class="md-ellipsis">
-    meter
+    Meter
     
   </span>
   
@@ -3284,7 +3269,7 @@
         
   
   <span class="md-ellipsis">
-    perimeter
+    Perimeter
     
   </span>
   
@@ -3350,7 +3335,7 @@
         
   
   <span class="md-ellipsis">
-    report
+    Report
     
   </span>
   
@@ -3438,7 +3423,7 @@
         
   
   <span class="md-ellipsis">
-    sgdist
+    Sgdist
     
   </span>
   
@@ -3460,7 +3445,7 @@
         
   
   <span class="md-ellipsis">
-    shade
+    Shade
     
   </span>
   
@@ -3482,7 +3467,7 @@
         
   
   <span class="md-ellipsis">
-    surface
+    Surface
     
   </span>
   
@@ -3504,7 +3489,7 @@
         
   
   <span class="md-ellipsis">
-    terminal
+    Terminal
     
   </span>
   
@@ -3526,7 +3511,7 @@
         
   
   <span class="md-ellipsis">
-    top
+    Top
     
   </span>
   
@@ -3570,7 +3555,7 @@
         
   
   <span class="md-ellipsis">
-    weather
+    Weather
     
   </span>
   
@@ -3636,7 +3621,7 @@
         
   
   <span class="md-ellipsis">
-    window
+    Window
     
   </span>
   
@@ -3658,7 +3643,7 @@
         
   
   <span class="md-ellipsis">
-    xsurf
+    Xsurf
     
   </span>
   
@@ -3680,7 +3665,7 @@
         
   
   <span class="md-ellipsis">
-    zhx
+    Zhx
     
   </span>
   
@@ -3724,7 +3709,7 @@
         
   
   <span class="md-ellipsis">
-    zone
+    Zone
     
   </span>
   
@@ -3835,6 +3820,15 @@
   <a href="#gtfmult" class="md-nav__link">
     <span class="md-ellipsis">
       gtFMult
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gtpyshgc" class="md-nav__link">
+    <span class="md-ellipsis">
+      gtPySHGC
     </span>
   </a>
   
@@ -4119,7 +4113,8 @@
 </tr>
 </tbody>
 </table>
-<p><strong>gtPySHGC =<em>float</em></strong></p>
+<h3 id="gtpyshgc">gtPySHGC</h3>
+<p>Type: <em>float</em></p>
 <p>Four float values separated by commas. Coefficients for incidence angle SHGC multiplier polynomial applied to <a class="autorefs autorefs-internal" href="#gtshgc">gtSHGC</a> to determine beam transmissivity at angles of incidence other than 90 degrees. The values are coefficients for first through fourth powers of the cosine of the incidence angle; there is no constant part. An error message will be issued if the coefficients do not add to one. They are used in the following computation:</p>
 <p>angle = incidence angle of beam radiation, measured from normal to glass.</p>
 <p>cosI = cos( angle)</p>
@@ -4341,6 +4336,46 @@
       
         <footer class="md-footer">
   
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../layer/" class="md-footer__link md-footer__link--prev" aria-label="Previous: LAYER">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                LAYER
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../meter/" class="md-footer__link md-footer__link--next" aria-label="Next: METER">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                METER
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
       <div class="md-copyright">
@@ -4367,7 +4402,7 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "toc.follow", "navigation.instant", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "toc.follow", "navigation.instant", "navigation.indexes", "navigation.footer"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.f1b6f286.min.js"></script>

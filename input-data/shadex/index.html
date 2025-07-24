@@ -1446,6 +1446,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#sxvertices" class="md-nav__link">
+    <span class="md-ellipsis">
+      sxVertices
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#endshadex" class="md-nav__link">
     <span class="md-ellipsis">
       endSHADEX
@@ -1958,8 +1967,6 @@
       
         
       
-        
-      
     
     
     
@@ -2098,7 +2105,7 @@
         
   
   <span class="md-ellipsis">
-    boiler
+    Boiler
     
   </span>
   
@@ -2120,7 +2127,7 @@
         
   
   <span class="md-ellipsis">
-    chiller
+    Chiller
     
   </span>
   
@@ -2142,7 +2149,7 @@
         
   
   <span class="md-ellipsis">
-    construction
+    Construction
     
   </span>
   
@@ -2604,7 +2611,7 @@
         
   
   <span class="md-ellipsis">
-    doas
+    Doas
     
   </span>
   
@@ -2626,7 +2633,7 @@
         
   
   <span class="md-ellipsis">
-    door
+    Door
     
   </span>
   
@@ -2648,7 +2655,7 @@
         
   
   <span class="md-ellipsis">
-    export
+    Export
     
   </span>
   
@@ -2714,7 +2721,7 @@
         
   
   <span class="md-ellipsis">
-    foundation
+    Foundation
     
   </span>
   
@@ -2758,7 +2765,7 @@
         
   
   <span class="md-ellipsis">
-    gain
+    Gain
     
   </span>
   
@@ -2824,7 +2831,7 @@
         
   
   <span class="md-ellipsis">
-    holiday
+    Holiday
     
   </span>
   
@@ -2930,28 +2937,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../probe-definitions/kiva/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    kiva
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../probe-definitions/LOADMETER/" class="md-nav__link">
         
   
@@ -2978,7 +2963,7 @@
         
   
   <span class="md-ellipsis">
-    layer
+    Layer
     
   </span>
   
@@ -3000,7 +2985,7 @@
         
   
   <span class="md-ellipsis">
-    mass
+    Mass
     
   </span>
   
@@ -3022,7 +3007,7 @@
         
   
   <span class="md-ellipsis">
-    material
+    Material
     
   </span>
   
@@ -3044,7 +3029,7 @@
         
   
   <span class="md-ellipsis">
-    meter
+    Meter
     
   </span>
   
@@ -3176,7 +3161,7 @@
         
   
   <span class="md-ellipsis">
-    perimeter
+    Perimeter
     
   </span>
   
@@ -3242,7 +3227,7 @@
         
   
   <span class="md-ellipsis">
-    report
+    Report
     
   </span>
   
@@ -3330,7 +3315,7 @@
         
   
   <span class="md-ellipsis">
-    sgdist
+    Sgdist
     
   </span>
   
@@ -3352,7 +3337,7 @@
         
   
   <span class="md-ellipsis">
-    shade
+    Shade
     
   </span>
   
@@ -3374,7 +3359,7 @@
         
   
   <span class="md-ellipsis">
-    surface
+    Surface
     
   </span>
   
@@ -3396,7 +3381,7 @@
         
   
   <span class="md-ellipsis">
-    terminal
+    Terminal
     
   </span>
   
@@ -3418,7 +3403,7 @@
         
   
   <span class="md-ellipsis">
-    top
+    Top
     
   </span>
   
@@ -3462,7 +3447,7 @@
         
   
   <span class="md-ellipsis">
-    weather
+    Weather
     
   </span>
   
@@ -3528,7 +3513,7 @@
         
   
   <span class="md-ellipsis">
-    window
+    Window
     
   </span>
   
@@ -3550,7 +3535,7 @@
         
   
   <span class="md-ellipsis">
-    xsurf
+    Xsurf
     
   </span>
   
@@ -3572,7 +3557,7 @@
         
   
   <span class="md-ellipsis">
-    zhx
+    Zhx
     
   </span>
   
@@ -3616,7 +3601,7 @@
         
   
   <span class="md-ellipsis">
-    zone
+    Zone
     
   </span>
   
@@ -3673,6 +3658,15 @@
   <a href="#sxmounting" class="md-nav__link">
     <span class="md-ellipsis">
       sxMounting
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sxvertices" class="md-nav__link">
+    <span class="md-ellipsis">
+      sxVertices
     </span>
   </a>
   
@@ -3755,7 +3749,8 @@
 </tr>
 </tbody>
 </table>
-<p><strong>sxVertices=<em>list of up to 36 floats</em></strong></p>
+<h3 id="sxvertices">sxVertices</h3>
+<p>Type: <em>list of up to 36 floats</em></p>
 <p>Vertices of a polygon representing the shape of the shading object.</p>
 <p>The values that follow sxVertices are a series of X, Y, and Z values for the vertices of the polygon. The coordinate system is defined from a viewpoint facing north.  X and Y values convey east-west and north-south location respectively relative to an arbitrary origin (positive X value are to the east; positive Y values are to the north).  Z values convey height relative to the building 0 level and positive values are upward.</p>
 <p>The vertices are specified in counter-clockwise order when facing the shading object from the south.  The number of values provided must be a multiple of 3.  The defined polygon must be planar and have no crossing edges.  When sxType=Building, the effective position of the polygon reflects building rotation specified by <a class="autorefs autorefs-internal" href="../top-members/#top-general-data-items">TOP bldgAzm</a>.</p>
@@ -3834,6 +3829,46 @@
       
         <footer class="md-footer">
   
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../pvarray/" class="md-footer__link md-footer__link--prev" aria-label="Previous: PVARRAY">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                PVARRAY
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../battery/" class="md-footer__link md-footer__link--next" aria-label="Next: BATTERY">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                BATTERY
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
       <div class="md-copyright">
@@ -3860,7 +3895,7 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "toc.follow", "navigation.instant", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "toc.follow", "navigation.instant", "navigation.indexes", "navigation.footer"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.f1b6f286.min.js"></script>
