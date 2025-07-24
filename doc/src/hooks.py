@@ -630,14 +630,19 @@ text_to_slug = {
     "rsFChgC": slugify("rsFChgC, rsFChg"),
     "rsFChg": slugify("rsFChgC, rsFChg"),
     "wsFaucetCount": slugify(
-        "wsFaucetCount, wsBathCount, wsCWashrCount, wsDWashrCount"
+        "wsFaucetCount, wsShowerCount, wsBathCount, wsCWashrCount, wsDWashrCount"
     ),
-    "wsBathCount": slugify("wsFaucetCount, wsBathCount, wsCWashrCount, wsDWashrCount"),
+    "wsShowerCount": slugify(
+        "wsFaucetCount, wsShowerCount, wsBathCount, wsCWashrCount, wsDWashrCount"
+    ),
+    "wsBathCount": slugify(
+        "wsFaucetCount, wsShowerCount, wsBathCount, wsCWashrCount, wsDWashrCount"
+    ),
     "wsCWashrCount": slugify(
-        "wsFaucetCount, wsBathCount, wsCWashrCount, wsDWashrCount"
+        "wsFaucetCount, wsShowerCount, wsBathCount, wsCWashrCount, wsDWashrCount"
     ),
     "wsDWashrCount": slugify(
-        "wsFaucetCount, wsBathCount, wsCWashrCount, wsDWashrCount"
+        "wsFaucetCount, wsShowerCount, wsBathCount, wsCWashrCount, wsDWashrCount"
     ),
 }
 

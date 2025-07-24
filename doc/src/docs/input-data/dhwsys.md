@@ -116,7 +116,7 @@ Number of identical systems of this type (including all child objects). Any valu
   })
 }}
 
-### wsFaucetCount, wsBathCount, wsCWashrCount, wsDWashrCount
+### wsFaucetCount, wsShowerCount, wsBathCount, wsCWashrCount, wsDWashrCount
 
 Type: integer
 
