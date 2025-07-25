@@ -12,4 +12,7 @@ dist/
 **/probe-definitions/*.md
 !**/probe-definitions/index.md
 
+probes.txt
+cullist.txt
+
 .DS_Store
