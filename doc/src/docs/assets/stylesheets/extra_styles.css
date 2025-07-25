@@ -101,3 +101,7 @@ Workaround term requiring margin-top fix
 .probe-table-sibling + * table:not([class]) th:first-child {
   width: 25%;
 }
+
+.md-typeset img {
+  max-width: 50%;
+}
