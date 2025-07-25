@@ -1,4 +1,4 @@
-**whName**
+### whName
 
 Optional name of water heater; give after the word “DHWHEATER” if desired.
 
