@@ -3,6 +3,7 @@ import re
 from typing import Dict, Set, Optional, Any, List
 import copy
 import subprocess
+import argparse
 
 
 class CoverageCheck:
@@ -499,7 +500,7 @@ class CoverageCheck:
     def check(self):
         all_file_paths_in_input_data = [
             path
-            for path in path_to_input_data.iterdir()
+            for path in self.path_to_input_data.iterdir()
             if path.is_file() and path.name not in self.IGNORED_INPUT_DATA_FILE_PATHS
         ]
 
@@ -577,10 +578,27 @@ class CoverageCheck:
 
 
 if __name__ == "__main__":
-    path_to_cse = Path(__file__).parent.parent.parent / "builds" / "cse-appleclang-64"
-    path_to_input_data = Path(__file__).parent / "docs" / "input-data"
+    parser = argparse.ArgumentParser(
+        description="Coverage Checker for CSE Documenation built with Mkdocs"
+    )
+    parser.add_argument(
+        "--path_to_cse",
+        type=str,
+        help="The path to the CSE executable.",
+    )
 
-    coverage_checker = CoverageCheck(path_to_cse, path_to_input_data)
+    parser.add_argument(
+        "--path_to_input_data",
+        type=str,
+        help="The path to the documentation's input-data folder.",
+        default=((Path(__file__).parent / "docs" / "input-data").resolve().absolute()),
+    )
+
+    args = parser.parse_args()
+
+    coverage_checker = CoverageCheck(
+        Path(args.path_to_cse), Path(args.path_to_input_data)
+    )
 
     if coverage_checker.passed:
         print("Passed!")
