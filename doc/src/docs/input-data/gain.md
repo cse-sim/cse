@@ -85,7 +85,7 @@ Type: choice
 
 Meter end use to which the GAIN's energy use should be accumulated.
 
-{% include 'enduses.md' %}
+{% include 'shared/enduses.md' %}
 
 
 {{

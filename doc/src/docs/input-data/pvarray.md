@@ -38,7 +38,7 @@ Type: choice
 
 Meter end use to which the PVARRAY's generated energy should be accumulated.
 
-{% include 'enduses.md' %}
+{% include 'shared/enduses.md' %}
 
 {{
   member_table({

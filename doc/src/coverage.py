@@ -509,7 +509,7 @@ class CoverageCheck:
 
         shared_map = {}
         for k, v in self.SHARED.items():
-            path = self.path_to_input_data.parent.parent / "shared" / v
+            path = self.path_to_input_data.parent / "shared" / v
             headings = self.read_record_document(path, expect_orphan_data_items=True)
             shared_map[k] = headings["orphan_members"]
 
