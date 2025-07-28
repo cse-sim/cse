@@ -1,3 +1,0 @@
-# HPLOOP
-
-To be written.
