@@ -1164,6 +1164,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#whname" class="md-nav__link">
+    <span class="md-ellipsis">
+      whName
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#whmult" class="md-nav__link">
     <span class="md-ellipsis">
       whMult
@@ -3943,6 +3952,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#whname" class="md-nav__link">
+    <span class="md-ellipsis">
+      whName
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#whmult" class="md-nav__link">
     <span class="md-ellipsis">
       whMult
@@ -4296,7 +4314,7 @@
 
 <h1 id="dhwheater">DHWHEATER</h1>
 <p>DHWHEATER constructs an object representing a domestic hot water heater (or several if identical).</p>
-<p><strong>whName</strong></p>
+<h3 id="whname">whName</h3>
 <p>Optional name of water heater; give after the word “DHWHEATER” if desired.</p>
 <div class="member-table-sibling"></div>
 <table>
@@ -4401,7 +4419,7 @@
 <h3 id="whheatsrc">whHeatSrc</h3>
 <p>Type: choice</p>
 <p>Heat source for water heater.  CSE implements uses efficiency-based models for
-all whTypes (as documented in RACM, App. B).  In addition, the detailed Ecotope HPWH model is
+all <a class="autorefs autorefs-internal" href="#whtype">whTypes</a> (as documented in RACM, App. B).  In addition, the detailed Ecotope HPWH model is
 available for electric (air source heat pump and resistance) SMALLSTORAGE water heaters.</p>
 <div class="no-header-table"></div>
 <table>
@@ -4414,7 +4432,7 @@ available for electric (air source heat pump and resistance) SMALLSTORAGE water 
 <tbody>
 <tr>
 <td>RESISTANCE</td>
-<td>Electric resistance heating element Deprecated for whType=SMALLSTORAGE (use RESISTANCEX)</td>
+<td>Electric resistance heating element Deprecated for <a class="autorefs autorefs-internal" href="#whtype">whType</a>=SMALLSTORAGE (use RESISTANCEX)</td>
 </tr>
 <tr>
 <td>RESISTANCEX</td>
@@ -4422,7 +4440,7 @@ available for electric (air source heat pump and resistance) SMALLSTORAGE water 
 </tr>
 <tr>
 <td>ASHP</td>
-<td>Air source heat pump, EF model Deprecated for whType=SMALLSTORAGE (use ASHPX)</td>
+<td>Air source heat pump, EF model Deprecated for <a class="autorefs autorefs-internal" href="#whtype">whType</a>=SMALLSTORAGE (use ASHPX)</td>
 </tr>
 <tr>
 <td>ASHPX</td>
@@ -4457,7 +4475,7 @@ available for electric (air source heat pump and resistance) SMALLSTORAGE water 
 </table>
 <h3 id="whrestype">whResType</h3>
 <p>Type: choice</p>
-<p>Resistance heater type, valid only if whHeatSrc is equal to RESISTANCEX, else ignored. These choices are supported by the detailed HPWH model.  Except for Generic, all heater characteristics are set by HPWH based on whResType.</p>
+<p>Resistance heater type, valid only if <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a> is equal to RESISTANCEX, else ignored. These choices are supported by the detailed HPWH model.  Except for Generic, all heater characteristics are set by HPWH based on whResType.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -4512,7 +4530,7 @@ available for electric (air source heat pump and resistance) SMALLSTORAGE water 
 </table>
 <h3 id="whvol">whVol</h3>
 <p>Type: float</p>
-<p>Storage tank volume. Must be omitted or 0 for instantaneous whTypes.  Used by HPWH model (whHeatSrc=RESISTANCEX or whHeatSrc=ASHPX). Required when whHeatSrc=RESISTANCEX or whHeatSrc=ASHPX with whASHPType=GENERIC.  For all other configurations, whVol is documentation-only.</p>
+<p>Storage tank volume. Must be omitted or 0 for instantaneous <a class="autorefs autorefs-internal" href="#whtype">whTypes</a>.  Used by HPWH model (<a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=RESISTANCEX or <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=ASHPX). Required when <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=RESISTANCEX or <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=ASHPX with <a class="autorefs autorefs-internal" href="#whashptype">whASHPType</a>=GENERIC.  For all other configurations, whVol is documentation-only.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -4528,7 +4546,7 @@ available for electric (air source heat pump and resistance) SMALLSTORAGE water 
 <tr>
 <td>gal</td>
 <td><span class="arithmatex">\(\ge\)</span> 0.1 (caution: small values may cause runtime errors)</td>
-<td>per whASHPType if HPWH else 50</td>
+<td>per <a class="autorefs autorefs-internal" href="#whashptype">whASHPType</a> if HPWH else 50</td>
 <td>For some HPWH configurations, see above</td>
 <td>constant</td>
 </tr>
@@ -4573,27 +4591,27 @@ below.  Calculation methods are documented in RACM, Appendix B.</p>
 </thead>
 <tbody>
 <tr>
-<td>whType=SMALLSTORAGE, whHeatSrc=RESISTANCE or FUEL</td>
+<td><a class="autorefs autorefs-internal" href="#whtype">whType</a>=SMALLSTORAGE, <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=RESISTANCE or FUEL</td>
 <td>0.82</td>
-<td>Derivation of whLDEF</td>
+<td>Derivation of <a class="autorefs autorefs-internal" href="#whldef">whLDEF</a></td>
 </tr>
 <tr>
-<td>whType=SMALLSTORAGE, whHeatSrc=ASHP</td>
+<td><a class="autorefs autorefs-internal" href="#whtype">whType</a>=SMALLSTORAGE, <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=ASHP</td>
 <td>0.82</td>
 <td>Derivation of whLDEFnote inappropriate default (deprecated, use ASHPX)</td>
 </tr>
 <tr>
-<td>whType=SMALLSTORAGE, whHeatSrc=ASHPX, whASHPType=GENERIC</td>
+<td><a class="autorefs autorefs-internal" href="#whtype">whType</a>=SMALLSTORAGE, <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=ASHPX, <a class="autorefs autorefs-internal" href="#whashptype">whASHPType</a>=GENERIC</td>
 <td>(req'd)</td>
 <td>Tank losses Overall efficiency</td>
 </tr>
 <tr>
-<td>whType=SMALLSTORAGE, whHeatSrc=RESISTANCEX</td>
+<td><a class="autorefs autorefs-internal" href="#whtype">whType</a>=SMALLSTORAGE, <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=RESISTANCEX</td>
 <td>(req'd)</td>
 <td>Tank losses Note: maximum whEF=0.98.</td>
 </tr>
 <tr>
-<td>whType=SMALLINSTANTANEOUS, whHeatSrc=RESISTANCE or FUEL</td>
+<td><a class="autorefs autorefs-internal" href="#whtype">whType</a>=SMALLINSTANTANEOUS, <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=RESISTANCE or FUEL</td>
 <td>0.82</td>
 <td>Annual efficiency = whEF*0.92</td>
 </tr>
@@ -4627,8 +4645,8 @@ below.  Calculation methods are documented in RACM, Appendix B.</p>
 </table>
 <h3 id="whldef">whLDEF</h3>
 <p>Type: float</p>
-<p>Load-dependent energy factor for DHWHEATERs with whType=SMALLSTORAGE and whHeatSrc=FUEL
-or whHeatSrc=RESISTANCE.  If not given, whLDEF is derived using a preliminary simulation
+<p>Load-dependent energy factor for DHWHEATERs with <a class="autorefs autorefs-internal" href="#whtype">whType</a>=SMALLSTORAGE and <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=FUEL
+or <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=RESISTANCE.  If not given, whLDEF is derived using a preliminary simulation
 activated via <a class="autorefs autorefs-internal" href="../dhwsys/#dhwsys">DHWSYS</a> <a class="autorefs autorefs-internal" href="../dhwsys/#wscalcmode">wsCalcMode</a>=PRERUN.  See RACM Appendix B.</p>
 <div class="member-table-sibling"></div>
 <table>
@@ -4646,15 +4664,15 @@ activated via <a class="autorefs autorefs-internal" href="../dhwsys/#dhwsys">DHW
 <td></td>
 <td>x <span class="arithmatex">\(&gt;\)</span> 0</td>
 <td>Calculated via <a class="autorefs autorefs-internal" href="../dhwsys/#dhwsys">DHWSYS</a> PreRun mechanism</td>
-<td>When whType = SMALLSTORAGE and PreRun not used</td>
+<td>When <a class="autorefs autorefs-internal" href="#whtype">whType</a> = SMALLSTORAGE and PreRun not used</td>
 <td>constant</td>
 </tr>
 </tbody>
 </table>
 <h3 id="whuef">whUEF</h3>
 <p>Type: float</p>
-<p>Water heater Uniform Energy Factor efficiency rating. Required when whType=INSTANTANEOUSUEF. When specified with
-whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adjusted to match the value input here. </p>
+<p>Water heater Uniform Energy Factor efficiency rating. Required when <a class="autorefs autorefs-internal" href="#whtype">whType</a>=INSTANTANEOUSUEF. When specified with
+<a class="autorefs autorefs-internal" href="#whtype">whType</a>=SMALLSTORAGE and <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=ASHPX, the compressor performance will be adjusted to match the value input here. </p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -4671,14 +4689,14 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 <td></td>
 <td>x <span class="arithmatex">\(\ge\)</span> 0</td>
 <td><em>none</em></td>
-<td>when whType= INSTANTANEOUSUEF</td>
+<td>when <a class="autorefs autorefs-internal" href="#whtype">whType</a>= INSTANTANEOUSUEF</td>
 <td>constant</td>
 </tr>
 </tbody>
 </table>
 <h3 id="whannualelec">whAnnualElec</h3>
 <p>Type: float</p>
-<p>Annual electricity use assumed in UEF rating derivation.  Used when whType=INSTANTANEOUSUEF.</p>
+<p>Annual electricity use assumed in UEF rating derivation.  Used when <a class="autorefs autorefs-internal" href="#whtype">whType</a>=INSTANTANEOUSUEF.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -4695,14 +4713,14 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 <td>kWh</td>
 <td>x <span class="arithmatex">\(\ge\)</span> 0</td>
 <td><em>none</em></td>
-<td>when whType= INSTANTANEOUSUEF</td>
+<td>when <a class="autorefs autorefs-internal" href="#whtype">whType</a>= INSTANTANEOUSUEF</td>
 <td>constant</td>
 </tr>
 </tbody>
 </table>
 <h3 id="whannualfuel">whAnnualFuel</h3>
 <p>Type: float</p>
-<p>Annual fuel use assumd in UEF rating derivation, used when whType=INSTANTANEOUSUEF.</p>
+<p>Annual fuel use assumd in UEF rating derivation, used when <a class="autorefs autorefs-internal" href="#whtype">whType</a>=INSTANTANEOUSUEF.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -4719,14 +4737,14 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 <td>therms</td>
 <td>x <span class="arithmatex">\(\ge\)</span> 0</td>
 <td><em>none</em></td>
-<td>when whType= INSTANTANEOUSUEF</td>
+<td>when <a class="autorefs autorefs-internal" href="#whtype">whType</a>= INSTANTANEOUSUEF</td>
 <td>constant</td>
 </tr>
 </tbody>
 </table>
 <h3 id="whratedflow">whRatedFlow</h3>
 <p>Type: float</p>
-<p>Maximum flow rate assumed in UEF rating derivation.  Used when whType=INSTANTANEOUSUEF.</p>
+<p>Maximum flow rate assumed in UEF rating derivation.  Used when <a class="autorefs autorefs-internal" href="#whtype">whType</a>=INSTANTANEOUSUEF.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -4743,14 +4761,14 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 <td>gpm</td>
 <td>x <span class="arithmatex">\(&gt;\)</span> 0</td>
 <td><em>none</em></td>
-<td>when whType= INSTANTANEOUSUEF</td>
+<td>when <a class="autorefs autorefs-internal" href="#whtype">whType</a>= INSTANTANEOUSUEF</td>
 <td>constant</td>
 </tr>
 </tbody>
 </table>
 <h3 id="whstbyelec">whStbyElec</h3>
 <p>Type: float</p>
-<p>Instantaneous water heater standby power (electricity consumed when heater is not operating).  Used when whType=INSTANTANEOUSUEF.</p>
+<p>Instantaneous water heater standby power (electricity consumed when heater is not operating).  Used when <a class="autorefs autorefs-internal" href="#whtype">whType</a>=INSTANTANEOUSUEF.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -4774,7 +4792,7 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 </table>
 <h3 id="whloadcfwdf">whLoadCFwdF</h3>
 <p>Type: float</p>
-<p>Instanteous water heater load carry forward factor -- approximate number of hours the heater is allowed to meet water heating demand that is unmet on a 1 minute basis, used when whType=INSTANTANEOUSUEF.</p>
+<p>Instanteous water heater load carry forward factor -- approximate number of hours the heater is allowed to meet water heating demand that is unmet on a 1 minute basis, used when <a class="autorefs autorefs-internal" href="#whtype">whType</a>=INSTANTANEOUSUEF.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -4798,8 +4816,8 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 </table>
 <h3 id="whzone">whZone</h3>
 <p>Type: <a class="autorefs autorefs-internal" href="../zone/#znname">znName</a></p>
-<p>Name of zone where water heater is located, used only in detailed HPWH models (whHeatSrc=ASHPX or whHeatSrc=RESISTANCEX), otherwise no effect. Zone conditions are used for tank heat loss calculations.  Heat losses from the DHWHEATER are included in the zone heat balance.  whZone also provides the default for whASHPSrcZn (see below).</p>
-<p>whZone and whTEx cannot both be specified.</p>
+<p>Name of zone where water heater is located, used only in detailed HPWH models (<a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=ASHPX or <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=RESISTANCEX), otherwise no effect. Zone conditions are used for tank heat loss calculations.  Heat losses from the DHWHEATER are included in the zone heat balance.  whZone also provides the default for <a class="autorefs autorefs-internal" href="#whashpsrczn">whASHPSrcZn</a> (see below).</p>
+<p>whZone and <a class="autorefs autorefs-internal" href="#whtex">whTEx</a> cannot both be specified.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -4823,8 +4841,8 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 </table>
 <h3 id="whtex">whTEx</h3>
 <p>Type: float</p>
-<p>Water heater surround temperature, used only in detailed HPWH models (whHeatSrc=ASHPX or whHeatSrc=RESISTANCEX), otherwise no effect.  When whTEx is specified, tank heat losses are calculated using whTEx and modify tank water temperatures, but the lost heat has no external effect.</p>
-<p>whZone and whTEx cannot both be specified.</p>
+<p>Water heater surround temperature, used only in detailed HPWH models (<a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=ASHPX or <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=RESISTANCEX), otherwise no effect.  When whTEx is specified, tank heat losses are calculated using whTEx and modify tank water temperatures, but the lost heat has no external effect.</p>
+<p><a class="autorefs autorefs-internal" href="#whzone">whZone</a> and whTEx cannot both be specified.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -4840,7 +4858,7 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 <tr>
 <td><sup>o</sup>F</td>
 <td>x <span class="arithmatex">\(\ge\)</span> 0</td>
-<td>whZone air temperature if specified, else 70 <sup>o</sup>F</td>
+<td><a class="autorefs autorefs-internal" href="#whzone">whZone</a> air temperature if specified, else 70 <sup>o</sup>F</td>
 <td>No</td>
 <td>hourly</td>
 </tr>
@@ -4848,7 +4866,7 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 </table>
 <h3 id="whashptype">whASHPType</h3>
 <p>Type: choice</p>
-<p>Air source heat pump type, valid only if whHeatSrc=ASHPX. These choices are supported by the detailed HPWH model.  Except for Generic, all heater characteristics are set by HPWH based on whASHPType.</p>
+<p>Air source heat pump type, valid only if <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=ASHPX. These choices are supported by the detailed HPWH model.  Except for Generic, all heater characteristics are set by HPWH based on whASHPType.</p>
 <table>
 <thead>
 <tr>
@@ -5105,12 +5123,12 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 </tr>
 <tr>
 <td>ResTank</td>
-<td>Resistance heater (no compressor).  Superceded by whHeatSrc=RESITANCEX</td>
+<td>Resistance heater (no compressor).  Superceded by <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=RESITANCEX</td>
 <td></td>
 </tr>
 <tr>
 <td>ResTankNoUA</td>
-<td>Resistance heater (no compressor) with no tank losses.  Superseded by whHeatSrc=RESISTANCEX.</td>
+<td>Resistance heater (no compressor) with no tank losses.  Superseded by <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=RESISTANCEX.</td>
 <td></td>
 </tr>
 <tr>
@@ -5441,15 +5459,15 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 <td></td>
 <td><em>Codes listed above</em></td>
 <td><em>none</em></td>
-<td>When whHeatSrc=ASHPX</td>
+<td>When <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=ASHPX</td>
 <td>constant</td>
 </tr>
 </tbody>
 </table>
 <h3 id="whashpsrczn">whASHPSrcZn</h3>
 <p>Type: <a class="autorefs autorefs-internal" href="../zone/#znname">znName</a></p>
-<p>Name of zone that serves as heat pump heat source used when whHeatSrc=ASHPX. Heat removed from the zone is added to the heated water and is included in zone heat balance (that is, heat pump operation cools the zone).</p>
-<p>whASHPSrcZn and whASHPSrcT cannot both be specified.</p>
+<p>Name of zone that serves as heat pump heat source used when <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=ASHPX. Heat removed from the zone is added to the heated water and is included in zone heat balance (that is, heat pump operation cools the zone).</p>
+<p>whASHPSrcZn and <a class="autorefs autorefs-internal" href="#whashpsrct">whASHPSrcT</a> cannot both be specified.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -5473,8 +5491,8 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 </table>
 <h3 id="whashpsrct">whASHPSrcT</h3>
 <p>Type: float</p>
-<p>Heat pump source air temperature used when whHeatSrc=ASHPX.  Heat removed from this source is added to the heated water but has no other effect.</p>
-<p>whASHPSrcZn and whASHPSrcT cannot both be specified.</p>
+<p>Heat pump source air temperature used when <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=ASHPX.  Heat removed from this source is added to the heated water but has no other effect.</p>
+<p><a class="autorefs autorefs-internal" href="#whashpsrczn">whASHPSrcZn</a> and whASHPSrcT cannot both be specified.</p>
 <p>The logic to determine the temperature of the heat pump source air is:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a>        if whASHPSrcT is specified
 </span><span id="__span-0-2"><a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a>          use whASHPSrcT
@@ -5485,7 +5503,7 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 </span><span id="__span-0-7"><a href="#__codelineno-0-7" id="__codelineno-0-7" name="__codelineno-0-7"></a>        else
 </span><span id="__span-0-8"><a href="#__codelineno-0-8" id="__codelineno-0-8" name="__codelineno-0-8"></a>          use 70 F
 </span></code></pre></div>
-<p>To model a heat pump that uses outdoor air as its heat source, omit whASHPSrcZn and specify whASHPSrcT = $tDbO.</p>
+<p>To model a heat pump that uses outdoor air as its heat source, omit <a class="autorefs autorefs-internal" href="#whashpsrczn">whASHPSrcZn</a> and specify whASHPSrcT = $tDbO.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -5501,7 +5519,7 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 <tr>
 <td><sup>o</sup>F</td>
 <td>x <span class="arithmatex">\(\ge\)</span> 0</td>
-<td>70 <sup>o</sup>F (used only when whASHPSrcZn and whZone not specified)</td>
+<td>70 <sup>o</sup>F (used only when <a class="autorefs autorefs-internal" href="#whashpsrczn">whASHPSrcZn</a> and <a class="autorefs autorefs-internal" href="#whzone">whZone</a> not specified)</td>
 <td>No</td>
 <td>hourly</td>
 </tr>
@@ -5509,7 +5527,7 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 </table>
 <h3 id="whashpresuse">whASHPResUse</h3>
 <p>Type: float</p>
-<p>Specifies activation temperature difference for resistance heating, used only when whHeatSrc=ASHPX and whASHPType=GENERIC.  Refer to HPWH engineering documentation for model details.</p>
+<p>Specifies activation temperature difference for resistance heating, used only when <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=ASHPX and <a class="autorefs autorefs-internal" href="#whashptype">whASHPType</a>=GENERIC.  Refer to HPWH engineering documentation for model details.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -5533,7 +5551,7 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 </table>
 <h3 id="whreshtpwr">whResHtPwr</h3>
 <p>Type: float</p>
-<p>Specifies resistance upper element power, used only with whHeatSrc=RESISTANCEX.</p>
+<p>Specifies resistance upper element power, used only with <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=RESISTANCEX.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -5557,7 +5575,7 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 </table>
 <h3 id="whreshtpwr2">whResHtPwr2</h3>
 <p>Type: float</p>
-<p>Specifies resistance lower element power, used only with whHeatSrc=RESISTANCEX.</p>
+<p>Specifies resistance lower element power, used only with <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=RESISTANCEX.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -5573,7 +5591,7 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 <tr>
 <td>W</td>
 <td>x <span class="arithmatex">\(\ge\)</span> 0</td>
-<td>whResHtPwr</td>
+<td><a class="autorefs autorefs-internal" href="#whreshtpwr">whResHtPwr</a></td>
 <td>No</td>
 <td>constant</td>
 </tr>
@@ -5629,7 +5647,7 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 </table>
 <h3 id="whinhtsupply-whinhtloopret">whInHtSupply, whInHtLoopRet</h3>
 <p>Type: float</p>
-<p>Fractional tank height of inlets for supply water and <a class="autorefs autorefs-internal" href="../dhwloop/#dhwloop">DHWLOOP</a> return, used only with HPWH types (whHeatSrc=RESISTANCEX or whHeatSrc=ASHPX).  0 indicates the bottom of the water heater tank and 1 specifies the top.  Inlet height influences tank layer mixing and can impact heat pump COP and/or heating activation frequency.</p>
+<p>Fractional tank height of inlets for supply water and <a class="autorefs autorefs-internal" href="../dhwloop/#dhwloop">DHWLOOP</a> return, used only with HPWH types (<a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=RESISTANCEX or <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=ASHPX).  0 indicates the bottom of the water heater tank and 1 specifies the top.  Inlet height influences tank layer mixing and can impact heat pump COP and/or heating activation frequency.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -5653,7 +5671,7 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 </table>
 <h3 id="whtankcount">whtankCount</h3>
 <p>Type: float</p>
-<p>Number of storage tanks per DHWHEATER, re built-up whType=Builtup, does <em>not</em> reflect wh_mult (wh_mult=2, wh_tankCount=3 -&gt; 6 tanks).</p>
+<p>Number of storage tanks per DHWHEATER, re built-up <a class="autorefs autorefs-internal" href="#whtype">whType</a>=Builtup, does <em>not</em> reflect wh_mult (wh_mult=2, wh_tankCount=3 -&gt; 6 tanks).</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -5677,7 +5695,7 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 </table>
 <h3 id="wheff">whEff</h3>
 <p>Type: float</p>
-<p>Water heating efficiency, used in modeling whType=LARGESTORAGE and whType=LARGEINSTANTANEOUS.</p>
+<p>Water heating efficiency, used in modeling <a class="autorefs autorefs-internal" href="#whtype">whType</a>=LARGESTORAGE and <a class="autorefs autorefs-internal" href="#whtype">whType</a>=LARGEINSTANTANEOUS.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -5701,7 +5719,7 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 </table>
 <h3 id="whsbl">whSBL</h3>
 <p>Type: float</p>
-<p>Standby loss, used in modeling whType=LARGESTORAGE.</p>
+<p>Standby loss, used in modeling <a class="autorefs autorefs-internal" href="#whtype">whType</a>=LARGESTORAGE.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -5725,7 +5743,7 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 </table>
 <h3 id="whpilotpwr">whPilotPwr</h3>
 <p>Type: float</p>
-<p>Pilot light consumption, included in fuel energy use of DHWHEATERs with whHeatSrc=FUEL.</p>
+<p>Pilot light consumption, included in fuel energy use of DHWHEATERs with <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=FUEL.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -5773,7 +5791,7 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 </table>
 <h3 id="whfadjelec-whfadjfuel">whFAdjElec, whFAdjFuel</h3>
 <p>Type: float</p>
-<p>Water heater energy use modifiers.  Multiplies calculated use of electricity (whFAdjElec) and fuel (whFAdjFuel).  All components of energy use -- primary, backup, XBU (extra backup), and other auxiliary -- are modified before they are accumulated to whElecMtr and whFuelMtr.</p>
+<p>Water heater energy use modifiers.  Multiplies calculated use of electricity (whFAdjElec) and fuel (whFAdjFuel).  All components of energy use -- primary, backup, XBU (extra backup), and other auxiliary -- are modified before they are accumulated to <a class="autorefs autorefs-internal" href="#whelecmtr">whElecMtr</a> and <a class="autorefs autorefs-internal" href="#whfuelmtr">whFuelMtr</a>.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -5821,7 +5839,7 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 </table>
 <h3 id="whxbuenduse">whxBUEndUse</h3>
 <p>Type: choice</p>
-<p>Specifies the whElecMtr end use, if any, to which extra backup energy is accumulated. In some water heater types, extra backup energy is modeled to maintain output temperature at <a class="autorefs autorefs-internal" href="../dhwsys/#wstuse">wsTUse</a>.  By default, extra backup energy is included in end use dhwBU.  whxBUEndUse allows specification of an alternative end use to which extra backup energy is accumulated.</p>
+<p>Specifies the <a class="autorefs autorefs-internal" href="#whelecmtr">whElecMtr</a> end use, if any, to which extra backup energy is accumulated. In some water heater types, extra backup energy is modeled to maintain output temperature at <a class="autorefs autorefs-internal" href="../dhwsys/#wstuse">wsTUse</a>.  By default, extra backup energy is included in end use dhwBU.  whxBUEndUse allows specification of an alternative end use to which extra backup energy is accumulated.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -5870,7 +5888,7 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 <h3 id="whtanktinit">whTankTInit</h3>
 <p>Type: <em>comma-separated list of 12 floats</em></p>
 <p>A list of 12 initial values for HPWH tank model layer temperatures, in bottom-to-top order.  If given, these values are used to initialize tank layer temperatures at the beginning of the warmup period.  Initialization is not repeated at the beginning of the main simulation.</p>
-<p>whTankTInit is allowed only for HPWH-based types (whHeatSrc=ASHPX or whHeatSrc=ResistanceX).</p>
+<p>whTankTInit is allowed only for HPWH-based types (<a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=ASHPX or <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=ResistanceX).</p>
 <p>whTankTInit is intended for use in empirical validation studies where the initial tank state needs to match measured data.  whTankTInit should not be generally used.  In the absence of whTankTInit, layer temperatures are initialized to the water heater setpoint inherited from the parent <a class="autorefs autorefs-internal" href="../dhwsys/#dhwsys">DHWSYS</a>.</p>
 <div class="member-table-sibling"></div>
 <table>

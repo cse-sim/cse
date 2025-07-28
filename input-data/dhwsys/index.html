@@ -1187,9 +1187,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#wsfaucetcount-wsbathcount-wscwashrcount-wsdwashrcount" class="md-nav__link">
+  <a href="#wsfaucetcount-wsshowercount-wsbathcount-wscwashrcount-wsdwashrcount" class="md-nav__link">
     <span class="md-ellipsis">
-      wsFaucetCount, wsBathCount, wsCWashrCount, wsDWashrCount
+      wsFaucetCount, wsShowerCount, wsBathCount, wsCWashrCount, wsDWashrCount
     </span>
   </a>
   
@@ -4195,9 +4195,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#wsfaucetcount-wsbathcount-wscwashrcount-wsdwashrcount" class="md-nav__link">
+  <a href="#wsfaucetcount-wsshowercount-wsbathcount-wscwashrcount-wsdwashrcount" class="md-nav__link">
     <span class="md-ellipsis">
-      wsFaucetCount, wsBathCount, wsCWashrCount, wsDWashrCount
+      wsFaucetCount, wsShowerCount, wsBathCount, wsCWashrCount, wsDWashrCount
     </span>
   </a>
   
@@ -4767,7 +4767,7 @@
 <tbody>
 <tr>
 <td>PRERUN</td>
-<td>Calculate hot water heating load; at end of run, derive whLDEF for all child <a class="autorefs autorefs-internal" href="../dhwheater/#dhwheater">DHWHEATERs</a> for which that value is required and defaulted (this emulates methods used in the T24DHW.DLL implementation of CEC DHW procedures). Also derived are average number of draws per day by end use (used in the wsDayWaste scheme).</td>
+<td>Calculate hot water heating load; at end of run, derive <a class="autorefs autorefs-internal" href="../dhwheater/#whldef">whLDEF</a> for all child <a class="autorefs autorefs-internal" href="../dhwheater/#dhwheater">DHWHEATERs</a> for which that value is required and defaulted (this emulates methods used in the T24DHW.DLL implementation of CEC DHW procedures). Also derived are average number of draws per day by end use (used in the wsDayWaste scheme).</td>
 </tr>
 <tr>
 <td>SIMULATE</td>
@@ -4834,7 +4834,7 @@
 <p>Type: dhwsysName</p>
 <p>Name of a DHWSYS that serves the same loads as this DHWSYS, allowing representation of multiple water heating systems within a unit. If given, <a class="autorefs autorefs-internal" href="#wsuse">wsUse</a> and <a class="autorefs autorefs-internal" href="#wsdayuse">wsDayUse</a> are not allowed, hot water requirements are derived from the referenced DHWSYS.  <a class="autorefs autorefs-internal" href="#wscentraldhwsys">wsCentralDHWSYS</a> and wsLoadShareDHWSYS cannot both be given.</p>
 <p>For example, two DHWSYSs should be defined to model two water heating systems serving a load represented by <a class="autorefs autorefs-internal" href="#wsdayuse">wsDayUse</a> DayUseTyp.  Each DHWSYS should include DHWHEATER(s) and other components as needed.  DHWSYS Sys1 should specify <a class="autorefs autorefs-internal" href="#wsdayuse">wsDayUse</a>=DayUseTyp and DHWSYS Sys2 should have wsLoadShareDHWSYS=Sys1 in place of <a class="autorefs autorefs-internal" href="#wsdayuse">wsDayUse</a>.</p>
-<p>Loads are shared by assigning <a class="autorefs autorefs-internal" href="../dhwuse/#dhwuse">DHWUSE</a> events sequentially by end use to all DHWSYS with compatible fixtures (determined by <a class="autorefs autorefs-internal" href="#wsfaucetcount-wsbathcount-wscwashrcount-wsdwashrcount">wsFaucetCount</a>, wsShowerCount etc., see below) in the group.  This algorithm approximately divides load for each end use by the number of compatible fixtures in the group.  In addition, assigning 0 to a fixture type prevents assignment of an end use load to a DHWSYS -- for example, <a class="autorefs autorefs-internal" href="#wsfaucetcount-wsbathcount-wscwashrcount-wsdwashrcount">wsDWashrCount</a>=0 could be provided for a DHWSYS that does not serve a kitchen.</p>
+<p>Loads are shared by assigning <a class="autorefs autorefs-internal" href="../dhwuse/#dhwuse">DHWUSE</a> events sequentially by end use to all DHWSYS with compatible fixtures (determined by <a class="autorefs autorefs-internal" href="#wsfaucetcount-wsshowercount-wsbathcount-wscwashrcount-wsdwashrcount">wsFaucetCount</a>, <a class="autorefs autorefs-internal" href="#wsfaucetcount-wsshowercount-wsbathcount-wscwashrcount-wsdwashrcount">wsShowerCount</a> etc., see below) in the group.  This algorithm approximately divides load for each end use by the number of compatible fixtures in the group.  In addition, assigning 0 to a fixture type prevents assignment of an end use load to a DHWSYS -- for example, <a class="autorefs autorefs-internal" href="#wsfaucetcount-wsshowercount-wsbathcount-wscwashrcount-wsdwashrcount">wsDWashrCount</a>=0 could be provided for a DHWSYS that does not serve a kitchen.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -4880,7 +4880,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="wsfaucetcount-wsbathcount-wscwashrcount-wsdwashrcount">wsFaucetCount, wsBathCount, wsCWashrCount, wsDWashrCount</h3>
+<h3 id="wsfaucetcount-wsshowercount-wsbathcount-wscwashrcount-wsdwashrcount">wsFaucetCount, wsShowerCount, wsBathCount, wsCWashrCount, wsDWashrCount</h3>
 <p>Type: integer</p>
 <p>Specifies the count of fixtures served by this DHWSYS that can accommodate draws of each end use (see <a class="autorefs autorefs-internal" href="../dhwuse/#dhwuse">DHWUSE</a>).  These counts are used for distributing draws in shared load configurations (multiple DHWSYSs serving the same loads, see <a class="autorefs autorefs-internal" href="#wsloadsharedhwsys">wsLoadShareDHWSYS</a> above).</p>
 <p>In addition, wsShowerCount participates in assignment of Shower draws to <a class="autorefs autorefs-internal" href="../dhwheatrec/#dhwheatrec">DHWHEATRECs</a> (if any).</p>
@@ -4933,7 +4933,7 @@
 <h3 id="wstinlettest">wsTInletTest</h3>
 <p>Type: float</p>
 <p>Overides at the substep interval the cold (mains) water temperature supplying this DHWSYS.</p>
-<p>CAUTION: wsTInletTest is intended for testing and model validation studies and should not be generally used. It is not fully supported for all DHWSYS configurations.  wsTInletTest is allowed only for configurations using HPWH-based <a class="autorefs autorefs-internal" href="../dhwheater/#dhwheater">DHWHEATERs</a> (whHeatSrc=ASHPX or whHeatSrc=RESISTANCEX).  </p>
+<p>CAUTION: wsTInletTest is intended for testing and model validation studies and should not be generally used. It is not fully supported for all DHWSYS configurations.  wsTInletTest is allowed only for configurations using HPWH-based <a class="autorefs autorefs-internal" href="../dhwheater/#dhwheater">DHWHEATERs</a> (<a class="autorefs autorefs-internal" href="../dhwheater/#whheatsrc">whHeatSrc</a>=ASHPX or <a class="autorefs autorefs-internal" href="../dhwheater/#whheatsrc">whHeatSrc</a>=RESISTANCEX).  </p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -5006,7 +5006,7 @@
 <h3 id="wsusetest">wsUseTest</h3>
 <p>Type: float</p>
 <p>Additional substep hot water use added to draw(s) specfied by wsHWUse and <a class="autorefs autorefs-internal" href="#wsdayuse">wsDayUse</a>.</p>
-<p>CAUTION: wsUseTest is intended for testing and model validation studies and should not be generally used. It is not fully supported for all DHWSYS configurations.  wsUseTest is allowed only for configurations using HPWH-based <a class="autorefs autorefs-internal" href="../dhwheater/#dhwheater">DHWHEATERs</a> (whHeatSrc=ASHPX or whHeatSrc=RESISTANCEX).  </p>
+<p>CAUTION: wsUseTest is intended for testing and model validation studies and should not be generally used. It is not fully supported for all DHWSYS configurations.  wsUseTest is allowed only for configurations using HPWH-based <a class="autorefs autorefs-internal" href="../dhwheater/#dhwheater">DHWHEATERs</a> (<a class="autorefs autorefs-internal" href="../dhwheater/#whheatsrc">whHeatSrc</a>=ASHPX or <a class="autorefs autorefs-internal" href="../dhwheater/#whheatsrc">whHeatSrc</a>=RESISTANCEX).  </p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -5640,7 +5640,7 @@
 <h3 id="wstusetest">wsTUseTest</h3>
 <p>Type: float</p>
 <p>Overides at the substep interval the hot water delivery temperature.</p>
-<p>CAUTION: wsTUseTest is intended for testing and model validation studies and should not be generally used. It is not fully supported for all DHWSYS configurations.  wsTUseTest is allowed only for configurations using HPWH-based <a class="autorefs autorefs-internal" href="../dhwheater/#dhwheater">DHWHEATERs</a> (whHeatSrc=ASHPX or whHeatSrc=RESISTANCEX).  </p>
+<p>CAUTION: wsTUseTest is intended for testing and model validation studies and should not be generally used. It is not fully supported for all DHWSYS configurations.  wsTUseTest is allowed only for configurations using HPWH-based <a class="autorefs autorefs-internal" href="../dhwheater/#dhwheater">DHWHEATERs</a> (<a class="autorefs autorefs-internal" href="../dhwheater/#whheatsrc">whHeatSrc</a>=ASHPX or <a class="autorefs autorefs-internal" href="../dhwheater/#whheatsrc">whHeatSrc</a>=RESISTANCEX).  </p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -6190,7 +6190,7 @@
 </table>
 <h3 id="wsfuelmtr">wsFuelMtr</h3>
 <p>Type: <em><a class="autorefs autorefs-internal" href="../meter/#mtrname">mtrName</a></em></p>
-<p>Name of <a class="autorefs autorefs-internal" href="../meter/#meter">METER</a> object, if any, to which DHWSYS fuel energy use is recorded (under end use DHW). DHWSYS fuel use is usually (always?) 0, so the primary use of this input is to specify the default whFuelMtr choice for <a class="autorefs autorefs-internal" href="../dhwheater/#dhwheater">DHWHEATERs</a> in this DHWSYS.</p>
+<p>Name of <a class="autorefs autorefs-internal" href="../meter/#meter">METER</a> object, if any, to which DHWSYS fuel energy use is recorded (under end use DHW). DHWSYS fuel use is usually (always?) 0, so the primary use of this input is to specify the default <a class="autorefs autorefs-internal" href="../dhwheater/#whfuelmtr">whFuelMtr</a> choice for <a class="autorefs autorefs-internal" href="../dhwheater/#dhwheater">DHWHEATERs</a> in this DHWSYS.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
