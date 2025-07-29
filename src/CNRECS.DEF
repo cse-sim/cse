@@ -966,15 +966,12 @@ FLOAT wx_tGrnd;		    // ground temp, F.  Calculated with Kusuda model
 						//   depth=10 ft, soilDiff = per user input
 FLOAT wx_tMains;		// cold water mains temp, F.  calc'd per
 						//   CEC 2013 methods, see CalcTMainsCEC()
-FLOAT wx_GHI;
-FLOAT wx_DHI;
-FLOAT wx_DNI;
+FLOAT wx_GHI;           // total GHI for interval, Btu/ft2
+FLOAT wx_DHI;           // total DHI for interval, Btu/ft2
+FLOAT wx_DNI;           // total DNI for interval, Btu/ft2
 
 FLOAT wx_tdvElecPk;	    // TDV peak
 FLOAT wx_tdvElecAvg;	// TDV avg
-
-
-
 
 *END    // WFSTATSSUB
 //========================================================================================================
@@ -982,17 +979,20 @@ RECORD WFSTATSDAY "wfstatsday" *RAT       // aggregated weather file statistics 
 
 *prefix wx_
 
+*declare "RC wx_ComputeStats( const class WDYEAR& wdy);"
+*declare "static int wx_TdvPkCompare(const void* p1, const void* p2);"
+
+*d SI wx_dayOfYear      // day of year of this WFSTATSDAY (1-365/366)
+
 *d *noname *nest WFSTATSSUB d
 
-#if 0
-int wx_tdvElecPkRank;	//   rank within year of wx_tdvElecPk (1-366)
-FLOAT wx_tdvElecPvPk;	//   peak for prior day
-FLOAT wx_tdvElecAvg01;	//   avg for print day
-UCH wx_tdvElecHrSTRank[ 24];	// TDV hr ranking (*standard time*)
+*d SI wx_tdvElecPkRank;	//   rank within year of wx_tdvElecPk (1-366)
+*d FLOAT wx_tdvElecPvPk;	//   peak for prior day
+*d FLOAT wx_tdvElecAvg01;	//   avg for print day
+*d *ARRAY 24 SI wx_tdvElecHrSTRank;	// TDV hr ranking
 								//   [ 0] = hour (1-24) with highest TDVElec
 								//   [ 1] = hour (1-24) with 2nd highest TDVElec
 								//   [ 2 .. 23] etc
-#endif
 
 						// mean dry bulb temp over recent days, F
 						// *not* including current day
@@ -1000,7 +1000,6 @@ UCH wx_tdvElecHrSTRank[ 24];	// TDV hr ranking (*standard time*)
 *d FLOAT wx_taDbAvg07;	//    7 day
 *d FLOAT wx_taDbAvg14;	//   14 day
 *d FLOAT wx_taDbAvg31;	//   31 day
-
 
 *END    // WFSTATSDAY
 //========================================================================================================
