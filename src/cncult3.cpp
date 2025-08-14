@@ -2905,11 +2905,9 @@ float SBC::sb_CombineInHcNatFrc() const	// combine inside face hc
 {
 	assert((sb_pXS->sfAdjZi == 0 && sb_si == 0) || sb_pXS->sfAdjZi > 0);		// valid only zone-facing
 
-#if 1 && defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 	if (Top.jDay==191 && strMatch(sb_pXS->xs_pParent->Name(), "WallS1"))
 		printf("\nHit");
-
-
 #endif
 
 	switch (sb_hcModel)

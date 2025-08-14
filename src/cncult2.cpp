@@ -1485,6 +1485,7 @@ x		}
 }		// topGt
 //===========================================================================
 LOCAL RC topMtr(	// check/dup all types of meters (energy, dhw, airflow)
+					//   and accumulators
 	int re)		// 0 = at RUN
 				// nz = 2nd call when main simulation follows autosize
 // copy to run rat.  Create sum-of-meters records as needed
@@ -1508,6 +1509,9 @@ LOCAL RC topMtr(	// check/dup all types of meters (energy, dhw, airflow)
 	CSE_E( AfMtrR.RunDup(AfMtriB, NULL, 1));
 	AFMTR* pAM;
 	AfMtrR.add(&pAM, ABT, AfMtriB.n + 1, "sum_of_AFMETERs");
+
+	// accumulators
+	CSE_E( AccumR.RunDup(AccumiB, NULL, 1));
 
 	// Submeter initialization
 	//  checks validity of submeter references
