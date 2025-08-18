@@ -5531,6 +5531,34 @@ RECORD GAIN "gain" *RAT   	// (zone internal) Gain input and runtime
 								//   note includes _TOTAL and _UNKNOWN
 *END			// GAIN
 //=============================================================================
+RECORD ACCUMULATOR_IVL "accumulator interval sub" *SUBSTRUCT  // substruct for one accumulator for one interval
+*prefix acm_
+
+*declare "void acm_Accum( const ACCUMULATOR_IVL* sIvl, bool firstFlg, bool lastFlg, int options=0);"
+
+    *e INT acm_count    // total # of subhrs included
+
+    *e FLOAT acm_min    // min value seen in interval
+    *e FLOAT acm_avg    // average value seen in interval
+    *e FLOAT acm_max    // max value seen in interval
+    *e FLOAT acm_sum    // sum of values in interval
+	
+*END		// ACCUMULATOR_IVL
+//=============================================================================
+RECORD ACCUMULATOR "accumulator" *RAT 
+*prefix acm_
+
+    *declare "RC acm_CkF( int options);"
+
+    *s *e FLOAT acm_value;              // value being accumulated
+                                        // generally set via probe 
+
+    *y *e *nest ACCUMULATOR_IVL Y   	// run (aka year or annual)
+    *m *e *nest ACCUMULATOR_IVL M   	// current month
+    *d *e *nest ACCUMULATOR_IVL D   	// current day
+    *h *e *nest ACCUMULATOR_IVL H   	// current hour
+*END		// ACCUMULATOR
+//=============================================================================
 RECORD MTR_IVL "meter interval sub" *SUBSTRUCT  // substruct for one meter for one interval for entire building
  // use results
 
