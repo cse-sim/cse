@@ -221,7 +221,7 @@ Reportcol colVal=@Accumulator[A].X.count colHead="Count" colWid=8 colDec=0 \
 Reportcol colVal=@Accumulator[A].X.min colHead="Min" colWid=8 colDec=2 \
 Reportcol colVal=@Accumulator[A].X.avg colHead="Avg" colWid=8 colDec=2 \
 Reportcol colVal=@Accumulator[A].X.max colHead="Max" colWid = 8 colDec=2 \
-Reportcol colVal=@Accumulator[A].X.sum colHead="Tot" colWid = 8 colDec=2
+Reportcol colVal=@Accumulator[A].X.sum colHead="Sum" colWid = 8 colDec=2
 
 // hourly
 Report rpType=UDT rpFreq=Hour rpCPL=-1 rpDayBeg = Feb 1
