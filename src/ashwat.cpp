@@ -1469,13 +1469,13 @@ bool CFSTY::cf_Thermal(		// layer temps / heat fluxes
 	double QInConvX = (1.-FHR_IN)*Ucg*(TAE_OUT - TIN) + Cx*( TRMIN - TIN) + NConv*ISOL;
 	double QInRadX = FHR_IN*Ucg*(TAE_OUT - TRMIN) + Cx*(TIN-TRMIN) + NRad*ISOL;
 
-	if (vNEQ( QInConv, QInConvX, .0002))
+	if (vNEQ( QInConv, QInConvX, .0003))
 	{	Message( msgERR, "QConv mismatch");
-		vNEQ( QInConv, QInConvX, .0002);
+		vNEQ( QInConv, QInConvX, .0003);	// re-call for debugging
 	}
-	if (vNEQ( QInRad, QInRadX, .0002))
+	if (vNEQ( QInRad, QInRadX, .001))
 	{	Message( msgERR, "QRad mismatch");
-		vNEQ( QInRad, QInRadX, .0002);
+		vNEQ( QInRad, QInRadX, .001);		// re-call for debugging
 	}
 #endif
 

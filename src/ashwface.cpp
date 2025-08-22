@@ -179,6 +179,7 @@ CFSTYX::CFSTYX(			// build a CFS
 	float _SHGCcogNFRC,		// externally calculated NFRC cog SHGC
 	...)					// add'l gap / layer info
 // call = id, U, SHGC, layerID, gasID, gapT (inches), layerID, ...
+//   layer order = outside -> inside
 {
 	Clear();
 	FCSET( ID, id);
@@ -636,15 +637,25 @@ RC FENAW::fa_Subhr(				// subhr calcs for single time step
 	z.zn_dRadSh += Ag*fa_awO.aw_cr;
 	z.zn_cxSh   += Ag*USItoIP( fa_awO.aw_Cx);
 
+	// transmitted solar, Btuh/ft2
+	fa_pXS->xs_glzTrans = fa_mSolar * (sbcO.sb_sgTarg.st_bm*fa_BmTauF(iH) + sbcO.sb_sgTarg.st_df*fa_DfTauF());
+
+	// inward flowing heat gain (convective and radiant), Btuh/ft2
+	fa_pXS->xs_glzInward = fa_mSolar * sbcO.sb_sgTarg.st_tot*(fa_awO.aw_FP+fa_awO.aw_FM);
+
 	// zone solar gain
 	//   add inward flowing fraction of absorbed
 	//   transmitted already included in qSgTotSh
-#if 0 && defined( _DEBUG)
-	double trans = sbcO.sb_sgTarg.st_bm*fa_BmTauF( iH) + sbcO.sb_sgTarg.st_df*fa_DfTauF();
-	if (fabs( Ag*fa_mSolar*trans - z.qSgTotSh) > .1)
-		printf( "mismatch ");
+#if 1 && defined( _DEBUG)
+	double ratTr = z.qSgTotSh > 0. ? Ag*fa_pXS->xs_glzTrans / z.qSgTotSh
+		: fa_pXS->xs_glzTrans == 0. ? 1.
+		: 999.;
+	double trans2 = Ag*fa_mSolar*IrSItoIP(absSlr[nL]);
+
+	if (fabs(ratTr - 1.) > .001)
+		printf("\nMismatch %0.3f", ratTr);
 #endif
-	z.qSgTotSh  += Ag*sbcO.sb_sgTarg.st_tot*(fa_awO.aw_FP+fa_awO.aw_FM)*fa_mSolar;
+	z.qSgTotSh  += Ag*fa_pXS->xs_glzInward;
 
 #if defined( DEBUGDUMP)
 	if (bDbPrint)
@@ -1326,14 +1337,14 @@ RC XASHWAT::xw_BuildLib()		// libary of built-in types
 // Beam total transmittance = tauBT = 0.11
 // Beam total reflectance     = rhoBT = 0.38
 	xw_layerLib.push_back( CFSLAYER( "DrapeMed",  ltyDRAPE, 0.01f, 0.38f, 0.10f));
-
-	xw_CFSLib.push_back( CFSTYX( "CLEAR_SINGLE", 1.042, 0.860, "102",  NULL));
-	xw_CFSLib.push_back( CFSTYX( "CLEAR_AIR",    0.481, 0.763, "102",  "Air", .492, "102",   NULL));
-	xw_CFSLib.push_back( CFSTYX( "EHSLE_AIR",    0.337, 0.721, "102",  "Air", .492, "9921",  NULL));
-	xw_CFSLib.push_back( CFSTYX( "HSLE_AIR",     0.320, 0.686, "102",  "Air", .492, "2184F", NULL));
-	xw_CFSLib.push_back( CFSTYX( "MSLE_AIR",     0.297, 0.419, "2010", "Air", .492, "102",   NULL));
-	xw_CFSLib.push_back( CFSTYX( "LSLE_AIR",     0.295, 0.371, "2026", "Air", .492, "102",   NULL));
-	xw_CFSLib.push_back( CFSTYX( "ELSLE_AIR",    0.289, 0.277, "2154", "Air", .492, "102",   NULL));
+//                                               UcogNFRC SHGCcogNFRC  Layers (outside to inside order)
+	xw_CFSLib.push_back( CFSTYX( "CLEAR_SINGLE", 1.042,   0.860,       "102",  NULL));
+	xw_CFSLib.push_back( CFSTYX( "CLEAR_AIR",    0.481,   0.763,       "102",  "Air", .492, "102",   NULL));
+	xw_CFSLib.push_back( CFSTYX( "EHSLE_AIR",    0.337,   0.721,       "102",  "Air", .492, "9921",  NULL));
+	xw_CFSLib.push_back( CFSTYX( "HSLE_AIR",     0.320,   0.686,       "102",  "Air", .492, "2184F", NULL));
+	xw_CFSLib.push_back( CFSTYX( "MSLE_AIR",     0.297,   0.419,       "2010", "Air", .492, "102",   NULL));
+	xw_CFSLib.push_back( CFSTYX( "LSLE_AIR",     0.295,   0.371,       "2026", "Air", .492, "102",   NULL));
+	xw_CFSLib.push_back( CFSTYX( "ELSLE_AIR",    0.289,   0.277,       "2154", "Air", .492, "102",   NULL));
 
 	return rc;
 

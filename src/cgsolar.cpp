@@ -280,12 +280,6 @@ A Solar Gain Table entry (SGRAT record) contains:
 	a pointer to a control variable to multiply gain, or NULL
 	1 single diffuse and 24 hourly beam RADIATION MULTIPLIERS.
 
-The possible targets (2-95) for gain are:
-		ZNR.qSgAir	zone air
-		ZNR.qSgTot	zone total (redundant check/report value)
-		ZNR.qSgTotSh	ditto, subhourly portion
-		MASSBC[].sg	mass inside [0], mass outside [1].
-
 Control variables: each target has an SGRAT record with NULL .control.
 In addition, if there is a controlled portion of its gain, it contains
 ANOTHER SGRAT entry with the appropropriate control pointer and radiation

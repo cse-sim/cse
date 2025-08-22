@@ -273,7 +273,7 @@ RC SFI::sf_TopSf1()
 				// window area may be given explicitly, to allow using old test files where area != height * width. 2-91.
 				if ( !IsSet( SFI_SFAREA) )			// if area not given
 					sfArea = sf_height * sf_width;			// compute window area
-			sfArea *= mult;				// multiplier (dfl 1.0) for giving multiple similar windows in surf
+			sfArea *= sf_mult;				// multiplier (dfl 1.0) for giving multiple similar windows in surf
 			// sfArea is copied to x.area below
 		}
 
