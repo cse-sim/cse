@@ -126,6 +126,7 @@ extern anc<WFDATA> WthrNxHrR;	// basAnc for next hour's weather data record ("we
 extern WFDATA WthrNxHr;			// static record for next hour's unpacked & adjusted data for cgwthr.cpp read-ahead
 extern anc<DESCOND> DcR;		// design conditions
 
+extern anc<ACCUMULATOR> AccumR;	// accumulators
 extern anc<MTR> MtrB;   		// meters, by name, each containing use by interval H D M Y and end use
 extern anc<AFMTR> AfMtrR;		// air flow meters
 extern anc<DHWMTR> WMtrR;  		// DHW meters
