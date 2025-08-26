@@ -22,11 +22,6 @@
 						//   usually does nothing if defined( ASHWAT_USECPP)
 #undef ASHWAT_CPPTESTTHERMAL // enable DLL<->C++ comparison for cf_Thermal() only
 
-#include <vector>
-#include <string>
-using namespace std;
-
-
 ///////////////////////////////////////////////////////////////////////////////
 // approx outside/inside combined coeff. under NFRC rating conditions, Btuh/ft2-F
 //   based on results from ASHWAT calcs for MSLE glazing
@@ -145,21 +140,14 @@ public:
 		aw_incSlr = _incSlr;
 		VCopy( aw_absSlr, CFSMAXNL+1, _absSlr);
 	}
+	void aw_Init()
+	{	memset( this, 0, sizeof( AWIN));
+	}
 	bool operator==( const AWIN& awI) const;
-	size_t aw_Hash() const;
-	void aw_Round();
 	WStr aw_CSVHeading( const char* tag=nullptr) const;
 	WStr aw_CSVRow() const;
 
 };		// class AWIN
-//----------------------------------------------------------------------------
-class AWINHASH		// access to hash function for map
-{	public:
-		size_t operator() (const AWIN& awI) const
-		{	return awI.aw_Hash();
-		}
-};	// class AWINHASH
-
 //=============================================================================
 class AWOUT
 {
@@ -229,11 +217,15 @@ public:
 	
 						// saved results from last ASHWAT call
 						//	re-used for multiple subhrs
+#if 1
+	AWIN fa_awI;
+#else
 							// conditions at prior calc = last full ASHWAT calc (re change detection)
 	double fa_incSlrPC;		// incident solar, W/m2
 	float fa_txaiPC;		// indoor air temp, F
 	float fa_hxaiPC;		// indoor convective coeff, Btuh/ft2-F
 	float fa_txaoPC;		// outdoor air temp, F
+#endif
 
 	AWOUT fa_awO;
 
@@ -347,7 +339,7 @@ public:
 	#endif // SUPPORT_XMODULE
 
 	RC xw_Setup();
-	static void MsgCallBackFunc( void* msgContext, AWMSGTY msgTy, const string& msg);
+	static void MsgCallBackFunc( void* msgContext, AWMSGTY msgTy, const std::string& msg);
 	bool xw_CheckFixCFSLayer( CFSLAYER& L, const char* what);
 	RC xw_FinalizeCFS( CFSTY& CFS);
 	RC xw_BuildGap( CFSGAP& G, const char* fgID, double tas, int gType=gtySEALED);

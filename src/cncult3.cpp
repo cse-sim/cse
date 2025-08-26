@@ -1540,7 +1540,7 @@ SFI::SFI( basAnc* b, TI i, SI noZ /*=0*/)
 	sf_sharedFndWalls.vector::~vector<TI>();
 	record::Copy( pSrc, options);
 	// base class calls FixUp() and (if _DEBUG) Validate()
-	new(&sf_sharedFndWalls) vector<TI>(((const SFI*)pSrc)->sf_sharedFndWalls);
+	new(&sf_sharedFndWalls) std::vector<TI>(((const SFI*)pSrc)->sf_sharedFndWalls);
 }		// SFI::Copy
 //---------------------------------------------------------------------------
 /*virtual*/ void SFI::FixUp()		// fix links

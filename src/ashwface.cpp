@@ -255,8 +255,12 @@ void FENAW::fa_Init()
 	fa_iterControl = 100;
 	fa_nCall = fa_nCalc = 0;
 	fa_awO.aw_Init();
+#if 1
+	fa_awI.aw_Init();
+#else
 	fa_incSlrPC = 0.;
 	fa_txaiPC = fa_hxaiPC = fa_txaoPC = 0.f;
+#endif
 }		// FENAW::FENAW
 //-----------------------------------------------------------------------------
 const char* FENAW::fa_Name() const
@@ -564,10 +568,11 @@ RC FENAW::fa_Subhr(				// subhr calcs for single time step
 	// do full ASHWAT iff conditions have changed "enough"
 	int bDoAW = Top.isBegRun
 		     // || Top.iSubhr == 1 ... idea: effect of hour changes appear at 2nd step
-			 || fabs( fa_txaoPC - sbcO.sb_txa) > Top.tp_AWTrigT		// default 1 F
-			 || fabs( fa_txaiPC - sbcI.sb_txa) > Top.tp_AWTrigT
-			 || frDiff( fa_incSlrPC, incSlr) > Top.tp_AWTrigSlr		// default .05
-			 || frDiff( fa_hxaiPC, sbcI.sb_hxa) > Top.tp_AWTrigH;	// default .1
+			 || fabs( fa_awI.aw_txaO - sbcO.sb_txa) > Top.tp_AWTrigT		// default 1 F
+			 || fabs( fa_awI.aw_txaI - sbcI.sb_txa) > Top.tp_AWTrigT
+			 || frDiff( fa_awI.aw_incSlr, incSlr) > Top.tp_AWTrigSlr		// default .05
+			 || frDiff( fa_awI.aw_hxaI, double( sbcI.sb_hxa)) > Top.tp_AWTrigH;	// default .1
+
 
 	if (bDoAW || bDbPrint)
 	{	// derive layer-by-layer absorbed solar
@@ -587,19 +592,14 @@ RC FENAW::fa_Subhr(				// subhr calcs for single time step
 		}
 	}
 
-	AWIN awI;
-	awI.aw_Set(
-		sbcO.sb_txa, sbcO.sb_hxa, sbcO.sb_txr,
-		sbcI.sb_txa, sbcI.sb_hxa, sbcI.sb_txr,
-		incSlr, absSlr);
-
 	if (bDoAW)
-	{	fa_incSlrPC = incSlr;
-		fa_txaiPC = sbcI.sb_txa;
-		fa_hxaiPC = sbcI.sb_hxa;
-		fa_txaoPC = sbcO.sb_txa;
+	{
+		fa_awI.aw_Set(
+			sbcO.sb_txa, sbcO.sb_hxa, sbcO.sb_txr,
+			sbcI.sb_txa, sbcI.sb_hxa, sbcI.sb_txr,
+			incSlr, absSlr);
 
-		rc |= fa_Thermal( awI, fa_awO);
+		rc |= fa_Thermal( fa_awI, fa_awO);
 		fa_iterControl = -1;		// don't init / don't iterate
 									//   subsequent calls
 	}
@@ -777,27 +777,6 @@ x	fax_stats[ fsxFR.sx_Obs( FRX, FR);
 	return 1.f / (1.f/max( Uc, .01f) + RoutNFRC + RinNFRC);
 }		// FENAW::fa_CtoUNFRC
 //=============================================================================
-void AWIN::aw_Round()
-{
-	roundNearest( aw_txaO, 5.);
-	roundNearest( aw_hxaO, .5);
-	roundNearest( aw_txrO, 5.);
-	roundNearest( aw_txaI, 2.);
-	roundNearest( aw_hxaI, .1);
-	roundNearest( aw_txrI, 2.);
-	roundNearest( aw_incSlr, 10.);
-	for (int iL=0; iL<CFSMAXNL+1; iL++)
-		roundNearest (aw_absSlr[ iL], 2.);
-}		// AWIN::aw_Round
-//-----------------------------------------------------------------------------
-size_t AWIN::aw_Hash() const
-{	return (size_t( (aw_txaO+100.)/5.))
-         + (size_t( aw_txaI/2.) << 6)
-		 + (size_t( aw_hxaO*2.) << 12)
-		 + (size_t( aw_hxaI*10.) << 16)
-		 + (size_t( aw_incSlr/10.) << 22);
-}		// AWIN::aw_Hash
-//-----------------------------------------------------------------------------
 bool AWIN::operator==( const AWIN& awI) const
 {	if (aw_txaO != awI.aw_txaO
 	 || aw_incSlr != awI.aw_incSlr)
@@ -1104,7 +1083,7 @@ static bool bSetup = false;
 /*static*/ void XASHWAT::MsgCallBackFunc(
 	[[maybe_unused]] void* msgContext,
 	AWMSGTY msgTy,
-	const string& msg)
+	const std::string& msg)
 {
 	if (msgTy == msgDBG)
 		DbPrintf( msg.c_str());
@@ -1117,10 +1096,10 @@ bool XASHWAT::xw_CheckFixCFSLayer(
 	[[maybe_unused]] const char* what)	// context for messages
 {
 #if defined( ASHWAT_USECPP)
-	vector< string> msgs;
+	std::vector< std::string> msgs;
 	bool bRet = L.cl_CheckFix( msgs, "Test");
 	if (!bRet)
-	{	vector< string>::const_iterator  pos;
+	{	std::vector< std::string>::const_iterator  pos;
 		for (pos=msgs.begin(); pos!=msgs.end(); ++pos)
 			warn( pos->c_str());
 	}
@@ -1166,7 +1145,7 @@ char fWhat[ MSGMAXLEN];
 RC XASHWAT::xw_FinalizeCFS( CFSTY& CFS)
 {
 #if defined( ASHWAT_USECPP)
-	string msg;
+	std::string msg;
 	bool bRet = CFS.cf_Finalize( &msg);
 	if (!bRet)
 		warn( msg.c_str());
