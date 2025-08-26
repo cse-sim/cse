@@ -22,14 +22,6 @@
 						//   usually does nothing if defined( ASHWAT_USECPP)
 #undef ASHWAT_CPPTESTTHERMAL // enable DLL<->C++ comparison for cf_Thermal() only
 
-
-#undef ASHWAT_REV2		// enable revised ASHWAT interface code, 5-2015
-						//   revised scheme reuses cached results
-						//   NOT successful (long run times)
-#if defined( ASHWAT_REV2)
-#include <unordered_map>
-#endif
-
 #include <vector>
 #include <string>
 using namespace std;
@@ -234,17 +226,15 @@ public:
 	int fa_iterControl;					// iteration control, passed to ASHWAT_Thermal
 										//    abs value = max # of iterations
 										//    if <0, do NOT init layer temps (start with cur values)
+	
 						// saved results from last ASHWAT call
 						//	re-used for multiple subhrs
-#if defined( ASHWAT_REV2)
-	std::unordered_map< AWIN, AWOUT, AWINHASH> fa_X;	// cache of prior results
-#else
 							// conditions at prior calc = last full ASHWAT calc (re change detection)
 	double fa_incSlrPC;		// incident solar, W/m2
 	float fa_txaiPC;		// indoor air temp, F
 	float fa_hxaiPC;		// indoor convective coeff, Btuh/ft2-F
 	float fa_txaoPC;		// outdoor air temp, F
-#endif
+
 	AWOUT fa_awO;
 
 	int fa_nCall;			// # of calls to this ASHWAT (does not include skipped calls where
@@ -273,7 +263,6 @@ public:
 	RC fa_FrameEndSubhr();
 	RC fa_Subhr( float fActive, int bDoFrm);
 	RC fa_EndSubhr( float fActive);
-	RC fa_ThermalCache( const AWIN& awIn, AWOUT& awOut);
 	RC fa_Thermal( const AWIN& awIn, AWOUT& awOut);
 	RC fa_PerfMap();
 	float fa_DfRhoB() const { return fa_dfRhoB; }

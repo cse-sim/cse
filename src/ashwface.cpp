@@ -236,9 +236,6 @@ void CFSTYX::Clear()
 // class FENAW -- XSURF substructure for ASHWAT glazings
 ///////////////////////////////////////////////////////////////////////////////
 FENAW::FENAW( XSURF* pXS /*=NULL*/)
-#if defined( ASHWAT_REV2)
-	: fa_X( 25000)
-#endif
 {
 	fa_pXS = pXS;
 	fa_Init();
@@ -258,12 +255,8 @@ void FENAW::fa_Init()
 	fa_iterControl = 100;
 	fa_nCall = fa_nCalc = 0;
 	fa_awO.aw_Init();
-#if defined( ASHWAT_REV2)
-	fa_X.clear();
-#else
 	fa_incSlrPC = 0.;
 	fa_txaiPC = fa_hxaiPC = fa_txaoPC = 0.f;
-#endif
 }		// FENAW::FENAW
 //-----------------------------------------------------------------------------
 const char* FENAW::fa_Name() const
@@ -568,13 +561,6 @@ RC FENAW::fa_Subhr(				// subhr calcs for single time step
 	double absSlr[ CFSMAXNL+1];				// absorbed by layer, W/m2 (including layer nL = "room")
 	double absSlrF[ CFSMAXNL+1];			// abs fraction by layer (test/debug aid only)
 
-#if defined( ASHWAT_REV2)
-	int bDoAW = TRUE;
-#if 0 && defined( _DEBUG)
-	if (fa_nCalc == 0)
-		fa_PerfMap();
-#endif
-#else
 	// do full ASHWAT iff conditions have changed "enough"
 	int bDoAW = Top.isBegRun
 		     // || Top.iSubhr == 1 ... idea: effect of hour changes appear at 2nd step
@@ -582,7 +568,6 @@ RC FENAW::fa_Subhr(				// subhr calcs for single time step
 			 || fabs( fa_txaiPC - sbcI.sb_txa) > Top.tp_AWTrigT
 			 || frDiff( fa_incSlrPC, incSlr) > Top.tp_AWTrigSlr		// default .05
 			 || frDiff( fa_hxaiPC, sbcI.sb_hxa) > Top.tp_AWTrigH;	// default .1
-#endif
 
 	if (bDoAW || bDbPrint)
 	{	// derive layer-by-layer absorbed solar
@@ -608,10 +593,6 @@ RC FENAW::fa_Subhr(				// subhr calcs for single time step
 		sbcI.sb_txa, sbcI.sb_hxa, sbcI.sb_txr,
 		incSlr, absSlr);
 
-#if defined( ASHWAT_REV2)
-	rc |= fa_ThermalCache( awI, fa_awO);
-	fa_iterControl = -1;
-#else
 	if (bDoAW)
 	{	fa_incSlrPC = incSlr;
 		fa_txaiPC = sbcI.sb_txa;
@@ -622,7 +603,6 @@ RC FENAW::fa_Subhr(				// subhr calcs for single time step
 		fa_iterControl = -1;		// don't init / don't iterate
 									//   subsequent calls
 	}
-#endif
 
 	// map results to CSE vars
 	//  Note CSE 0=inside, ASHWAT 0=outside
@@ -774,14 +754,8 @@ x	fax_stats[ fsxFR.sx_Obs( FRX, FR);
 #endif
 #if 0 && defined( _DEBUG)
 	if (Top.tp_IsLastStep())
-#if defined( ASHWAT_REV2)
-		DbPrintf( "\nASHWAT %s  nCall=%d   nCalc=%d   fCalc=%.3f   mapLoad=%.3f",
-			fa_pXS->xs_Name(), fa_nCall, fa_nCalc, double( fa_nCalc)/double( fa_nCall),
-			fa_X.max_load_factor());
-#else
 		DbPrintf( "\nASHWAT %s  nCall=%d   nCalc=%d   fCalc=%.3f",
 			fa_pXS->xs_Name(), fa_nCall, fa_nCalc, double( fa_nCalc)/double( fa_nCall));
-#endif
 #endif
 
 	return RCOK;
@@ -890,36 +864,6 @@ WStr AWOUT::aw_CSVRow() const
 #undef TL
 }	// AWOUT::aw_CSVRow
 //=============================================================================
-#if defined( ASHWAT_REV2)
-RC FENAW::fa_ThermalCache(		// ASHWAT thermal calcs
-	const AWIN& awI,		// input values
-	AWOUT& awO)			// output values
-{
-	RC rc = RCOK;
-	AWIN awIX( awI);
-	awIX.aw_Round();
-	if (fa_X.size() > 0 && fa_X.count( awIX))
-		awO = fa_X[ awIX];
-	else
-	{
-#if defined( XX)
-		if (fa_nCalc == 0)
-		{
-		}
-		fa_Thermal( awI, awO);		// unrounded calc
-		WStr oUnR = awO.aw_CSVRow();
-#endif
-		rc = fa_Thermal( awIX, awO);
-		fa_X[ awIX] = awO;
-#if defined( XX)
-
-
-#endif
-	}
-	return rc;
-}
-#endif
-//-----------------------------------------------------------------------------
 RC FENAW::fa_Thermal(		// ASHWAT thermal calcs
 	const AWIN& awI,		// input values
 	AWOUT& awO)			// output values
