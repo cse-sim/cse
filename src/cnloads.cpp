@@ -6712,7 +6712,7 @@ RC XSURF::xs_SubhrBC()		// subhour: surface boundary conditions
 	RC rc = RCOK;
 
 	// set surface coefficients
-	double areaEff = xs_IsASHWAT() ? xs_AreaGlazed() : xs_area;
+	double areaEff = xs_IsASHWAT() ? xs_areaGlz : xs_area;
 	xs_sbcI.sb_SetCoeffs( areaEff, uC);
 	xs_sbcO.sb_SetCoeffs( areaEff, uC);
 	if (xs_IsASHWAT())

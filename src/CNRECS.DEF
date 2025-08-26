@@ -1273,7 +1273,6 @@ RECORD XSURF "xsurf sub" *SUBSTRUCT	// for PRI, SFI, XSRAT.
 	*declare "int xs_CanHaveExtSlr() const;"
 	*declare "RC xs_SetUNom();"
 	*declare "float& xs_AbsSlr( int io) { return xs_SBC( io).sb_absSlr; }"
-	*declare "float xs_AreaGlazed() const;"
 	*declare "void xs_SetRunConstants();"
 	*declare "void xs_AccumZoneValues();"
 	*declare "void xs_sbTest();"
@@ -1298,7 +1297,9 @@ RECORD XSURF "xsurf sub" *SUBSTRUCT	// for PRI, SFI, XSRAT.
     *z SI xs_ty		// type CTEXTWALL, CTINTWALL, CTWINDOW, CTMXWALL, CTPERIM, CTKIVA set by cult or code.
 
 	// inputs.  *r's where set by topCkf in at least some cases.
-    *r AREA_GZ xs_area	// (net) area, sf.  Reflects window multiplier.
+    *r AREA_GZ xs_area	// (net) area, ft2.  Reflects window multiplier.
+    *r AREA_GZ xs_areaGlz   // glazed area, ft2. nz iff window
+                            // reflects window multiplier and frame fraction
     *r ANGLE azm 		// azimuth (radians, 0 = North, Pi/2 = East)
     *r ANGLE tilt 		// tilt (radians, 0 = horiz up, Pi/2 = vert.
     *r *array 3 FLOAT xs_dircos	// outward normal direction cosines for given azm/tilt
@@ -1378,7 +1379,6 @@ RECORD XSURF "xsurf sub" *SUBSTRUCT	// for PRI, SFI, XSRAT.
     *array XSMXTLRB *h *e
 		FLOAT xs_tLrB	// layer boundary temps re probes
 						// populated at end of hour
-
 
 *END		// XSURF
 //=============================================================================
@@ -5546,12 +5546,15 @@ RECORD ACCUMULATOR_IVL "accumulator interval sub" *SUBSTRUCT  // substruct for o
 
 *declare "void acm_Accum( const ACCUMULATOR_IVL* sIvl, bool firstFlg, bool lastFlg, int options=0);"
 
-    *e INT acm_count    // total # of subhrs included
+    // NOTE: visible prefix used, not *prefix
+    //       WHY: the name "sum" is treated as reserved and rejected.
+    //            Visible "acm" prefixes solve avoid that
+    INT acmCount    // total # of subhrs included
 
-    *e FLOAT acm_min    // min value seen in interval
-    *e FLOAT acm_avg    // average value seen in interval
-    *e FLOAT acm_max    // max value seen in interval
-    *e FLOAT acm_sum    // sum of values in interval
+    FLOAT acmMin    // min value seen in interval
+    FLOAT acmMean   // mean value seen in interval
+    FLOAT acmMax    // max value seen in interval
+    FLOAT acmTotal    // sum of values in interval
 	
 *END		// ACCUMULATOR_IVL
 //=============================================================================
@@ -5560,7 +5563,10 @@ RECORD ACCUMULATOR "accumulator" *RAT
 
     *declare "RC acm_CkF( int options);"
 
-    *s *e FLOAT acm_value;              // value being accumulated
+    // NOTE: visible prefix used, not *prefix
+    //       WHY: the name "sum" is treated as reserved and rejected.
+    //            Visible "acm" prefixes solve avoid that
+    *s *e FLOAT acmValue;              // value being accumulated
                                         // generally set via probe 
 
     *y *e *nest ACCUMULATOR_IVL Y   	// run (aka year or annual)

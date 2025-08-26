@@ -2161,8 +2161,8 @@ void LOCAL accumulatorsAccum(
 
 		if (ivl == C_IVLCH_H)
 		{
-			pSrc->acm_min = pSrc->acm_max = pSrc->acm_avg = pSrc->acm_sum = pACM->acm_value;
-			pSrc->acm_count = 1;
+			pSrc->acmMin = pSrc->acmMax = pSrc->acmMean = pSrc->acmTotal = pACM->acmValue;
+			pSrc->acmCount = 1;
 		}
 		
 		pDst->acm_Accum( pSrc, firstFlg, lastFlg);
@@ -2196,13 +2196,13 @@ void ACCUMULATOR_IVL::acm_Accum(			// accumulate to this
 	}
 	else
 	{
-		acm_min = std::min(acm_min, pSrc->acm_min);
-		acm_max = std::max(acm_max, pSrc->acm_max);
-		acm_sum += pSrc->acm_sum;
-		acm_count += pSrc->acm_count;
+		acmMin = std::min(acmMin, pSrc->acmMin);
+		acmMax = std::max(acmMax, pSrc->acmMax);
+		acmTotal += pSrc->acmTotal;
+		acmCount += pSrc->acmCount;
 	}
 	if (lastFlg)
-		acm_avg = acm_sum / acm_count;
+		acmMean = acmTotal / acmCount;
 
 }	// ACCUMULATOR_IVL::amc_Accum
 

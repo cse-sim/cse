@@ -274,7 +274,7 @@ RC SFI::sf_TopSf1()
 				if ( !IsSet( SFI_SFAREA) )			// if area not given
 					sfArea = sf_height * sf_width;			// compute window area
 			sfArea *= sf_mult;				// multiplier (dfl 1.0) for giving multiple similar windows in surf
-			// sfArea is copied to x.area below
+			// sfArea is copied to x.xs_area below
 		}
 
 		// topSf1: door/window: subtract area from area of owning surface
@@ -326,7 +326,7 @@ RC SFI::sf_TopSf1()
 	if (sfc==sfcWINDOW			// window: not nec user-given
 	 || CkSet( SFI_SFAREA)==RCOK)	// verify RQD mbr given (FPE protection)
 		x.xs_area = sfArea;	// move area to where used at run. For surface, b4 XSURF is added to zn,
-							// window and door areas are subtracted from .x.area,
+							// window and door areas are subtracted from .x.xs_area,
     						// by code above in this fcn, on later call to this fcn.
 
 	// init SGDIST count
@@ -454,6 +454,9 @@ RC SFI::sf_TopSf1()
 					CSE_V x.scc = CSE_V x.sco;  		// use window shades-open value, checked/defaulted just above
 			}
 		}
+
+		x.xs_areaGlz = x.xs_area * x.xs_fMult;		// total glazed area (w/o frame)
+	
 		if (x.xs_IsASHWAT())
 		{	const char* when = "when wnModel=ASHWAT";
 			rc1 = requireN( when, SFX( UNFRC), SFX( SHGC), SFX( NGLZ), 0);
@@ -2336,12 +2339,6 @@ RC XSURF::xs_Validate(
 const char* XSURF::xs_Name() const
 {	return xs_pParent ? xs_pParent->Name() : "?";
 }		// XSURF::xs_Name
-//-----------------------------------------------------------------------------
-float XSURF::xs_AreaGlazed() const
-{
-	// TODO: complete xs_AreaGlazed
-	return xs_area * xs_fMult;
-}		// XSURF::xs_AreaGlazed
 //-----------------------------------------------------------------------------
 int XSURF::xs_Class() const
 {

@@ -2,7 +2,7 @@
 
 MyAccum for Sun 01-Feb
 
- hr    Count      Min      Avg      Max      Tot
+ hr    Count      Min     Mean      Max    Total
  -- -------- -------- -------- -------- --------
   1       10     1.00     1.00     1.00    10.00
   2       10     1.00     1.00     1.00    10.00
@@ -33,7 +33,7 @@ MyAccum for Sun 01-Feb
 
 MyAccum for Feb
 
-  Day    Count      Min      Avg      Max      Tot
+  DOY    Count      Min     Mean      Max    Total
  ---- -------- -------- -------- -------- --------
    32      240     1.00     1.00     1.00   240.00
    33      240     1.00     1.00     1.00   240.00
@@ -68,7 +68,7 @@ MyAccum for Feb
 
 Monthly data for MyAccum
 
- mo    Count      Min      Avg      Max      Tot
+ mo    Count      Min     Mean      Max    Total
  -- -------- -------- -------- -------- --------
   1     7440     1.00     1.00     1.00  7440.00
   2     6720     1.00     1.00     1.00  6720.00
@@ -89,7 +89,7 @@ Monthly data for MyAccum
 
 Monthly data for WthrAccum
 
- mo    Count      Min      Avg      Max      Tot
+ mo    Count      Min     Mean      Max    Total
  -- -------- -------- -------- -------- --------
   1     7440    28.22    46.87    60.08 348692.3
   2     6720    32.00    49.26    69.98 331043.7
@@ -110,7 +110,7 @@ Monthly data for WthrAccum
 
 Monthly data for WthrAccum2
 
- mo    Count      Min      Avg      Max      Tot
+ mo    Count      Min     Mean      Max    Total
  -- -------- -------- -------- -------- --------
   1     7440    28.22    46.86    60.08 348672.0
   2     6720    32.00    49.27    69.98 331084.2
@@ -131,7 +131,7 @@ Monthly data for WthrAccum2
 
 ! Log for Run 001:
 
-! CSE 0.926.0+accumulator.33991d82.8.dirty for Win32 console
+! CSE 0.926.0+transmitted-solar.b9f493a6.12.dirty for Win32 console
 
 
 
@@ -356,11 +356,11 @@ Input for Run 001:
         
 #       #define CSEBtuSF 1000
 #       #define ACCOLS( A, X) \
-#       Reportcol colVal=@Accumulator[A].X.count colHead="Count" colWid=8 colDec=0 \
-#       Reportcol colVal=@Accumulator[A].X.min colHead="Min" colWid=8 colDec=2 \
-#       Reportcol colVal=@Accumulator[A].X.avg colHead="Avg" colWid=8 colDec=2 \
-#       Reportcol colVal=@Accumulator[A].X.max colHead="Max" colWid = 8 colDec=2 \
-#       Reportcol colVal=@Accumulator[A].X.sum colHead="Tot" colWid = 8 colDec=2
+#       Reportcol colVal=@Accumulator[A].X.acmCount colHead="Count" colWid=8 colDec=0 \
+#       Reportcol colVal=@Accumulator[A].X.acmMin colHead="Min" colWid=8 colDec=2 \
+#       Reportcol colVal=@Accumulator[A].X.acmMean colHead="Mean" colWid=8 colDec=2 \
+#       Reportcol colVal=@Accumulator[A].X.acmMax colHead="Max" colWid = 8 colDec=2 \
+#       Reportcol colVal=@Accumulator[A].X.acmTotal colHead="Total" colWid = 8 colDec=2
         
         // hourly
         Report rpType=UDT rpFreq=Hour rpCPL=-1 rpDayBeg = Feb 1
@@ -371,7 +371,7 @@ Input for Run 001:
         // daily
         Report rpType=UDT rpFreq=Day rpCPL=-1 rpDayBeg = Feb 1 rpDayEnd=Feb 28
         rpTitle="MyAccum"
-        Reportcol colVal=$dayofyear  colHead="Day"      colWid=4
+        Reportcol colVal=$dayofyear  colHead="DOY"      colWid=4
         ACCOLS( "MyAccum", D)
         
         
@@ -613,18 +613,18 @@ Input for Run 001:
 
 
 
-! CSE 0.926.0+accumulator.33991d82.8.dirty for Win32 console run(s) done: Thu 14-Aug-25   3:1 pm
+! CSE 0.926.0+transmitted-solar.b9f493a6.12.dirty for Win32 console run(s) done: Mon 25-Aug-25   1:4 pm
 
 ! Executable:   d:\cse\builds\cse.exe
-!               14-Aug-25   3:1 pm   (VS 14.29    3378176 bytes)  (HPWH 1.26.0)
-! Command line: -x!  -b -t1 accumulator
+!               25-Aug-25   1:4 pm   (VS 14.29    3378176 bytes)  (HPWH 1.26.0)
+! Command line: -x!  -t1 accumulator
 ! Input file:   D:\cse\test\accumulator.cse
 ! Report file:  D:\CSE\TEST\ACCUMULATOR.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 1         T/C = 0.0520
+!                Input:  Time = 0.04     Calls = 1         T/C = 0.0450
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 0.65     Calls = 1         T/C = 0.6470
+!           Simulation:  Time = 0.56     Calls = 1         T/C = 0.5560
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
-!                Total:  Time = 0.70     Calls = 1         T/C = 0.7000
+!                Total:  Time = 0.61     Calls = 1         T/C = 0.6060

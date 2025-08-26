@@ -630,15 +630,38 @@ RC FENAW::fa_Subhr(				// subhr calcs for single time step
 	sbcO.sb_tSrf = DegKtoF( fa_awO.aw_TL[ 0]);			// outside
 	sbcO.sb_txe = sbcO.sb_txr*fa_awO.aw_FHR_OUT + sbcO.sb_txa*( 1. - fa_awO.aw_FHR_OUT);	// effective outside temp
 
-	double Ag = fActive * fa_pXS->xs_AreaGlazed();		// note: glazed area only
+	double Ag = fActive * fa_pXS->xs_areaGlz;		// note: glazed area only
 	z.zn_nAirSh += Ag*(sbcO.sb_txe*fa_awO.aw_cc + sbcO.sb_sgTarg.st_tot*fa_awO.aw_FP*fa_mSolar);
 	z.zn_dAirSh += Ag*fa_awO.aw_cc;
 	z.zn_nRadSh += Ag*(sbcO.sb_txe*fa_awO.aw_cr + sbcO.sb_sgTarg.st_tot*fa_awO.aw_FM*fa_mSolar);
 	z.zn_dRadSh += Ag*fa_awO.aw_cr;
 	z.zn_cxSh   += Ag*USItoIP( fa_awO.aw_Cx);
 
-	// transmitted solar, Btuh/ft2
+	// transmitted SW solar, Btuh/ft2
 	fa_pXS->xs_glzTrans = fa_mSolar * (sbcO.sb_sgTarg.st_bm*fa_BmTauF(iH) + sbcO.sb_sgTarg.st_df*fa_DfTauF());
+	
+#if defined( _DEBUG)
+	if (absSlr[nL] > 0.)
+	{
+		double trans2 = fa_mSolar * IrSItoIP(absSlr[nL]);
+		double diff = frDiff(double(fa_pXS->xs_glzTrans), trans2);
+		if (diff > .01)
+			printf("\nMismatch %s: %0.3f", Top.When(C_IVLCH_S), diff);
+	}
+#endif
+
+
+#if 0 && defined( _DEBUG)
+	// compare transmitted to zone total from targetting
+	// test valid iff one one window
+	// perfect match not expected due to cavity abs
+
+	double ratTr = z.qSgTotSh > 0. ? Ag*fa_pXS->xs_glzTrans / z.qSgTotSh
+		: fa_pXS->xs_glzTrans == 0. ? 1.
+		: 999.;
+	if (fabs(ratTr - 1.) > .001)
+		printf("\nMismatch %s: %0.6f", Top.When(C_IVLCH_S), ratTr);
+#endif
 
 	// inward flowing heat gain (convective and radiant), Btuh/ft2
 	fa_pXS->xs_glzInward = fa_mSolar * sbcO.sb_sgTarg.st_tot*(fa_awO.aw_FP+fa_awO.aw_FM);
@@ -646,15 +669,6 @@ RC FENAW::fa_Subhr(				// subhr calcs for single time step
 	// zone solar gain
 	//   add inward flowing fraction of absorbed
 	//   transmitted already included in qSgTotSh
-#if 1 && defined( _DEBUG)
-	double ratTr = z.qSgTotSh > 0. ? Ag*fa_pXS->xs_glzTrans / z.qSgTotSh
-		: fa_pXS->xs_glzTrans == 0. ? 1.
-		: 999.;
-	double trans2 = Ag*fa_mSolar*IrSItoIP(absSlr[nL]);
-
-	if (fabs(ratTr - 1.) > .001)
-		printf("\nMismatch %0.3f", ratTr);
-#endif
 	z.qSgTotSh  += Ag*fa_pXS->xs_glzInward;
 
 #if defined( DEBUGDUMP)
@@ -694,7 +708,7 @@ RC FENAW::fa_EndSubhr(			// ASHWAT end-of-subhour (accounting etc)
 	ZNR& z = ZrB[ sbcI.sb_zi];
 
 	// glazed area
-	double Ag = fActive * fa_pXS->xs_AreaGlazed();
+	double Ag = fActive * fa_pXS->xs_areaGlz;
 	sbcO.sb_qSrf =  fa_awO.aw_cc*(sbcO.sb_txe - sbcI.sb_txa)
 		                + fa_awO.aw_cr*(sbcO.sb_txe - sbcI.sb_txr);
 	sbcI.sb_qSrf = -sbcO.sb_qSrf;
