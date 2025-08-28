@@ -3851,14 +3851,13 @@ void RSYS::rs_HeatingOutletAirState(
 	if (auszMode == rsmHEAT)
 	{	if (Top.tp_pass1A)
 		{	// autosize warmup: assume fixed temp rise at room (duct losses and fan details ignored)
-			rs_capHt = rs_asOut.as_CalcQSen2(rs_asRet.as_tdb + rs_tdDesH, rs_amf);
+			rs_capHtFS= rs_capHt = rs_asOut.as_CalcQSen2(rs_asRet.as_tdb + rs_tdDesH, rs_amf);
 			rs_effHt = 1.f;		// need nz value, else ASHP assumes compressor off
 		}
 		else if (rs_IsASHP())
 		{	// ASHP heat autosize (based on rs_capH)
 				rs_effHt = 1.f;
-				rs_capHt = rs_capH;
-				rs_capAuxH = rs_capH;		// same cap for aux during autosizing
+				rs_capHtFS = rs_capHt = rs_capAuxH = rs_capH;		// same cap for aux during autosizing
 				//   used below if needed
 
 		}
@@ -3887,6 +3886,9 @@ void RSYS::rs_HeatingOutletAirState(
 
 			rs_capHt = capHtGross * rs_fCondCap + rs_fanPwr;
 			rs_inpHt = inpHtGross * rs_fCondInp + rs_fanPwr;
+
+			if (rs_speedF == 1.f)
+				rs_capHtFS = rs_capHt;
 	
 		}
 		else if (rs_IsWSHP())
@@ -3901,12 +3903,13 @@ void RSYS::rs_HeatingOutletAirState(
 		else if (rs_IsCHDHW())
 		{
 			rs_capHt = rs_CurCapHtCHDHW(rs_speedF);
+			// rs_capHtFS set in rs_CurCapHtCHDHW
 			rs_effHt = 1.f;
 		}
 		else
 		{	// not heat pump of any type
 			rs_effHt = rs_IsFanCoil() ? 1.f : rs_AFUE * rs_fEffH;
-			rs_capHt = rs_capH;		// includes fan heat
+			rs_capHtFS = rs_capHt = rs_capH;		// includes fan heat
 		}
 	}
 
@@ -5428,10 +5431,7 @@ void RSYS::rs_ClearSubhrResults(
 		return;
 
 	// all modes
-#if defined( RSYSLOADF)
-	rs_loadF = 
-#endif
-		rs_PLR = rs_runF = rs_speedF = rs_runFAux = rs_PLF = rs_capSenNetFS = 0.f;
+	rs_PLR = rs_runF = rs_speedF = rs_runFAux = rs_PLF = rs_capSenNetFS = 0.f;
 	rs_outSen = rs_outLat = rs_outFan = rs_outAux = rs_outDefrost
 		= rs_outSenTot = rs_inPrimary = rs_inFan = rs_inAux = rs_inDefrost = 0.;
 
@@ -6354,6 +6354,11 @@ RC RSYS::rs_FinalizeSh()
 			rs_inPrimary = fabs(rs_outSen + rs_outLat)/ max(.01f, rs_effCt * rs_PLF);
 		}
 
+		if (rs_capSenNetFS != 0.f)
+		{	
+			rs_PLR = rs_znLoad[0] / rs_capSenNetFS;
+		}
+
 		if (rs_pMtrElec)
 		{	rs_pMtrElec->H.clg += rs_inPrimary * Top.tp_subhrDur;	// compressor energy for step, Btu
 			rs_pMtrElec->H.fanC += rs_inFan * Top.tp_subhrDur;
@@ -6486,7 +6491,11 @@ RC RSYS::rs_FinalizeSh()
 				rs_inPrimary = rs_outSen / rs_effHt;
 			}
 		}
-
+		if (rs_capHtFS != 0.f)
+		{
+			rs_capSenNetFS = rs_capHtFS;
+			rs_PLR = rs_znLoad[0] / rs_capHtFS;
+		}
 		if (rs_pMtrHeat)
 			rs_pMtrHeat->H.htg += rs_inPrimary * Top.tp_subhrDur;
 		rs_inFan = rs_outFan;	// fan input, Btuh (in = out, all fan heat into air)
@@ -6503,10 +6512,7 @@ RC RSYS::rs_FinalizeSh()
 	}
 	// else if (rs_Mode == rsmOFF)
 
-	if (rs_capSenNetFS != 0.f)
-	{	
-		rs_PLR = rs_znLoad[0] / rs_capSenNetFS;
-	}
+	
 
 	// parasitic consumption
 	if (rs_pMtrElec)
