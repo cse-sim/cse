@@ -16,7 +16,11 @@ endif ()
 
 if ("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Windows")
     if (${COMPILER_ID} STREQUAL "msvc")
-        set(configure_command ${configure_command} -T v142,version=14.29.16.11 -A ${TARGET_VS_ARCHITECTURE} -DCMAKE_SYSTEM_VERSION=10.0.20348.0)
+        # Explicitly set versions to guarantee computational stability
+        #    toolset version (-T, version)
+        #    SDK version (CMAKE_SYSTEM_VERSION)
+        #        Supported list of SDK versions: https://developer.microsoft.com/en-us/windows/downloads/sdk-archive/
+        set(configure_command ${configure_command} -T v142,version=14.29.16.11 -A ${TARGET_VS_ARCHITECTURE} -DCMAKE_SYSTEM_VERSION=10.0.26100.0)
     elseif(${COMPILER_ID} STREQUAL "clang")
         set(configure_command ${configure_command} -T ClangCL -A ${TARGET_VS_ARCHITECTURE})
     endif ()
