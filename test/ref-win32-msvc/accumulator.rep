@@ -131,7 +131,7 @@ Monthly data for WthrAccum2
 
 ! Log for Run 001:
 
-! CSE 0.926.0+transmitted-solar.b9f493a6.12.dirty for Win32 console
+! CSE 0.926.0+transmitted-solar.f1f66a4e.19.dirty for Win32 console
 
 
 
@@ -142,11 +142,11 @@ Input for Run 001:
         wfName = "CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
         nSubSteps = 10
         
-        ACCUMULATOR MyAccum acValue = 1
+        ACCUMULATOR MyAccum acmValue = 1
         
-        ACCUMULATOR WthrAccum acValue = $tdbosh
+        ACCUMULATOR WthrAccum acmValue = $tdbosh
         
-        ACCUMULATOR WthrAccum2 acValue = @weather.db
+        ACCUMULATOR WthrAccum2 acmValue = @weather.db
         
         
         
@@ -613,18 +613,18 @@ Input for Run 001:
 
 
 
-! CSE 0.926.0+transmitted-solar.b9f493a6.12.dirty for Win32 console run(s) done: Mon 25-Aug-25   1:4 pm
+! CSE 0.926.0+transmitted-solar.f1f66a4e.19.dirty for Win32 console run(s) done: Fri 29-Aug-25   9:4 am
 
 ! Executable:   d:\cse\builds\cse.exe
-!               25-Aug-25   1:4 pm   (VS 14.29    3378176 bytes)  (HPWH 1.26.0)
+!               29-Aug-25   9:4 am   (VS 14.29    3377152 bytes)  (HPWH 1.26.0)
 ! Command line: -x!  -t1 accumulator
 ! Input file:   D:\cse\test\accumulator.cse
 ! Report file:  D:\CSE\TEST\ACCUMULATOR.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.04     Calls = 1         T/C = 0.0450
+!                Input:  Time = 0.04     Calls = 1         T/C = 0.0440
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
 !           Simulation:  Time = 0.56     Calls = 1         T/C = 0.5560
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
-!                Total:  Time = 0.61     Calls = 1         T/C = 0.6060
+!                Total:  Time = 0.60     Calls = 1         T/C = 0.6050

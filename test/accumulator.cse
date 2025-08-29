@@ -3,11 +3,11 @@
 wfName = "CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
 nSubSteps = 10
 
-ACCUMULATOR MyAccum acValue = 1
+ACCUMULATOR MyAccum acmValue = 1
 
-ACCUMULATOR WthrAccum acValue = $tdbosh
+ACCUMULATOR WthrAccum acmValue = $tdbosh
 
-ACCUMULATOR WthrAccum2 acValue = @weather.db
+ACCUMULATOR WthrAccum2 acmValue = @weather.db
 
 
 

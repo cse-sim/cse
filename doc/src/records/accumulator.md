@@ -8,11 +8,11 @@ ACCUMULATOR results must be reported using user-defined REPORTs or EXPORTs.  For
 
     REPORT rpType=UDT rpFreq=Month rpDayBeg=Jan 1 rpDayEnd=Dec 31
         REPORTCOL colHead="mon" colVal=$Month colWid=3
-        REPORTCOL colHead="Total" colVal=@Accumulator[ 1].M.sum colDec=0 colWid=10
-        REPORTCOL colHead="Average" colVal=@Accumulator[ 1].M.avg colDec=0 colWid=10
+        REPORTCOL colHead="Total" colVal=@Accumulator[ 1].M.acmSum colDec=0 colWid=10
+        REPORTCOL colHead="Average" colVal=@Accumulator[ 1].M.acmMean colDec=0 colWid=10
 
 
-**acName**
+**acmName**
 
 Name of ACCUMULATOR: required for referencing in reports.
 
@@ -23,7 +23,7 @@ Name of ACCUMULATOR: required for referencing in reports.
   required: "Yes",
   variability: "constant") %>
 
-**acValue=*float***
+**acmValue=*float***
 
 The value being accumulated.  Generally expression.
 
