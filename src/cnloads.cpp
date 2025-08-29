@@ -3896,7 +3896,7 @@ void RSYS::rs_HeatingOutletAirState(
 			const float airMassFlowF = 1.f;  // temporary assumption
 			/*rc |=*/ WSHPPerf.whp_HeatingFactors(rs_fCondCap, rs_fCondInp, rs_tdbOut, rs_tdbCoilIn, airMassFlowF);
 			float capHtGross = (rs_capH - rs_fanHRtdH) * rs_fCondCap;
-			rs_capHt = capHtGross + rs_fanPwr;		// net capacity
+			rs_capHtFS = rs_capHt = capHtGross + rs_fanPwr;		// net capacity
 			float inpX = (capHtGross / rs_COP47) * rs_fCondInp;  // gross input power
 			rs_effHt = capHtGross / inpX * rs_fEffH;	// adjusted gross efficiency
 		}
@@ -4212,8 +4212,8 @@ x	rs_asOut = asSav;
 	rs_asOut.as_Set(50., .001);
 #endif
 
-	// speedF?
-	rs_capSenNetFS = rs_capSenCt / (rs_speedF > 0.f ? rs_speedF : 1.f) + rs_fanPwr;		// net full speed sensible capacity
+	if (rs_speedF == 1.f)
+		rs_capSenNetFS = rs_capSenCt + rs_fanPwr;	// net full speed sensible capacity
 
 #if defined( _DEBUG)
 	if (!Top.isWarmup)
@@ -6356,7 +6356,7 @@ RC RSYS::rs_FinalizeSh()
 
 		if (rs_capSenNetFS != 0.f)
 		{	
-			rs_PLR = rs_znLoad[0] / rs_capSenNetFS;
+			rs_PLR = rs_znLoad[0] / rs_capSenNetFS;		// PLR based on sensible load and FS sensible capacity
 		}
 
 		if (rs_pMtrElec)
@@ -6400,9 +6400,6 @@ RC RSYS::rs_FinalizeSh()
 					runFFan = rs_runF;
 					fFanPwrPrim = 1.f;
 				}
-
-				rs_capSenNetFS = rs_capHt - rs_capDfHt;	// net capacity
-														// includes fan heat; does not include defrost
 
 				double outTot = rs_runF * rs_capHt;
 
@@ -6476,7 +6473,6 @@ RC RSYS::rs_FinalizeSh()
 		}
 		else
 		{	// non-ASHP, non-CHDHW
-			rs_capSenNetFS = rs_capHt;				// net capacity, Btuh
 			double outTot = rs_runF * rs_capHt;		// total output (incl fan), Btuh
 			// rs_outLat = 0.;						// total latent output
 			rs_outFan = min( outTot, rs_runF * rs_fanPwr);	// fan output, Btuh
