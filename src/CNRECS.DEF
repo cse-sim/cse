@@ -1269,6 +1269,7 @@ RECORD XSURF "xsurf sub" *SUBSTRUCT	// for PRI, SFI, XSRAT.
 	*declare "XSURF& Copy( const XSURF* pXS, int options=0);"
 	*declare "RC xs_Validate( int options=0);"
 	*declare "SBC& xs_SBC( int si) { return si ? xs_sbcO : xs_sbcI; }"
+	*declare "SBC& xs_FrmSBC( int si) { return si ? xs_frmSbcO : xs_frmSbcI; }"
 	*declare "const char* xs_Name() const;"
 	*declare "int xs_CanHaveExtSlr() const;"
 	*declare "RC xs_SetUNom();"
@@ -1320,6 +1321,8 @@ RECORD XSURF "xsurf sub" *SUBSTRUCT	// for PRI, SFI, XSRAT.
     *mh FRAC scc    // window: SMSC: Solar Heat Gain Coef, shades Closed
     *r *nest SBC xs_sbcI	// inside (zone side) surface boundary conditions
     *r *nest SBC xs_sbcO	// outside (ambient or adjacent zone) surface boundary conditions
+    *r *nest SBC xs_frmSbcI	// ASHWAT windows: frame inside (zone side) surface boundary conditions
+    *r *nest SBC xs_frmSbcO	// ASHWAT windows: frame outside (ambient (or adjacent zone?)) surface boundary conditions
 
     *i FENMODELCH xs_fenModel	// fenestration model: user input
     *i FRAC xs_SHGC				// rated SHGC of assembly
@@ -1373,8 +1376,8 @@ RECORD XSURF "xsurf sub" *SUBSTRUCT	// for PRI, SFI, XSRAT.
        *nest SGDIST sgdist	// solar gain distribution (struct just above).  set: cncult3.cpp:cnuSgDist().
 
     // runtime values
-    *s *e FLOAT xs_glzTrans
-    *s *e FLOAT xs_glzInward
+    *s *e FLOAT xs_glzTrans     // ASHWAT windows: transmitted solar gain, Btuh (w/o cavity absorp adjustment)
+    *s *e FLOAT xs_glzInward    // ASHWAT windows: inward flowing convective and LW radiant gain to zone, Btuh
 
     *array XSMXTLRB *h *e
 		FLOAT xs_tLrB	// layer boundary temps re probes

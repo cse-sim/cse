@@ -2250,6 +2250,8 @@ void XSURF::xs_Init(			// initialize
 	{	// fixup, don't change data
 		xs_sbcI.sb_pXS = this;
 		xs_sbcO.sb_pXS = this;
+		xs_frmSbcI.sb_pXS = this;
+		xs_frmSbcO.sb_pXS = this;
 		for (int iFA=0; iFA<2; iFA++)
 		{	// relink FENAWs if they exist
 			if (xs_pFENAW[ iFA])
@@ -2260,6 +2262,8 @@ void XSURF::xs_Init(			// initialize
 	{	// full init
 		xs_sbcI.sb_Init( this, 0);
 		xs_sbcO.sb_Init( this, 1);
+		xs_frmSbcI.sb_Init( this, 0);	// set up linkage altho may not be used
+		xs_frmSbcO.sb_Init( this, 1);
 		xs_DeleteFENAW();		// no ASHWAT
 
 		// layer boundary temps: init to "unknown"

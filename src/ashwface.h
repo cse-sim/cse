@@ -193,8 +193,6 @@ public:
 	float fa_frmArea;			// frame area, ft2
 	float fa_frmUNFRC;			// frame U-factor with NFRC surface conductances, Btuh/ft2-F
 	float fa_frmUC;				// frame surface-to-surface conductance, Btuh/ft2-F
-	SBC fa_frmSbcI;				// frame inside (zone side) boundary conditions
-	SBC fa_frmSbcO;				// frame outside boundary conditions
 	CFSTYX fa_CFS;				// CFS for this fenestration: represents glazing and shades
 	char fa_refDesc[ CFSIDLEN+30];	// fa_CFS.ID + " (SHGC=%.3f  U=%.3f)"
 	float fa_mSolar;			// solar muliplier
@@ -214,18 +212,13 @@ public:
 	int fa_iterControl;					// iteration control, passed to ASHWAT_Thermal
 										//    abs value = max # of iterations
 										//    if <0, do NOT init layer temps (start with cur values)
+
+	double fa_absSlr[ CFSMAXNL+1];		// absorbed by layer, W/m2 (including layer nL = "room")
+	double fa_absSlrF[ CFSMAXNL+1];		// abs fraction by layer (test/debug aid only)
 	
 						// saved results from last ASHWAT call
 						//	re-used for multiple subhrs
-#if 1
 	AWIN fa_awI;
-#else
-							// conditions at prior calc = last full ASHWAT calc (re change detection)
-	double fa_incSlrPC;		// incident solar, W/m2
-	float fa_txaiPC;		// indoor air temp, F
-	float fa_hxaiPC;		// indoor convective coeff, Btuh/ft2-F
-	float fa_txaoPC;		// outdoor air temp, F
-#endif
 
 	AWOUT fa_awO;
 
@@ -245,6 +238,7 @@ public:
 	RC fa_SetupBare( float dirtShadeF);
 	RC fa_InsertLayer( int iLIns, const CFSLAYER* pL, const CFSGAP* pG=NULL);
     SBC& fa_SBC( int si) { return fa_pXS->xs_SBC( si); }
+    SBC& fa_FrmSBC( int si) { return fa_pXS->xs_FrmSBC( si); }
 	int fa_NL() const { return fa_CFS.NL; }
 	void DbDump() const;
 	RC fa_DfSolar();

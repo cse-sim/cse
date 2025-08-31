@@ -244,8 +244,6 @@ FENAW::FENAW( XSURF* pXS /*=NULL*/)
 void FENAW::fa_Init()
 {	// fa_pXS do not alter
 	fa_UNFRC = fa_SHGC = fa_frmF = fa_frmArea = fa_frmUNFRC = fa_frmUC = 0.f;
-	fa_frmSbcI.sb_Init( fa_pXS, 0);
-	fa_frmSbcO.sb_Init( fa_pXS, 1);
 	fa_CFS.cf_Clear();
 	VZero( fa_refDesc, CFSIDLEN+30);
 	fa_mSolar = fa_mCond = fa_dfAbsB = fa_dfRhoB = fa_dfTauB = 0.f;
@@ -255,12 +253,7 @@ void FENAW::fa_Init()
 	fa_iterControl = 100;
 	fa_nCall = fa_nCalc = 0;
 	fa_awO.aw_Init();
-#if 1
 	fa_awI.aw_Init();
-#else
-	fa_incSlrPC = 0.;
-	fa_txaiPC = fa_hxaiPC = fa_txaoPC = 0.f;
-#endif
 }		// FENAW::FENAW
 //-----------------------------------------------------------------------------
 const char* FENAW::fa_Name() const
@@ -362,8 +355,8 @@ RC FENAW::fa_SetupBare(		// FENAW init glazing alone
 
 		// frame
 		if (fa_frmArea > 0.f)
-		{	fa_frmSbcI = fa_SBC( 0);		// same boundary conditions as XSRAT
-			fa_frmSbcO = fa_SBC( 1);
+		{	fa_FrmSBC( 0) = fa_SBC( 0);		// same boundary conditions as XSRAT
+			fa_FrmSBC( 1) = fa_SBC( 1);
 			// TODO: roughness or other differences?
 		}
 	}
@@ -497,8 +490,8 @@ RC FENAW::fa_FrameBC()
 	RC rc = RCOK;
 	// frame is modeled as a quick surface (no mass)
 	if (fa_frmArea > 0.)
-	{	fa_frmSbcI.sb_SetCoeffs( fa_frmArea, fa_frmUC);
-		fa_frmSbcO.sb_SetCoeffs( fa_frmArea, fa_frmUC);
+	{	fa_FrmSBC( 0).sb_SetCoeffs( fa_frmArea, fa_frmUC);
+		fa_FrmSBC( 1).sb_SetCoeffs( fa_frmArea, fa_frmUC);
 	}
 	return rc;
 }		// FENAW::fa_FrameBC
@@ -507,9 +500,9 @@ RC FENAW::fa_FrameQS()
 {
 	RC rc = RCOK;
 	if (fa_frmArea > 0.)
-	{	ZNR& z = ZrB[ fa_frmSbcI.sb_zi];
-		z.zn_AccumBalTermsQS( fa_frmArea, fa_frmSbcI, fa_frmSbcO);
-		// if (fa_frmSbcO.sb_zi) ... generalize if supporting interzone fenestration
+	{	ZNR& z = ZrB[ fa_FrmSBC( 0).sb_zi];
+		z.zn_AccumBalTermsQS( fa_frmArea, fa_FrmSBC( 0), fa_FrmSBC( 1));
+		// if (fa_FrmSBC( 1).sb_zi) ... generalize if supporting interzone fenestration
 	}
 	return rc;
 }		// FENAW::fa_FrameQS
@@ -518,10 +511,10 @@ RC FENAW::fa_FrameEndSubhr()
 {
 	RC rc = RCOK;
 	if (fa_frmArea > 0.)
-	{	ZNR& z = ZrB[ fa_frmSbcI.sb_zi];
-		fa_frmSbcI.sb_SetTx();
-		fa_frmSbcO.sb_SetTx();
-		z.zn_EndSubhrQS( fa_frmArea, fa_frmUC, fa_frmSbcI, fa_frmSbcO);
+	{	ZNR& z = ZrB[ fa_FrmSBC( 0).sb_zi];
+		fa_FrmSBC( 0).sb_SetTx();
+		fa_FrmSBC( 1).sb_SetTx();
+		z.zn_EndSubhrQS( fa_frmArea, fa_frmUC, fa_FrmSBC( 0), fa_FrmSBC( 1));
 	}
 	return rc;
 }		// FENAW::fa_FrameEndSubhr
@@ -562,8 +555,6 @@ RC FENAW::fa_Subhr(				// subhr calcs for single time step
 	// solar gain
 	double incSlrIP = sbcO.sb_sgTarg.st_tot + sbcI.sb_sgTarg.st_tot;
 	double incSlr = IrIPtoSI( incSlrIP);	// total incident solar, W/m2 (used re SHGC calc)
-	double absSlr[ CFSMAXNL+1];				// absorbed by layer, W/m2 (including layer nL = "room")
-	double absSlrF[ CFSMAXNL+1];			// abs fraction by layer (test/debug aid only)
 
 	// do full ASHWAT iff conditions have changed "enough"
 	int bDoAW = Top.isBegRun
@@ -580,15 +571,15 @@ RC FENAW::fa_Subhr(				// subhr calcs for single time step
 		if (incSlr > 0.)
 		{	// nL+1 cuz innermost = room pseudo-layer
 			for (iL=0; iL<nL+1; iL++)
-			{	absSlr[ iL] = IrIPtoSI( fa_bmLAbsF[ iH][ iL]*sbcO.sb_sgTarg.st_bm
+			{	fa_absSlr[ iL] = IrIPtoSI( fa_bmLAbsF[ iH][ iL]*sbcO.sb_sgTarg.st_bm
 				 			          + fa_dfLAbsF[ iL]     *sbcO.sb_sgTarg.st_df
 									  + fa_dfLAbsB[ iL]     *sbcI.sb_sgTarg.st_df);
-				absSlrF[ iL] = absSlr[ iL] / incSlr;
+				fa_absSlrF[ iL] = fa_absSlr[ iL] / incSlr;
 			}
 		}
 		for (; iL < CFSMAXNL+1; iL++)
-		{	absSlr[ iL] = 0.;	// clear unused values (= all at night)
-			absSlrF[ iL] = 0.;
+		{	fa_absSlr[ iL] = 0.;	// clear unused values (= all at night)
+			fa_absSlrF[ iL] = 0.;
 		}
 	}
 
@@ -597,7 +588,7 @@ RC FENAW::fa_Subhr(				// subhr calcs for single time step
 		fa_awI.aw_Set(
 			sbcO.sb_txa, sbcO.sb_hxa, sbcO.sb_txr,
 			sbcI.sb_txa, sbcI.sb_hxa, sbcI.sb_txr,
-			incSlr, absSlr);
+			incSlr, fa_absSlr);
 
 		rc |= fa_Thermal( fa_awI, fa_awO);
 		fa_iterControl = -1;		// don't init / don't iterate
@@ -621,12 +612,12 @@ RC FENAW::fa_Subhr(				// subhr calcs for single time step
 	fa_pXS->xs_glzTrans = fa_mSolar * (sbcO.sb_sgTarg.st_bm*fa_BmTauF(iH) + sbcO.sb_sgTarg.st_df*fa_DfTauF());
 	
 #if defined( _DEBUG)
-	if (absSlr[nL] > 0.)
+	if (fa_absSlr[nL] > 0.)
 	{
-		double trans2 = fa_mSolar * IrSItoIP(absSlr[nL]);
+		double trans2 = fa_mSolar * IrSItoIP(fa_absSlr[nL]);
 		double diff = frDiff(double(fa_pXS->xs_glzTrans), trans2);
 		if (diff > .01)
-			printf("\nMismatch %s: %0.3f", Top.When(C_IVLCH_S), diff);
+			printf("\nMismatch %s %s: %0.3f", fa_pXS->xs_Name(), Top.When(C_IVLCH_S), diff);
 	}
 #endif
 
@@ -660,8 +651,8 @@ RC FENAW::fa_Subhr(				// subhr calcs for single time step
 				fa_pXS->xs_Name(), nL,
 				sbcO.sb_txa, sbcO.sb_txr, sbcO.sb_txe, sbcI.sb_txa, sbcI.sb_txr, sbcI.sb_txe);
 		DbPrintf("   incSlr=%0.2f  trans=%0.2f (%0.3f)",
-			sbcO.sb_sgTarg.st_tot, IrSItoIP( absSlr[ nL]), absSlrF[ nL]);
-		VDbPrintf( "  layer abs=", absSlr, nL, "  %0.2f", 1./cfIr);
+			sbcO.sb_sgTarg.st_tot, IrSItoIP( fa_absSlr[ nL]), fa_absSlrF[ nL]);
+		VDbPrintf( "  layer abs=", fa_absSlr, nL, "  %0.2f", 1./cfIr);
 		// layer temps, F
 		DbPrintf("   layer temps= ");
 		for (iL=0; iL<nL; iL++)
@@ -670,8 +661,8 @@ RC FENAW::fa_Subhr(				// subhr calcs for single time step
 			AWO( SHGCrt), AWO( Urt), AWO( cr), AWO( cc), AWO( FP), AWO( FM), USItoIP( AWO( Cx)));
 		SBC::sb_DbPrintf( "COG", sbcO, sbcI);
 		if (fa_frmArea > 0.  && bDoFrm)
-		{	const FENAW* A0= fa_pXS->xs_pFENAW[ 0];	// frame BCs always in [ 0]
-			SBC::sb_DbPrintf( "Frame", A0->fa_frmSbcO, A0->fa_frmSbcI);
+		{	FENAW* A0= fa_pXS->xs_pFENAW[ 0];	// frame BCs always in [ 0]
+			SBC::sb_DbPrintf( "Frame", A0->fa_FrmSBC( 1), A0->fa_FrmSBC( 0));
 		}
 	}
 #endif
