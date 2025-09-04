@@ -6,11 +6,27 @@ TODO: expand description and example
 
 ACCUMULATOR results must be reported using user-defined REPORTs or EXPORTs.  For example --
 
-    REPORT rpType=UDT rpFreq=Month rpDayBeg=Jan 1 rpDayEnd=Dec 31
-        REPORTCOL colHead="mon" colVal=$Month colWid=3
-        REPORTCOL colHead="Total" colVal=@Accumulator[ 1].M.acmSum colDec=0 colWid=10
-        REPORTCOL colHead="Average" colVal=@Accumulator[ 1].M.acmMean colDec=0 colWid=10
+    ACCUMULATOR "Zone Heating Set Point"
+      acmValue = @Zone[ 1].znTH // Subhourly output
 
+
+    REPORT rpType=UDT rpFreq=Month rpDayBeg=Jan 1 rpDayEnd=Dec 31
+        REPORTCOL colHead="Month"           colVal=$Month                                                          colWid= 3
+        REPORTCOL colHead="Monthly Total"   colVal=@Accumulator["Zone Heating Set Point"].M.acmSum  colDec=0 colWid=10
+        REPORTCOL colHead="Monthly Average" colVal=@Accumulator["Zone Heating Set Point"].M.acmMean colDec=0 colWid=10
+    
+
+    ACCUMULATOR "Window Transmitted Solar Gain" 
+      acmValue = @xsurf[ 1].glzTrans // Subhourly output
+
+    REPORT rpType=UDT rpFreq=Hour rpDayBeg=Jul 21 rpDayEnd=Jul 21
+        REPORTCOL colHead="Month"                                                 colVal=$Month                                                          colWid= 3
+        REPORTCOL colHead="Day"                                                   colVal=$Day                                                            colWid= 3
+        REPORTCOL colHead="Hour"                                                  colVal=$Hour                                                           colWid= 3
+        REPORTCOL colHead="Hourly Window Transmitted Solar Gain"                  colVal=@Accumulator["Window Transmitted Solar Gain"].H.acmSum  colDec=0 colWid=10
+        REPORTCOL colHead="Hourly Average Subhour Window Transmitted Solar Gain"  colVal=@Accumulator["Window Transmitted Solar Gain"].H.acmMean colDec=0 colWid=10
+        REPORTCOL colHead="Hourly Max Subhour Window Transmitted Solar Gain"      colVal=@Accumulator["Window Transmitted Solar Gain"].H.acmMax  colDec=0 colWid=10
+        REPORTCOL colHead="Hourly Min Subhour Window Transmitted Solar Gain"      colVal=@Accumulator["Window Transmitted Solar Gain"].H.acmMin  colDec=0 colWid=10
 
 **acmName**
 
