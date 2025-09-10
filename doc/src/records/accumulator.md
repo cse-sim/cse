@@ -6,15 +6,16 @@ TODO: expand description and example
 
 ACCUMULATOR results must be reported using user-defined REPORTs or EXPORTs.  For example --
 
-    ACCUMULATOR "Zone Heating Set Point"
-      acmValue = @Zone[ 1].znTH // Subhourly output
+    ACCUMULATOR "Zone Sensible Cooling Rate [Btu/h]" 
+      acmValue = @znRes[ 1].H.qscHvac // Hourly output
 
 
-    REPORT rpType=UDT rpFreq=Month rpDayBeg=Jan 1 rpDayEnd=Dec 31
-        REPORTCOL colHead="Month"           colVal=$Month                                                          colWid= 3
-        REPORTCOL colHead="Monthly Total"   colVal=@Accumulator["Zone Heating Set Point"].M.acmSum  colDec=0 colWid=10
-        REPORTCOL colHead="Monthly Average" colVal=@Accumulator["Zone Heating Set Point"].M.acmMean colDec=0 colWid=10
-    
+    REPORT rpType=UDT rpFreq=Month rpDayBeg=Jan 1 rpDayEnd=Dec 31 // Monthly Report
+        REPORTCOL colHead="Month"                                          colVal=$Month                                                                   colWid= 3
+        REPORTCOL colHead="Monthly Total Cooling [Btu]"                    colVal=@Accumulator["Zone Sensible Cooling Rate [Btu/h]"].M.acmSum    colDec=0  colWid=10
+        REPORTCOL colHead="Monthly Average Hourly Cooling Rate [Btu/h]"    colVal=@Accumulator["Zone Sensible Cooling Rate [Btu/h]"].M.acmMean   colDec=0  colWid=10
+        REPORTCOL colHead="Monthly Max Hourly Cooling Rate [Btu/h]"        colVal=@Accumulator["Zone Sensible Cooling Rate [Btu/h]"].M.acmMax    colDec=0  colWid=10
+        REPORTCOL colHead="Monthly Min Hourly Cooling Rate [Btu/h]"        colVal=@Accumulator["Zone Sensible Cooling Rate [Btu/h]"].M.acmMin    colDec=0  colWid=10
 
     ACCUMULATOR "Window Transmitted Solar Gain" 
       acmValue = @xsurf[ 1].glzTrans // Subhourly output
