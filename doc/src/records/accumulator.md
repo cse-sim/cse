@@ -20,14 +20,11 @@ ACCUMULATOR results must be reported using user-defined REPORTs or EXPORTs.  For
     ACCUMULATOR "Window Transmitted Solar Gain" 
       acmValue = @xsurf[ 1].glzTrans // Subhourly output
 
-    REPORT rpType=UDT rpFreq=Hour rpDayBeg=Jul 21 rpDayEnd=Jul 21
-        REPORTCOL colHead="Month"                                                 colVal=$Month                                                          colWid= 3
-        REPORTCOL colHead="Day"                                                   colVal=$Day                                                            colWid= 3
-        REPORTCOL colHead="Hour"                                                  colVal=$Hour                                                           colWid= 3
-        REPORTCOL colHead="Hourly Window Transmitted Solar Gain"                  colVal=@Accumulator["Window Transmitted Solar Gain"].H.acmSum  colDec=0 colWid=10
-        REPORTCOL colHead="Hourly Average Subhour Window Transmitted Solar Gain"  colVal=@Accumulator["Window Transmitted Solar Gain"].H.acmMean colDec=0 colWid=10
-        REPORTCOL colHead="Hourly Max Subhour Window Transmitted Solar Gain"      colVal=@Accumulator["Window Transmitted Solar Gain"].H.acmMax  colDec=0 colWid=10
-        REPORTCOL colHead="Hourly Min Subhour Window Transmitted Solar Gain"      colVal=@Accumulator["Window Transmitted Solar Gain"].H.acmMin  colDec=0 colWid=10
+    REPORT rpType=UDT rpFreq=Hour rpDayBeg=Jul 21 rpDayEnd=Jul 21 // Hourly Report
+        REPORTCOL colHead="Month"                                 colVal=$Month                                                             colWid= 3
+        REPORTCOL colHead="Day"                                   colVal=$Day                                                               colWid= 3
+        REPORTCOL colHead="Hour"                                  colVal=$Hour                                                              colWid= 3
+        REPORTCOL colHead="Hourly Window Transmitted Solar Gain"  colVal=@Accumulator["Window Transmitted Solar Gain"].H.acmSum  colDec=0   colWid=10
 
 **acmName**
 
