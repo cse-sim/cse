@@ -24,7 +24,7 @@ ACCUMULATOR results must be reported using user-defined REPORTs or EXPORTs.  For
         REPORTCOL colHead="Month"                                 colVal=$Month                                                             colWid= 3
         REPORTCOL colHead="Day"                                   colVal=$Day                                                               colWid= 3
         REPORTCOL colHead="Hour"                                  colVal=$Hour                                                              colWid= 3
-        REPORTCOL colHead="Zone Solar Gain Rate [Btu/h]"  colVal=@Accumulator["Window Transmitted Solar Gain"].H.acmSum  colDec=0   colWid=10
+        REPORTCOL colHead="Zone Solar Gain Rate [Btu/h]"          colVal=@Accumulator["Window Transmitted Solar Gain"].H.acmSum  colDec=0   colWid=10
 
 **acmName**
 
