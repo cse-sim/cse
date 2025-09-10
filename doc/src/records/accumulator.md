@@ -7,7 +7,7 @@ TODO: expand description and example
 ACCUMULATOR results must be reported using user-defined REPORTs or EXPORTs.  For example --
 
     ACCUMULATOR "Zone Sensible Cooling Rate [Btu/h]" 
-      acmValue = @znRes[ 1].H.qscHvac // Hourly output
+      acmValue = @znRes[ 1].H.qscHvac // Hourly Output
 
 
     REPORT rpType=UDT rpFreq=Month rpDayBeg=Jan 1 rpDayEnd=Dec 31 // Monthly Report
@@ -18,7 +18,7 @@ ACCUMULATOR results must be reported using user-defined REPORTs or EXPORTs.  For
         REPORTCOL colHead="Monthly Min Hourly Cooling Rate [Btu/h]"        colVal=@Accumulator["Zone Sensible Cooling Rate [Btu/h]"].M.acmMin    colDec=0  colWid=10
 
     ACCUMULATOR "Zone Solar Gain [Btu]" 
-      acmValue = @znRes[ 1].S.qSlr // Subhourly output
+      acmValue = @znRes[ 1].S.qSlr // Subhourly Output
 
     REPORT rpType=UDT rpFreq=Hour rpDayBeg=Jul 21 rpDayEnd=Jul 21 // Hourly Report
         REPORTCOL colHead="Month"                                 colVal=$Month                                                             colWid= 3
