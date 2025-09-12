@@ -1,11 +1,11 @@
+# mypy: ignore-errors
 import re
-
 from pathlib import Path
-from typing import Literal, List, Set, Dict, TypedDict
+from typing import Dict, List, Literal, Optional, Set, Tuple, TypedDict, cast
 
 from .base import BaseParser
-from .cnfields import FieldsResult
 from .cndefns import DefinitionsResult
+from .cnfields import FieldsResult
 
 
 # TODO:Better definition for Field
@@ -93,12 +93,12 @@ COMMENT_TOKEN_PATTERN = re.compile(
 )
 
 
-def parse_content_and_comments(line: str, in_block_comment=False):
-    content = []
-    comments = []
+def parse_content_and_comments(line: str, in_block_comment: bool = False) -> Tuple[List[str], List[str], bool]:  # noqa: PLR0912
+    content: List[str] = []
+    comments: List[str] = []
 
     if line.strip() == "":
-        return [], [], in_block_comment
+        return content, comments, in_block_comment
 
     for match in COMMENT_TOKEN_PATTERN.finditer(line):
         if in_block_comment:
@@ -110,9 +110,7 @@ def parse_content_and_comments(line: str, in_block_comment=False):
                 # so the actual value (without .strip()) is stored.
                 if leading_comment.strip():
                     comments += [leading_comment]
-                nested_content, nested_comments, in_block_comment = (
-                    parse_content_and_comments(line[match.end() :])
-                )
+                nested_content, nested_comments, in_block_comment = parse_content_and_comments(line[match.end() :])
                 comments += nested_comments
                 content += nested_content
                 in_block_comment = False
@@ -121,46 +119,41 @@ def parse_content_and_comments(line: str, in_block_comment=False):
                 comments += [line]
                 break
 
-        else:
-            if match.group("inline_start"):
-                leading_content = line[: match.start()].strip()
-                trailing_comment = line[match.start() + 2 :]
+        elif match.group("inline_start"):
+            leading_content = line[: match.start()].strip()
+            trailing_comment = line[match.start() + 2 :]
 
-                if leading_content:
-                    content += [leading_content]
+            if leading_content:
+                content += [leading_content]
 
-                if trailing_comment.strip():
-                    comments += [trailing_comment]
-                break
-            elif match.group("inline_block"):
-                leading_content = line[: match.start()].strip()
-                middle_comment = line[match.start() + 2 : match.end() - 2]
+            if trailing_comment.strip():
+                comments += [trailing_comment]
+            break
+        elif match.group("inline_block"):
+            leading_content = line[: match.start()].strip()
+            middle_comment = line[match.start() + 2 : match.end() - 2]
 
-                if leading_content:
-                    content += [leading_content]
+            if leading_content:
+                content += [leading_content]
 
-                if middle_comment.strip():
-                    comments += [middle_comment]
+            if middle_comment.strip():
+                comments += [middle_comment]
 
-                nested_content, nested_comments, in_block_comment = (
-                    parse_content_and_comments(line[match.end() :])
-                )
-                content += nested_content
-                comments += nested_comments
-            elif match.group("block_start"):
-                leading_content = line[: match.start()].strip()
-                trailing_comment = line[match.start() + 2 :]
+            nested_content, nested_comments, in_block_comment = parse_content_and_comments(line[match.end() :])
+            content += nested_content
+            comments += nested_comments
+        elif match.group("block_start"):
+            leading_content = line[: match.start()].strip()
+            trailing_comment = line[match.start() + 2 :]
 
-                if leading_content:
-                    content += [leading_content]
+            if leading_content:
+                content += [leading_content]
 
-                if trailing_comment.strip():
-                    comments += [trailing_comment]
-                in_block_comment = True
-            elif match.group("block_end"):
-                raise Exception(
-                    "End block comment token cannot appear first if not already in a block comment."
-                )
+            if trailing_comment.strip():
+                comments += [trailing_comment]
+            in_block_comment = True
+        elif match.group("block_end"):
+            raise Exception("End block comment token cannot appear first if not already in a block comment.")
         break  # ensure that if there are no matches from pattern.find_iter that we go to else block
     else:
         if in_block_comment and line.strip():
@@ -198,103 +191,98 @@ def make_field_dict_from_pending_tokens(
 
 
 def parse_field_directives(
-    line: str, field_pattern: re.Pattern, member_types: Set[str], first_line_of_record
-):
+    line: str, field_pattern: re.Pattern, member_types: Set[str], first_line_of_record: str
+) -> List[Dict] | None:
     field_match = field_pattern.match(line)
 
-    if field_match:
-        field_data = {}
-        tokens = [t for t in line.split(" ") if t.strip()]
+    if not field_match:
+        return None
 
-        variability_directives = []
-        boolean_directives = []
-        kvp_directives = []
+    field_data = {}
+    tokens = [t for t in line.split(" ") if t.strip()]
 
-        field_array = []
+    variability_directives = []
+    boolean_directives = []
+    kvp_directives = []
 
-        i = 0
-        while i < len(tokens):
-            token = tokens[i]
-            next_token = tokens[i + 1] if i + 1 < len(tokens) else None
+    field_array = []
 
-            if (
-                token.startswith("*")
-                and token[1:].lower() in FIELD_VARIABILITY_DIRECTIVES
-            ):
-                # could use set, but would prefer to maintain order in list. Probably an ordered set is a thing in python?
-                if token[1:].lower() in variability_directives:
-                    i += 1
-                    continue
+    i = 0
+    while i < len(tokens):
+        token = tokens[i]
+        next_token = tokens[i + 1] if i + 1 < len(tokens) else None
 
-                variability_directives.append(token[1:].lower())
-
-            elif token.startswith("*") and token[1:].lower() in FIELD_BOOL_DIRECTIVES:
-                boolean_directives.append(token[1:].lower())
-
-            elif token.startswith("*") and token[1:].lower() in FIELD_KVP_DIRECTIVES:
-                if next_token is None:
-                    raise Exception(
-                        "A kvp directive appeared without a corresponding value."
-                    )
-
-                kvp_directives.append({token[1:].lower(): next_token})
+        if token.startswith("*") and token[1:].lower() in FIELD_VARIABILITY_DIRECTIVES:
+            # could use set, but would prefer to maintain order in list.
+            # Probably an ordered set is a thing in python?
+            if token[1:].lower() in variability_directives:
                 i += 1
+                continue
 
-            elif token.upper() in member_types:
-                field_data["type"] = token.upper()
-                if next_token is None:
-                    raise Exception(
-                        "A field type appeared without a corresponding field name."
-                    )
+            variability_directives.append(token[1:].lower())
 
-                field_array.append(
-                    make_field_dict_from_pending_tokens(
-                        {token.upper(): next_token},
-                        variability_directives,
-                        boolean_directives,
-                        kvp_directives,
-                    )
+        elif token.startswith("*") and token[1:].lower() in FIELD_BOOL_DIRECTIVES:
+            boolean_directives.append(token[1:].lower())
+
+        elif token.startswith("*") and token[1:].lower() in FIELD_KVP_DIRECTIVES:
+            if next_token is None:
+                raise Exception("A kvp directive appeared without a corresponding value.")
+
+            kvp_directives.append({token[1:].lower(): next_token})
+            i += 1
+
+        elif token.upper() in member_types:
+            field_data["type"] = token.upper()
+            if next_token is None:
+                raise Exception("A field type appeared without a corresponding field name.")
+
+            field_array.append(
+                make_field_dict_from_pending_tokens(
+                    {token.upper(): next_token},
+                    variability_directives,
+                    boolean_directives,
+                    kvp_directives,
                 )
-                variability_directives = []
-                boolean_directives = []
-                kvp_directives = []
-
-                i += 1
-
-            else:
-                field_array.append(
-                    make_field_dict_from_pending_tokens(
-                        {"": token},
-                        variability_directives,
-                        boolean_directives,
-                        kvp_directives,
-                    )
-                )
-                variability_directives = []
-                boolean_directives = []
-                kvp_directives = []
+            )
+            variability_directives = []
+            boolean_directives = []
+            kvp_directives = []
 
             i += 1
 
-        if any(
-            [
-                len(variability_directives) > 0,
-                len(boolean_directives) > 0,
-                len(kvp_directives) > 0,
-            ]
-        ):
-            raise Exception(
-                f"If a line containes variability, boolean, or kvp directives, it must also contain a field name and/or type.\n{line}\n{first_line_of_record}"
+        else:
+            field_array.append(
+                make_field_dict_from_pending_tokens(
+                    {"": token},
+                    variability_directives,
+                    boolean_directives,
+                    kvp_directives,
+                )
             )
+            variability_directives = []
+            boolean_directives = []
+            kvp_directives = []
 
-        return field_array
+        i += 1
+
+    if any(
+        [
+            len(variability_directives) > 0,
+            len(boolean_directives) > 0,
+            len(kvp_directives) > 0,
+        ]
+    ):
+        raise Exception(
+            f"""If a line containes variability, boolean, or kvp directives,
+            it must also contain a field name and/or type.\n{line}\n{first_line_of_record}"""
+        )
+
+    return field_array
 
 
 def get_field_start_pattern(field_types: Set[str]) -> re.Pattern:
     # Combine known directives and member types into a single list
-    directives = FIELD_BOOL_DIRECTIVES.union(
-        FIELD_KVP_DIRECTIVES, FIELD_VARIABILITY_DIRECTIVES
-    )
+    directives = FIELD_BOOL_DIRECTIVES.union(FIELD_KVP_DIRECTIVES, FIELD_VARIABILITY_DIRECTIVES)
 
     # Prefix directives with literal *
     directive_patterns = [r"\*" + re.escape(d) for d in directives]
@@ -307,70 +295,72 @@ def get_field_start_pattern(field_types: Set[str]) -> re.Pattern:
     return re.compile(pattern, re.IGNORECASE)
 
 
-def remove_multiline_comments(text: str):
+def remove_multiline_comments(text: str) -> str:
     """Remove all multiline comments (i.e., /*...*/)."""
     pattern = re.compile(r"/\*.*?\*/", re.DOTALL)
 
     return pattern.sub(" ", text)
 
 
-def remove_inline_comments(text: str):
+def remove_inline_comments(text: str) -> str:
     cleaned_lines = [line.split("//", 1)[0].rstrip() for line in text.splitlines()]
     return "\n".join(cleaned_lines)
 
 
-def remove_comments(text: str):
+def remove_comments(text: str) -> str:
     return remove_inline_comments(remove_multiline_comments(text))
 
 
 def parse_directives(
     text: str, bool_directives: Set[str], kvp_directives: Set[str]
-) -> dict:
-    directives = {}
+) -> Dict[str, str | bool | None] | None:
+    directives: Dict[str, str | bool | None] = {}
 
     tokens = re.findall(r"\*([a-zA-Z0-9_]+)(?:\s+([a-zA-Z0-9_]+))?", text)
 
     for key, value in tokens:
-        key_lower = key.lower()
+        key_lower = cast(str, key).lower()
         if key_lower in bool_directives:
             directives[key_lower] = True
         elif key_lower in kvp_directives:
-            directives[key_lower] = value.strip() if value else None
+            directives[key_lower] = cast(str, value).strip() if value else None
 
     return directives if len(tokens) > 0 else None
 
 
-def parse_declare_directive(text: str):
+def parse_declare_directive(text: str) -> Optional[Dict[str, str]]:
     match = re.match(r'\s*\*declare\s+"(.*?)"', text)
 
     if match:
         return {"declare": match.group(1)}
+    else:
+        return None
 
 
-def parse_define_statement(text: str):
+def parse_define_statement(text: str) -> Optional[Dict[str, str]]:
     match = re.match(r"#define\s+(.*)", text)
 
     if match:
         return {"define": match.group(1)}
+    else:
+        return None
 
 
-def parse_record(text, field_types: Set[str]):
-    data = {}
+def parse_record(text: str, field_types: Set[str]) -> Record:  # noqa: PLR0912, PLR0915
+    data: Record = {}
 
     lines = text.splitlines()
     index = 0
     in_block_comment = False
-    pending_comments = []
-    pending_fields = []
+    pending_comments: List[str] = []
+    pending_fields: List[dict] = []
 
     elapsed_lines = 0
 
     while index < len(lines):
         line = lines[index]
 
-        content, comments, in_block_comment = parse_content_and_comments(
-            line, in_block_comment
-        )
+        content, comments, in_block_comment = parse_content_and_comments(line, in_block_comment)
 
         merged_line_content = " ".join(content)
 
@@ -378,7 +368,7 @@ def parse_record(text, field_types: Set[str]):
         if header_match:
             data["id"] = header_match.group("id")
             data["name"] = header_match.group("name")
-            data["type"] = header_match.group("type")
+            data["type"] = cast(RecordType, header_match.group("type"))
 
             parsed_record_header_directives = parse_directives(
                 merged_line_content,
@@ -386,21 +376,22 @@ def parse_record(text, field_types: Set[str]):
                 RECORD_HEADER_KVP_DIRECTIVES,
             )
 
-            data = {**data, **parsed_record_header_directives}
+            if parsed_record_header_directives:
+                data = {**data, **parsed_record_header_directives}
 
             if len(comments) > 0:
                 data["record_comments"] = comments
 
             next_in_block_comment = in_block_comment
             while index + 1 < len(lines):
-                next_line_content, next_line_comments, next_in_block_comment = (
-                    parse_content_and_comments(lines[index + 1], next_in_block_comment)
+                next_line_content, next_line_comments, next_in_block_comment = parse_content_and_comments(
+                    lines[index + 1], next_in_block_comment
                 )
 
                 # Capture all comments until either a blank line or line with real content is encountered.
                 if len(next_line_content) == 0 and len(next_line_comments) > 0:
                     if "record_comments" in data:
-                        data["record_comments"] += next_line_comments
+                        data["record_comments"] = data["record_comments"] + next_line_comments
                     else:
                         data["record_comments"] = next_line_comments
                     in_block_comment = next_in_block_comment
@@ -415,7 +406,6 @@ def parse_record(text, field_types: Set[str]):
             continue
 
         if len(content) == 0 and len(comments) == 0:
-            #
             if "field_groups" not in data:
                 data["field_groups"] = []
 
@@ -436,14 +426,10 @@ def parse_record(text, field_types: Set[str]):
             pending_comments = []
             elapsed_lines = 0
 
-        record_directive = parse_directives(
-            merged_line_content, RECORD_BOOL_DIRECTIVES, RECORD_KVP_DIRECTIVES
-        )
+        record_directive = parse_directives(merged_line_content, RECORD_BOOL_DIRECTIVES, RECORD_KVP_DIRECTIVES)
 
         if record_directive and len(record_directive.keys()) > 1:
-            raise Exception(
-                "Parser expects at most one record directive (or declare directive) per line"
-            )
+            raise Exception("Parser expects at most one record directive (or declare directive) per line")
 
         if record_directive:
             if len(pending_comments) > 0 and len(pending_fields) == 0:
@@ -451,8 +437,8 @@ def parse_record(text, field_types: Set[str]):
 
             next_in_block_comment = in_block_comment
             while index + 1 < len(lines):
-                next_line_content, next_line_comments, next_in_block_comment = (
-                    parse_content_and_comments(lines[index + 1], next_in_block_comment)
+                next_line_content, next_line_comments, next_in_block_comment = parse_content_and_comments(
+                    lines[index + 1], next_in_block_comment
                 )
 
                 # Capture all comments until either a blank line or line with real content is encountered.
@@ -475,8 +461,8 @@ def parse_record(text, field_types: Set[str]):
         if define_statement:
             next_in_block_comment = in_block_comment
             while index + 1 < len(lines):
-                next_line_content, next_line_comments, next_in_block_comment = (
-                    parse_content_and_comments(lines[index + 1], next_in_block_comment)
+                next_line_content, next_line_comments, next_in_block_comment = parse_content_and_comments(
+                    lines[index + 1], next_in_block_comment
                 )
 
                 # Capture all comments until either a blank line or line with real content is encountered.
@@ -498,8 +484,8 @@ def parse_record(text, field_types: Set[str]):
         if declare_directive:
             next_in_block_comment = in_block_comment
             while index + 1 < len(lines):
-                next_line_content, next_line_comments, next_in_block_comment = (
-                    parse_content_and_comments(lines[index + 1], next_in_block_comment)
+                next_line_content, next_line_comments, next_in_block_comment = parse_content_and_comments(
+                    lines[index + 1], next_in_block_comment
                 )
 
                 # Capture all comments until either a blank line or line with real content is encountered.
@@ -517,14 +503,12 @@ def parse_record(text, field_types: Set[str]):
 
         field_pattern = get_field_start_pattern(field_types)
 
-        field_directives = parse_field_directives(
-            merged_line_content, field_pattern, field_types, lines[0]
-        )
+        field_directives = parse_field_directives(merged_line_content, field_pattern, field_types, lines[0])
         if len(field_directives or []) > 0:
             next_in_block_comment = in_block_comment
             while index + 1 < len(lines):
-                next_line_content, next_line_comments, next_in_block_comment = (
-                    parse_content_and_comments(lines[index + 1], next_in_block_comment)
+                next_line_content, next_line_comments, next_in_block_comment = parse_content_and_comments(
+                    lines[index + 1], next_in_block_comment
                 )
 
                 # Capture all comments until either a blank line or line with real content is encountered.
@@ -543,10 +527,7 @@ def parse_record(text, field_types: Set[str]):
 
         # If line is empty or we are at end of record block, attach any pending
         # fields as a new field group.
-        if (len(content) == 0 and len(comments) == 0) or (
-            index == len(lines) - 1 and len(pending_fields) > 0
-        ):
-            #
+        if (len(content) == 0 and len(comments) == 0) or (index == len(lines) - 1 and len(pending_fields) > 0):
             if "field_groups" not in data:
                 data["field_groups"] = []
 
@@ -566,9 +547,7 @@ def parse_record(text, field_types: Set[str]):
 
 
 class RecordsParser(BaseParser[RecordsResult]):
-    def __init__(
-        self, path: Path, definitions: DefinitionsResult, fields: FieldsResult
-    ):
+    def __init__(self, path: Path, definitions: DefinitionsResult, fields: FieldsResult):
         super().__init__(path)
         self.definition_flags = definitions["bool"]
         self.field_types = {field["typename"] for field in fields}
@@ -602,10 +581,7 @@ class RecordsParser(BaseParser[RecordsResult]):
             else_block = match.group("else_block") or ""
 
             # Case-insensitive "startswith" matching
-            if not any(
-                def_name.lower().startswith(allowed.lower())
-                for allowed in self.definition_flags
-            ):
+            if not any(def_name.lower().startswith(allowed.lower()) for allowed in self.definition_flags):
                 replacement = else_block
             else:
                 replacement = if_block

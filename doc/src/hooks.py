@@ -1,16 +1,16 @@
-# Note: Edits to hooks do not get captured by MkDocs' built-in reloading mechanism.
+# mypy: ignore-errors
+# # Note: Edits to hooks do not get captured by MkDocs' built-in reloading mechanism.
 # If you change the hooks, you must manually stop and restart the server.
 import copy
 import re
+from pathlib import Path
+from typing import List, Optional, TypedDict
 
 from bs4 import BeautifulSoup
-from pathlib import Path
-from slugify import slugify
-from typing import Optional, TypedDict, List
-
 from parsers.cndefns import DefinitionsParser
 from parsers.cnfields import FieldsParser
 from parsers.cnrecs import Field, FieldGroup, Record, RecordsParser
+from slugify import slugify
 
 
 class RecordPrefixClass(TypedDict, total=False):
@@ -75,7 +75,7 @@ class SourcePaths(TypedDict):
     cnrecs: Path
 
 
-def get_visible_data_members_by_group(group: FieldGroup):
+def get_visible_data_members_by_group(group: FieldGroup) -> list[Field]:
     members = group.get("members", [])
 
     return list(
@@ -86,14 +86,14 @@ def get_visible_data_members_by_group(group: FieldGroup):
     )
 
 
-def get_resolved_probe_name(member, prefix: Optional[str] = None):
+def get_resolved_probe_name(member: Field, prefix: Optional[str] = None) -> str:
     # TODO: Fix at parser level.
     clean_name = member["name"].replace(";", "")
 
     return f"{prefix + '.' if prefix else ''}{clean_name}{'[index]' if 'array' in member else ''}"
 
 
-def get_resolved_comment_string(comments: list[str]):
+def get_resolved_comment_string(comments: list[str]) -> str:
     if len(comments) == 0:
         return ""
     elif len(comments) == 1:
@@ -103,23 +103,15 @@ def get_resolved_comment_string(comments: list[str]):
         return f"<ul>\n{items}\n</ul>"
 
 
-def is_visible_noname_nest_member(member):
-    return (
-        member.get("nest", None) is not None
-        and member.get("noname", False)
-        and not member.get("hide", False)
-    )
+def is_visible_noname_nest_member(member: Field) -> bool:
+    return member.get("nest", None) is not None and member.get("noname", False) and not member.get("hide", False)
 
 
-def is_visible_named_nest_member(member):
-    return (
-        member.get("nest", None) is not None
-        and not member.get("noname", False)
-        and not member.get("hide", False)
-    )
+def is_visible_named_nest_member(member: Field) -> bool:
+    return member.get("nest", None) is not None and not member.get("noname", False) and not member.get("hide", False)
 
 
-def attach_forward_variability_directives(member, forward_variability_directives):
+def attach_forward_variability_directives(member: Field, forward_variability_directives: set[str]) -> Field | None:
     if "hide" in member:
         return None
 
@@ -141,9 +133,7 @@ class ProbeWriter:
     def __init__(self, paths: SourcePaths, destination_dir: Path):
         self.cndefns = DefinitionsParser(paths["cndefns"]).parse()
         self.cnfields = FieldsParser(paths["cnfields"]).parse()
-        self.cnrecs = RecordsParser(
-            paths["cnrecs"], self.cndefns, self.cnfields
-        ).parse()
+        self.cnrecs = RecordsParser(paths["cnrecs"], self.cndefns, self.cnfields).parse()
         self.process_cnrecs()
 
         self.destination_dir = destination_dir
@@ -161,9 +151,7 @@ class ProbeWriter:
 
         resolved_prefix = prefix if isinstance(prefix, str) else prefix["value"]
 
-        return (
-            name[len(resolved_prefix) :] if name.startswith(resolved_prefix) else name
-        )
+        return name[len(resolved_prefix) :] if name.startswith(resolved_prefix) else name
 
     def process_cnrecs(self):
         """Strips all record prefixes."""
@@ -179,13 +167,11 @@ class ProbeWriter:
 
                 for member in data_members:
                     if "name" not in member:
-                        raise Exception(
-                            f"Could not find name for data member: {member}"
-                        )
+                        raise Exception(f"Could not find name for data member: {member}")
 
                     member["name"] = self.strip_prefix(member["name"], prefix)
 
-    def get_field_groups_by_record(
+    def get_field_groups_by_record(  # noqa: PLR0912
         self, record: Record, forward_variability_directives: Optional[str] = []
     ) -> List[FieldGroup]:
         if not record:
@@ -200,9 +186,7 @@ class ProbeWriter:
             if not baseclass:
                 raise Exception(f"Could not find baseclass: {baseclass_id}")
 
-            new_field_groups += self.get_field_groups_by_record(
-                baseclass, forward_variability_directives
-            )
+            new_field_groups += self.get_field_groups_by_record(baseclass, forward_variability_directives)
 
         field_groups = record.get("field_groups", [])
         for field_group in field_groups:
@@ -228,25 +212,18 @@ class ProbeWriter:
 
                         # New forwarded directives include any previous forwards plus any
                         # directives attached to the current noname nest record
-                        merged_variability_directives = set(
-                            member.get("variability_directives", [])
-                        )
-                        merged_variability_directives.update(
-                            forward_variability_directives
-                        )
+                        merged_variability_directives = set(member.get("variability_directives", []))
+                        merged_variability_directives.update(forward_variability_directives)
 
                         new_field_groups += self.get_field_groups_by_record(
                             nest_record, list(merged_variability_directives)
                         )
 
+                    elif "hide" in member:
+                        continue
                     else:
-                        if "hide" in member:
-                            continue
-                        else:
-                            enriched_member = attach_forward_variability_directives(
-                                member, forward_variability_directives
-                            )
-                            new_members.append(enriched_member)
+                        enriched_member = attach_forward_variability_directives(member, forward_variability_directives)
+                        new_members.append(enriched_member)
 
                 if len(new_members) > 0:
                     new_field_group = {"members": new_members}
@@ -263,9 +240,7 @@ class ProbeWriter:
                     if "hide" in member:
                         continue
                     else:
-                        enriched_member = attach_forward_variability_directives(
-                            member, forward_variability_directives
-                        )
+                        enriched_member = attach_forward_variability_directives(member, forward_variability_directives)
                         new_members.append(enriched_member)
 
                 new_field_group: FieldGroup = {"members": new_members}
@@ -301,9 +276,7 @@ class ProbeWriter:
 
     def get_resolved_array_length(self, member, record_id):
         if "array" not in member:
-            raise Exception(
-                "To get resolved array length, the data member must be an array."
-            )
+            raise Exception("To get resolved array length, the data member must be an array.")
 
         try:
             return int(member["array"])
@@ -318,9 +291,7 @@ class ProbeWriter:
             if len(defines) > 0:  # added to make debugging easier.
                 for item in defines:
                     if value in item["define"]:
-                        return self.get_array_length_from_define_statement(
-                            item["define"], value
-                        )
+                        return self.get_array_length_from_define_statement(item["define"], value)
 
         # If we couldn't parse the value as a number or find the corresponding definiton in the data member's defines or
         # in the definitions in cndefn.h, simply return the string that is present.
@@ -346,13 +317,9 @@ class ProbeWriter:
 
         self.types.add(base_probe_type or "")
 
-        resolved_array_length = (
-            self.get_resolved_array_length(member, record_id)
-            if "array" in member
-            else None
-        )
+        resolved_array_length = self.get_resolved_array_length(member, record_id) if "array" in member else None
 
-        return f"{mapped_probe_type}{" " if mapped_probe_type and resolved_array_length else ""}{f'Array [{resolved_array_length}]' if 'array' in member else ''}"
+        return f"{mapped_probe_type}{' ' if mapped_probe_type and resolved_array_length else ''}{f'Array [{resolved_array_length}]' if 'array' in member else ''}"  # noqa: E501
 
     def get_appended_record(
         self,
@@ -381,11 +348,9 @@ class ProbeWriter:
                     </div>
                 </details>
             </td>
-        </tr>"""
+        </tr>"""  # noqa: E501
 
-    def resolve_directive(
-        self, args: list[str], options: list[str], fallback: str | None = None
-    ) -> str:
+    def resolve_directive(self, args: list[str], options: list[str], fallback: str | None = None) -> str:
         for opt in options:
             if opt in args:
                 return opt
@@ -414,36 +379,23 @@ class ProbeWriter:
             return ""
 
         resolved_frequency = self.resolve_directive(directives, FREQUENCY_DIRECTIVES)
-        resolved_availability = self.resolve_directive(
-            directives, AVAILABILITY_DIRECTIVES, fallback="b"
-        )
+        resolved_availability = self.resolve_directive(directives, AVAILABILITY_DIRECTIVES, fallback="b")
 
         if not resolved_frequency:
-            self.members_with_no_frequency_directive.add(
-                f"{member['name'], member['type']}"
-            )
+            self.members_with_no_frequency_directive.add(f"{member['name'], member['type']}")
 
-        self.variability_combinations.add(
-            f"{resolved_frequency},{resolved_availability}"
-        )
+        self.variability_combinations.add(f"{resolved_frequency},{resolved_availability}")
 
         try:
             return DESCRIPTION_MAP[resolved_frequency][resolved_availability]
         except KeyError:
             return "Unknown"
 
-    def get_data_member_row(
-        self, member: Field, record_id, probe_name_prefix: Optional[str]
-    ):
-
+    def get_data_member_row(self, member: Field, record_id, probe_name_prefix: Optional[str]):
         resolved_name = get_resolved_probe_name(member, probe_name_prefix)
         resolved_type = self.get_resolved_probe_type(member, record_id)
-        resolved_variability_directives_string = (
-            self.get_resolved_variability_directives_string(member)
-        )
-        resolved_comment_string = get_resolved_comment_string(
-            member.get("comments", [])
-        )
+        resolved_variability_directives_string = self.get_resolved_variability_directives_string(member)
+        resolved_comment_string = get_resolved_comment_string(member.get("comments", []))
 
         appended_record = self.get_appended_record(member, resolved_name)
 
@@ -457,9 +409,7 @@ class ProbeWriter:
             + appended_record
         )
 
-    def get_field_group_table_string(
-        self, group, record_id, probe_name_prefix: Optional[str]
-    ):
+    def get_field_group_table_string(self, group, record_id, probe_name_prefix: Optional[str]):
         visible_data_members = get_visible_data_members_by_group(group)
 
         if len(visible_data_members) == 0:
@@ -486,15 +436,12 @@ class ProbeWriter:
 
     def write_probes_by_record(self, record: Record):
         result = [f"---\ntitle: {record['name']}\n---"]
-        result += [f"[](){{ #p_{record["name"].lower()} }}"]
+        result += [f"[](){{ #p_{record['name'].lower()} }}"]
 
         resolved_field_groups = self.get_field_groups_by_record(record, [])
-        result += [
-            self.get_field_group_table_string(group, record["id"], None)
-            for group in resolved_field_groups
-        ]
+        result += [self.get_field_group_table_string(group, record["id"], None) for group in resolved_field_groups]
 
-        filename = f"{record["name"]}.md"
+        filename = f"{record['name']}.md"
         path = self.destination_dir / filename
 
         new_content = "".join(result)
@@ -528,9 +475,7 @@ class ProbeWriter:
                     records.append(record_copy)
                     break
 
-        for record in filter(
-            lambda r: r["type"] == "RAT" and "hideall" not in r, records
-        ):
+        for record in filter(lambda r: r["type"] == "RAT" and "hideall" not in r, records):
             self.write_probes_by_record(record)
 
 
@@ -588,39 +533,19 @@ text_to_slug = {
     "ahCzCzns": slugify("ahWzCzns, ahCzCzns"),
     "chAuxOnMtr": slugify("chAuxOnMtr, chAuxOffMtr, chAuxFullOffMtr, chAuxOnAtAllMtr"),
     "chAuxOffMtr": slugify("chAuxOnMtr, chAuxOffMtr, chAuxFullOffMtr, chAuxOnAtAllMtr"),
-    "chAuxFullOffMtr": slugify(
-        "chAuxOnMtr, chAuxOffMtr, chAuxFullOffMtr, chAuxOnAtAllMtr"
-    ),
-    "chAuxOnAtAllMtr": slugify(
-        "chAuxOnMtr, chAuxOffMtr, chAuxFullOffMtr, chAuxOnAtAllMtr"
-    ),
+    "chAuxFullOffMtr": slugify("chAuxOnMtr, chAuxOffMtr, chAuxFullOffMtr, chAuxOnAtAllMtr"),
+    "chAuxOnAtAllMtr": slugify("chAuxOnMtr, chAuxOffMtr, chAuxFullOffMtr, chAuxOnAtAllMtr"),
     "rsLoadMtr": slugify("rsLoadMtr, rsHtgLoadMtr, rsClgLoadMtr"),
     "rsHtgLoadMtr": slugify("rsLoadMtr, rsHtgLoadMtr, rsClgLoadMtr"),
     "rsClgLoadMtr": slugify("rsLoadMtr, rsHtgLoadMtr, rsClgLoadMtr"),
-    "rsSrcSideLoadMtr": slugify(
-        "rsSrcSideLoadMtr, rsHtgSrcSideLoadMtr, rsClgSrcSideLoadMtr"
-    ),
-    "rsHtgSrcSideLoadMtr": slugify(
-        "rsSrcSideLoadMtr, rsHtgSrcSideLoadMtr, rsClgSrcSideLoadMtr"
-    ),
-    "rsClgSrcSideLoadMtr": slugify(
-        "rsSrcSideLoadMtr, rsHtgSrcSideLoadMtr, rsClgSrcSideLoadMtr"
-    ),
-    "sfExCTGrnd": slugify(
-        "sfExCTGrnd, sfExCTaDbAvg07, sfExCTaDbAvg14, sfExCTaDbAvg31, sfExCTaDbAvgYr"
-    ),
-    "sfExCTaDbAvg07": slugify(
-        "sfExCTGrnd, sfExCTaDbAvg07, sfExCTaDbAvg14, sfExCTaDbAvg31, sfExCTaDbAvgYr"
-    ),
-    "sfExCTaDbAvg14": slugify(
-        "sfExCTGrnd, sfExCTaDbAvg07, sfExCTaDbAvg14, sfExCTaDbAvg31, sfExCTaDbAvgYr"
-    ),
-    "sfExCTaDbAvg31": slugify(
-        "sfExCTGrnd, sfExCTaDbAvg07, sfExCTaDbAvg14, sfExCTaDbAvg31, sfExCTaDbAvgYr"
-    ),
-    "sfExCTaDbAvgYr": slugify(
-        "sfExCTGrnd, sfExCTaDbAvg07, sfExCTaDbAvg14, sfExCTaDbAvg31, sfExCTaDbAvgYr"
-    ),
+    "rsSrcSideLoadMtr": slugify("rsSrcSideLoadMtr, rsHtgSrcSideLoadMtr, rsClgSrcSideLoadMtr"),
+    "rsHtgSrcSideLoadMtr": slugify("rsSrcSideLoadMtr, rsHtgSrcSideLoadMtr, rsClgSrcSideLoadMtr"),
+    "rsClgSrcSideLoadMtr": slugify("rsSrcSideLoadMtr, rsHtgSrcSideLoadMtr, rsClgSrcSideLoadMtr"),
+    "sfExCTGrnd": slugify("sfExCTGrnd, sfExCTaDbAvg07, sfExCTaDbAvg14, sfExCTaDbAvg31, sfExCTaDbAvgYr"),
+    "sfExCTaDbAvg07": slugify("sfExCTGrnd, sfExCTaDbAvg07, sfExCTaDbAvg14, sfExCTaDbAvg31, sfExCTaDbAvgYr"),
+    "sfExCTaDbAvg14": slugify("sfExCTGrnd, sfExCTaDbAvg07, sfExCTaDbAvg14, sfExCTaDbAvg31, sfExCTaDbAvgYr"),
+    "sfExCTaDbAvg31": slugify("sfExCTGrnd, sfExCTaDbAvg07, sfExCTaDbAvg14, sfExCTaDbAvg31, sfExCTaDbAvgYr"),
+    "sfExCTaDbAvgYr": slugify("sfExCTGrnd, sfExCTaDbAvg07, sfExCTaDbAvg14, sfExCTaDbAvg31, sfExCTaDbAvgYr"),
     "cpStage": slugify("cpStageN"),
     "hpStage": slugify("hpStageN"),
     "whFAdjElec": slugify("whFAdjElec, whFAdjFuel"),
@@ -629,21 +554,11 @@ text_to_slug = {
     "whInHtLoopRet": slugify("whInHtSupply, whInHtLoopRet"),
     "rsFChgC": slugify("rsFChgC, rsFChg"),
     "rsFChg": slugify("rsFChgC, rsFChg"),
-    "wsFaucetCount": slugify(
-        "wsFaucetCount, wsShowerCount, wsBathCount, wsCWashrCount, wsDWashrCount"
-    ),
-    "wsShowerCount": slugify(
-        "wsFaucetCount, wsShowerCount, wsBathCount, wsCWashrCount, wsDWashrCount"
-    ),
-    "wsBathCount": slugify(
-        "wsFaucetCount, wsShowerCount, wsBathCount, wsCWashrCount, wsDWashrCount"
-    ),
-    "wsCWashrCount": slugify(
-        "wsFaucetCount, wsShowerCount, wsBathCount, wsCWashrCount, wsDWashrCount"
-    ),
-    "wsDWashrCount": slugify(
-        "wsFaucetCount, wsShowerCount, wsBathCount, wsCWashrCount, wsDWashrCount"
-    ),
+    "wsFaucetCount": slugify("wsFaucetCount, wsShowerCount, wsBathCount, wsCWashrCount, wsDWashrCount"),
+    "wsShowerCount": slugify("wsFaucetCount, wsShowerCount, wsBathCount, wsCWashrCount, wsDWashrCount"),
+    "wsBathCount": slugify("wsFaucetCount, wsShowerCount, wsBathCount, wsCWashrCount, wsDWashrCount"),
+    "wsCWashrCount": slugify("wsFaucetCount, wsShowerCount, wsBathCount, wsCWashrCount, wsDWashrCount"),
+    "wsDWashrCount": slugify("wsFaucetCount, wsShowerCount, wsBathCount, wsCWashrCount, wsDWashrCount"),
 }
 
 
@@ -690,8 +605,9 @@ combined_pattern = re.compile(
     \b
 ({"|".join(escaped)})       # group(1) = base heading
     # TODO: Also allow trailing (s)?
-    # TODO: Do we even need to capture this? Maybe we can simply remove word boundary, then only the keyword has that anchor?
-    # (i.e., then the link [ABCs][abc] would be updated to [ABC][abc]s, so the ending 's' is not part of the link.)
+    # TODO: Do we even need to capture this? Maybe we can simply remove word boundary,
+    # then only the keyword has that anchor?
+    # (i.e., then the link [ABCs][abc] would be updated to [ABC][abc]s,so the ending 's' is not part of the link.)
     ((?:s|ing|))?           # group(2) = optional trailing 's' or 'ing'
     \b
     (?!\])            # not followed by ]
@@ -761,9 +677,7 @@ def on_page_content(html, page, config, files):
 
     for directive_p in directive_paragraphs:
         if directive_p.string and DIRECTIVE_REGEX.match(directive_p.string):
-            start_heading = directive_p.find_next(
-                lambda tag: tag.name in {"h1", "h2", "h3", "h4", "h5", "h6"}
-            )
+            start_heading = directive_p.find_next(lambda tag: tag.name in {"h1", "h2", "h3", "h4", "h5", "h6"})
             if not start_heading:
                 continue
 

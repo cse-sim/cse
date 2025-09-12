@@ -1,6 +1,6 @@
-from pathlib import Path
-from io import StringIO
 import csv
+from io import StringIO
+from pathlib import Path
 
 
 def define_env(env):
@@ -27,9 +27,7 @@ def define_env(env):
             + " | ".join("------" for _ in header_row)
             + " |\n"
             + (
-                "\n".join(
-                    ("| " + " | ".join(f"{c}" for c in row) + " |") for row in body_rows
-                )
+                "\n".join(("| " + " | ".join(f"{c}" for c in row) + " |") for row in body_rows)
                 if len(body_rows) > 0
                 else ""
             )
@@ -64,18 +62,14 @@ def define_env(env):
         table = (
             '<div class="member-table-sibling"></div>\n'
             + "| "
-            + " | ".join(
-                f"{c}"
-                for c in ["Units", "Legal Range", "Default", "Required", "Variability"]
-            )
+            + " | ".join(f"{c}" for c in ["Units", "Legal Range", "Default", "Required", "Variability"])
             + " |\n"
             + "| "
             + " | ".join("------" for _ in 5 * [""])
             + " |\n"
             + "| "
             + " | ".join(
-                f"{c if c is not None else fallback}"
-                for c in [units, legal_range, default, required, variability]
+                f"{c if c is not None else fallback}" for c in [units, legal_range, default, required, variability]
             )
             + " |\n"
         )

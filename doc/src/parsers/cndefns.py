@@ -1,6 +1,5 @@
 import re
-
-from typing import Literal, Dict, List, TypedDict, Tuple
+from typing import Dict, List, Literal, Tuple, TypedDict, cast
 
 from .base import BaseParser
 
@@ -15,7 +14,7 @@ class DefinitionsResult(TypedDict):
 
 
 class DefinitionsParser(BaseParser[DefinitionsResult]):
-    def get_block_by_key(self, key: BlockKey, text: str):
+    def get_block_by_key(self, key: BlockKey, text: str) -> str:
         pattern = re.compile(
             rf"^//-{{10,}}\s*{re.escape(key)}\s*-{{10,}}.*?\n"
             r"(.*?)"
@@ -29,7 +28,7 @@ class DefinitionsParser(BaseParser[DefinitionsResult]):
 
         return match.group(1).strip()
 
-    def parse_define_line(self, line) -> Tuple[str, int | str]:
+    def parse_define_line(self, line: str) -> Tuple[str, int | str | bool] | Tuple[None, None]:
         line = self.strip_inline_comments(line).strip()
 
         match = re.match(r"^#define\s+(\w+)(?:\s+(.*))?$", line)
@@ -37,13 +36,14 @@ class DefinitionsParser(BaseParser[DefinitionsResult]):
         if not match:
             return None, None
 
-        key, raw_value = match.groups()
+        raw_key, raw_value = match.groups()
+        key = cast(str, raw_key)
+        raw_value = cast(str | None, raw_value)
 
         if raw_value is None:
             return key, True
 
-        raw_value = raw_value.strip()
-
+        value: str | int | None = None
         try:
             value = int(raw_value)
         except ValueError:
@@ -67,9 +67,13 @@ class DefinitionsParser(BaseParser[DefinitionsResult]):
                 if not parsed_key:
                     continue
 
-                if parsed_value:
+                if type(parsed_value) is bool:
                     result["bool"].append(parsed_key)
                 else:
-                    result["kvp"][parsed_key] = parsed_value
+                    # parsed_value can't be None, but Python type system doesn't realize that
+                    # It is only None when parsed_key is also None, but then "if not parsed_key: continue"
+                    # would prevent us from getting here.
+                    cast_value = cast(int | str, parsed_value)
+                    result["kvp"][parsed_key] = cast_value
 
         return result

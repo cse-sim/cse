@@ -1,10 +1,10 @@
 import json
 import re
-import yaml
-
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import TypeVar, Generic
+from typing import Generic, TypeVar
+
+import yaml
 
 T = TypeVar("T")
 
@@ -17,19 +17,19 @@ class BaseParser(ABC, Generic[T]):
         self.path = path
         self.raw_text = ""
         self.clean_text = ""
-        self.result = None
+        self.result: T | None = None
 
     def read(self):
         with open(self.path, "r") as f:
             self.raw_text = f.read()
 
-    def strip_falsy_blocks(self, text: str):
+    def strip_falsy_blocks(self, text: str) -> str:
         return re.sub(r"^\s*#if\s+0\b.*?^\s*#endif\b.*?$", "", text, flags=re.MULTILINE)
 
-    def strip_block_comments(self, text: str):
+    def strip_block_comments(self, text: str) -> str:
         return re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL | re.MULTILINE)
 
-    def strip_inline_comments(self, text: str):
+    def strip_inline_comments(self, text: str) -> str:
         return re.sub(r"//.*$", "", text)
 
     def prepare_clean_text(self):

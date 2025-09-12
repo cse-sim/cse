@@ -1,17 +1,20 @@
-from pathlib import Path
-import re
-from typing import Dict, Set, Optional, Any, List
-import copy
-import subprocess
 import argparse
+import copy
+import re
+import subprocess
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Set
+
+SKIP_LINE_COUNT = 4
 
 
 class CoverageCheck:
     """
-    A class for checking coverage between the output of "cse -c" and the markdown content in docs/input-data (or shared).
+    A class for checking coverage between the output of "cse -c",
+    and the markdown content in docs/input-data (or shared).
     """
 
-    IGNORED_HEADERS = {"related probes", "inverse"}
+    IGNORED_HEADERS = ["related probes", "inverse"]
 
     # Files in input-data directory that should not be analyzed for coverage.
     IGNORED_INPUT_DATA_FILE_PATHS = [".nav.yml", "index.md"]
@@ -79,9 +82,7 @@ class CoverageCheck:
 
         heading = CoverageCheck.md_header(line, [1])
 
-        return (
-            heading.strip() if heading and not CoverageCheck.ignore(heading) else None
-        )
+        return heading.strip() if heading and not CoverageCheck.ignore(heading) else None
 
     @staticmethod
     def data_item_header(line: str) -> List[str]:
@@ -100,11 +101,7 @@ class CoverageCheck:
         if not heading:
             return []
 
-        return [
-            result.strip()
-            for result in heading.split(",")
-            if not CoverageCheck.ignore(result)
-        ]
+        return [result.strip() for result in heading.split(",") if not CoverageCheck.ignore(result)]
 
     @staticmethod
     def ignore(header: str) -> bool:
@@ -121,9 +118,7 @@ class CoverageCheck:
         return h in CoverageCheck.IGNORED_HEADERS
 
     @staticmethod
-    def parse_record_document(
-        content: str, expect_orphan_data_items: Optional[bool] = False
-    ) -> Dict[str, Set[str]]:
+    def parse_record_document(content: str, expect_orphan_data_items: Optional[bool] = False) -> Dict[str, Set[str]]:
         """
         Given the content of a markdown document of a record and its input, return
         a RecordInputSet for the records and input fields found in that document.
@@ -134,18 +129,18 @@ class CoverageCheck:
         Returns:
             Dictionary mapping record names to sets of input field names
         """
-        output = {}
+        output: Dict[str, Set[str]] = {}
         current_header = None
 
         for line in content.splitlines():
-            line = line.rstrip()
-            h = CoverageCheck.record_header(line)
+            stripped_line = line.rstrip()
+            h = CoverageCheck.record_header(stripped_line)
             if h and not CoverageCheck.ignore(h):
                 current_header = h
                 if current_header not in output:
                     output[current_header] = set()
             else:
-                input_hdr = CoverageCheck.data_item_header(line)
+                input_hdr = CoverageCheck.data_item_header(stripped_line)
 
                 if len(input_hdr) == 0:
                     continue
@@ -163,7 +158,7 @@ class CoverageCheck:
                     if type(resolved_heading) is list:
                         for item in resolved_heading:
                             output[current_header or "orphan_members"].add(item)
-                    else:
+                    elif type(resolved_heading) is str:
                         output[current_header or "orphan_members"].add(resolved_heading)
 
         if not expect_orphan_data_items and "orphan_members" in output:
@@ -173,9 +168,7 @@ class CoverageCheck:
         return output
 
     @staticmethod
-    def read_record_document(
-        path: str, expect_orphan_data_items: Optional[bool] = False
-    ) -> Dict[str, Set[str]]:
+    def read_record_document(path: Path, expect_orphan_data_items: Optional[bool] = False) -> Dict[str, Set[str]]:
         """
         Given a file path to a markdown document containing record documentation,
         return a RecordInputSet for the records and input fields found in that
@@ -193,7 +186,7 @@ class CoverageCheck:
         return CoverageCheck.parse_record_document(content, expect_orphan_data_items)
 
     @staticmethod
-    def read_all_record_documents(paths: List[str]) -> Dict[str, Set[str]]:
+    def read_all_record_documents(paths: List[Path]) -> Dict[str, Set[str]]:
         """
         Given an array of file paths to record documentation, consecutively
         construct a RecordInputSet from all of the documents listed. Note: it is an
@@ -230,22 +223,22 @@ class CoverageCheck:
         Returns:
             Dictionary mapping record names to sets of field names
         """
-        output = {}
+        output: Dict[str, Set[str]] = {}
         current_record = None
 
         lines = content.splitlines()
         for idx, line in enumerate(lines):
-            if idx <= 3:  # Skip first 4 lines
+            if idx < SKIP_LINE_COUNT:  # Skip first 4 lines
                 continue
 
-            line = line.rstrip()
-            record_match = re.match(r"^(\S+).*$", line)
+            stripped_line = line.rstrip()
+            record_match = re.match(r"^(\S+).*$", stripped_line)
             if record_match:
                 current_record = record_match.group(1).strip()
                 if current_record not in output:
                     output[current_record] = set()
             elif current_record is not None:
-                field_match = re.match(r"^   (\S+).*$", line)
+                field_match = re.match(r"^   (\S+).*$", stripped_line)
                 if field_match:
                     output[current_record].add(field_match.group(1).strip())
 
@@ -311,7 +304,7 @@ class CoverageCheck:
         Returns:
             Adjusted dictionary
         """
-        n = {}
+        n: Dict[str, Set[str]] = {}
         for k, v in m.items():
             new_k = k.split()[0] if " " in k else k
             if new_k in n:
@@ -358,7 +351,7 @@ class CoverageCheck:
             Dictionary of differences or None if no differences
         """
         if records_to_ignore is None:
-            records_to_ignore = set()
+            records_to_ignore = []
         if record_fields_to_ignore is None:
             record_fields_to_ignore = {}
 
@@ -366,21 +359,17 @@ class CoverageCheck:
             # Downcase everything if case doesn't matter
             ris1 = {k.lower(): {v.lower() for v in vs} for k, vs in ris1.items()}
             ris2 = {k.lower(): {v.lower() for v in vs} for k, vs in ris2.items()}
-            records_to_ignore = {k.lower() for k in records_to_ignore}
-            record_fields_to_ignore = {
-                k.lower(): v for k, v in record_fields_to_ignore.items()
-            }
+            records_to_ignore_set = {k.lower() for k in records_to_ignore}
+            record_fields_to_ignore = {k.lower(): v for k, v in record_fields_to_ignore.items()}
 
         if ris1 == ris2:
             return None
 
         ks1 = set(ris1.keys())
         ks2 = set(ris2.keys())
-        key_diffs = CoverageCheck.set_differences(
-            ks1, ks2, case_matters, records_to_ignore
-        )
+        key_diffs = CoverageCheck.set_differences(ks1, ks2, case_matters, records_to_ignore_set)
 
-        out = None
+        out: Optional[Dict[str, Any]] = None
         if key_diffs:
             out = {
                 "records_in_1st_not_2nd": key_diffs["in_1st_not_2nd"],
@@ -394,9 +383,7 @@ class CoverageCheck:
                 continue
 
             field_ignores = record_fields_to_ignore.get(k, set())
-            diffs = CoverageCheck.set_differences(
-                ris1.get(k, set()), ris2.get(k, set()), case_matters, field_ignores
-            )
+            diffs = CoverageCheck.set_differences(ris1.get(k, set()), ris2.get(k, set()), case_matters, field_ignores)
 
             if diffs:
                 if out is None:
@@ -411,7 +398,7 @@ class CoverageCheck:
         return out
 
     @staticmethod
-    def diffs_to_string(
+    def diffs_to_string(  # noqa: PLR0913
         diffs: Optional[Dict[str, Set[str]]],
         name: Optional[str],
         k1: str,
@@ -454,11 +441,7 @@ class CoverageCheck:
         self.path_to_cse = path_to_cse
         self.path_to_input_data = path_to_input_data
 
-        cullist_raw = subprocess.run(
-            [self.path_to_cse, "-c"],
-            capture_output=True,
-            text=True,
-        ).stdout
+        cullist_raw = subprocess.run([self.path_to_cse, "-c"], capture_output=True, text=True, check=True).stdout
 
         self.cullist = self.parse_cul_list(cullist_raw)
         self.check()
@@ -484,7 +467,7 @@ class CoverageCheck:
             ref = self.downcase_record_input_set(self.cullist)
 
         name_suffix = "Name" if case_sensitive else "name"
-        n = {}
+        n: Dict[str, Set[str]] = {}
 
         for k, vs in ris.items():
             kk = k if case_sensitive else k.lower()
@@ -504,22 +487,20 @@ class CoverageCheck:
             if path.is_file() and path.name not in self.IGNORED_INPUT_DATA_FILE_PATHS
         ]
 
-        input_data_headings = self.read_all_record_documents(
-            all_file_paths_in_input_data
-        )
+        input_data_headings = self.read_all_record_documents(all_file_paths_in_input_data)
 
         shared_map = {}
-        for k, v in self.SHARED.items():
-            path = self.path_to_input_data.parent / "shared" / v
+        for k_shared, v_shared in self.SHARED.items():
+            path = self.path_to_input_data.parent / "shared" / v_shared
             headings = self.read_record_document(path, expect_orphan_data_items=True)
-            shared_map[k] = headings["orphan_members"]
+            shared_map[k_shared] = headings["orphan_members"]
 
         docs_headings = copy.deepcopy(input_data_headings)
-        for k, v in shared_map.items():
-            if k not in docs_headings:
-                docs_headings[k] = set()
-            for h in v:
-                docs_headings[k].add(h)
+        for k_map, v_map in shared_map.items():
+            if k_map not in docs_headings:
+                docs_headings[k_map] = set()
+            for h in v_map:
+                docs_headings[k_map].add(h)
 
         docs_headings = self.drop_name_fields(self.adjust_map(docs_headings))
         self.diffs = self.record_input_set_differences(
@@ -555,9 +536,7 @@ class CoverageCheck:
 
         if diffs.get("records_in_1st_not_2nd") or diffs.get("records_in_2nd_not_1st"):
             s += "RECORD INCONSISTENCIES:\n"
-            s += CoverageCheck.diffs_to_string(
-                diffs, None, "records_in_1st_not_2nd", "records_in_2nd_not_1st", a, b, 4
-            )
+            s += CoverageCheck.diffs_to_string(diffs, None, "records_in_1st_not_2nd", "records_in_2nd_not_1st", a, b, 4)
 
         if diffs.get("field_set_differences"):
             ks = sorted(diffs["field_set_differences"].keys())
@@ -578,9 +557,7 @@ class CoverageCheck:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Coverage Checker for CSE Documenation built with Mkdocs"
-    )
+    parser = argparse.ArgumentParser(description="Coverage Checker for CSE Documenation built with Mkdocs")
     parser.add_argument(
         "--path_to_cse",
         type=str,
@@ -596,9 +573,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    coverage_checker = CoverageCheck(
-        Path(args.path_to_cse), Path(args.path_to_input_data)
-    )
+    coverage_checker = CoverageCheck(Path(args.path_to_cse), Path(args.path_to_input_data))
 
     if coverage_checker.passed:
         print("Passed!")
