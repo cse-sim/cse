@@ -10,7 +10,7 @@ dependencies = [
     "mkdocs-autorefs>=1.4.2",
     "mkdocs-awesome-nav>=3.1.2",
     "mkdocs-macros-plugin>=1.3.7",
-    "mkdocs-material>=9.6.19",
+    "mkdocs-material",
     "python-slugify>=8.0.4",
     "pyyaml>=6.0.2",
     "types-pyyaml>=6.0.12.20250516",
@@ -55,3 +55,4 @@ packages = ["cse"]
 
 [tool.uv]
 [tool.uv.sources]
+mkdocs-material = { git = "https://github.com/squidfunk/mkdocs-material.git", rev = "6af73667b36c2c1043252d3bc9f772a665295ae6" }
