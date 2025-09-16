@@ -40,6 +40,7 @@ max-args = 6
 disallow_incomplete_defs = true
 no_implicit_optional = true
 check_untyped_defs = true
+exclude = ["vendor/"]
 
 [[tool.mypy.overrides]]
 module = "cse.*"
