@@ -470,7 +470,7 @@ RC PERFORMANCEMAP::pm_SetupBtwxt(		// input -> Btwxt conversion
 	rc |= pm_LUCheckAndMakeVector(1, pLUCap, vCapRat, LUSize);
 	PMLOOKUPDATA* pLUCOP;
 	std::vector< double> vCOP;
-	rc |= pm_LUCheckAndMakeVector(2, pLUCOP, vCOP, LUSize, 0.1, 20.);
+	rc |= pm_LUCheckAndMakeVector(2, pLUCOP, vCOP, LUSize, 0.1);
 
 	if (rc)
 		return rc;
