@@ -324,7 +324,7 @@ Interior convection coefficient adjustment factor.  When drInHcModel=INPUT, hc=d
 
 Type: *float array*
 
-Specifies 3 coefficients for an alternative inside surface forced convection model (applicable only for drInHCModel=UNIFIED).  When given, the inside surface forced convection coefficient for this surface is derived as follows:
+Specifies 3 coefficients for an alternative inside surface forced convection model (applicable only for drInHcModel=UNIFIED).  When given, the inside surface forced convection coefficient for this surface is derived as follows:
 
       hcFrc = hConvF * (drInHcFrcCoeffs[ 1] + drInHcFrcCoeffs[ 2] * ACH ^ drInHcFrcCoeffs[ 3])
 

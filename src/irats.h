@@ -48,6 +48,7 @@ extern anc<COOLPLANT> CpiB;   	// COOLPLANTs input info
 extern anc<CHILLER> ChiB;   	// CHILLER input info
 extern anc<TOWERPLANT> TpiB;   	// TOWERPLANT input info
 
+extern anc<ACCUMULATOR> AccumiB;	// Accumulator input records
 extern anc<MTR> MtriB;			// meters input records
 extern anc<DHWMTR> WMtriB;		// DHW meter input records
 extern anc<AFMTR> AfMtriB;		// air flow meter input records
