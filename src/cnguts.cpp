@@ -2161,11 +2161,17 @@ void LOCAL accumulatorsAccum(
 
 		if (ivl == C_IVLCH_H)
 		{
-			pSrc->acmMin = pSrc->acmMax = pSrc->acmMean = pSrc->acmTotal = pACM->acmValue;
+			pSrc->acmMin = pSrc->acmMax = pSrc->acmMean = pSrc->acmSum = pACM->acmValue;
+			pSrc->acmMinTimeStamp = pSrc->acmMaxTimeStamp = Top.When(C_IVLCH_S);
 			pSrc->acmCount = 1;
 		}
 		
 		pDst->acm_Accum( pSrc, firstFlg, lastFlg);
+
+#if 0
+		if (ivl == C_IVLCH_H)
+			printf("\nHr");
+#endif
 
 
 	}
@@ -2180,6 +2186,15 @@ RC ACCUMULATOR::acm_CkF(
 
 }	// ACCUMULATOR::acm_CkF
 //-----------------------------------------------------------------------------
+void ACCUMULATOR_IVL::acm_Copy(			// copy to this
+	const ACCUMULATOR_IVL* pSrc)		// source
+{
+	memcpy(this, pSrc, sizeof(ACCUMULATOR_IVL));
+	acmMinTimeStamp.FixAfterCopy();
+	acmMaxTimeStamp.FixAfterCopy();
+
+}	// ACCUMULATOR_IVL::acm_Copy
+//-----------------------------------------------------------------------------
 void ACCUMULATOR_IVL::acm_Accum(			// accumulate to this
 	const ACCUMULATOR_IVL* pSrc,		// source
 	bool firstFlg,				// true iff first accum into this (beg of ivl)
@@ -2190,22 +2205,26 @@ void ACCUMULATOR_IVL::acm_Accum(			// accumulate to this
 	//   2: sum only (do not average)
 {
 	if (firstFlg)
-	{
-		memcpy(this, pSrc, sizeof(ACCUMULATOR_IVL));
-	
-	}
+		acm_Copy( pSrc);
 	else
 	{
-		acmMin = std::min(acmMin, pSrc->acmMin);
-		acmMax = std::max(acmMax, pSrc->acmMax);
-		acmTotal += pSrc->acmTotal;
+		if (pSrc->acmMin < acmMin)
+		{
+			acmMin = pSrc->acmMin;
+			acmMinTimeStamp = pSrc->acmMinTimeStamp;
+		}
+		if (pSrc->acmMax > acmMax)
+		{
+			acmMax = pSrc->acmMax;
+			acmMaxTimeStamp = pSrc->acmMaxTimeStamp;
+		}
+		acmSum += pSrc->acmSum;
 		acmCount += pSrc->acmCount;
 	}
 	if (lastFlg)
-		acmMean = acmTotal / acmCount;
+		acmMean = acmSum / acmCount;
 
 }	// ACCUMULATOR_IVL::amc_Accum
-
 //=============================================================================
 
 

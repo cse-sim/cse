@@ -1,137 +1,139 @@
 
 
-MyAccum for Sun 01-Feb
+Hour results for ACCUMULATOR MyAccum for Sun 01-Feb
 
- hr    Count      Min     Mean      Max    Total
- -- -------- -------- -------- -------- --------
-  1       10     1.00     1.00     1.00    10.00
-  2       10     1.00     1.00     1.00    10.00
-  3       10     1.00     1.00     1.00    10.00
-  4       10     1.00     1.00     1.00    10.00
-  5       10     1.00     1.00     1.00    10.00
-  6       10     1.00     1.00     1.00    10.00
-  7       10     1.00     1.00     1.00    10.00
-  8       10     1.00     1.00     1.00    10.00
-  9       10     1.00     1.00     1.00    10.00
- 10       10     1.00     1.00     1.00    10.00
- 11       10     1.00     1.00     1.00    10.00
- 12       10     1.00     1.00     1.00    10.00
- 13       10     1.00     1.00     1.00    10.00
- 14       10     1.00     1.00     1.00    10.00
- 15       10     1.00     1.00     1.00    10.00
- 16       10     1.00     1.00     1.00    10.00
- 17       10     1.00     1.00     1.00    10.00
- 18       10     1.00     1.00     1.00    10.00
- 19       10     1.00     1.00     1.00    10.00
- 20       10     1.00     1.00     1.00    10.00
- 21       10     1.00     1.00     1.00    10.00
- 22       10     1.00     1.00     1.00    10.00
- 23       10     1.00     1.00     1.00    10.00
- 24       10     1.00     1.00     1.00    10.00
+  hr    Count      Min Min TS                             Mean      Max Max TS                              Sum
+ --- -------- -------- ------------------------------ -------- -------- ------------------------------ --------
+   1       10     1.00 Sun 01-Feb hour 1 subHour 0        1.00     1.00 Sun 01-Feb hour 1 subHour 0       10.00
+   2       10     1.00 Sun 01-Feb hour 2 subHour 0        1.00     1.00 Sun 01-Feb hour 2 subHour 0       10.00
+   3       10     1.00 Sun 01-Feb hour 3 subHour 0        1.00     1.00 Sun 01-Feb hour 3 subHour 0       10.00
+   4       10     1.00 Sun 01-Feb hour 4 subHour 0        1.00     1.00 Sun 01-Feb hour 4 subHour 0       10.00
+   5       10     1.00 Sun 01-Feb hour 5 subHour 0        1.00     1.00 Sun 01-Feb hour 5 subHour 0       10.00
+   6       10     1.00 Sun 01-Feb hour 6 subHour 0        1.00     1.00 Sun 01-Feb hour 6 subHour 0       10.00
+   7       10     1.00 Sun 01-Feb hour 7 subHour 0        1.00     1.00 Sun 01-Feb hour 7 subHour 0       10.00
+   8       10     1.00 Sun 01-Feb hour 8 subHour 0        1.00     1.00 Sun 01-Feb hour 8 subHour 0       10.00
+   9       10     1.00 Sun 01-Feb hour 9 subHour 0        1.00     1.00 Sun 01-Feb hour 9 subHour 0       10.00
+  10       10     1.00 Sun 01-Feb hour 10 subHour 0       1.00     1.00 Sun 01-Feb hour 10 subHour 0      10.00
+  11       10     1.00 Sun 01-Feb hour 11 subHour 0       1.00     1.00 Sun 01-Feb hour 11 subHour 0      10.00
+  12       10     1.00 Sun 01-Feb hour 12 subHour 0       1.00     1.00 Sun 01-Feb hour 12 subHour 0      10.00
+  13       10     1.00 Sun 01-Feb hour 13 subHour 0       1.00     1.00 Sun 01-Feb hour 13 subHour 0      10.00
+  14       10     1.00 Sun 01-Feb hour 14 subHour 0       1.00     1.00 Sun 01-Feb hour 14 subHour 0      10.00
+  15       10     1.00 Sun 01-Feb hour 15 subHour 0       1.00     1.00 Sun 01-Feb hour 15 subHour 0      10.00
+  16       10     1.00 Sun 01-Feb hour 16 subHour 0       1.00     1.00 Sun 01-Feb hour 16 subHour 0      10.00
+  17       10     1.00 Sun 01-Feb hour 17 subHour 0       1.00     1.00 Sun 01-Feb hour 17 subHour 0      10.00
+  18       10     1.00 Sun 01-Feb hour 18 subHour 0       1.00     1.00 Sun 01-Feb hour 18 subHour 0      10.00
+  19       10     1.00 Sun 01-Feb hour 19 subHour 0       1.00     1.00 Sun 01-Feb hour 19 subHour 0      10.00
+  20       10     1.00 Sun 01-Feb hour 20 subHour 0       1.00     1.00 Sun 01-Feb hour 20 subHour 0      10.00
+  21       10     1.00 Sun 01-Feb hour 21 subHour 0       1.00     1.00 Sun 01-Feb hour 21 subHour 0      10.00
+  22       10     1.00 Sun 01-Feb hour 22 subHour 0       1.00     1.00 Sun 01-Feb hour 22 subHour 0      10.00
+  23       10     1.00 Sun 01-Feb hour 23 subHour 0       1.00     1.00 Sun 01-Feb hour 23 subHour 0      10.00
+  24       10     1.00 Sun 01-Feb hour 24 subHour 0       1.00     1.00 Sun 01-Feb hour 24 subHour 0      10.00
+
+ Day      240     1.00 Sun 01-Feb hour 1 subHour 0        1.00     1.00 Sun 01-Feb hour 1 subHour 0      240.00
 
 
 
-MyAccum for Feb
+Day results for ACCCUMULATOR MyAccum for Feb
 
-  DOY    Count      Min     Mean      Max    Total
- ---- -------- -------- -------- -------- --------
-   32      240     1.00     1.00     1.00   240.00
-   33      240     1.00     1.00     1.00   240.00
-   34      240     1.00     1.00     1.00   240.00
-   35      240     1.00     1.00     1.00   240.00
-   36      240     1.00     1.00     1.00   240.00
-   37      240     1.00     1.00     1.00   240.00
-   38      240     1.00     1.00     1.00   240.00
-   39      240     1.00     1.00     1.00   240.00
-   40      240     1.00     1.00     1.00   240.00
-   41      240     1.00     1.00     1.00   240.00
-   42      240     1.00     1.00     1.00   240.00
-   43      240     1.00     1.00     1.00   240.00
-   44      240     1.00     1.00     1.00   240.00
-   45      240     1.00     1.00     1.00   240.00
-   46      240     1.00     1.00     1.00   240.00
-   47      240     1.00     1.00     1.00   240.00
-   48      240     1.00     1.00     1.00   240.00
-   49      240     1.00     1.00     1.00   240.00
-   50      240     1.00     1.00     1.00   240.00
-   51      240     1.00     1.00     1.00   240.00
-   52      240     1.00     1.00     1.00   240.00
-   53      240     1.00     1.00     1.00   240.00
-   54      240     1.00     1.00     1.00   240.00
-   55      240     1.00     1.00     1.00   240.00
-   56      240     1.00     1.00     1.00   240.00
-   57      240     1.00     1.00     1.00   240.00
-   58      240     1.00     1.00     1.00   240.00
-   59      240     1.00     1.00     1.00   240.00
+  DOY    Count      Min Min TS                             Mean      Max Max TS                              Sum
+ ---- -------- -------- ------------------------------ -------- -------- ------------------------------ --------
+   32      240     1.00 Sun 01-Feb hour 1 subHour 0        1.00     1.00 Sun 01-Feb hour 1 subHour 0      240.00
+   33      240     1.00 Mon 02-Feb hour 1 subHour 0        1.00     1.00 Mon 02-Feb hour 1 subHour 0      240.00
+   34      240     1.00 Tue 03-Feb hour 1 subHour 0        1.00     1.00 Tue 03-Feb hour 1 subHour 0      240.00
+   35      240     1.00 Wed 04-Feb hour 1 subHour 0        1.00     1.00 Wed 04-Feb hour 1 subHour 0      240.00
+   36      240     1.00 Thu 05-Feb hour 1 subHour 0        1.00     1.00 Thu 05-Feb hour 1 subHour 0      240.00
+   37      240     1.00 Fri 06-Feb hour 1 subHour 0        1.00     1.00 Fri 06-Feb hour 1 subHour 0      240.00
+   38      240     1.00 Sat 07-Feb hour 1 subHour 0        1.00     1.00 Sat 07-Feb hour 1 subHour 0      240.00
+   39      240     1.00 Sun 08-Feb hour 1 subHour 0        1.00     1.00 Sun 08-Feb hour 1 subHour 0      240.00
+   40      240     1.00 Mon 09-Feb hour 1 subHour 0        1.00     1.00 Mon 09-Feb hour 1 subHour 0      240.00
+   41      240     1.00 Tue 10-Feb hour 1 subHour 0        1.00     1.00 Tue 10-Feb hour 1 subHour 0      240.00
+   42      240     1.00 Wed 11-Feb hour 1 subHour 0        1.00     1.00 Wed 11-Feb hour 1 subHour 0      240.00
+   43      240     1.00 Thu 12-Feb hour 1 subHour 0        1.00     1.00 Thu 12-Feb hour 1 subHour 0      240.00
+   44      240     1.00 Fri 13-Feb hour 1 subHour 0        1.00     1.00 Fri 13-Feb hour 1 subHour 0      240.00
+   45      240     1.00 Sat 14-Feb hour 1 subHour 0        1.00     1.00 Sat 14-Feb hour 1 subHour 0      240.00
+   46      240     1.00 Sun 15-Feb hour 1 subHour 0        1.00     1.00 Sun 15-Feb hour 1 subHour 0      240.00
+   47      240     1.00 Mon 16-Feb hour 1 subHour 0        1.00     1.00 Mon 16-Feb hour 1 subHour 0      240.00
+   48      240     1.00 Tue 17-Feb hour 1 subHour 0        1.00     1.00 Tue 17-Feb hour 1 subHour 0      240.00
+   49      240     1.00 Wed 18-Feb hour 1 subHour 0        1.00     1.00 Wed 18-Feb hour 1 subHour 0      240.00
+   50      240     1.00 Thu 19-Feb hour 1 subHour 0        1.00     1.00 Thu 19-Feb hour 1 subHour 0      240.00
+   51      240     1.00 Fri 20-Feb hour 1 subHour 0        1.00     1.00 Fri 20-Feb hour 1 subHour 0      240.00
+   52      240     1.00 Sat 21-Feb hour 1 subHour 0        1.00     1.00 Sat 21-Feb hour 1 subHour 0      240.00
+   53      240     1.00 Sun 22-Feb hour 1 subHour 0        1.00     1.00 Sun 22-Feb hour 1 subHour 0      240.00
+   54      240     1.00 Mon 23-Feb hour 1 subHour 0        1.00     1.00 Mon 23-Feb hour 1 subHour 0      240.00
+   55      240     1.00 Tue 24-Feb hour 1 subHour 0        1.00     1.00 Tue 24-Feb hour 1 subHour 0      240.00
+   56      240     1.00 Wed 25-Feb hour 1 subHour 0        1.00     1.00 Wed 25-Feb hour 1 subHour 0      240.00
+   57      240     1.00 Thu 26-Feb hour 1 subHour 0        1.00     1.00 Thu 26-Feb hour 1 subHour 0      240.00
+   58      240     1.00 Fri 27-Feb hour 1 subHour 0        1.00     1.00 Fri 27-Feb hour 1 subHour 0      240.00
+   59      240     1.00 Sat 28-Feb hour 1 subHour 0        1.00     1.00 Sat 28-Feb hour 1 subHour 0      240.00
 
 
 
 Monthly data for MyAccum
 
- mo    Count      Min     Mean      Max    Total
- -- -------- -------- -------- -------- --------
-  1     7440     1.00     1.00     1.00  7440.00
-  2     6720     1.00     1.00     1.00  6720.00
-  3     7430     1.00     1.00     1.00  7430.00
-  4     7200     1.00     1.00     1.00  7200.00
-  5     7440     1.00     1.00     1.00  7440.00
-  6     7200     1.00     1.00     1.00  7200.00
-  7     7440     1.00     1.00     1.00  7440.00
-  8     7440     1.00     1.00     1.00  7440.00
-  9     7200     1.00     1.00     1.00  7200.00
- 10     7440     1.00     1.00     1.00  7440.00
- 11     7210     1.00     1.00     1.00  7210.00
- 12     7440     1.00     1.00     1.00  7440.00
+ mo    Count      Min Min TS                             Mean      Max Max TS                              Sum
+ -- -------- -------- ------------------------------ -------- -------- ------------------------------ --------
+  1     7440     1.00 Thu 01-Jan hour 1 subHour 0        1.00     1.00 Thu 01-Jan hour 1 subHour 0     7440.00
+  2     6720     1.00 Sun 01-Feb hour 1 subHour 0        1.00     1.00 Sun 01-Feb hour 1 subHour 0     6720.00
+  3     7430     1.00 Sun 01-Mar hour 1 subHour 0        1.00     1.00 Sun 01-Mar hour 1 subHour 0     7430.00
+  4     7200     1.00 Wed 01-Apr hour 1 subHour 0        1.00     1.00 Wed 01-Apr hour 1 subHour 0     7200.00
+  5     7440     1.00 Fri 01-May hour 1 subHour 0        1.00     1.00 Fri 01-May hour 1 subHour 0     7440.00
+  6     7200     1.00 Mon 01-Jun hour 1 subHour 0        1.00     1.00 Mon 01-Jun hour 1 subHour 0     7200.00
+  7     7440     1.00 Wed 01-Jul hour 1 subHour 0        1.00     1.00 Wed 01-Jul hour 1 subHour 0     7440.00
+  8     7440     1.00 Sat 01-Aug hour 1 subHour 0        1.00     1.00 Sat 01-Aug hour 1 subHour 0     7440.00
+  9     7200     1.00 Tue 01-Sep hour 1 subHour 0        1.00     1.00 Tue 01-Sep hour 1 subHour 0     7200.00
+ 10     7440     1.00 Thu 01-Oct hour 1 subHour 0        1.00     1.00 Thu 01-Oct hour 1 subHour 0     7440.00
+ 11     7210     1.00 Sun 01-Nov hour 1 subHour 0        1.00     1.00 Sun 01-Nov hour 1 subHour 0     7210.00
+ 12     7440     1.00 Tue 01-Dec hour 1 subHour 0        1.00     1.00 Tue 01-Dec hour 1 subHour 0     7440.00
 
- Yr    87600     1.00     1.00     1.00 87600.00
+ Yr    87600     1.00 Thu 01-Jan hour 1 subHour 0        1.00     1.00 Thu 01-Jan hour 1 subHour 0    87600.00
 
 
 
 Monthly data for WthrAccum
 
- mo    Count      Min     Mean      Max    Total
- -- -------- -------- -------- -------- --------
-  1     7440    28.22    46.87    60.08 348692.3
-  2     6720    32.00    49.26    69.98 331043.7
-  3     7430    42.08    60.79    91.40 451635.3
-  4     7200    34.70    58.13    79.16 418526.6
-  5     7440    44.42    67.07    97.88 499001.2
-  6     7200    50.36    73.43   107.96 528710.4
-  7     7440    55.04    74.02   101.48 550718.6
-  8     7440    53.60    74.99   104.18 557961.6
-  9     7200    48.92    69.24    97.52 498547.6
- 10     7440    47.84    64.00    98.42 476178.0
- 11     7210    32.54    54.47    77.00 392705.9
- 12     7440    28.04    46.58    64.04 346567.5
+ mo    Count      Min Min TS                             Mean      Max Max TS                              Sum
+ -- -------- -------- ------------------------------ -------- -------- ------------------------------ --------
+  1     7440        0 Thu 01-Jan hour 1 subHour 0       36.42   336.81 Sun 25-Jan hour 12 subHour 4   270957.0
+  2     6720        0 Sun 01-Feb hour 1 subHour 0       75.46   351.76 Fri 13-Feb hour 12 subHour 5   507094.0
+  3     7430        0 Sun 01-Mar hour 1 subHour 0       83.92   340.75 Wed 11-Mar hour 14 subHour 4   623505.1
+  4     7200        0 Wed 01-Apr hour 1 subHour 0      102.04   354.23 Wed 08-Apr hour 15 subHour 5   734669.8
+  5     7440        0 Fri 01-May hour 1 subHour 0      136.44   329.44 Tue 12-May hour 17 subHour 0    1015121
+  6     7200        0 Mon 01-Jun hour 1 subHour 0      142.19   338.18 Sun 14-Jun hour 17 subHour 0    1023762
+  7     7440        0 Wed 01-Jul hour 1 subHour 0      153.88   334.28 Mon 13-Jul hour 13 subHour 9    1144834
+  8     7440        0 Sat 01-Aug hour 1 subHour 0      142.08   331.62 Mon 03-Aug hour 14 subHour 4    1057100
+  9     7200        0 Tue 01-Sep hour 1 subHour 0      121.44   337.44 Tue 22-Sep hour 14 subHour 4   874359.2
+ 10     7440        0 Thu 01-Oct hour 1 subHour 0       97.35   330.32 Sat 17-Oct hour 13 subHour 5   724317.7
+ 11     7210        0 Sun 01-Nov hour 1 subHour 0       70.77   332.06 Thu 26-Nov hour 14 subHour 0   510281.6
+ 12     7440        0 Tue 01-Dec hour 1 subHour 0       45.13   327.55 Thu 03-Dec hour 12 subHour 5   335791.4
 
- Yr    87600    28.04    61.65   107.96  5400288
+ Yr    87600        0 Thu 01-Jan hour 1 subHour 0      100.71   354.23 Wed 08-Apr hour 15 subHour 5    8821793
 
 
 
 Monthly data for WthrAccum2
 
- mo    Count      Min     Mean      Max    Total
- -- -------- -------- -------- -------- --------
-  1     7440    28.22    46.86    60.08 348672.0
-  2     6720    32.00    49.27    69.98 331084.2
-  3     7430    42.08    60.78    91.40 451612.6
-  4     7200    34.70    58.14    79.16 418579.2
-  5     7440    44.42    67.07    97.88 499013.4
-  6     7200    50.36    73.44   107.96 528759.1
-  7     7440    55.04    74.02   101.48 550671.6
-  8     7440    53.60    75.00   104.18 557970.6
-  9     7200    48.92    69.24    97.52 498520.8
- 10     7440    47.84    64.00    98.42 476164.3
- 11     7210    32.54    54.46    77.00 392651.6
- 12     7440    28.04    46.58    64.04 346589.4
+ mo    Count      Min Min TS                             Mean      Max Max TS                              Sum
+ -- -------- -------- ------------------------------ -------- -------- ------------------------------ --------
+  1     7440    28.22 Sun 04-Jan hour 7 subHour 0       46.86    60.08 Sat 10-Jan hour 14 subHour 0   348672.0
+  2     6720    32.00 Sun 01-Feb hour 6 subHour 0       49.27    69.98 Sat 28-Feb hour 16 subHour 0   331084.2
+  3     7430    42.08 Thu 19-Mar hour 4 subHour 0       60.78    91.40 Tue 24-Mar hour 16 subHour 0   451612.6
+  4     7200    34.70 Wed 08-Apr hour 7 subHour 0       58.14    79.16 Wed 01-Apr hour 17 subHour 0   418579.2
+  5     7440    44.42 Wed 13-May hour 6 subHour 0       67.07    97.88 Fri 22-May hour 16 subHour 0   499013.4
+  6     7200    50.36 Fri 19-Jun hour 6 subHour 0       73.44   107.96 Mon 08-Jun hour 17 subHour 0   528759.1
+  7     7440    55.04 Tue 14-Jul hour 5 subHour 0       74.02   101.48 Sun 05-Jul hour 17 subHour 0   550671.6
+  8     7440    53.60 Sun 09-Aug hour 6 subHour 0       75.00   104.18 Sat 29-Aug hour 17 subHour 0   557970.6
+  9     7200    48.92 Wed 16-Sep hour 3 subHour 0       69.24    97.52 Sat 05-Sep hour 17 subHour 0   498520.8
+ 10     7440    47.84 Tue 27-Oct hour 7 subHour 0       64.00    98.42 Fri 02-Oct hour 17 subHour 0   476164.3
+ 11     7210    32.54 Fri 27-Nov hour 7 subHour 0       54.46    77.00 Sat 14-Nov hour 14 subHour 0   392651.6
+ 12     7440    28.04 Thu 03-Dec hour 6 subHour 0       46.58    64.04 Wed 09-Dec hour 13 subHour 0   346589.4
 
- Yr    87600    28.04    61.65   107.96  5400288
+ Yr    87600    28.04 Thu 03-Dec hour 6 subHour 0       61.65   107.96 Mon 08-Jun hour 17 subHour 0    5400288
 
 
 
 ! Log for Run 001:
 
-! CSE 0.926.0+transmitted-solar.f1f66a4e.19.dirty for Win32 console
+! CSE 0.926.0+transmitted-solar.99c6f0b3.21.dirty for Win32 console
 
 
 
@@ -143,15 +145,10 @@ Input for Run 001:
         nSubSteps = 10
         
         ACCUMULATOR MyAccum acmValue = 1
-        
-        ACCUMULATOR WthrAccum acmValue = $tdbosh
-        
+        ACCUMULATOR WthrAccum acmValue = @Top.radBeamShAv
         ACCUMULATOR WthrAccum2 acmValue = @weather.db
         
-        
-        
         // Constructions
-        
         MATERIAL "Plasterboard" matCond = 0.09 matSpHt = 0.2 matDens = 59
         MATERIAL "FoamInsul"  matCond=0.02311   matSpHt=0.3346   matDens=0.625
         MATERIAL "WoodSiding"      matCond=0.08088   matSpHt=0.2151   matDens=33.125
@@ -358,22 +355,11 @@ Input for Run 001:
 #       #define ACCOLS( A, X) \
 #       Reportcol colVal=@Accumulator[A].X.acmCount colHead="Count" colWid=8 colDec=0 \
 #       Reportcol colVal=@Accumulator[A].X.acmMin colHead="Min" colWid=8 colDec=2 \
+#       Reportcol colVal=@Accumulator[A].X.acmMinTimeStamp colHead="Min TS" colWid=30 \
 #       Reportcol colVal=@Accumulator[A].X.acmMean colHead="Mean" colWid=8 colDec=2 \
 #       Reportcol colVal=@Accumulator[A].X.acmMax colHead="Max" colWid = 8 colDec=2 \
-#       Reportcol colVal=@Accumulator[A].X.acmTotal colHead="Total" colWid = 8 colDec=2
-        
-        // hourly
-        Report rpType=UDT rpFreq=Hour rpCPL=-1 rpDayBeg = Feb 1
-        rpTitle="MyAccum"
-        Reportcol colVal=$hour  colHead="hr"      colWid=2
-        ACCOLS( "MyAccum", H)
-        
-        // daily
-        Report rpType=UDT rpFreq=Day rpCPL=-1 rpDayBeg = Feb 1 rpDayEnd=Feb 28
-        rpTitle="MyAccum"
-        Reportcol colVal=$dayofyear  colHead="DOY"      colWid=4
-        ACCOLS( "MyAccum", D)
-        
+#       Reportcol colVal=@Accumulator[A].X.acmMaxTimeStamp colHead="Max TS" colWid=30 \
+#       Reportcol colVal=@Accumulator[A].X.acmSum colHead=" Sum" colWid = 8 colDec=2
         
         // Monthly
 #       #define ACMON( A) \
@@ -385,8 +371,28 @@ Input for Run 001:
 #       Reportcol colVal="Yr"       colWid=2 \
 #       ACCOLS(A, Y)
         
-        ACMON("MyAccum")
+        // hourly
+#       #define ACHOUR( A, dayX) \
+#       Report rpType=UDT rpFreq=Hour rpCPL=-1 rpDayBeg = dayX \
+#       rpTitle=concat("Hour results for ACCUMULATOR ", A) \
+#       Reportcol colVal=$hour  colHead="hr"      colWid=3 \
+#       ACCOLS( A, H) \
+#       Report rpType=UDT rpFreq=Day rpCPL=-1 rpHeader = No rpDayBeg = dayX \
+#       Reportcol colVal="Day" colWid=3 \
+#       ACCOLS( A, D)
         
+        // daily
+#       #define ACDAY( A, dayB, dayE) \
+#       Report rpType=UDT rpFreq=Day rpCPL=-1 rpDayBeg = dayB rpDayEnd=dayE \
+#       rpTitle=concat( "Day results for ACCCUMULATOR ", A) \
+#       Reportcol colVal=$dayofyear  colHead="DOY"      colWid=4 \
+#       ACCOLS( A, D)
+        
+        ACHOUR( "MyAccum", Feb 1)
+        
+        ACDAY( "MyAccum", Feb 1, Feb 28)
+        
+        ACMON("MyAccum")
         
         ACMON("WthrAccum")
         
@@ -613,18 +619,18 @@ Input for Run 001:
 
 
 
-! CSE 0.926.0+transmitted-solar.f1f66a4e.19.dirty for Win32 console run(s) done: Fri 29-Aug-25   9:4 am
+! CSE 0.926.0+transmitted-solar.99c6f0b3.21.dirty for Win32 console run(s) done: Wed 17-Sep-25   1:2 pm
 
 ! Executable:   d:\cse\builds\cse.exe
-!               29-Aug-25   9:4 am   (VS 14.29    3377152 bytes)  (HPWH 1.26.0)
+!               17-Sep-25  11: am   (VS 14.29    3378176 bytes)  (HPWH 1.26.0)
 ! Command line: -x!  -t1 accumulator
 ! Input file:   D:\cse\test\accumulator.cse
 ! Report file:  D:\CSE\TEST\ACCUMULATOR.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.04     Calls = 1         T/C = 0.0440
+!                Input:  Time = 0.05     Calls = 1         T/C = 0.0530
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 0.56     Calls = 1         T/C = 0.5560
+!           Simulation:  Time = 0.86     Calls = 1         T/C = 0.8640
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
-!                Total:  Time = 0.60     Calls = 1         T/C = 0.6050
+!                Total:  Time = 0.92     Calls = 1         T/C = 0.9220

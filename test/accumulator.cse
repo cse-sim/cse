@@ -4,15 +4,10 @@ wfName = "CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
 nSubSteps = 10
 
 ACCUMULATOR MyAccum acmValue = 1
-
-ACCUMULATOR WthrAccum acmValue = $tdbosh
-
+ACCUMULATOR WthrAccum acmValue = @Top.radBeamShAv
 ACCUMULATOR WthrAccum2 acmValue = @weather.db
 
-
-
 // Constructions
-
 MATERIAL "Plasterboard" matCond = 0.09 matSpHt = 0.2 matDens = 59
 MATERIAL "FoamInsul"  matCond=0.02311   matSpHt=0.3346   matDens=0.625
 MATERIAL "WoodSiding"      matCond=0.08088   matSpHt=0.2151   matDens=33.125
@@ -219,22 +214,11 @@ ZNCOLS(1, Y)
 #define ACCOLS( A, X) \
 Reportcol colVal=@Accumulator[A].X.acmCount colHead="Count" colWid=8 colDec=0 \
 Reportcol colVal=@Accumulator[A].X.acmMin colHead="Min" colWid=8 colDec=2 \
+Reportcol colVal=@Accumulator[A].X.acmMinTimeStamp colHead="Min TS" colWid=30 \
 Reportcol colVal=@Accumulator[A].X.acmMean colHead="Mean" colWid=8 colDec=2 \
 Reportcol colVal=@Accumulator[A].X.acmMax colHead="Max" colWid = 8 colDec=2 \
-Reportcol colVal=@Accumulator[A].X.acmTotal colHead="Total" colWid = 8 colDec=2
-
-// hourly
-Report rpType=UDT rpFreq=Hour rpCPL=-1 rpDayBeg = Feb 1
-rpTitle="MyAccum"
-Reportcol colVal=$hour  colHead="hr"      colWid=2
-ACCOLS( "MyAccum", H)
-
-// daily
-Report rpType=UDT rpFreq=Day rpCPL=-1 rpDayBeg = Feb 1 rpDayEnd=Feb 28
-rpTitle="MyAccum"
-Reportcol colVal=$dayofyear  colHead="DOY"      colWid=4
-ACCOLS( "MyAccum", D)
-
+Reportcol colVal=@Accumulator[A].X.acmMaxTimeStamp colHead="Max TS" colWid=30 \
+Reportcol colVal=@Accumulator[A].X.acmSum colHead=" Sum" colWid = 8 colDec=2
 
 // Monthly
 #define ACMON( A) \
@@ -246,8 +230,28 @@ Report rpType=UDT rpFreq=Year rpHeader=No rpCPL=-1 \
 Reportcol colVal="Yr"       colWid=2 \
 ACCOLS(A, Y)
 
-ACMON("MyAccum")
+// hourly
+#define ACHOUR( A, dayX) \
+Report rpType=UDT rpFreq=Hour rpCPL=-1 rpDayBeg = dayX \
+rpTitle=concat("Hour results for ACCUMULATOR ", A) \
+Reportcol colVal=$hour  colHead="hr"      colWid=3 \
+ACCOLS( A, H) \
+Report rpType=UDT rpFreq=Day rpCPL=-1 rpHeader = No rpDayBeg = dayX \
+Reportcol colVal="Day" colWid=3 \
+ACCOLS( A, D)
 
+// daily
+#define ACDAY( A, dayB, dayE) \
+Report rpType=UDT rpFreq=Day rpCPL=-1 rpDayBeg = dayB rpDayEnd=dayE \
+rpTitle=concat( "Day results for ACCCUMULATOR ", A) \
+Reportcol colVal=$dayofyear  colHead="DOY"      colWid=4 \
+ACCOLS( A, D)
+
+ACHOUR( "MyAccum", Feb 1)
+
+ACDAY( "MyAccum", Feb 1, Feb 28)
+
+ACMON("MyAccum")
 
 ACMON("WthrAccum")
 
