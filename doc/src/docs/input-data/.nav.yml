@@ -14,6 +14,7 @@ nav:
   - DHWMETER: dhwmeter.md
   - AFMETER: afmeter.md
   - LOADMETER: loadmeter.md
+  - ACCUMULATOR: accumulator.md
   - ZONE: zone.md
   - GAIN: gain.md
   - SURFACE: surface.md
