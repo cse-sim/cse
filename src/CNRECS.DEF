@@ -1371,16 +1371,15 @@ RECORD XSURF "xsurf sub" *SUBSTRUCT	// for PRI, SFI, XSRAT.
     // solar gain distributions: [partly] based on SGDIST inputs
     *r SI nsgdist	 		// Number of SG distributions
     // SGDIST sgdist[ HSMXSGDIST]:
-    *array HSMXSGDIST	// =8 (2-95), cndefns.h. explicit solar gain distribs
-       *r			// min variation here: no members set at input time
-       *nest SGDIST sgdist	// solar gain distribution (struct just above).  set: cncult3.cpp:cnuSgDist().
+     *r *array HSMXSGDIST *nest SGDIST sgdist	// =8 (2-95), cndefns.h. explicit solar gain distribs
+    			// *r -> min variation here: no members set at input time
+                // *nest SGDIST sgdist -> solar gain distribution (struct just above).  set: cncult3.cpp:cnuSgDist().
 
     // runtime values
     *s *e FLOAT xs_glzTrans     // ASHWAT windows: transmitted solar gain, Btuh (w/o cavity absorp adjustment)
     *s *e FLOAT xs_glzInward    // ASHWAT windows: inward flowing convective and LW radiant gain to zone, Btuh
 
-    *array XSMXTLRB *h *e
-		FLOAT xs_tLrB	// layer boundary temps re probes
+    *array XSMXTLRB *h *e FLOAT xs_tLrB	// layer boundary temps re probes
 						// populated at end of hour
 
 *END		// XSURF
