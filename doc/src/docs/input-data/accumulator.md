@@ -12,40 +12,51 @@ ACCUMULATOR results must be reported using user-defined REPORTs or EXPORTs.  For
         REPORTCOL colHead="Average" colVal=@Accumulator[ 1].M.acmMean colDec=0 colWid=10
 
 
-**acmName**
+### acmName
 
 Name of ACCUMULATOR: required for referencing in reports.
 
-<%= member_table(
-  units: "",
-  legal_range: "*63 characters*",
-  default: "*none*",
-  required: "Yes",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*63 characters*", 
+    "default": "*none*",
+    "required": "Yes",
+    "variability": "constant" 
+  })
+}}
 
-**acmValue=*float***
+### acmValue
+
+Type: *float*
 
 The value being accumulated.  Generally expression.
 
-<%= member_table(
-  units: "any",
-  legal_range: "",
-  default: "",
-  required: "Yes",
-  variability: "subhourly") %>
+{{
+  member_table({
+    "units": "any",
+    "legal_range": "", 
+    "default": "",
+    "required": "Yes",
+    "variability": "subhourly" 
+  })
+}}
 
 
-**endACCUMULATOR**
+### endACCUMULATOR
 
 Indicates the end of the ACCUMULATOR definition. Alternatively, the end of the definition can be indicated by the declaration of another object or by END.
 
-<%= member_table(
-  units: "",
-  legal_range: "",
-  default: "*none*",
-  required: "No",
-  variability: "constant") %>
+{{
+  member_table({
+    "units": "",
+    "legal_range": "", 
+    "default": "*none*",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
 
 **Related Probes:**
 
-- @[accumulator](#p_accumulator)
+- @[accumulator][p_accumulator]
