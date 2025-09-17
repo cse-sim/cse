@@ -29,7 +29,7 @@ ACPMFURNACE, Compressor-based cooling modeled per PERFORMANCEMAP specified in rs
 ACRESISTANCE, Compressor-based cooling and electric ('strip') heating. Cooling performance based on SEER and EER.  Primary heating input energy is accumulated to end use HTG of meter rsElecMtr.
 ACPMRESISTANCE, Cooling based on PERFORMANCEMAP specified in rsPerfMapClg. Primary heating input energy is accumulated to end use HTG of meter rsElecMtr.
 ASHP,  Air-source heat pump (compressor-based heating and cooling). Primary (compressor) heating input energy is accumulated to end use HTG of meter rsElecMtr. Auxiliary and defrost heating input energy is accumulated to end use HPBU of meter rsElecMtr or meter rsFuelMtr (depending on rsTypeAuxH).
-ASHPKGROOM,  Packaged room air-source heat pump.
+ASHPPKGROOM,  Packaged room air-source heat pump.
 ASHPHYDRONIC, Air-to-water heat pump with hydronic distribution. Compressor performance is approximated using the air-to-air model with adjusted efficiencies.
 ASHPPM, Air-to-air heat pump modeled per PERFORMANCMAPs specified via rsPerfMapHtg and rsPerfMapClg.
 WSHP,  Water-to-air heat pump.
