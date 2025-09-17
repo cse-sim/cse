@@ -3679,7 +3679,6 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
                             //   includes rs_fEffH modification if any
 							//   0 = ASHP compressor is unavailable (due to lockout, )
 *s *e FLOAT rs_capHtFS      // current step full speed primary heating capacity, Btuh
-                            //   if known; used only for CHDHW
 *s *e FLOAT rs_capHt		// current step current speed net primary heating capacity, Btuh
 							//   includes fan heat and strip/furn defrost makeup heat
 							//   = fan heat only if compressor unavailable
