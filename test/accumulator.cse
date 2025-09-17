@@ -214,10 +214,14 @@ ZNCOLS(1, Y)
 #define ACCOLS( A, X) \
 Reportcol colVal=@Accumulator[A].X.acmCount colHead="Count" colWid=8 colDec=0 \
 Reportcol colVal=@Accumulator[A].X.acmMin colHead="Min" colWid=8 colDec=2 \
-Reportcol colVal=@Accumulator[A].X.acmMinTimeStamp colHead="Min TS" colWid=30 \
+Reportcol colVal=@Accumulator[A].X.acmMinDayOfYear colHead="MinDOY" colWid=6 \
+Reportcol colVal=@Accumulator[A].X.acmMinHour colHead="MinHr" colWid=5 \
+Reportcol colVal=@Accumulator[A].X.acmMinSubhour colHead="MinSH" colWid=5 \
 Reportcol colVal=@Accumulator[A].X.acmMean colHead="Mean" colWid=8 colDec=2 \
 Reportcol colVal=@Accumulator[A].X.acmMax colHead="Max" colWid = 8 colDec=2 \
-Reportcol colVal=@Accumulator[A].X.acmMaxTimeStamp colHead="Max TS" colWid=30 \
+Reportcol colVal=@Accumulator[A].X.acmMaxDayOfYear colHead="MaxDOY" colWid=6 \
+Reportcol colVal=@Accumulator[A].X.acmMaxHour colHead="MaxHr" colWid=5 \
+Reportcol colVal=@Accumulator[A].X.acmMaxSubhour colHead="MaxSH" colWid=5 \
 Reportcol colVal=@Accumulator[A].X.acmSum colHead=" Sum" colWid = 8 colDec=2
 
 // Monthly

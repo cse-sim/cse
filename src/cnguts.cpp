@@ -2161,19 +2161,15 @@ void LOCAL accumulatorsAccum(
 
 		if (ivl == C_IVLCH_H)
 		{
-			pSrc->acmMin = pSrc->acmMax = pSrc->acmMean = pSrc->acmSum = pACM->acmValue;
-			pSrc->acmMinTimeStamp = pSrc->acmMaxTimeStamp = Top.When(C_IVLCH_S);
-			pSrc->acmCount = 1;
+			ACCUMULATOR_IVL tempSubhr;
+			tempSubhr.acm_PopulateSubhr(pACM->acmValue);
+			pDst->acm_Accum(&tempSubhr, firstFlg, lastFlg);
 		}
-		
-		pDst->acm_Accum( pSrc, firstFlg, lastFlg);
-
-#if 0
-		if (ivl == C_IVLCH_H)
-			printf("\nHr");
-#endif
-
-
+		else
+		{
+			const ACCUMULATOR_IVL* pSrc = pDst + 1;		// source: next shorter interval
+			pDst->acm_Accum(pSrc, firstFlg, lastFlg);
+		}
 	}
 
 }	// accumulatorsAccum
@@ -2190,10 +2186,19 @@ void ACCUMULATOR_IVL::acm_Copy(			// copy to this
 	const ACCUMULATOR_IVL* pSrc)		// source
 {
 	memcpy(this, pSrc, sizeof(ACCUMULATOR_IVL));
-	acmMinTimeStamp.FixAfterCopy();
-	acmMaxTimeStamp.FixAfterCopy();
 
 }	// ACCUMULATOR_IVL::acm_Copy
+//-----------------------------------------------------------------------------
+void ACCUMULATOR_IVL::acm_PopulateSubhr(	// make full subhr object
+	float value)
+{
+	acmMin = acmMax = acmMean = acmSum = value;
+	acmMinDayOfYear = acmMaxDayOfYear = Top.jDay;
+	acmMinHour = acmMaxHour = Top.iHr;
+	acmMinSubhour = acmMaxSubhour = Top.iSubhr;
+	acmCount = 1;
+
+}	// ACCUMULATOR_IVL::acm_PopulateSubhr
 //-----------------------------------------------------------------------------
 void ACCUMULATOR_IVL::acm_Accum(			// accumulate to this
 	const ACCUMULATOR_IVL* pSrc,		// source
@@ -2211,12 +2216,16 @@ void ACCUMULATOR_IVL::acm_Accum(			// accumulate to this
 		if (pSrc->acmMin < acmMin)
 		{
 			acmMin = pSrc->acmMin;
-			acmMinTimeStamp = pSrc->acmMinTimeStamp;
+			acmMinDayOfYear = pSrc->acmMinDayOfYear;
+			acmMinHour = pSrc->acmMinHour;
+			acmMinSubhour = pSrc->acmMinSubhour;
 		}
 		if (pSrc->acmMax > acmMax)
 		{
 			acmMax = pSrc->acmMax;
-			acmMaxTimeStamp = pSrc->acmMaxTimeStamp;
+			acmMaxDayOfYear = pSrc->acmMaxDayOfYear;
+			acmMaxHour = pSrc->acmMaxHour;
+			acmMaxSubhour = pSrc->acmMaxSubhour;
 		}
 		acmSum += pSrc->acmSum;
 		acmCount += pSrc->acmCount;

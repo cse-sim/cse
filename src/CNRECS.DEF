@@ -5548,6 +5548,7 @@ RECORD ACCUMULATOR_IVL "accumulator interval sub" *SUBSTRUCT  // substruct for o
 *prefix acm_
 
 *declare "void acm_Copy( const ACCUMULATOR_IVL* src);"
+*declare "void acm_PopulateSubhr( float value);"
 *declare "void acm_Accum( const ACCUMULATOR_IVL* sIvl, bool firstFlg, bool lastFlg, int options=0);"
 
     // NOTE: visible prefix used, not *prefix
@@ -5556,12 +5557,18 @@ RECORD ACCUMULATOR_IVL "accumulator interval sub" *SUBSTRUCT  // substruct for o
     INT acmCount    // total # of subhrs included
 
     FLOAT acmMin    // min value seen in interval
-    CULSTR acmMinTimeStamp  // string
     FLOAT acmMean   // mean value seen in interval
     FLOAT acmMax    // max value seen in interval
-    CULSTR acmMaxTimeStamp
     FLOAT acmSum    // sum of values in interval
-	
+
+    SI acmMinDayOfYear      // day of year on which min occurs, 1-365
+    SI acmMinHour           // hour of day at which min occurs, 1-24
+    SI acmMinSubhour        // subhour within hour at which min occurs, 1-Top.tp_nSubSteps
+
+    SI acmMaxDayOfYear      // day of year on which min occurs, 1-365
+    SI acmMaxHour           // hour of day at which min occurs, 1-24
+    SI acmMaxSubhour        // subhour within hour at which min occurs, 1-Top.tp_nSubSteps
+
 *END		// ACCUMULATOR_IVL
 //=============================================================================
 RECORD ACCUMULATOR "accumulator" *RAT 
