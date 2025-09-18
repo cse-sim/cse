@@ -1,0 +1,473 @@
+// accumulator test
+
+wfName = "CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
+nSubSteps = 10
+
+ACCUMULATOR MyAccum acmValue = 1
+
+ACCUMULATOR WthrAccum acmValue = $tdbosh
+
+ACCUMULATOR WthrAccum2 acmValue = @weather.db
+
+
+
+// Constructions
+
+MATERIAL "Plasterboard" matCond = 0.09 matSpHt = 0.2 matDens = 59
+MATERIAL "FoamInsul"  matCond=0.02311   matSpHt=0.3346   matDens=0.625
+MATERIAL "WoodSiding"      matCond=0.08088   matSpHt=0.2151   matDens=33.125
+
+
+CONSTRUCTION "Exterior Surface"
+  LAYER lrMat="Plasterboard" lrThk=0.04
+  LAYER lrMat="FoamInsul" lrThk=0.5
+  LAYER lrMat="WoodSiding" lrThk=0.75/12
+
+GLAZETYPE Double gtUNFRC=.5 gtSHGC=.4 gtU=.8
+	gtPySHGC=1.908287712,1.135916854,-4.28852329,2.244318725
+    gtDMSHGC=.8
+    gtDMRBSol=.8
+
+// Zone
+ZONE "Main"
+  znModel = CZM
+  znArea = 473.6120886464
+  znVol = 6289.542746893183
+  znCAir = 116.23074996258602
+  znHcAirX = 0.0 // Remove +4.8 ACH assumed for non-RSYS zones
+  infAC = 0.0
+  znFloorZ = 0.0
+  znCeilingHt = 12.631234000000001
+  znEaveZ = 12.631234000000001
+  znTH = 68 znTD = 70  znTC = 74
+  znQMxH = 200000  znQMxC=-200000
+
+
+  SURFACE "Horizontal Roof"
+    sfCon = "Exterior Surface"
+	sfType = Ceiling
+	sfArea = 172.2225776896
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+  SURFACE "South Vertical Wall"
+    sfCon = "Exterior Surface"
+	sfTilt = 90
+    sfType = Wall
+    sfAzm = 180
+    sfArea = 116.25023994048001
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+	WINDOW SouthWin wnHeight=5 wnWidth=4 wnModel=SHGC wnGT="Double"
+
+  SURFACE "East Vertical Wall"
+    sfCon = "Exterior Surface"
+    sfTilt = 90
+    sfType = Wall
+    sfAzm = 90
+    sfArea = 116.25023994048001
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+  SURFACE "North Vertical Wall"
+    sfCon = "Exterior Surface"
+    sfTilt = 90
+    sfType = Wall
+    sfAzm = 0
+    sfArea = 306.77146650960003
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+  SURFACE "West Vertical Wall"
+    sfCon = "Exterior Surface"
+    sfTilt = 90
+    sfType = Wall
+    sfAzm = 270
+    sfArea = 116.25023994048001
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+  SURFACE "Southeast Vertical Wall"
+    sfCon = "Exterior Surface"
+    sfTilt = 90
+    sfType = Wall
+    sfAzm = 135
+    sfArea = 82.20133297647665
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+  SURFACE "Southwest Vertical Wall"
+    sfCon = "Exterior Surface"
+    sfTilt = 90
+    sfType = Wall
+    sfAzm = 225
+    sfArea = 82.20133297647665
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+  SURFACE "East Sloped Roof"
+    sfCon = "Exterior Surface"
+    sfTilt = 30
+    sfType = Ceiling
+    sfAzm = 90
+    sfArea = 99.33171386698861
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+  SURFACE "South Sloped Roof"
+    sfCon = "Exterior Surface"
+    sfTilt = 30
+    sfType = Ceiling
+    sfAzm = 180
+    sfArea = 99.33171386698861
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+  SURFACE "West Sloped Roof"
+    sfCon = "Exterior Surface"
+    sfTilt = 30
+    sfType = Ceiling
+    sfAzm = 270
+    sfArea = 99.33171386698861
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+  SURFACE "Southwest Sloped Roof"
+    sfCon = "Exterior Surface"
+    sfTilt = 30
+    sfType = Ceiling
+    sfAzm = 225
+	sfArea = 35.11906423111473
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+  SURFACE "Southeast Sloped Roof"
+    sfCon = "Exterior Surface"
+    sfTilt = 30
+    sfType = Ceiling
+    sfAzm = 135
+    sfArea = 35.11906423111473
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+  SURFACE "Floor"
+    sfCon = "Exterior Surface"
+    sfType = Floor
+    sfArea = 473.6120886464
+    sfExCnd = Ambient
+    sfModel = forward_difference
+    sfExRf = 1.67
+    sfExAbs = 1
+
+
+// Output
+
+DELETE REPORT EB
+
+#if 0
+#define CSEBtuSF 1000
+#define ZNCOLS( Z, X) \
+Reportcol colVal=@znRes[Z].X.tAir colHead="Tin" colWid=4 colDec=1 \
+Reportcol colVal=@znRes[Z].X.tRad colHead="Trad" colWid=4 colDec=1 \
+Reportcol colVal=@znRes[Z].X.qSlr/CSEBtuSF colHead="Slr" colDec=0 \
+Reportcol colVal=@znRes[Z].X.qsIg/CSEBtuSF colHead="IntGs" colDec=0 \
+Reportcol colVal=@znRes[Z].X.qlIg/CSEBtuSF colHead="IntGl" colDec=0 \
+Reportcol colVal=@znRes[Z].X.qCond/CSEBtuSF colHead="Cond" colDec=0 \
+Reportcol colVal=@znRes[Z].X.qMass/CSEBtuSF colHead="Surf" colDec=0 \
+Reportcol colVal=@znRes[Z].X.eqfVentHr colHead = "VntHr" colDec=0 colWid=5 \
+Reportcol colVal=@znRes[Z].X.qsIz/CSEBtuSF colHead="sInfVnt" colDec=0 colWid=7 \
+Reportcol colVal=@znRes[Z].X.qhMech/CSEBtuSF colHead="Hload" colDec=0 \
+Reportcol colVal=@znRes[Z].X.qcMech/CSEBtuSF colHead="Cload" colDec=0
+
+// Report for 1st zone
+Report rpBtuSf=1000 rpType=UDT rpFreq=Month rpCPL=-1
+rpTitle="Conditioned-zn Monthly Energy (kBtu + into the zone, except E = Energy Consumed)"
+Reportcol colVal=$month  colHead="mo"      colWid=2
+ZNCOLS(1, M)
+
+Report rpBtuSf=1000 rpType=UDT rpFreq=Year rpHeader=No rpCPL=-1   //Annual Summary
+Reportcol colVal="Yr"       colWid=2
+ZNCOLS(1, Y)
+#endif
+
+#define CSEBtuSF 1000
+#define ACCOLS( A, X) \
+Reportcol colVal=@Accumulator[A].X.acmCount colHead="Count" colWid=8 colDec=0 \
+Reportcol colVal=@Accumulator[A].X.acmMin colHead="Min" colWid=8 colDec=2 \
+Reportcol colVal=@Accumulator[A].X.acmMean colHead="Mean" colWid=8 colDec=2 \
+Reportcol colVal=@Accumulator[A].X.acmMax colHead="Max" colWid = 8 colDec=2 \
+Reportcol colVal=@Accumulator[A].X.acmTotal colHead="Total" colWid = 8 colDec=2
+
+// hourly
+Report rpType=UDT rpFreq=Hour rpCPL=-1 rpDayBeg = Feb 1
+rpTitle="MyAccum"
+Reportcol colVal=$hour  colHead="hr"      colWid=2
+ACCOLS( "MyAccum", H)
+
+// daily
+Report rpType=UDT rpFreq=Day rpCPL=-1 rpDayBeg = Feb 1 rpDayEnd=Feb 28
+rpTitle="MyAccum"
+Reportcol colVal=$dayofyear  colHead="DOY"      colWid=4
+ACCOLS( "MyAccum", D)
+
+
+// Monthly
+#define ACMON( A) \
+Report rpType=UDT rpFreq=Month rpCPL=-1 \
+rpTitle=concat("Monthly data for ", A) \
+Reportcol colVal=$month  colHead="mo"      colWid=2 \
+ACCOLS( A, M) \
+Report rpType=UDT rpFreq=Year rpHeader=No rpCPL=-1 \
+Reportcol colVal="Yr"       colWid=2 \
+ACCOLS(A, Y)
+
+ACMON("MyAccum")
+
+
+ACMON("WthrAccum")
+
+ACMON("WthrAccum2")
+
+
+
+#if 0
+
+#define HRREP1(xdb, xde) REPORT rpType=UDT rpFreq=HOUR rpDayBeg=xdb rpDayEnd=xde rpCPL=-1 \
+  REPORTCOL colHead="Mon" colVal=$month colWid=3 \
+  REPORTCOL colHead="Day" colVal=$dayOfMonth colWid=3 \
+  REPORTCOL colHead="Hr" colVal=$hour colWid=3 \
+  REPORTCOL colHead="HrST" colVal=$hourST colWid=4 \
+  REPORTCOL colHead="DT" colVal=$IsDT colWid=2 \
+  REPORTCOL colHead="sunupf" colVal=@weather.sunupf  colWid=6 \
+  REPORTCOL colHead="slAzm" colVal=@weather.slAzm  colWid=6 \
+  REPORTCOL colHead="slAlt" colVal=@weather.slAlt  colWid=6 \
+  REPORTCOL colHead="db" colVal=@weather.db  colWid=6 colDec=2 \
+  REPORTCOL colHead="wb" colVal=@weather.wb  colWid=6 colDec=2 \
+  REPORTCOL colHead="DNI" colVal=@weather.DNI  colWid=6  colDec=2 \
+  REPORTCOL colHead="DHI" colVal=@weather.DHI  colWid=6  colDec=2 \
+  REPORTCOL colHead="bmrad" colVal=@weather.bmrad  colWid=6 colDec=2 \
+  REPORTCOL colHead="dfrad" colVal=@weather.dfrad  colWid=6 colDec=2 \
+  REPORTCOL colHead="wndDir" colVal=@weather.wndDir  colWid=6 colDec=2 \
+  REPORTCOL colHead="wndSpd" colVal=@weather.wndSpd  colWid=6 colDec=2 \
+  REPORTCOL colHead="glrad" colVal=@weather.glrad  colWid=6 colDec=2 \
+  REPORTCOL colHead="cldCvr" colVal=@weather.cldCvr  colWid=6 colDec=2 \
+  REPORTCOL colHead="irHoriz" colVal=@weather.irHoriz  colWid=6 colDec=2 \
+  REPORTCOL colHead="tSky" colVal=@weather.tSky  colWid=6 colDec=2 \
+  REPORTCOL colHead="tGrnd" colVal=@weather.tGrnd  colWid=6 colDec=2 \
+  REPORTCOL colHead="taDp" colVal=@weather.taDp  colWid=6 colDec=2 \
+  REPORTCOL colHead="tMains" colVal=@weather.tMains  colWid=6 colDec=2 \
+  REPORTCOL colHead="taDbMin" colVal=@weather.taDbMin  colWid=7 colDec=2 \
+  REPORTCOL colHead="taDbAvg" colVal=@weather.taDbAvg  colWid=7 colDec=2 \
+  REPORTCOL colHead="taDbMax" colVal=@weather.taDbMax  colWid=7 colDec=2 \
+  REPORTCOL colHead="taDbPvMax" colVal=@weather.taDbPvMax  colWid=9 colDec=2 \
+  REPORTCOL colHead="taDbAvg01" colVal=@weather.taDbAvg01  colWid=9 colDec=2 \
+  REPORTCOL colHead="taDbAvg07" colVal=@weather.taDbAvg07  colWid=9 colDec=2 \
+  REPORTCOL colHead="taDbAvg14" colVal=@weather.taDbAvg14  colWid=9 colDec=2 \
+  REPORTCOL colHead="taDbAvg31" colVal=@weather.taDbAvg31  colWid=9 colDec=2 \
+  REPORTCOL colHead="tdvFuel" colVal=@weather.tdvFuel  colWid=7 colDec=2 \
+  REPORTCOL colHead="tdvElec" colVal=@weather.tdvElec  colWid=7 colDec=2 \
+  REPORTCOL colHead="tdvElecPk" colVal=@weather.tdvElecPk  colWid=9 colDec=2 \
+  REPORTCOL colHead="tdvElecPkRank" colVal=@weather.tdvElecPkRank  colWid=13 \
+  REPORTCOL colHead="tdvElecPvPk" colVal=@weather.tdvElecPvPk  colWid=11 colDec=2 \
+  REPORTCOL colHead="tdvElecAvg01" colVal=@weather.tdvElecAvg01  colWid=12 colDec=2 \
+  REPORTCOL colHead="tdvElecHrR01" colVal=@weather.tdvElecHrRank[ 1] colWid=12 \
+  REPORTCOL colHead="tdvElecHrR24" colVal=@weather.tdvElecHrRank[ 24]  colWid=12
+
+
+  HRREP1( Mar 7, Mar 9)
+
+
+    RUN
+		
+
+#if 0
+	*h *ARRAY 25 SI wd_tdvElecHrRank	// hour ranking of TDV values for current da
+
+
+  REPORTCOL colHead="TdbHr" colVal=@Top.tDbOHr colDec=2 colWid=6 \
+  REPORTCOL colHead="TdbHrAv" colVal=@Top.tDbOHrAv colDec=2 colWid=7 \
+  REPORTCOL colHead="rhSh" colVal=rhFromDbW( @Top.tDbOSh, @Top.woSh) colDec=3 colWid=6 \
+  REPORTCOL colHead="rhoDSh" colVal=@Top.rhoDryOSh colDec=5 colWid=8 \
+  REPORTCOL colHead="rhoMSh" colVal=@Top.rhoMoistOSh colDec=5 colWid=8 \
+  REPORTCOL colHead="tSkySh" colVal=@Top.tSkySh colDec=2 colWid=6 \
+  REPORTCOL colHead="Pres" colVal=@Top.presAtm colDec=2 colWid=6 \
+  REPORTCOL colHead="WD" colVal=@Top.windDirDegHr colWid=3 \
+  REPORTCOL colHead="TSC" colVal=@weather.cldCvr colWid=3 \
+  REPORTCOL colHead="TdbMin" colVal=@weather.taDbMin colWid=6  colDec=2 \
+  REPORTCOL colHead="TdbMean" colVal=@weather.taDbAvg colWid=7  colDec=2 \
+  REPORTCOL colHead="TdbMax" colVal=@weather.taDbMax colWid=6 colDec=2 \
+  REPORTCOL colHead="TdbMaxPv" colVal=@weather.taDbPvMax colWid=8 colDec=2 \
+  REPORTCOL colHead="TdbNx" colVal=@weatherNextHour.db colWid=6 colDec=2 
+
+
+#define SHREP1(xdb, xde) REPORT rpType=UDT rpFreq=SUBHOUR rpDayBeg=xdb rpDayEnd=xde rpCPL=-1 \
+  REPORTCOL colHead="Mon" colVal=$month colWid=3 \
+  REPORTCOL colHead="Day" colVal=$dayOfMonth colWid=3 \
+  REPORTCOL colHead="Hr" colVal=$hour colWid=3 \
+  REPORTCOL colHead="HrST" colVal=$hourST colWid=4 \
+  REPORTCOL colHead="DT" colVal=$IsDT colWid=2 \
+  REPORTCOL colHead="Shr" colVal=$subhour colWid=3 \
+  REPORTCOL colHead="FHr" colVal= $hour + ($subhour - 1.)/ @Top.nsubsteps colDec=3 colWid=5\
+  REPORTCOL colHead="TdbHr" colVal=@Top.tDbOHr colDec=2 colWid=6 \
+  REPORTCOL colHead="TdbHrAv" colVal=@Top.tDbOHrAv colDec=2 colWid=7 \
+  REPORTCOL colHead="TdbSh" colVal=@Top.tDbOSh colDec=2 colWid=6 \
+  REPORTCOL colHead="TdpSh" colVal=@Top.tDpOSh colDec=2 colWid=6 \
+  REPORTCOL colHead="TwbSh" colVal=@Top.tWbOSh colDec=2 colWid=6 \
+  REPORTCOL colHead="wSh" colVal=@Top.woSh colWid=7 \
+  REPORTCOL colHead="rhSh" colVal=rhFromDbW( @Top.tDbOSh, @Top.woSh) colDec=3 colWid=6 \
+  REPORTCOL colHead="rhoDSh" colVal=@Top.rhoDryOSh colDec=5 colWid=8 \
+  REPORTCOL colHead="rhoMSh" colVal=@Top.rhoMoistOSh colDec=5 colWid=8 \
+  REPORTCOL colHead="tSkySh" colVal=@Top.tSkySh colDec=2 colWid=6 \
+  REPORTCOL colHead="Pres" colVal=@Top.presAtm colDec=2 colWid=6 \
+  REPORTCOL colHead="WD" colVal=@Top.windDirDegHr colWid=3 \
+  REPORTCOL colHead="TSC" colVal=@weather.cldCvr colWid=3 \
+  REPORTCOL colHead="TdbMin" colVal=@weather.taDbMin colWid=6  colDec=2 \
+  REPORTCOL colHead="TdbMean" colVal=@weather.taDbAvg colWid=7  colDec=2 \
+  REPORTCOL colHead="TdbMax" colVal=@weather.taDbMax colWid=6 colDec=2 \
+  REPORTCOL colHead="TdbMaxPv" colVal=@weather.taDbPvMax colWid=8 colDec=2 \
+  REPORTCOL colHead="TdbNx" colVal=@weatherNextHour.db colWid=6 colDec=2 
+
+
+#define SHREP2(xdb, xde) REPORT rpType=UDT rpFreq=SUBHOUR rpDayBeg=xdb rpDayEnd=xde rpCPL=-1 \
+  REPORTCOL colHead="Mon" colVal=$month colWid=3 \
+  REPORTCOL colHead="Day" colVal=$dayOfMonth colWid=3 \
+  REPORTCOL colHead="Hr" colVal=$hour colWid=3 \
+  REPORTCOL colHead="HrST" colVal=$hourST colWid=4 \
+  REPORTCOL colHead="DT" colVal=$IsDT colWid=2 \
+  REPORTCOL colHead="Shr" colVal=$subhour colWid=3 \
+  REPORTCOL colHead="FHr" colVal= $hour + ($subhour - 1.)/ @Top.nsubsteps colDec=3 colWid=5\
+  REPORTCOL colHead="DNI" colVal=@weather.DNI colDec=1 colWid=6 \
+  REPORTCOL colHead="DHI" colVal=@weather.DHI colDec=1 colWid=6 \
+  REPORTCOL colHead="GHI" colVal=@weather.glrad colDec=1 colWid=6 \
+  REPORTCOL colHead="DayDNI" colVal=@wfstatsDay[ $dayOfYear].DNI colDec=1 colWid=6 \
+  REPORTCOL colHead="DayDHI" colVal=@wfstatsDay[ $dayOfYear].DHI colDec=1 colWid=6 \
+  REPORTCOL colHead="DayGHI" colVal=@wfstatsDay[ $dayOfYear].GHI colDec=1 colWid=6 \
+  REPORTCOL colHead="RBHrAv" colVal=@top.radBeamHrAv colDec=1 colWid=6 \
+  REPORTCOL colHead="RDHrAv" colVal=@top.radDiffHrAv colDec=1 colWid=6 \
+  REPORTCOL colHead="RBShAv" colVal=@top.radBeamShAv colDec=1 colWid=6 \
+  REPORTCOL colHead="RDShAv" colVal=@top.radDiffShAv colDec=1 colWid=6 \
+  REPORTCOL colHead="IHBeam" colVal=@xsurf["Horizontal Roof"].sbcO.sgTarg.bm colDec=1 colWid=6 \
+  REPORTCOL colHead="IHDiff" colVal=@xsurf["Horizontal Roof"].sbcO.sgTarg.df colDec=1 colWid=6 \
+  REPORTCOL colHead="IHTot" colVal=@xsurf["Horizontal Roof"].sbcO.sgTarg.tot colDec=1 colWid=6
+
+// year end wrap
+SHREP1( Dec 31, Jan 1)
+SHREP2( Dec 31, Jan 1)
+
+// not daylight savings
+SHREP1( Feb 1, Feb 3)
+SHREP2( Feb 1, Feb 3)
+
+// changeover to daylight savings
+SHREP1( Mar 5, Mar 10)
+SHREP2( Mar 5, Mar 10)
+
+// is daylight savings
+SHREP1( Aug 1, Aug 3)
+SHREP2( Aug 1, Aug 3)
+
+// changeover from daylight savings
+SHREP1( Oct 30, Nov 2)
+SHREP2( Oct 30, Nov 2)
+
+#define HRREP(xdb, xde) REPORT rpType=UDT rpFreq=HOUR rpDayBeg=xdb rpDayEnd=xde \
+  REPORTCOL colHead="Mon" colVal=$month colWid=3 \
+  REPORTCOL colHead="Day" colVal=$dayOfMonth colWid=3 \
+  REPORTCOL colHead="Hr" colVal=$hour colWid=3 \
+  REPORTCOL colHead="HrST" colVal=$hourST colWid=4 \
+  REPORTCOL colHead="taDb" colVal=@weather.db colDec=1 colWid=5 \
+  REPORTCOL colHead="taWb" colVal=@weather.wb colDec=1 colWid=5 \
+  REPORTCOL colHead="taDp" colVal=@weather.tadp colDec=1 colWid=5 \
+  REPORTCOL colHead="DNI" colVal=@weather.DNI colDec=1 colWid=5 \
+  REPORTCOL colHead="DHI" colVal=@weather.DHI colDec=1 colWid=5 \
+  REPORTCOL colHead="bmrad" colVal=@weather.bmrad colDec=1 colWid=5 \
+  REPORTCOL colHead="dfrad" colVal=@weather.dfrad colDec=1 colWid=5 \
+  REPORTCOL colHead="glrad" colVal=@weather.glrad colDec=1 colWid=5 \
+  REPORTCOL colHead="tdvE" colVal=@weather.tdvElec colDec=2 colWid=6 \
+  REPORTCOL colHead="tdvEPk" colVal=@weather.tdvElecPk colDec=2 colWid=6 \
+  REPORTCOL colHead="tdvEAv" colVal=@weather.tdvElecAvg colDec=2 colWid=6
+
+
+#define DAYREP(xdb, xde) REPORT rpType=UDT rpFreq=DAY rpDayBeg=xdb rpDayEnd=xde \
+  REPORTCOL colHead="Mon" colVal=$month colWid=3 \
+  REPORTCOL colHead="Day" colVal=$dayOfMonth colWid=3 \
+  REPORTCOL colHead="tdvEPk" colVal=@wfstatsDay[ $dayOfYear].tdvElecPk colDec=2 colWid=6 \
+  REPORTCOL colHead="tdvEAv" colVal=@wfstatsDay[ $dayOfYear].tdvElecAvg colDec=2 colWid=6
+
+HRREP( feb 1, feb 3)
+
+DAYREP( feb 1, feb 3)
+
+
+RUN
+
+#if 0
+  REPORTCOL colHead="DayDNI" colVal=@wfstatsDay[ $dayOfYear].DNI colDec=1 colWid=6
+  REPORTCOL colHead="DayDHI" colVal=@wfstatsDay[ $dayOfYear].DHI colDec=1 colWid=6
+  REPORTCOL colHead="DayGHI" colVal=@wfstatsDay[ $dayOfYear].GHI colDec=1 colWid=6
+#endif
+
+#endif
+
+
+UNSET DT
+DT = Yes
+
+RUN
+
+DTBegDay = Nov 10   DTEndDay = Apr 5
+RUN
+
+#if 0
+UNSET slrInterpMeth
+UNSET DTBegDay   UNSET DTEndDay
+slrInterpMeth = TRNSYS
+RUN
+
+UNSET skyModelLW
+skyModelLW = IRHORIZ
+RUN
+
+UNSET wfName
+wfName = "CA_BLUE-CANYON-AP_725845S_STYP20.EPW"
+
+UNSET slrInterpMeth
+UNSET DT
+DT = No
+UNSET skyModelLW
+
+
+RUN
+
+#endif
+
+#endif
+
+RUN
+
+

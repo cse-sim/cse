@@ -1434,7 +1434,7 @@ RC ZNR::ztuEndSubhr()	// end-subhour (after iterations) hvac checks/computations
 
 // subhour results: solar gain
 	zrs->qSlr = (qSgTot + qSgTotSh) * Top.tp_subhrDur;
-								//	slr gain. qSgTot & qStTotSh are targets set per SgR entries in cnloads.
+								//	slr gain, Btuh qSgTot & qStTotSh are targets set per SgR entries in cnloads.
 								//     mass part qMsSg subtracted out of qMass above
 
 // subhour results: infiltration and conduction
