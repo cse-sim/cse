@@ -566,7 +566,9 @@ CONSTRUCTION BGIR30
     LAYER lrMat=FoamBd lrThk = 0'6
 	LAYER lrMat=Conc140 lrThk = .667
 
-METER   "MtrElec"  
+METER   "MtrElec"
+
+LOADMETER "MtrLoads"
 
 #if 1
 IZXFER   "CeilingLeak"  
@@ -993,6 +995,7 @@ RSYS   "Sys1"
       
    rsFxCapH = 1.5
    rsElecMtr = "MtrElec"
+   rsLoadMtr = "MtrLoads"
 
    rsPerfMapHtg = "PMHtg"
    rsPerfMapClg = "PMClg"
@@ -1191,6 +1194,8 @@ HRREP( CD1)     // hottest day
     RXCOL colHead="Tlv"  colVal=@RSYS[ rs].asOut.tDb  colWid=6 colDec=2 \
     RXCOL colHead="Tsup"  colVal=@RSYS[ rs].asSup.tDb  colWid=6 colDec=2 \
     RXCOL colHead="capHt" colVal=@RSYS[ rs].capHt colWid=5 colDec=0 \
+    RXCOL colHead="capHtFS" colVal=@RSYS[ rs].capHtFS colWid=7 colDec=0 \
+    RXCOL colHead="capSenNetFS" colVal=@RSYS[ rs].capSenNetFS colWid=11 colDec=0 \
     RXCOL colHead="znLd" colVal=@RSYS[ rs].znLoad[ 0] colWid=5 colDec=0 \
     RXCOL colHead="capF" colVal=@RSYS[ rs].fCondCap colWid=5  colDec=3 \
     RXCOL colHead="inpF" colVal=@RSYS[ rs].fCondInp colWid=5  colDec=3 \
@@ -1207,7 +1212,7 @@ HRREP( CD1)     // hottest day
     RXCOL colHead="qNet" colVal=@RSYS[ rs].outSenTot colWid=6 colDec=0 \
     RXCOL colHead="qDct" colVal=-@DUCTSEGRES[ dctTot].S.qhTotSen/@Top.subhrDur colWid=6 colDec=0 \
     RXCOL colHead="qZn"  colVal=@Zone[zn].qsHVAC colWid=6 colDec=0 \
-    RXCOL colHead="qBal1" colVal=@RSYS[ rs].outSenTot-@Zone[zn].qsHVAC colWid=5 colDec=0 \
+    RXCOL colHead="qBal1" colVal=@RSYS[ rs].outSenTot-@Zone[zn].qsHVAC-@DUCTSEGRES[ dctTot].S.qhTotSen/@Top.subhrDur colWid=5 colDec=0 \
     RXCOL colHead="qBal2"  colVal=(@RSYSRES[ rs].S.qhNet-@ZNRES[ zn].S.qshHvac-@DUCTSEGRES[ dctTot].S.qhTotSen)/@Top.subhrDur colWid=6 colDec=0 \
     RXCOL colHead="eComp"  colVal=@RSYS[rs].inPrimary colWid=5 colDec=0 \
     RXCOL colHead="eTot"   colVal=@RSYSRES[rs].S.ehTot / @Top.subhrDur colWid=6 colDec = 0 \
@@ -1218,11 +1223,51 @@ HRREP( CD1)     // hottest day
 REPORT rpType=UDT rpFreq=subhour rpDayBeg=(HD1)-1 rpDayEnd=(HD1)+1  rpTitle="RSYS Heating subhour details"
 SYSCOLSH( Reportcol, 1, 1, "Attic", 3)
 
-REPORT rpType=UDT rpFreq=subhour rpDayBeg=jul 1 rpDayEnd=jul 1  rpTitle="RSYS Heating subhour details"
-SYSCOLSH( Reportcol, 1, 1, "Attic", 3)
+// report columns: RSYS cooling subhour details
+#define SYSCOLSC( RXCOL, rs, lm, zn, zat, dctTot) \
+    RXCOL colHead="mon" colVal=$Month colWid=3 \
+    RXCOL colHead="day" colVal=$Dayofmonth colWid=3 \
+    RXCOL colHead="Hr" colVal=@Top.iHr colWid=2  \
+    RXCOL colHead="Sh" colVal=@Top.iSubHr colWid=2 \
+    RXCOL colHead="ToDb" colVal=@Top.tDbOSh colWid=5 colDec=2 \
+    RXCOL colHead="Tatt"  colVal=@Zone[zat].tz colWid=5 colDec=2 \
+    RXCOL colHead="Tzn"  colVal=@Zone[zn].tz colWid=5 colDec=2 \
+    RXCOL colHead="Tent"  colVal=@RSYS[ rs].asIn.tDb  colWid=6 colDec=2 \
+    RXCOL colHead="Tlv"  colVal=@RSYS[ rs].asOut.tDb  colWid=6 colDec=2 \
+    RXCOL colHead="Tsup"  colVal=@RSYS[ rs].asSup.tDb  colWid=6 colDec=2 \
+    RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHrs[ 1] colWid=5 colDec=2 \
+    RXCOL colHead="znLd" colVal=@RSYS[ rs].znLoad[ 0] colWid=6 colDec=0 \
+    RXCOL colHead="capF" colVal=@RSYS[ rs].fCondCap colWid=5  colDec=3 \
+    RXCOL colHead="inpF" colVal=@RSYS[ rs].fCondInp colWid=5  colDec=3 \
+    RXCOL colHead="SHR" colVal=@RSYS[ rs].shr  colWid=4 colDec=3 \
+    RXCOL colHead="capSenNetFS" colVal=@RSYS[ rs].capSenNetFS colWid=11 colDec=0 \
+    RXCOL colHead="capSen" colVal=@RSYS[rs].capSenCt colWid=6 colDec=0 \
+    RXCOL colHead="capLat" colVal=@RSYS[rs].capLatCt colWid=6 colDec=0 \
+    RXCOL colHead="capTot" colVal=@RSYS[rs].capTotCt colWid=6 colDec=0 \
+    RXCOL colHead="PLR" colVal=@RSYS[ rs].PLR colWid=5  colDec=3 \
+    RXCOL colHead="runF" colVal=@RSYS[ rs].runF colWid=5  colDec=3 \
+    RXCOL colHead="spdF" colVal=@RSYS[ rs].speedF colWid=5  colDec=3 \
+    RXCOL colHead="PLF"   colVal=@RSYS[ rs].plf  colWid=5  colDec=3 \
+    RXCOL colHead="CFMav" colVal=@Zone[ zn].rsAmfSup/4.5  colWid=5 colDec=1 \
+    RXCOL colHead="qSCoil" colVal=@RSYS[ rs].outSen colWid=6 colDec=0 \
+    RXCOL colHead="qSFan" colVal=@RSYS[ rs].outFan colWid=5 colDec=0 \
+    RXCOL colHead="qSNet" colVal=@RSYS[ rs].outSenTot colWid=6 colDec=0 \
+    RXCOL colHead="qSNet2"  colVal=@RSYSRES[ rs].S.qcSenNet/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="qLd" colVal=@LOADMETER[ lm].S.qClg/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="qSDct" colVal=@DuctSegRes[ dctTot].S.qcTotSen/@Top.subhrDur colWid=5 colDec=0 \
+    RXCOL colHead="qsZn1"  colVal=@ZnRes[zn].S.qscHVAC/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="qsZn2"  colVal=@Zone[ zn].qsHVAC colWid=6 colDec=0 \
+    RXCOL colHead="qBal1" colVal=@RSYS[ rs].outSenTot-@Zone[zn].qsHVAC-@DUCTSEGRES[ dctTot].S.qcTotSen/@Top.subhrDur colWid=5 colDec=0 \
+    RXCOL colHead="qBal2"  colVal=(@RSYSRES[ rs].S.qcSenNet-@ZNRES[ zn].S.qscHvac-@DUCTSEGRES[ dctTot].S.qcTotSen)/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="qLat1" colVal=@RSYS[ rs].outLat colWid=6 colDec=0 \
+    RXCOL colHead="qLat2"  colVal=@ZnRes[zn].S.qlMech/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="qtZn"   colVal=(@ZnRes[zn].S.qscHvac+@ZnRes[zn].S.qlMech)/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="eComp"  colVal=@RSYS[rs].inPrimary colWid=5 colDec=0 \
+    RXCOL colHead="eTot"   colVal=@RSYSRES[rs].S.ecTot/@Top.subhrDur colWid=6 colDec = 0
 
-REPORT rpType=UDT rpFreq=subhour rpDayBeg=(CD1)-1 rpDayEnd=(CD1)+1  rpTitle="RSYS Heating subhour details"
-SYSCOLSH( Reportcol, 1, 1, "Attic", 3)
+REPORT rpType=UDT rpFreq=subhour rpDayBeg=(CD1)-1 rpDayEnd=(CD1)+1 rpCpl=-1 rpTitle="RSYS cooling subhour details"
+SYSCOLSC( Reportcol, 1, 1, 1, "Attic", 3)
+
 
 
 // report columns: values accross RSYSRES, DUCTSEGRES, ZNRES, LOADMETER

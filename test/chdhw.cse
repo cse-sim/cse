@@ -6913,15 +6913,15 @@ TPERFCOLS( REPORTCOL,"Hr",$hour,H,.001,3,MtrElec, MtrLoads, MtrSSLoads, 1, 1)
   RXCOL colHead="TcLkL"  colVal=@DUCTSEGRES[ t].X.qcLeakLat*f colWid=6 colDec=0
 
 REPORT rpType=UDT rpFreq=subhour rpDayBeg=jan 1 rpDayEnd=jan 3 rpCpl=-1
-DUCTCOLS( Reportcol, 1, 2, 3, S, 1, "SH", $subhour)
+DUCTCOLS(Reportcol,1,2,3,S,1,"SH",$subhour)
 
 REPORT rpType=UDT rpFreq=subhour rpDayBeg=(HDX)-1 rpDayEnd=(HDX)+1 rpCpl=-1
-DUCTCOLS( Reportcol, 1, 2, 3, S, 1, "SH", $subhour)
+DUCTCOLS(Reportcol,1,2,3,S,1,"SH",$subhour)
 
 REPORT rpType=UDT rpFreq=month
-DUCTCOLS( Reportcol, 1, 2, 3, M, .001, "Mon", @Top.monStr)
+DUCTCOLS(Reportcol,1,2,3,M,.001,"Mon",@Top.monStr)
 REPORT rpType=UDT rpFreq=Year rpHeader = No
-DUCTCOLS( Reportcol, 1, 2, 3, Y, .001, "", "Yr")
+DUCTCOLS(Reportcol,1,2,3,Y,.001,"","Yr")
 #endif
 
 // report columns: system <-> duct <-> zone energy balance
@@ -6944,14 +6944,14 @@ DUCTCOLS( Reportcol, 1, 2, 3, Y, .001, "", "Yr")
   RXCOL colHead="QcBal"  colVal=(@RSYSRES[ rs].X.qcSenNet-@ZNRES[ zn].X.qscHvac-@DUCTSEGRES[ dctTot].X.qcTotSen)*f colWid=6 colDec=0
 
 REPORT rpType=UDT rpFreq=month  rpTitle="Duct / system / zone energy balance"
-DUCTCOLX( Reportcol,M, 1, 3, 1, 1, 2, 3, .001, "Mon", @Top.monStr)
+DUCTCOLX(Reportcol,M,1,3,1,1,2,3,.001,"Mon",@Top.monStr)
 ENDREPORT
 REPORT rpType=UDT rpFreq=Year rpHeader = No
-DUCTCOLX( Reportcol,Y,1, 3, 1, 1, 2, 3, .001, "", "Yr")
+DUCTCOLX(Reportcol,Y,1,3,1,1,2,3,.001,"","Yr")
 ENDREPORT
 
 REPORT rpType=UDT rpFreq=subhour rpDayBeg=(HDX)-1 rpDayEnd=(HDX)+1 rpCpl=-1 rpTitle="Duct / system / zone energy balance"
-DUCTCOLX( Reportcol,S, 1, 3, 1, 1, 2, 3, 1, "SH", $subhour)
+DUCTCOLX(Reportcol,S,1,3,1,1,2,3,1,"SH",$subhour)
 ENDREPORT
 
 
@@ -6980,31 +6980,32 @@ ENDREPORT
 
 
 #if 0
-    RXCOL colHead="capF" colVal=@RSYS[ rs].fCondCap colWid=5  colDec=3 \
-    RXCOL colHead="inpF" colVal=@RSYS[ rs].fCondInp colWid=5  colDec=3 \
-    RXCOL colHead="PLR" colVal=@RSYS[ rs].PLR colWid=5  colDec=3 \
-    RXCOL colHead="spdF" colVal=@RSYS[ rs].speedF colWid=5  colDec=3 \
-    RXCOL colHead="runF" colVal=@RSYS[ rs].runF colWid=5  colDec=3 \
-    RXCOL colHead="PLF"   colVal=@RSYS[ rs].plf  colWid=5  colDec=3 \
-    RXCOL colHead="runFAux" colVal=@RSYS[ rs].runFAux colWid=7  colDec=3 \
-    RXCOL colHead="CFMav" colVal=@Zone[ zn].rsAmfSup/4.5  colWid=5 colDec=1 \
-    RXCOL colHead="qPrim" colVal=@RSYS[ rs].outSen colWid=6 colDec=0 \
-    RXCOL colHead="qAux" colVal=@RSYS[ rs].outAux colWid=6 colDec=0 \
-    RXCOL colHead="qDef" colVal=@RSYS[ rs].outDefrost colWid=5 colDec=0 \
-    RXCOL colHead="qFan" colVal=@RSYS[ rs].outFan colWid=5 colDec=0 \
-    RXCOL colHead="qNet" colVal=@RSYS[ rs].outSenTot colWid=6 colDec=0 \
+RXCOL colHead="capF" colVal=@RSYS[rs].fCondCap colWid=5  colDec=3 \
+RXCOL colHead="inpF" colVal=@RSYS[rs].fCondInp colWid=5  colDec=3 \
+RXCOL colHead="PLR" colVal=@RSYS[rs].PLR colWid=5  colDec=3 \
+RXCOL colHead="spdF" colVal=@RSYS[rs].speedF colWid=5  colDec=3 \
+RXCOL colHead="runF" colVal=@RSYS[rs].runF colWid=5  colDec=3 \
+RXCOL colHead="PLF"   colVal=@RSYS[rs].plf  colWid=5  colDec=3 \
+RXCOL colHead="runFAux" colVal=@RSYS[rs].runFAux colWid=7  colDec=3 \
+RXCOL colHead="CFMav" colVal=@Zone[zn].rsAmfSup/4.5  colWid=5 colDec=1 \
+RXCOL colHead="qPrim" colVal=@RSYS[rs].outSen colWid=6 colDec=0 \
+RXCOL colHead="qAux" colVal=@RSYS[rs].outAux colWid=6 colDec=0 \
+RXCOL colHead="qDef" colVal=@RSYS[rs].outDefrost colWid=5 colDec=0 \
+RXCOL colHead="qFan" colVal=@RSYS[rs].outFan colWid=5 colDec=0 \
+RXCOL colHead="qNet" colVal=@RSYS[rs].outSenTot colWid=6 colDec=0 \
 
-    RXCOL colHead="znClg" colVal=@ZNRES[ zn].X.qscHVAC*F colWid=5 colDec=0 \
+RXCOL colHead="znClg" colVal=@ZNRES[zn].X.qscHVAC*F colWid=5 colDec=0 \
 
-    RXCOL colHead="qLMClg" colVal=@LOADMETER[ lm].X.qClg*F colWid=6 colDec=0 \
+RXCOL colHead="qLMClg" colVal=@LOADMETER[lm].X.qClg*F colWid=6 colDec=0 \
 
-    RXCOL colHead="qDct" colVal=-@DUCTSEGRES[ dctTot].S.qhTotSen/@Top.subhrDur colWid=6 colDec=0 \
-    RXCOL colHead="qZn"  colVal=@Zone[zn].qsHVAC colWid=6 colDec=0 \
-    RXCOL colHead="qBal1" colVal=@RSYS[ rs].outSenTot-@Zone[zn].qsHVAC colWid=5 colDec=0 \
-    RXCOL colHead="qBal2"  colVal=(@RSYSRES[ rs].S.qhNet-@ZNRES[ zn].S.qshHvac-@DUCTSEGRES[ dctTot].S.qhTotSen)/@Top.subhrDur colWid=6 colDec=0 \
-    RXCOL colHead="eComp"  colVal=@RSYS[rs].inPrimary colWid=5 colDec=0 \
-    RXCOL colHead="eTot"   colVal=@RSYSRES[rs].S.ehTot/@Top.subhrDur colWid=6 colDec = 0
+RXCOL colHead="qDct" colVal=-@DUCTSEGRES[dctTot].S.qhTotSen/@Top.subhrDur colWid=6 colDec=0 \
+RXCOL colHead="qZn"  colVal=@Zone[zn].qsHVAC colWid=6 colDec=0 \
+RXCOL colHead="qBal1" colVal=@RSYS[rs].outSenTot-@Zone[zn].qsHVAC colWid=5 colDec=0 \
+RXCOL colHead="qBal2"  colVal=(@RSYSRES[rs].S.qhNet-@ZNRES[zn].S.qshHvac-@DUCTSEGRES[dctTot].S.qhTotSen)/@Top.subhrDur colWid=6 colDec=0 \
+RXCOL colHead="eComp"  colVal=@RSYS[rs].inPrimary colWid=5 colDec=0 \
+RXCOL colHead="eTot"   colVal=@RSYSRES[rs].S.ehTot/@Top.subhrDur colWid=6 colDec = 0
 #endif
+
 
 // report columns: RSYS heating subhour details
 #define SYSCOLSH( RXCOL, rs, lm, zn, zat, dctTot) \
@@ -7021,6 +7022,7 @@ ENDREPORT
     RXCOL colHead="Tsup"  colVal=@RSYS[ rs].asSup.tDb  colWid=6 colDec=2 \
     RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHrs[ 0] colWid=5 colDec=2 \
     RXCOL colHead="capHt" colVal=@RSYS[ rs].capHt colWid=5 colDec=0 \
+    RXCOL colHead="capHtFS" colVal=@RSYS[ rs].capHtFS colWid=7 colDec=0 \
     RXCOL colHead="spdMn" colVal=@RSYS[ rs].speedFMin colWid=5 colDec=3 \
     RXCOL colHead="znLd" colVal=@RSYS[ rs].znLoad[ 0] colWid=5 colDec=0 \
     RXCOL colHead="capF" colVal=@RSYS[ rs].fCondCap colWid=5  colDec=3 \
@@ -7097,6 +7099,7 @@ SYSTOTCOLSX( Y)
     RXCOL colHead="PLF"   colVal=@RSYS[ rs].plf  colWid=5  colDec=3 \
     RXCOL colHead="CFMav" colVal=@Zone[ zn].rsAmfSup/4.5  colWid=5 colDec=1 \
     RXCOL colHead="SHR" colVal=@RSYS[ rs].shr  colWid=4 colDec=3 \
+    RXCOL colHead="capSenNetFS" colVal=@RSYS[ rs].capSenNetFS colWid=11 colDec=0 \
     RXCOL colHead="capSen" colVal=@RSYS[rs].capSenCt colWid=6 colDec=0 \
     RXCOL colHead="capLat" colVal=@RSYS[rs].capLatCt colWid=6 colDec=0 \
     RXCOL colHead="capTot" colVal=@RSYS[rs].capTotCt colWid=6 colDec=0 \
