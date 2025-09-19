@@ -1320,9 +1320,11 @@ RECORD XSURF "xsurf sub" *SUBSTRUCT	// for PRI, SFI, XSRAT.
     *mh FRAC sco    // window: SMSO: Solar Heat Gain Coef multiplier, shades Open
     *mh FRAC scc    // window: SMSC: Solar Heat Gain Coef, shades Closed
     *r *nest SBC xs_sbcI	// inside (zone side) surface boundary conditions
+                            //   ASHWAT windows: BCs at inside face of inside layer (glazing or shade; frame excluded, see xs_frmSbcI)
     *r *nest SBC xs_sbcO	// outside (ambient or adjacent zone) surface boundary conditions
+                            //   ASHWAT windows: BCs at outside face of outside layer (glazing, screen, or shade; frame excluded, see xs_frmSbcO)
     *r *nest SBC xs_frmSbcI	// ASHWAT windows: frame inside (zone side) surface boundary conditions
-    *r *nest SBC xs_frmSbcO	// ASHWAT windows: frame outside (ambient (or adjacent zone?)) surface boundary conditions
+    *r *nest SBC xs_frmSbcO	// ASHWAT windows: frame outside (ambient) surface boundary conditions
 
     *i FENMODELCH xs_fenModel	// fenestration model: user input
     *i FRAC xs_SHGC				// rated SHGC of assembly
@@ -5564,18 +5566,18 @@ DBL acmSum      // sum of values in interval
 SI acmMinDayOfYear      // day of year on which min occurs, 1-365
 SI acmMinDayOfYearST    // day of year (standard time) on which min occurs, 1-365
                         //  can differ from acmMinDayOfYear iff Top.DT=Yes
-SI acmMinHour           // hour of day at which min occurs, 1-24
-SI acmMinHourST         // hour of day (standard time) at which min occurs, 1-24
+SI acmMinHour           // hour of day at which min occurs, 0-23
+SI acmMinHourST         // hour of day (standard time) at which min occurs, 0-23
                         //  can differ from acmMinHour iff Top.DT=Yes
-SI acmMinSubhour        // subhour within hour at which min occurs, 1-Top.tp_nSubSteps
+SI acmMinSubhour        // subhour within hour at which min occurs, 0 - Top.tp_nSubSteps-1
 
 SI acmMaxDayOfYear      // day of year on which min occurs, 1-365
-SI acmMaxDayOfYearST    // day of year (standard time) on which max occurs, 1-365
+SI acmMaxDayOfYearST    // day of year (standard time) on which max occurs, 0-23
                         //  can differ from acmMaxDayOfYear iff Top.DT=Yes
-SI acmMaxHour           // hour of day at which min occurs, 1-24
-SI acmMaxHourST         // hour of day (standard time) at which max occurs, 1-24
+SI acmMaxHour           // hour of day at which min occurs, 0-23
+SI acmMaxHourST         // hour of day (standard time) at which max occurs, 0-23
                         //  can differ from acmMaxHour iff Top.DT=Yes
-SI acmMaxSubhour        // subhour within hour at which min occurs, 1-Top.tp_nSubSteps
+SI acmMaxSubhour        // subhour within hour at which min occurs, 0 - Top.tp_nSubSteps-1
 
 *END		// ACCUMULATOR_IVL
 //=============================================================================
