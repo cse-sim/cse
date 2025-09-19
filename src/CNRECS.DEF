@@ -3695,7 +3695,6 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
                             //   includes rs_fEffH modification if any
 							//   0 = ASHP compressor is unavailable (due to lockout, )
 *s *e FLOAT rs_capHtFS      // current step full speed primary heating capacity, Btuh
-                            //   if known; used only for CHDHW
 *s *e FLOAT rs_capHt		// current step current speed net primary heating capacity, Btuh
 							//   includes fan heat and strip/furn defrost makeup heat
 							//   = fan heat only if compressor unavailable
@@ -3855,10 +3854,12 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *s *e FLOAT rs_PLR      // current step part load ratio = sensible load / full-speed sensible capacity
 *s *e FLOAT rs_runF		// primary (e.g. compressor) run fraction
 *s *e FLOAT rs_speedF	// primary (compressor) current speed fraction
-                        //    = current net cap / full speed net cap
-						//    fixed speed: 1; var spd: <= 1 per load
+                        //    for CHDWH = current net cap / full speed net cap
+                        //    for variable speed = n/N (between 1/N and 1.0), where n is the modulated speed of the coil
+						//    for fixed speed = 1
 *s *e FLOAT rs_speedFMin // primary (compressor) current minimum speed fraction
-                        //    fixed speed: 1; var spd: < 1 per min current min cap
+                        //    fixed speed: 1
+                        //    variable speed: 1/N (N = number of coil speeds)
 *s *e FLOAT rs_runFAux	// auxiliary run fraction
 *s *e DBL rs_outSen		// average primary (compressor, burner, coil, ) sensible heat delivery rate for last subhr, Btuh
 						//   (includes runF/speedF, does not include fan, defrost, or aux heat)
