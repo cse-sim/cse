@@ -8,9 +8,10 @@ ACCUMULATOR results must be reported using user-defined REPORTs or EXPORTs.  For
 
     REPORT rpType=UDT rpFreq=Month rpDayBeg=Jan 1 rpDayEnd=Dec 31
         REPORTCOL colHead="mon" colVal=$Month colWid=3
-        REPORTCOL colHead="Total" colVal=@Accumulator[ 1].M.acmSum colDec=0 colWid=10
+        REPORTCOL colHead=" Sum" colVal=@Accumulator[ 1].M.acmSum colDec=0 colWid=10
         REPORTCOL colHead="Average" colVal=@Accumulator[ 1].M.acmMean colDec=0 colWid=10
 
+(Note use of colHead=" Sum" (not colHead="Sum") to avoid a CSE parsing quirk.  See REPORTCOL.)
 
 **acmName**
 

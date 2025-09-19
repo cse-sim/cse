@@ -2,10 +2,19 @@
 
 wfName = "CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
 nSubSteps = 10
+DT = NO     // first run w/o daylight savings
 
-ACCUMULATOR MyAccum acmValue = 1
-ACCUMULATOR WthrAccum acmValue = @Top.radBeamShAv
-ACCUMULATOR WthrAccum2 acmValue = @weather.db
+// trivial test case: accumulate constant 1
+ACCUMULATOR Accum1 acmValue = 1
+
+// accumulate subhour beam solar: good test cuz it varies within hour
+ACCUMULATOR AccumBeam acmValue = @Top.radBeamShAv
+
+// accumulate subhour surface heat flow: tests for lag
+ACCUMULATOR AccumQSrf acmValue = @xsurf[ "South Vertical Wall"].sbcO.qSrf
+
+// accumulate from znres
+ACCUMULATOR AccumQsMech acmValue = @znRes[ "Main"].S.qsMech
 
 // Constructions
 MATERIAL "Plasterboard" matCond = 0.09 matSpHt = 0.2 matDens = 59
@@ -210,56 +219,95 @@ Reportcol colVal="Yr"       colWid=2
 ZNCOLS(1, Y)
 #endif
 
-#define CSEBtuSF 1000
+
+
+
 #define ACCOLS( A, X) \
 Reportcol colVal=@Accumulator[A].X.acmCount colHead="Count" colWid=8 colDec=0 \
-Reportcol colVal=@Accumulator[A].X.acmMin colHead="Min" colWid=8 colDec=2 \
-Reportcol colVal=@Accumulator[A].X.acmMinDayOfYear colHead="MinDOY" colWid=6 \
-Reportcol colVal=@Accumulator[A].X.acmMinHour colHead="MinHr" colWid=5 \
-Reportcol colVal=@Accumulator[A].X.acmMinSubhour colHead="MinSH" colWid=5 \
-Reportcol colVal=@Accumulator[A].X.acmMean colHead="Mean" colWid=8 colDec=2 \
-Reportcol colVal=@Accumulator[A].X.acmMax colHead="Max" colWid = 8 colDec=2 \
-Reportcol colVal=@Accumulator[A].X.acmMaxDayOfYear colHead="MaxDOY" colWid=6 \
-Reportcol colVal=@Accumulator[A].X.acmMaxHour colHead="MaxHr" colWid=5 \
-Reportcol colVal=@Accumulator[A].X.acmMaxSubhour colHead="MaxSH" colWid=5 \
-Reportcol colVal=@Accumulator[A].X.acmSum colHead=" Sum" colWid = 8 colDec=2
+Reportcol colVal=@Accumulator[A].X.acmMin colHead="Min" colGap=4 colWid=8 colDec=2 \
+Reportcol colVal=@Accumulator[A].X.acmMinDayOfYear colHead="MinDOY" colWid=8 \
+Reportcol colVal=@Accumulator[A].X.acmMinDayOfYear colHead="MinDOYST" colWid=8 \
+Reportcol colVal=@Accumulator[A].X.acmMinHour colHead="MinHr" colWid=8 \
+Reportcol colVal=@Accumulator[A].X.acmMinHour colHead="MinHrST" colWid=8 \
+Reportcol colVal=@Accumulator[A].X.acmMinSubhour colHead="MinSH" colWid=8 \
+Reportcol colVal=@Accumulator[A].X.acmMean colHead="Mean" colGap=4 colWid=8 colDec=2 \
+Reportcol colVal=@Accumulator[A].X.acmMax colHead="Max" colGap=4 colWid = 8 colDec=2 \
+Reportcol colVal=@Accumulator[A].X.acmMaxDayOfYear colHead="MaxDOY" colWid=8 \
+Reportcol colVal=@Accumulator[A].X.acmMaxDayOfYear colHead="MaxDOYST" colWid=8 \
+Reportcol colVal=@Accumulator[A].X.acmMaxHour colHead="MaxHr" colWid=8 \
+Reportcol colVal=@Accumulator[A].X.acmMaxHour colHead="MaxHrST" colWid=8 \
+Reportcol colVal=@Accumulator[A].X.acmMaxSubhour colHead="MaxSH" colWid=8 \
+Reportcol colVal=@Accumulator[A].X.acmSum colHead=" Sum" colGap=4 colWid = 8 colDec=2
 
 // Monthly
-#define ACMON( A) \
-Report rpType=UDT rpFreq=Month rpCPL=-1 \
+#define ACMON( NM, A) \
+Report NM rpType=UDT rpFreq=Month rpCPL=-1 \
 rpTitle=concat("Monthly data for ", A) \
 Reportcol colVal=$month  colHead="mo"      colWid=2 \
 ACCOLS( A, M) \
-Report rpType=UDT rpFreq=Year rpHeader=No rpCPL=-1 \
+Report concat( NM,"_Y") rpType=UDT rpFreq=Year rpHeader=No rpCPL=-1 \
 Reportcol colVal="Yr"       colWid=2 \
 ACCOLS(A, Y)
 
-// hourly
-#define ACHOUR( A, dayX) \
-Report rpType=UDT rpFreq=Hour rpCPL=-1 rpDayBeg = dayX \
-rpTitle=concat("Hour results for ACCUMULATOR ", A) \
-Reportcol colVal=$hour  colHead="hr"      colWid=3 \
-ACCOLS( A, H) \
-Report rpType=UDT rpFreq=Day rpCPL=-1 rpHeader = No rpDayBeg = dayX \
-Reportcol colVal="Day" colWid=3 \
-ACCOLS( A, D)
-
 // daily
-#define ACDAY( A, dayB, dayE) \
-Report rpType=UDT rpFreq=Day rpCPL=-1 rpDayBeg = dayB rpDayEnd=dayE \
+#define ACDAY( NM, A, dayB, dayE) \
+Report NM rpType=UDT rpFreq=Day rpCPL=-1 rpDayBeg = dayB rpDayEnd=dayE \
 rpTitle=concat( "Day results for ACCCUMULATOR ", A) \
 Reportcol colVal=$dayofyear  colHead="DOY"      colWid=4 \
 ACCOLS( A, D)
 
-ACHOUR( "MyAccum", Feb 1)
 
-ACDAY( "MyAccum", Feb 1, Feb 28)
+// hourly
+#define ACHOUR( NM, A, dayX) \
+Report NM rpType=UDT rpFreq=Hour rpCPL=-1 rpDayBeg = dayX \
+rpTitle=concat("Hour results for ACCUMULATOR ", A) \
+Reportcol colVal=$hour  colHead="hr"      colWid=3 \
+ACCOLS( A, H) \
+Report concat( NM, "_D") rpType=UDT rpFreq=Day rpCPL=-1 rpHeader = No rpDayBeg = dayX \
+Reportcol colVal="Day" colWid=3 \
+ACCOLS( A, D)
 
-ACMON("MyAccum")
 
-ACMON("WthrAccum")
+ACHOUR( "H1", "Accum1", Feb 1)
 
-ACMON("WthrAccum2")
+ACDAY( "D1", "Accum1", Feb 1, Feb 28)
+
+ACMON( "M1", "Accum1")
+
+#define SHREP1(xdb, xde) REPORT rpType=UDT rpFreq=SUBHOUR rpDayBeg=xdb rpDayEnd=xde rpCPL=-1 \
+  REPORTCOL colHead="Mon" colVal=$month colWid=3 \
+  REPORTCOL colHead="Day" colVal=$dayOfMonth colWid=3 \
+  REPORTCOL colHead="DOY" colVal=$dayOfYear colWid=5 \
+  REPORTCOL colHead="DOYST" colVal=@Top.jDayST colWid=5 \
+  REPORTCOL colHead="Hr0" colVal=@Top.iHr colWid=3 \
+  REPORTCOL colHead="Hr0ST" colVal=@Top.iHrST colWid=4 \
+  REPORTCOL colHead="DT" colVal=$IsDT colWid=2 \
+  REPORTCOL colHead="Subhr0" colVal=@Top.iSubhr colWid=3 \
+  REPORTCOL colHead="Beam" colVal= @Top.radBeamShAv colWid=7 colDec=2 \
+  REPORTCOL colHead="BeamAc" colVal= @ACCUMULATOR["AccumBeam"].acmValue colWid=7 colDec=2 \
+  REPORTCOL colHead="QSrf" colVal= @xsurf["South Vertical Wall"].sbcO.qSrf colWid=7 colDec=2 \
+  REPORTCOL colHead="QSrfAc" colVal= @ACCUMULATOR["AccumQSrf"].acmValue colWid=7 colDec=2 \
+  REPORTCOL colHead="ZnQsM" colVal= @znRes[ "Main"].S.qsMech colWid=7 colDec=2 \
+  REPORTCOL colHead="ZnQsMAc" colVal= @ACCUMULATOR["AccumQsMech"].acmValue colWid=7 colDec=2
+
+
+
+SHREP1( mar 7, mar 9)
+
+ACHOUR( "BH", "AccumBeam", mar 8)
+
+ACDAY( "BD", "AccumBeam", mar 1, mar 31)
+
+ACMON("BM", "AccumBeam")
+
+ACHOUR( "QH", "AccumQSrf", mar 8)
+
+ACDAY( "QD", "AccumQSrf", mar 1, mar 31)
+
+ACMON("QM", "AccumQSrf")
+
+// accumulate subhour surface heat flow: tests for lag
+// ACCUMULATOR AccumQSrf acmValue = @xsurf[ "South Vertical Wall"].sbcO.qSrf
 
 
 
@@ -475,6 +523,19 @@ RUN
 #endif
 
 #endif
+
+RUN
+
+UNSET DT
+DT = YES
+
+DELETE REPORT "H1"
+DELETE REPORT "H1_D"
+
+DELETE REPORT "D1"
+
+DELETE REPORT "M1"
+DELETE REPORT "M1_Y"
 
 RUN
 
