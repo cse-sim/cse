@@ -12,7 +12,7 @@
    ebTolSubHr = 0.001
    jan1DOW = "THU"
    wuDays = 30
-   nSubSteps = 30
+   nSubSteps = 10
    skyModel = "anisotropic"
    dt = "YES"
    heatDsTDbO = 33
@@ -1543,7 +1543,18 @@ Report rpType=MTR rpMeter=MtrNatGas rpFreq=MONTH rpBtuSf=1000
 		        Reportcol colVal=@Meter[MtrElec].d.fanc/CSEBtuSF colHead="fan" colDec=1 colWid=6 
        Reportcol colVal=@Meter[MtrElec].d.clg/CSEBtuSF colHead="Clg" colDec=1 colWid=6
 
+#define WNCOLS( tag, srf) \
+ReportCol colHead=concat( tag, "-Trans") colVal = @xsurf[ srf].glzTrans colWid=10 colDec=2 \
+ReportCol colHead=concat( tag, "-Inw") colVal = @xsurf[ srf].glzInward colWid=10 colDec=2
 
-      
- RUN
- $EOF
+
+REPORT rpType=UDT rpFreq=Subhour rpDayBeg = CD1
+REPORTCOL colHead="Mon" colVal=$month  colWid = 3
+REPORTCOL colHead="Day" colVal=$dayOfMonth colWid=3
+REPORTCOL colHead="Hr" colVal=$hour  colWid=3
+REPORTCOL colHead="Sh" colVal=$subhour colWid=3
+WNCOLS( "S", "Win R1-Scrn")
+WNCOLS( "NS", "Win R1-NoScrn")
+
+RUN
+$EOF

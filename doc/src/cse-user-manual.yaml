@@ -66,6 +66,7 @@ sections:
   - [2, "records/dhwmeter.md"]
   - [2, "records/afmeter.md"]
   - [2, "records/loadmeter.md"]
+  - [2, "records/accumulator.md"]
   - [2, "records/zone.md"]
   - [2, "records/gain.md"]
   - [2, "records/surface.md"]

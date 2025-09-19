@@ -273,8 +273,8 @@ RC SFI::sf_TopSf1()
 				// window area may be given explicitly, to allow using old test files where area != height * width. 2-91.
 				if ( !IsSet( SFI_SFAREA) )			// if area not given
 					sfArea = sf_height * sf_width;			// compute window area
-			sfArea *= mult;				// multiplier (dfl 1.0) for giving multiple similar windows in surf
-			// sfArea is copied to x.area below
+			sfArea *= sf_mult;				// multiplier (dfl 1.0) for giving multiple similar windows in surf
+			// sfArea is copied to x.xs_area below
 		}
 
 		// topSf1: door/window: subtract area from area of owning surface
@@ -326,7 +326,7 @@ RC SFI::sf_TopSf1()
 	if (sfc==sfcWINDOW			// window: not nec user-given
 	 || CkSet( SFI_SFAREA)==RCOK)	// verify RQD mbr given (FPE protection)
 		x.xs_area = sfArea;	// move area to where used at run. For surface, b4 XSURF is added to zn,
-							// window and door areas are subtracted from .x.area,
+							// window and door areas are subtracted from .x.xs_area,
     						// by code above in this fcn, on later call to this fcn.
 
 	// init SGDIST count
@@ -454,6 +454,9 @@ RC SFI::sf_TopSf1()
 					CSE_V x.scc = CSE_V x.sco;  		// use window shades-open value, checked/defaulted just above
 			}
 		}
+
+		x.xs_areaGlz = x.xs_area * x.xs_fMult;		// total glazed area (w/o frame)
+	
 		if (x.xs_IsASHWAT())
 		{	const char* when = "when wnModel=ASHWAT";
 			rc1 = requireN( when, SFX( UNFRC), SFX( SHGC), SFX( NGLZ), 0);
@@ -1537,7 +1540,7 @@ SFI::SFI( basAnc* b, TI i, SI noZ /*=0*/)
 	sf_sharedFndWalls.vector::~vector<TI>();
 	record::Copy( pSrc, options);
 	// base class calls FixUp() and (if _DEBUG) Validate()
-	new(&sf_sharedFndWalls) vector<TI>(((const SFI*)pSrc)->sf_sharedFndWalls);
+	new(&sf_sharedFndWalls) std::vector<TI>(((const SFI*)pSrc)->sf_sharedFndWalls);
 }		// SFI::Copy
 //---------------------------------------------------------------------------
 /*virtual*/ void SFI::FixUp()		// fix links
@@ -2247,6 +2250,8 @@ void XSURF::xs_Init(			// initialize
 	{	// fixup, don't change data
 		xs_sbcI.sb_pXS = this;
 		xs_sbcO.sb_pXS = this;
+		xs_frmSbcI.sb_pXS = this;
+		xs_frmSbcO.sb_pXS = this;
 		for (int iFA=0; iFA<2; iFA++)
 		{	// relink FENAWs if they exist
 			if (xs_pFENAW[ iFA])
@@ -2257,6 +2262,8 @@ void XSURF::xs_Init(			// initialize
 	{	// full init
 		xs_sbcI.sb_Init( this, 0);
 		xs_sbcO.sb_Init( this, 1);
+		xs_frmSbcI.sb_Init( this, 0);	// set up linkage altho may not be used
+		xs_frmSbcO.sb_Init( this, 1);
 		xs_DeleteFENAW();		// no ASHWAT
 
 		// layer boundary temps: init to "unknown"
@@ -2336,12 +2343,6 @@ RC XSURF::xs_Validate(
 const char* XSURF::xs_Name() const
 {	return xs_pParent ? xs_pParent->Name() : "?";
 }		// XSURF::xs_Name
-//-----------------------------------------------------------------------------
-float XSURF::xs_AreaGlazed() const
-{
-	// TODO: complete xs_AreaGlazed
-	return xs_area * xs_fMult;
-}		// XSURF::xs_AreaGlazed
 //-----------------------------------------------------------------------------
 int XSURF::xs_Class() const
 {
@@ -2905,11 +2906,9 @@ float SBC::sb_CombineInHcNatFrc() const	// combine inside face hc
 {
 	assert((sb_pXS->sfAdjZi == 0 && sb_si == 0) || sb_pXS->sfAdjZi > 0);		// valid only zone-facing
 
-#if 1 && defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 	if (Top.jDay==191 && strMatch(sb_pXS->xs_pParent->Name(), "WallS1"))
 		printf("\nHit");
-
-
 #endif
 
 	switch (sb_hcModel)

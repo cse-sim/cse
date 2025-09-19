@@ -1742,6 +1742,26 @@ CULT()
 };	// rsysT
 #undef AS_OKIF
 
+//============================= ACCUMULATOR command =============================
+LOCAL RC accumStarCkf([[maybe_unused]] CULT* c, /*ACCUMULATOR* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
+// called at end of AFMETER input, to get messages near source of error.
+{
+	return ((ACCUMULATOR*)p)->acm_CkF( 0);
+}		// accumStarCkf
+//=============================================================================
+static CULT accumT[] = //------ ACCUMULATOR cmd RAT Entry table
+{
+// id              cs     fn                 f        uc evf     ty     b       dfls    p2   ckf
+//---------------- -----  -----------------  -------  -- ------  -----  ------  ------  ---- ----
+CULT("*",          STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   accumStarCkf),
+CULT( "acmValue",  DAT,	ACCUMULATOR_ACMVALUE,0,		  0, VSUBHRLY|EVPSTIVL,
+	                                                             TYFL, 0,       0.f,    N,   N),
+
+CULT("endACCUMULATOR", ENDER, 0,             0,       0, 0,      0,     0,      0.f,    N,   N),
+CULT()
+};	// accumT
+
+
 //============================= DHWMETER command =============================
 LOCAL RC wmtStarCkf([[maybe_unused]] CULT* c, /*DHWMTR* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
 // called at end of DHWMETER input, to get messages near source of error.
@@ -2937,6 +2957,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "battery",     RATE,  0,                 0,          0, 0,      0,    &BTiB,   N,    0.f,           btT,  N),
 	CULT( "shadex",      RATE,  0,                 0,          0, 0,      0,    &SXiB,   N,    0.f,       shadexT,  N),
 	CULT( "airHandler",  RATE,  0,                 NM_RQD,     0, 0,      0,    &AhiB,   N,    0.f,           ahT,  N),
+	CULT( "accumulator", RATE,  0,                 NM_RQD,     0, 0,      0,    &AccumiB,N,    0.f,        accumT,  N),
 	CULT( "meter",       RATE,  0,                 NM_RQD,     0, 0,      0,    &MtriB,  N,    0.f,          mtrT,  N),
 	CULT( "gain",        RATE,  0,                 NOTOWNED,   0, 0,      0,    &GniB,   N,    0.f,           gnT,  N),
 	CULT( "reportCol",   RATE,  0,                 NOTOWNED,   0, 0,      0,    &RcoliB, N,    0.f,         rpColT, N),
@@ -3012,11 +3033,14 @@ TOPRAT Topi((anc<TOPRAT>*)& TopiR, 0);  	// "Top" info input RAT's one static en
 // inverse objects
 makAncINVERSE(IvB, inverseT);
 
-// zones, transfers, gains, meters
+// zones, transfers, gains
 makAncZNI(ZiB, znT);					// zones input info records basAnc
 makAncIZXRAT(IzxiB, izxT);				// interzone transfer input records basAnc
 makAncDUCTSEG(DsiB, dsT);				// duct segment input records basAnc
 makAncGAIN(GniB, gnT);					// (zone) gains input records basAnc
+
+// accumulators, meters
+makAncACCUMULATOR(AccumiB, accumT);		// Accumulator input records basAnc
 makAncMTR(MtriB, mtrT);					// Meters input records basAnc
 makAncAFMTR(AfMtriB, afMeterT);			// Airflow meters input records basAnc
 makAncDHWMTR(WMtriB, dhwMeterT);		// DHW meters
@@ -3103,7 +3127,7 @@ WFDATA WthrNxHr((anc<WFDATA>*)& WthrNxHrR, 0);	// record containing current next
 												// extracted and adjusted, for cgWthr.cpp read-ahead
 makAncDESCOND(DcR, dcT);						// design conditions
 
-// zones, transfers, gains, meters
+// zones, transfers, gains,
 makAncZNR(ZrB, znT);					// Zones runtime info: input set in cncult
 										//   use ZNI CULT table, ZNI and ZNR have same initial layout
 makAncZNRES(ZnresB, nullptr);			// Month and year simulation results for zones
@@ -3111,6 +3135,8 @@ makAncIZXRAT(IzxR, izxT);				// interZone transfers -- conductions / ventilation
 makAncDOAS(doasR, doasT);				// DOAS
 makAncGAIN(GnB, gnT);					// (zone) gains run records basAnc
 
+// accumulators, meters, 
+makAncACCUMULATOR(AccumR, accumT);		// Accumulator run records basAnc
 makAncMTR(MtrB, mtrT);					// meters (energy use) run records basAnc
 makAncAFMTR(AfMtrR, afMeterT);			// air flow meters run basAnc
 makAncLOADMTR(LdMtrR, ldMeterT);		// load meters run basAnc
@@ -3190,6 +3216,7 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 {
 	ZiB.free();
 	IzxiB.free();
+	AccumiB.free();
 	MtriB.free();
 	AfMtriB.free();
 	WMtriB.free();
