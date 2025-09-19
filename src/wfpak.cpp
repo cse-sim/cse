@@ -1,8 +1,8 @@
-// Copyright (c) 1997-2019 The CSE Authors. All rights reserved.
+// Copyright (c) 1997-2025 The CSE Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file.
 
-// wfpak.cpp -- weather file functions, part 1
+// wfpak.cpp -- weather file functions
 
 /*--------------------------------- INCLUDES ------------------------------- */
 #include "cnglob.h"	// CSE global definitions -- included first in every module
@@ -12,15 +12,12 @@
 #include "ancrec.h"	// record: base class for rccn.h classes
 #include "exman.h"
 #include "rccn.h"	// TOPRAT WFILE WFDATA
+#include "cnguts.h"
 #include "psychro.h"
 #include "solar.h"
 
 #include "yacam.h"	// class YACAM
 #include "tdpak.h"
-
-#if defined( WTHR_T24DLL)
-#include "xmodule.h"		// interface to T24WTHR.DLL
-#endif
 
 #include "wfpak.h"
 
@@ -28,6 +25,8 @@
 const int WFMAXLNLEN = 2000;		// maximum line length supported
 									//   for text file formats
 const int WFMAXCOLS = 100;			// max # of columns supported
+
+#define USEWX	// use WFSTATSxxx
 
 
 /*--------------------------- LOCAL FUNCTIONS -----------------------------*/
@@ -126,192 +125,6 @@ t
 t}		/* main */
 #endif	/* TEST */
 
-#if defined( WTHR_T24DLL)
-///////////////////////////////////////////////////////////////////////////////
-// class XT24WTHR: interface to T24WTHR.DLL
-//    California Title 24 hourly weather data
-///////////////////////////////////////////////////////////////////////////////
-// T24WTHR.DLL data item indexes
-// per Doug Herr documentation, 2-6-2012
-const int t24WthrDB = 1;	// dry bulb, F
-const int t24WthrWB = 2;	// wet bulb, F
-const int t24WthrDP = 3;	// dew point, F
-const int t24WthrTG = 4;    // ground temperature, F
-const int t24WthrTS = 5;    // Tsky, F
-const int t24WthrBR = 6;    // direct normal radiation, Btu/sf
-const int t24WthrDR = 7;    // diffuse radiation, Btu/sf
-const int t24WthrWS = 8;    // wind speed, miles/hr
-const int t24WthrPA = 9;    // atmospheric pressure, mb
-const int t24WthrTL7 = 10;  // 7-day average temperature with lag, F
-const int t24WthrTL14 = 11; // 14-day average temperature with lag, F
-const int t24WthrTL31 = 12; // 31-day average temperature with lag, F
-//-----------------------------------------------------------------------------
-class XT24WTHR : public XMODULE
-{
-    typedef int T24InitWthr( int CZ, char* VerMsg, char* ErrMsg);
-    typedef int T24InitWthrResearch( char* FILENAME, char* VerMsg, char* ErrMsg);
-    typedef float T24HrWthr( int Month, int Day, int Hour, int DataField, char* ErrMsg);
-    typedef int T24WthrLocation( char* LocData, char* VerMsg, char* ErrMsg);
-
-private:
-	// proc pointers
-	T24InitWthr* xw_pT24InitWthr;
-	T24InitWthrResearch* xw_pT24InitWthrResearch;
-	T24HrWthr* xw_pT24HrWthr;
-	T24WthrLocation* xw_pT24WthrLocation;
-	char xw_errMsg[ 256];		// error message buffer used by several functions
-	CString xw_verMsg;			// DLL version message (returned by T24InitWthr)
-								//  e.g. "T24WTHR.CLL ver 2013.W0.07 Douglas Herr/CEC"
-
-public:
-	XT24WTHR( const char* moduleName);
-	~XT24WTHR();
-	virtual void xm_ClearPtrs();
-	RC xw_Setup();
-	RC xw_Shutdown();
-	RC xw_InitWthr( int CZ, int erOp=WRN);
-	CString xw_GetVerMsg() const { return xw_verMsg; }
-	CString xw_GetErrMsg() const { return xw_errMsg; }
-	RC xw_GetHr( int erOp, int iMon, int iDom, int iHr, WFDATA* pwd);
-};		// class XT24WTHR
-//=============================================================================
-static XT24WTHR T24Wthr( "T24WTHR.DLL");		// XT24WTHR object
-//=============================================================================
-XT24WTHR::XT24WTHR( const char* moduleName)		// c'tor
-	: XMODULE( moduleName)
-{
-	xm_ClearPtrs();
-	memset( xw_errMsg, 0, sizeof( xw_errMsg));
-	xw_verMsg.Empty();
-}
-//-----------------------------------------------------------------------------
-XT24WTHR::~XT24WTHR()
-{
-}	// XT24WTHR::~XT24WTHR
-//-----------------------------------------------------------------------------
-/*virtual*/ void XT24WTHR::xm_ClearPtrs()
-{	xw_pT24InitWthr = NULL;
-	xw_pT24InitWthrResearch = NULL;
-	xw_pT24HrWthr = NULL;
-	xw_pT24WthrLocation = NULL;
-}		// XT24WTHR::xm_ClearPtrs
-//-----------------------------------------------------------------------------
-RC XT24WTHR::xw_Setup()
-{
-	if (xm_LoadLibrary() == RCOK)
-	{
-		xw_pT24InitWthr = (T24InitWthr*)xm_GetProcAddress( "T24InitWthr");
-		xw_pT24InitWthrResearch = (T24InitWthrResearch*)xm_GetProcAddress( "T24InitWthrResearch");
-		xw_pT24HrWthr = (T24HrWthr*)xm_GetProcAddress( "T24HrWthr");
-#if 0
-		xw_pT24WthrLocation = (T24WthrLocation*)xm_GetProcAddress( "T24WthrLocation");
-#endif
-	}
-	return xm_RC;
-}		// XT24WTHR::xw_Setup
-//-----------------------------------------------------------------------------
-RC XT24WTHR::xw_InitWthr(
-	int CZ,		// climate zone, 1-16
-	int erOp /*=WRN*/)	// msg control
-// return RCOK on success
-//   else RCBAD (msg'd per erOp, message in xw_errMsg)
-{	if (!xw_pT24InitWthr)
-		return RCBAD;
-	char verMsg[ 256];
-	int ret = (*xw_pT24InitWthr)( CZ, verMsg, xw_errMsg);
-	int rc;
-	if (ret)
-	{	xw_verMsg.Empty();
-		rc = err( erOp, "T24WTHR.DLL error: %s", xw_errMsg);
-	}
-	else
-	{	xw_verMsg = verMsg;
-		rc = RCOK;
-	}
-	return rc;
-}		// XT24WTHR::xw_InitWthr
-//-----------------------------------------------------------------------------
-RC XT24WTHR::xw_Shutdown()		// finish use of T24WTHR DLL
-{
-	RC rc = RCOK;
-	if (xm_hModule != NULL)
-	{	// no DLL shutdown call
-		rc = xm_Shutdown();
-	}
-	return rc;
-}		// XT24WTHR::xw_Shutdown
-//-----------------------------------------------------------------------------
-RC XT24WTHR::xw_GetHr(
-	int erOp,		// msg control: WRN, IGN, etc.
-					// option bit WF_DSNDAY: causes error message here.
-	int iMon,		// month (1-12)
-	int iDom,		// day of month (1-31)
-	int iHr,		// hour (1-24)
-	WFDATA* pwd )	// weather data structure to receive hourly data.
-{
-	if (!xw_pT24HrWthr)
-		return RCBAD;
-
-#if 0
-    wd_DNI = wd_bmrad = 0.f;
-    wd_DHI = wd_dfrad = 0.f;
-    wd_db	 = 0.f;
-    wd_wb = 0.f;
-    wd_wndDir = 0.f;
-    wd_wndSpd = 0.f;
-	wd_glrad = 0.f;
-	wd_cldCvr = 0.f;
-	wd_tSky = 0.f;
-	wd_tGrnd = 0.f;
-	wd_tMains = 0.f;
-	wd_taDp = 0.f;
-	wd_taDbPvMax = 0.f;
-	wd_taDbAvg = 0.f;
-	wd_taDbAvg01 = 0.f;
-	wd_taDbAvg07 = 0.f;
-	wd_taDbAvg14 = 0.f;
-	wd_taDbAvg31 = 0.f;
-#endif
-
-struct WFDATAMAP
-{	int iFld;			// T24WTHR.DLL field index
-	float WFDATA::*pVM;	// where to store value (member pointer)
-};
-static WFDATAMAP WFDATAMap[] =
-{	t24WthrDB,   &WFDATA::wd_db,
-	t24WthrWB,   &WFDATA::wd_wb,
-	t24WthrDP,   &WFDATA::wd_taDp,
-	t24WthrTG,   &WFDATA::wd_tGrnd,
-	t24WthrTS,   &WFDATA::wd_tSky,
-	t24WthrBR,   &WFDATA::wd_bmrad,
-	t24WthrDR,   &WFDATA::wd_dfrad,
-	t24WthrWS,   &WFDATA::wd_wndSpd,
-	// t24WthrPA,   &WFDATA::wd_?
-	t24WthrTL7,  &WFDATA::wd_taDbAvg07,
-	t24WthrTL14, &WFDATA::wd_taDbAvg14,
-	t24WthrTL31, &WFDATA::wd_taDbAvg31,
-				// wd_glrad
-				// wd_cldCvr
-				// wd_taDbPvMax
-				// wd_wndDir
-   -1
-};
-
-	RC rc = RCOK;
-	for (int i=0; ; i++)
-	{	WFDATAMAP& wfdm = WFDATAMap[ i];
-		if (wfdm.iFld < 0)
-			break;
-		float v = (*xw_pT24HrWthr)( iMon, iDom, iHr, wfdm.iFld, xw_errMsg);
-		if (v > 99990.f)	// if error
-			rc |= err( erOp, "Error reading %d", wfdm.iFld);		// TODO
-		else
-			pwd->*wfdm.pVM = v;
-	}
-	return rc;
-
-}	// XT24WTHR::xw_GetHr
-#endif	// WTHR_T24DLL
 //=============================================================================
 void WDHR::wd_Init(	// initialize all members
 	int options/*=0*/)		// options
@@ -422,10 +235,12 @@ friend class WDYEAR;
 friend WDHR;
 friend WFILE;
 	float wdd_taDbPvMax;	// previous day max air dry bulb temp, F
+#if !defined( USEWX)
 	float wdd_taDbMin;		// current day min air dry bulb temp, F
 	float wdd_taDbAvg;		// current day mean air dry bulb temp, F
 							//   used re calc of wdd_taDbAvgXX, wd_taDbAvg01,
 	float wdd_taDbMax;		// current day max air dry bulb temp, F
+#endif
 	float wdd_tGrnd;		// ground temp, F.  Calculated with Kusuda model
 							//   depth=10 ft, soilDiff = per user input
 	float wdd_tMains;		// cold water mains temp, F.  calc'd per
@@ -584,13 +399,17 @@ public:
 	WDDAY& wdy_Day( int jDay)		// 1-based day-of-year (<1 OK)
 	{	return wdy_day[ wdy_DayIdx( jDay)];
 	}
+	WFSTATSDAY& wdy_StatsDay(int jDay) const
+	{	return WfStatsDay[wdy_DayIdx(jDay)+1];
+	}
 	WDSUBHR& wdy_Subhr(int iHrST, int iSh=0)
 	{	return wdy_shDay[iHrST * wdy_nSubhr + iSh];
 	}
 	RC wdy_Fill( WFILE* pWF, int erOp=WRN);
 	RC wdy_TransferHr( int jDay, int iHr, WDHR* pwd, int erOp);
-	void wdy_Stats( int jDay, double& taDbMin, double& taDbAvg, double& taDbMax,
-		double& tdvElecAvg, double& tdvElecPk, UCH tdvElecHrRank[ 24]) const;
+	void wdy_Stats(int jDay, double& taDbMin, double& taDbAvg, double& taDbMax,
+		double& tdvElecAvg, double& tdvElecPk, UCH tdvElecHrRank[24],
+		float& GHITot, float& DHITot, float& DNITot) const;
 	float wdy_TaDbAvg( int jDay1, int jDay2);
 #if 0
 	RC wdy_PrepareWDSLRDAY( WDSLRDAY& wdsd, int dayTy, int jDay);
@@ -631,15 +450,35 @@ void WDYEAR::wdy_Init(
 
 }		// WDYEAR::wdy_Init
 //-----------------------------------------------------------------------------
+RC WFILE::wf_InitStatRATs() const
+{
+	RC rc = RCOK;
+
+	WfStatsDay.al( 366);
+	WFSTATSDAY* pWFS = nullptr;
+	for (int iDay = 1; iDay<=366; iDay++)
+	{
+		WfStatsDay.add(&pWFS, iDay);
+
+	}
+
+	return rc;
+
+}	// WFILE::wf_InitStatRATs
+//-----------------------------------------------------------------------------
 RC WFILE::wf_FillWDYEAR(	// read and unpack weather data for entire file
 	int erOp /*=WRN*/)
 // Note: no DST awareness / adjustment
 // returns RCOK on success
 {
 	RC rc = RCOK;
+
+	rc |= wf_InitStatRATs();
+
 	if (!wf_pWDY)
 		wf_pWDY = new WDYEAR;
-	rc = wf_pWDY->wdy_Fill( this, erOp);
+
+	rc |= wf_pWDY->wdy_Fill( this, erOp);
 
 	if (IsMissing( taDbAvgYr))
 		taDbAvgYr = wf_pWDY->wdy_taDbAvg[ 0];
@@ -651,6 +490,11 @@ RC WFILE::wf_FillWDYEAR(	// read and unpack weather data for entire file
 	int jD;
 	for (jD=1; jD <= wf_pWDY->wdy_YrDays(); jD++)
 		wf_pWDY->wdy_Day( jD).wdd_Set24( &wf_pWDY->wdy_Hr( jD, 0), options);
+#if defined( USEWX)
+	for (jD=1; jD <= wf_pWDY->wdy_YrDays(); jD++)
+		wf_pWDY->wdy_StatsDay( jD).wx_Set24( &wf_pWDY->wdy_Hr( jD, 0), options);
+#endif
+
 #if 0 && defined( _DEBUG)
 	if (wFileFormat == CSW)
 	{	// CSW data should match calculated
@@ -706,20 +550,45 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 			}
 			if (rc)
 				break;
-			double taDbMin, taDbAvg, taDbMax, tdvElecAvg, tdvElecPk;
+
 			WDDAY& wdd = wdy_Day( jDay);
-			wdy_Stats( jDay, taDbMin, taDbAvg, taDbMax, tdvElecAvg, tdvElecPk, 
-				wdd.wdd_tdvElecHrSTRank);
+			WDDAY& wdd1 = wdy_Day( jDay+1);
+			WFSTATSDAY& wdx = wdy_StatsDay(jDay);
+			WFSTATSDAY& wdx1 = wdy_StatsDay(jDay+1);
+
+			double taDbMin, taDbAvg, taDbMax, tdvElecAvg, tdvElecPk;
+			wdy_Stats(jDay, taDbMin, taDbAvg, taDbMax, tdvElecAvg, tdvElecPk,
+				wdd.wdd_tdvElecHrSTRank,
+				wdx.d.wx_GHI, wdx.d.wx_DHI, wdx.d.wx_DNI);
 
 			// current day values
 			// next day's previous day values = current day
-			WDDAY& wdd1 = wdy_Day( jDay+1);
+#if !defined( USEWX)
 			wdd.wdd_taDbMin = taDbMin;
-			wdd.wdd_taDbAvg = wdd1.wdd_taDbAvg01 = taDbAvg;
-			wdd.wdd_taDbMax = wdd1.wdd_taDbPvMax = taDbMax;
+			wdd.wdd_taDbAvg = taDbAvg;
+			wdd.wdd_taDbMax = taDbMax;
+#endif
+
+			wdd1.wdd_taDbAvg01 = taDbAvg;
+			wdd1.wdd_taDbPvMax = taDbMax;
+
+
 			wdd.wdd_tdvElecPk = wdd1.wdd_tdvElecPvPk = tdvElecPk;
 			wdd.wdd_tdvElecAvg = wdd1.wdd_tdvElecAvg01 = tdvElecAvg;
 			wdy_taDbAvg[ iMon] += taDbAvg;		// re monthly average
+
+		
+			wdx.d.wx_taDbMin = taDbMin;
+			wdx.d.wx_taDbAvg = taDbAvg;
+			wdx.d.wx_taDbMax = taDbMax;
+
+#if 0
+			wdx.wx_tdvElecPk = wdd1.wdd_tdvElecPvPk = tdvElecPk;
+			wdx.wx_tdvElecAvg = wdd1.wdd_tdvElecAvg01 = tdvElecAvg;
+			wdy_taDbAvg[ iMon] += taDbAvg;		// re monthly average
+#endif
+
+
 		}
 		wdy_taDbAvg[ 0] += wdy_taDbAvg[ iMon];		// re year avg
 		wdy_taDbAvg[ iMon] /= monLen;
@@ -790,15 +659,19 @@ void WDYEAR::wdy_Stats(			// statistics for day
 	double& taDbMax,		// returned: max dry-bulb, F
 	double& tdvElecAvg,		// returned: mean TDV elec
 	double& tdvElecPk,			// returned: max TDV elec
-	UCH tdvElecHrSTRank[ 24]) const	// returned: hour ranking of tdvElec
+	UCH tdvElecHrSTRank[ 24],	// returned: hour ranking of tdvElec
 									//   [ 0] = 1-based hour of peak TDV
-									//   [ 1] = ditto, next highest
-// returns min, mean, and max dry-bulb for day
+									//   [ 1] = ditto, next highe
+	float& GHITot,
+	float& DHITot,
+	float& DNITot) const
+// returns statistics for day
 {
 	VHR tdvElecHr[ 24];		// day's tdvElec for hour-rank sort
 	taDbMin = 9999.;
 	taDbMax = tdvElecPk = -9999.;
 	taDbAvg = tdvElecAvg = 0.;
+	GHITot = DHITot = DNITot = 0.f;
 	int iHr;
 	for (iHr=0; iHr<24; iHr++)
 	{	const WDHR& wd = wdy_Hr( jDay, iHr);
@@ -814,6 +687,9 @@ void WDYEAR::wdy_Stats(			// statistics for day
 			tdvElecHr[ iHr].v = wd.wd_tdvElec;	// tdvElec for rank-hour sort
 			tdvElecHr[ iHr].iHr = iHr;			// corresponding hour
 		}
+		GHITot += wd.wd_glrad;
+		DHITot += wd.wd_DHI;
+		DNITot += wd.wd_DNI;
 	}
 	taDbAvg /= 24.;
 	if (!ISUNSET( tdvElecAvg))
@@ -833,7 +709,11 @@ float WDYEAR::wdy_TaDbAvg(			// multi-day average dry bulb
 {
 	double taDbSum = 0;
 	for (int jDay=jDay1; jDay<=jDay2; jDay++)
+#if defined( USEWX)
+		taDbSum += wdy_StatsDay( jDay).d.wx_taDbAvg;
+#else
 		taDbSum += wdy_Day( jDay).wdd_taDbAvg;
+#endif
 	return float( taDbSum / (jDay2 - jDay1 + 1));
 }		// WDYEAR::wdy_TaDbAvg
 //-----------------------------------------------------------------------------
@@ -1301,12 +1181,15 @@ RC WFILE::wf_GetSubhrRad(		// retrieve subhr solar values
 	radDiffAv = wdsh.wdsh_rad[scDIFF];
 	return rc;
 }	// WFILE::wf_GetSubhrRad
+
 //=============================================================================
 void WDDAY::wdd_Init()
-{	
+{
+#if !defined( USEWX)
 	wdd_taDbMin = 0.f;
 	wdd_taDbAvg = 0.f;
 	wdd_taDbMax = 0.f;
+#endif
 	
 	wdd_taDbPvMax = 0.f;
 	wdd_taDbAvg01 = 0.f;
@@ -1327,6 +1210,7 @@ void WDDAY::wdd_Init()
 
 }	// WDDAY::wdd_Init
 //-----------------------------------------------------------------------------
+#if 0
 int WDDAY::wdd_Compare(		// check that hour values match daily
 	const WDHR* wdHr) const
 {
@@ -1348,6 +1232,7 @@ int WDDAY::wdd_Compare(		// check that hour values match daily
 	}
 	return diffCount;
 }		// WDDAY::wdd_Compare
+#endif
 //-----------------------------------------------------------------------------
 void WDDAY::wdd_Set24(		// set hourly values from daily
 	WDHR* wdHr,					// 1st hour data for day
@@ -1370,9 +1255,11 @@ void WDHR::wd_SetDayValues(		// set daily members for this hour
 	const WDDAY& wdd)			// source
 // note: no DST awareness / adjustment
 {
+#if !defined( USEWX)
 	wd_taDbMin     = wdd.wdd_taDbMin;
 	wd_taDbAvg     = wdd.wdd_taDbAvg;
 	wd_taDbMax     = wdd.wdd_taDbMax;
+#endif
 	wd_taDbPvMax   = wdd.wdd_taDbPvMax;
 	wd_taDbAvg01   = wdd.wdd_taDbAvg01;
 	wd_taDbAvg07   = wdd.wdd_taDbAvg07;
@@ -1393,9 +1280,11 @@ void WDHR::wd_SetDayValuesIfMissing(		// set missing daily members
 // note: no DST awareness / adjustment
 {
 #define SETIF( d, s) if (IsMissing( d)) d = s;
+#if !defined( USEWX)
 	SETIF( wd_taDbMin,		wdd.wdd_taDbMin)
 	SETIF( wd_taDbAvg,		wdd.wdd_taDbAvg)
 	SETIF( wd_taDbMax,		wdd.wdd_taDbMax)
+#endif
 	SETIF( wd_taDbPvMax,	wdd.wdd_taDbPvMax)
 	SETIF( wd_taDbAvg01,	wdd.wdd_taDbAvg01)
 	SETIF( wd_taDbAvg07,	wdd.wdd_taDbAvg07)
@@ -1410,6 +1299,59 @@ void WDHR::wd_SetDayValuesIfMissing(		// set missing daily members
 	wd_SetTdvElecHrRank( wdd);
 #undef SETIF
 }	// WDHR::wd_SetDayValuesIfMissing
+
+//-----------------------------------------------------------------------------
+void WDHR::wd_SetDayValues(		// set daily members for this hour
+	const WFSTATSDAY& wxd)			// source
+// note: no DST awareness / adjustment
+{
+	// const WFSTATSDAY& wxd = WfStatsDay(jDay);
+
+	wd_taDbMin     = wxd.d.wx_taDbMin;
+	wd_taDbAvg     = wxd.d.wx_taDbAvg;
+	wd_taDbMax     = wxd.d.wx_taDbMax;
+#if 0
+	wd_taDbPvMax   = wxd.wx_taDbPvMax;
+	wd_taDbAvg01   = wxd.wx_taDbAvg01;
+	wd_taDbAvg07   = wxd.wx_taDbAvg07;
+	wd_taDbAvg14   = wxd.wx_taDbAvg14;
+	wd_taDbAvg31   = wxd.wx_taDbAvg31;
+	wd_tGrnd       = wxd.wx_tGrnd;
+	wd_tMains      = wxd.wx_tMains;
+	wd_tdvElecPk   = wxd.wx_tdvElecPk;
+	wd_tdvElecPkRank = wxd.wx_tdvElecPkRank;
+	wd_tdvElecAvg  = wxd.wx_tdvElecAvg;
+	wd_tdvElecPvPk = wxd.wx_tdvElecPvPk;
+	wd_tdvElecAvg01= wxd.wx_tdvElecAvg01;
+	wd_SetTdvElecHrRank( wdd);
+#endif
+}	// WDHR::wd_SetDayValues
+//-----------------------------------------------------------------------------
+void WDHR::wd_SetDayValuesIfMissing(		// set missing daily members
+	const WFSTATSDAY& wxd)			// source
+// note: no DST awareness / adjustment
+{
+#define SETIF( d, s) if (IsMissing( d)) d = s;
+	SETIF( wd_taDbMin,		wxd.d.wx_taDbMin)
+	SETIF( wd_taDbAvg,		wxd.d.wx_taDbAvg)
+	SETIF( wd_taDbMax,		wxd.d.wx_taDbMax)
+#if 0
+	SETIF( wd_taDbPvMax,	wxd.wx_taDbPvMax)
+	SETIF( wd_taDbAvg01,	wxd.wx_taDbAvg01)
+	SETIF( wd_taDbAvg07,	wxd.wx_taDbAvg07)
+	SETIF( wd_taDbAvg14,	wxd.wx_taDbAvg14)
+	SETIF( wd_taDbAvg31,	wxd.wx_taDbAvg31)
+	SETIF( wd_tGrnd,		wxd.wx_tGrnd)
+	SETIF( wd_tMains,		wxd.wx_tMains)
+	SETIF( wd_tdvElecPk,	wxd.wx_tdvElecPk)
+	SETIF( wd_tdvElecAvg,	wxd.wx_tdvElecAvg)
+	SETIF( wd_tdvElecPvPk,	wxd.wx_tdvElecPvPk)
+	SETIF( wd_tdvElecAvg01,	wxd.wx_tdvElecAvg01)
+	wd_SetTdvElecHrRank( wdd);
+#endif
+#undef SETIF
+}	// WDHR::wd_SetDayValuesIfMissing
+
 //----------------------------------------------------------------------------
 void WDHR::wd_SetTdvElecHrRank( const WDDAY& wdd)
 {	wd_tdvElecHrRank[ 0] = 0;	// unused
@@ -1432,6 +1374,28 @@ bool WDHR::wd_HasTdvData() const	// true iff TDV data is present
 	return !ISUNSET( wd_tdvElec);
 
 }	// WDHR::wd_HasTdvData
+//============================================================================
+
+//////////////////////////////////////////////////////////////////////////////
+// class WFSTATSDAY: probable daily weather statistics
+//////////////////////////////////////////////////////////////////////////////
+void WFSTATSDAY::wx_Set24(
+	WDHR* wdHr,					// 1st hour data for day
+	int options /*=0*/)	const	// option bits
+								//   1: set iff destination is "missing"
+// WHY: values that change daily are copied to all hours of day.
+//      Facilitates probing
+{
+	if (!options)
+	{	for (int iHr=0; iHr<24; iHr++)
+			wdHr[ iHr].wd_SetDayValues( *this);
+	}
+	else
+	{	for (int iHr=0; iHr<24; iHr++)
+			wdHr[ iHr].wd_SetDayValuesIfMissing( *this);
+	}
+}		// WFSTATSDAY::wx_Set24
+
 //============================================================================
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1809,9 +1773,7 @@ RC WFILE::wf_Open(	// Open existing weather file and initialize WFILE structure
 // Try to open file in various formats, 1st success determines type
 	RC rc = RCBAD;			// init to "cannot open file" to issue message on fallthru if NULL ptr passed
 
-	rc = wf_T24DLLOpen( wfName, erOp);	// try as T24DLL
-	if (rc == RCBAD2)
-		rc = wf_PackedOpen( wfName, erOp, wrAccess, 	// attempt open as BSGS or ET or other future packed types
+	rc = wf_PackedOpen( wfName, erOp, wrAccess, 	// attempt open as BSGS or ET or other future packed types
 						hdr, clrnss, turbid, atmois );
 	if (rc == RCBAD2)						// if wrong file type (but file could be opened)
 		rc = wf_CSWOpen( wfName, erOp);		// retry as CSW
@@ -1867,9 +1829,6 @@ RC WFILE::wf_Close( 		// Close weather file if open
 	}
 	if (yacTDV)
 		rc |= yacTDV->close( WRN);
-#if defined( WTHR_T24DLL)
-	rc |= T24Wthr.xw_Shutdown();
-#endif
 	return rc;
 }				// WFILE::wf_Close
 //-----------------------------------------------------------------------------
@@ -2227,7 +2186,6 @@ RC WFILE::wf_Read(	// read and unpack weather data for an hour
 			rc |=
 			  wFileFormat == CSW ? wf_CSWRead(pwd, jDay, iHr, erOp)
 			: wFileFormat == EPW ? wf_EPWRead(pwd, jDay, iHr, erOp)
-			: wFileFormat == T24DLL ? wf_T24DLLRead(pwd, jDay, iHr, erOp)
 			: RCBAD;
 
 		// read additional TDV data if requested and available
@@ -2590,68 +2548,6 @@ RC WFILE::wf_TDVReadIf(	// read TDV data
 	return rc;
 }			// WFILE::wf_TDVReadIf
 //-----------------------------------------------------------------------------
-RC WFILE::wf_T24DLLOpen(		// set up access to T24WTHR.DLL hourly data
-	const char* wfName,	// file "name" -- if not in form "$CZxx", return RCBAD2
-	[[maybe_unused]] int erOp)			// msg control
-
-// returns: RCOK:   successful, *pWf initialized from file header.
-//          RCBAD:  could not open file (no message)
-//          RCBAD2: type not known here (no message)
-//                    or has bad header (possible specific message issued here).
-//          No message issued for file not found or wrong type, so caller may silently try a different open function.
-//          Caller issues "not found" or "bad header" error message on bad return if no other fcn works. */
-
-{
-	RC rc = RCBAD;
-	if (!wfName)
-		rc = RCBAD;		// no name, always bad
-#if defined( WTHR_T24DLL)
-	CString czCode( wfName);
-	czCode.TrimLeft().TrimRight();
-	if (czCode.GetLength() < 4 || czCode.Left( 3).CompareNoCase( "$CZ") )
-		rc = RCBAD2;		// cannot be valid $CZxx, say wrong file type
-	else
-	{	int CZ;
-		if (strDecode( czCode.Mid( 3), CZ) != 1)
-			rc = err( erOp,	"Invalid climate zone code '%s'", czCode);
-		else
-			rc = T24Wthr.xw_Setup();
-		if (rc == RCOK)
-		{	// note: T24WTHR.DLL checks 1 <= CZ <= 16
-			rc = T24Wthr.xw_InitWthr( CZ, IGN);
-			if (rc != RCOK)
-				err( erOp, "Failed to find weather data for '%s':\n%s",
-					czCode, T24Wthr.xw_GetErrMsg());
-		}
-		if (rc == RCOK)
-			// header info?
-			wFileFormat = T24DLL;		// success
-	}
-#else
-	else
-		rc = RCBAD2;		// type unknown here
-#endif
-	return rc;
-}	// WFILE::wf_T24DLLOpen
-//--------------------------------------------------------------------------
-RC WFILE::wf_T24DLLRead(	// read and unpack data from CSW
-	[[maybe_unused]] WDHR* pwd,	// weather data structure to receive hourly data.
-	[[maybe_unused]] int jDay,		// Julian day for which data is expected (1 - 365)
-	[[maybe_unused]] int iHr,			// Hour for which data is expected (0 - 23)
-	[[maybe_unused]] int erOp)		// msg control: WRN, IGN, etc.
-					// option bit WF_DSNDAY: causes error message here.
-{
-#if defined( WTHR_T24DLL)
-	IDATE iDate;
-	SI yr = -1;	// assume T24WTHR.DLL years are always 365 days
-	tddyi( jDay, yr, &iDate);
-
-	return T24Wthr.xw_GetHr( erOp, iDate.month, iDate.mday, iHr+1, pwd);
-#else
-	return RCBAD;
-#endif
-}	// WFILE::wf_T24DLLRead
-//------------------------------------------------------------------------------
 RC WFILE::wf_EPWOpen(	// open EnergyPlus weather file
 	const char* wfName,	// pathName of file to open
 	int erOp)
