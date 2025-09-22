@@ -58,6 +58,8 @@ Type: string
 
 Text used for field name in export header.
 
+Note: Due to quirk (or bug?) in CSE parsing, setting *colHead* equal to "sum", "all", or "all_but" (case-insensitive) will trigger an error message along the lines of "'SUM' cannot be used here."  Adding a space avoids this issue.  For example, colHead = " Sum" is accepted.
+
 {{
   member_table({
     "units": "",

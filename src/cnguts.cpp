@@ -2160,14 +2160,22 @@ void LOCAL accumulatorsAccum(
 		ACCUMULATOR_IVL* pSrc = pDst + 1;		// source: next shorter interval
 
 		if (ivl == C_IVLCH_H)
-		{
-			pSrc->acmMin = pSrc->acmMax = pSrc->acmMean = pSrc->acmTotal = pACM->acmValue;
-			pSrc->acmCount = 1;
+		{	// construct temporary subhour ACCUMULATOR_IVL
+			ACCUMULATOR_IVL tempSubhr;
+			tempSubhr.acm_PopulateSubhr(pACM->acmValue);
+			pDst->acm_Accum(&tempSubhr, firstFlg, lastFlg);
+#if 0 && defined( _DEBUG)
+			// re lagged value investigation
+			//   print value actually used
+			if (strMatch(pACM->Name(), "AccumQSrf") && Top.jDay == 67)
+				printf("\nAccum %d %d %d %0.2f", Top.jDay, Top.iHr, Top.iSubhr, pACM->acmValue);
+#endif
 		}
-		
-		pDst->acm_Accum( pSrc, firstFlg, lastFlg);
-
-
+		else
+		{
+			const ACCUMULATOR_IVL* pSrc = pDst + 1;		// source: next shorter interval
+			pDst->acm_Accum(pSrc, firstFlg, lastFlg);
+		}
 	}
 
 }	// accumulatorsAccum
@@ -2180,6 +2188,28 @@ RC ACCUMULATOR::acm_CkF(
 
 }	// ACCUMULATOR::acm_CkF
 //-----------------------------------------------------------------------------
+void ACCUMULATOR_IVL::acm_Copy(			// copy to this
+	const ACCUMULATOR_IVL* pSrc)		// source
+{
+	memcpy(this, pSrc, sizeof(ACCUMULATOR_IVL));
+
+}	// ACCUMULATOR_IVL::acm_Copy
+//-----------------------------------------------------------------------------
+void ACCUMULATOR_IVL::acm_PopulateSubhr(	// make full subhr object
+	float value)
+{
+	acmMin = acmMax = acmMean = value;
+	acmSum = double(value);		// acmSum uses double
+								//   (truncation error insurance)
+	acmMinDayOfYear = acmMaxDayOfYear = Top.jDay;
+	acmMinDayOfYearST = acmMaxDayOfYearST = Top.jDayST;
+	acmMinHour = acmMaxHour = Top.iHr;
+	acmMinHourST = acmMaxHourST = Top.iHrST;
+	acmMinSubhour = acmMaxSubhour = Top.iSubhr;
+	acmCount = 1;
+
+}	// ACCUMULATOR_IVL::acm_PopulateSubhr
+//-----------------------------------------------------------------------------
 void ACCUMULATOR_IVL::acm_Accum(			// accumulate to this
 	const ACCUMULATOR_IVL* pSrc,		// source
 	bool firstFlg,				// true iff first accum into this (beg of ivl)
@@ -2190,22 +2220,34 @@ void ACCUMULATOR_IVL::acm_Accum(			// accumulate to this
 	//   2: sum only (do not average)
 {
 	if (firstFlg)
-	{
-		memcpy(this, pSrc, sizeof(ACCUMULATOR_IVL));
-	
-	}
+		acm_Copy( pSrc);
 	else
 	{
-		acmMin = std::min(acmMin, pSrc->acmMin);
-		acmMax = std::max(acmMax, pSrc->acmMax);
-		acmTotal += pSrc->acmTotal;
+		if (pSrc->acmMin < acmMin)
+		{
+			acmMin = pSrc->acmMin;
+			acmMinDayOfYear = pSrc->acmMinDayOfYear;
+			acmMinDayOfYearST = pSrc->acmMinDayOfYearST;
+			acmMinHour = pSrc->acmMinHour;
+			acmMinHourST = pSrc->acmMinHourST;
+			acmMinSubhour = pSrc->acmMinSubhour;
+		}
+		if (pSrc->acmMax > acmMax)
+		{
+			acmMax = pSrc->acmMax;
+			acmMaxDayOfYear = pSrc->acmMaxDayOfYear;
+			acmMaxDayOfYearST = pSrc->acmMaxDayOfYearST;
+			acmMaxHour = pSrc->acmMaxHour;
+			acmMaxHourST = pSrc->acmMaxHourST;
+			acmMaxSubhour = pSrc->acmMaxSubhour;
+		}
+		acmSum += pSrc->acmSum;
 		acmCount += pSrc->acmCount;
 	}
 	if (lastFlg)
-		acmMean = acmTotal / acmCount;
+		acmMean = acmSum / acmCount;
 
 }	// ACCUMULATOR_IVL::amc_Accum
-
 //=============================================================================
 
 
