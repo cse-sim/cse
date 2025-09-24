@@ -763,7 +763,7 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 		SubMeterSeq.smsq_AccumHour( MTR::ACCUMOPT::BATTERYONLY);
 	}
 
-	doIvlFinalize();	// finalize meters etc
+	doIvlFinalize();	// finalize meters and ACCUMULATORs
 
 	CSE_EF( doIvlExprs( EVPSTIVL))		// do all post load management expressions for this interval
 
@@ -1639,8 +1639,6 @@ LOCAL void FC doIvlAccum()
 		pLM->lmt_Accum(C_IVLCH_H, Top.isBegHour, Top.isEndHour);
 	}
 
-	accumulatorsAccum( C_IVLCH_H, Top.isBegHour, Top.isEndHour);		// ACCUMULATORs subhour->hour
-
 	if (Top.ivl > C_IVLCH_H)						// if subhour call, done
 		return;
 
@@ -1789,8 +1787,6 @@ LOCAL void FC doIvlAccum()
 
 	mtrsAccum( C_IVLCH_D, Top.isBegDay, Top.isEndDay);  	// Meters: finish hour (including submeters), sum to day
 
-	accumulatorsAccum( C_IVLCH_D, Top.isBegDay, Top.isEndDay);		// ACCUMULATORs hour->day
-
 	if (Top.ivl > C_IVLCH_D)			// if hour call, done
 		return;
 
@@ -1806,8 +1802,6 @@ LOCAL void FC doIvlAccum()
 	RLUP( AhresB, ahres)							// loop air handers sim results
 		accumAhr( &ahres->D, &ahres->M, Top.isBegMonth, Top.isEndMonth);	// accumulate day ah results to month
 	mtrsAccum( C_IVLCH_M, Top.isBegMonth, Top.isEndMonth);					// accum METERs, DHWMETERs, AFMETERS, LOADMTRs: day to month
-
-	accumulatorsAccum( C_IVLCH_M, Top.isBegMonth, Top.isEndMonth);		// ACCUMULATORs day->month
 
 #ifdef BINRES
 	if (brf)									// if outputting binary results for this run
@@ -1852,8 +1846,6 @@ LOCAL void FC doIvlAccum()
 		pWSR->Y.wsr_Accum(&pWSR->M, Top.isFirstMon, Top.isLastDay);
 	mtrsAccum( C_IVLCH_Y, Top.isFirstMon, Top.isLastDay);					// accumulate metered energy use: month to year
 
-	accumulatorsAccum( C_IVLCH_Y, Top.isFirstMon, Top.isLastDay);		// ACCUMULATORs month->year
-
 #ifdef BINRES
 	if (brf)						// if outputting any binary results this run
 	{
@@ -1872,32 +1864,37 @@ LOCAL void FC doIvlAccum()
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC doIvlFinalize()
 
-// finalize meters (and ?) after load management (battery, ) stage at end of interval
+// finalize MTRs and ACCUMULATORs after load management (battery, ) stage at end of interval
 
 // uses: Top.ivl: interval subhour, hour, day, month, year.  Coinciding shorter intervals also done.
 
+// always accum during warmup / autosize re possible expression use and prior values
+
 {
-// always accum during warmup / autosize
-// re possible expression use and prior values
+	accumulatorsAccum(C_IVLCH_H, Top.isBegHour, Top.isEndHour);		// ACCUMULATORs subhour->hour
 
 	if (Top.ivl > C_IVLCH_H)						// if subhour call, done
 		return;
 
-	mtrsFinalize( C_IVLCH_D, Top.isBegDay);  	// sum energy uses to hour's total, and accumulate hour meter use to day. local.
+	mtrsFinalize( C_IVLCH_D, Top.isBegDay);  	// finalize MTRs hour's totals, then hour->day
+
+	accumulatorsAccum(C_IVLCH_D, Top.isBegDay, Top.isEndDay);	// ACCUMULATORs hour->day
 
 	if (Top.ivl > C_IVLCH_D)					// if hour call, done
 		return;
 
-	mtrsFinalize( C_IVLCH_M, Top.isBegMonth);	// accum metered energy: day to month. local,below.
+	mtrsFinalize( C_IVLCH_M, Top.isBegMonth);	// MTRs: day->month
+
+	accumulatorsAccum(C_IVLCH_M, Top.isBegMonth, Top.isEndMonth);	// ACCUMULATORs day->month
 
 	if (Top.ivl > C_IVLCH_M)					// if day call, done.
 		return;
 
-	// accumulate month results to year
+	mtrsFinalize( C_IVLCH_Y, Top.isFirstMon);	// MTRs: month->year
 
-	mtrsFinalize( C_IVLCH_Y, Top.isFirstMon);	// accumulate metered energy use: month to year
+	accumulatorsAccum( C_IVLCH_Y, Top.isFirstMon, Top.isLastDay);	// ACCUMULATORs month->year
 
-	//if (Top.ivl > C_IVLCH_Y)					// if month call, done
+	// if (Top.ivl > C_IVLCH_Y)					// if month call, done
 	//   return;
 	// year (end of run) accumulation: nothing to do
 }							// doIvlFinalize

@@ -1754,7 +1754,7 @@ static CULT accumT[] = //------ ACCUMULATOR cmd RAT Entry table
 // id              cs     fn                 f        uc evf     ty     b       dfls    p2   ckf
 //---------------- -----  -----------------  -------  -- ------  -----  ------  ------  ---- ----
 CULT("*",          STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   accumStarCkf),
-CULT( "acmValue",  DAT,	ACCUMULATOR_ACMVALUE,0,		  0, VSUBHRLY|EVPSTIVL,
+CULT( "acmValue",  DAT,	ACCUMULATOR_ACMVALUE,0,		  0, VSUBHRLY|EVENDIVL,
 	                                                             TYFL, 0,       0.f,    N,   N),
 
 CULT("endACCUMULATOR", ENDER, 0,             0,       0, 0,      0,     0,      0.f,    N,   N),
