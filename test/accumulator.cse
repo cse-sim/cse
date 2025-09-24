@@ -292,7 +292,7 @@ ACMON( "M1", "Accum1")
 
 
 
-SHREP1( mar 7, mar 9)
+SHREP1( mar 6, mar 9)
 
 ACHOUR( "BH", "AccumBeam", mar 8)
 
@@ -300,14 +300,21 @@ ACDAY( "BD", "AccumBeam", mar 1, mar 31)
 
 ACMON("BM", "AccumBeam")
 
-ACHOUR( "QH", "AccumQSrf", mar 8)
+ACHOUR( "QH6", "AccumQSrf", mar 6)
+
+ACHOUR( "QH8", "AccumQSrf", mar 8)
 
 ACDAY( "QD", "AccumQSrf", mar 1, mar 31)
 
 ACMON("QM", "AccumQSrf")
 
-// accumulate subhour surface heat flow: tests for lag
-// ACCUMULATOR AccumQSrf acmValue = @xsurf[ "South Vertical Wall"].sbcO.qSrf
+ACHOUR( "ZH6", "AccumQsMech", mar 6)
+
+ACHOUR( "ZH8", "AccumQsMech", mar 8)
+
+ACDAY( "ZD", "AccumQsMech", mar 1, mar 31)
+
+ACMON("ZM", "AccumQSMech")
 
 
 
