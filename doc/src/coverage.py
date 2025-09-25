@@ -4,6 +4,7 @@ import re
 import subprocess
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
+from sys import exit
 
 SKIP_LINE_COUNT = 4
 
@@ -575,7 +576,8 @@ if __name__ == "__main__":
 
     coverage_checker = CoverageCheck(Path(args.path_to_cse), Path(args.path_to_input_data))
 
-    if coverage_checker.passed:
-        print("Passed!")
-    else:
+    if not coverage_checker.passed:
         print(coverage_checker.record_input_set_differences_to_string())
+        exit(1)
+
+    print("Documentation Coverage Complete!")

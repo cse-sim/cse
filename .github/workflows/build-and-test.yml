@@ -53,14 +53,16 @@ jobs:
       - name: Get number of CPU cores # Can replace when CMake is upgraded to 3.29
         uses: SimenB/github-actions-cpu-cores@v2
         id: cpu-cores
-      - name: Build CSE
-        uses: ./.github/actions/build-cse
+      # - name: Setup Mesa3D
+      #   uses: bigladder/github-actions/setup-mesa3d@main
+      #   with:
+      #     install-directory: msvc
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v5
         with:
-          arch: ${{ matrix.arch }}
-          config: ${{ matrix.config }}
-          compiler: ${{ matrix.compiler }}
-      - name: Build cse_tests.exe (unit tests)
-        run: cmake -DBUILD_ARCHITECTURE=${{ matrix.arch }} -DCONFIGURATION=${{ matrix.config }} -DTARGET_NAME=cse_tests -DBUILD_DIRECTORY=build -P cmake/build.cmake
+          python-version: "3.13"
+      - name: Build CSE
+        run: cmake -DBUILD_ARCHITECTURE=${{ matrix.arch }} -DCOMPILER_ID=${{ matrix.compiler }} -DCONFIGURATION=${{ matrix.config }} -DBUILD_DIRECTORY=build -DBUILD_DOCS_WITH_ALL -P cmake/configure-and-build.cmake
       - name: Upload executable artifact
         uses: actions/upload-artifact@v4
         with:
@@ -68,12 +70,6 @@ jobs:
           path: |
             build/CSE*
             build/cse*
-      - name: Build wcmp executable
-        run: cmake -DBUILD_ARCHITECTURE=${{ matrix.arch }} -DCONFIGURATION=${{ matrix.config }} -DTARGET_NAME=wcmp -DBUILD_DIRECTORY=build -P cmake/build.cmake
-      # - name: Setup Mesa3D
-      #   uses: bigladder/github-actions/setup-mesa3d@main
-      #   with:
-      #     install-directory: msvc
       - name: Test
         id: test
         run: ctest -C ${{ matrix.config }} -j ${{ steps.cpu-cores.outputs.count }} --output-on-failure -E shadetest  # CI can't do GPU calcs at this time (the steps above get us close, but throws an exception on destruction)
@@ -87,34 +83,12 @@ jobs:
           path: |
             test/*.rep
             test/*.REP
-      - name: Check test failure
-        if: steps.test.outcome == 'failure'
-        run: exit 1
-  build-doc:
-    strategy:
-      fail-fast: false
-    name: Build CSE documentation
-    needs: build-cse
-    if: ${{ always() }}
-    runs-on: windows-2022
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Configure CMake
-        run: cmake -P cmake/configure.cmake
-      - name: Download CSE artifact
-        uses: ./.github/actions/download-cse-artifact
-      - name: Build docs
-        uses: ./.github/actions/build-docs
-      - name: Run coverage check
-        run: rake coverage
-        working-directory: doc
-        env:
-          CSE_EXE_PATH: ..\\build\\CSE.exe
       - name: Upload documentation
         uses: actions/upload-artifact@v4
         with:
-          name: Documentation
+          name: Documentation-${{ matrix.os }}-${{ matrix.os_ver }}
           path: |
-                doc/output
-                !doc/output/.git
+            doc/build
+      - name: Check test failure
+        if: steps.test.outcome == 'failure'
+        run: exit 1
