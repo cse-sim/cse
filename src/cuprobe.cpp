@@ -718,7 +718,6 @@ w          break;
 #endif
 	case DTMASSLAYERP:
 	case DTMASSMODELP:
-	case DTYACAMP:
 	case DTXFILEP:
 		errorSub = "un-probe-able";
 		break;
@@ -730,7 +729,14 @@ w          break;
 		break;
 
 	default:
-		errorSub = "unrecognized";
+		if (dt & DTBCHOICB)
+		{
+			lop = PSRATLOD2;  		// basAnc record load 2 bytes: fetches SI/USI.
+			ty = TYSI;
+			sz = 2;
+		}
+		else
+			errorSub = "unrecognized";
 		break;
 
 	} // switch (dt)
