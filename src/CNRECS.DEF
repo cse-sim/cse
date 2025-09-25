@@ -5592,10 +5592,10 @@ RECORD ACCUMULATOR "accumulator" *RAT
     *s *e FLOAT acmValue;              // value being accumulated
                                         // generally set via probe 
 
-    *y *e *nest ACCUMULATOR_IVL Y   	// run (aka year or annual)
-    *m *e *nest ACCUMULATOR_IVL M   	// current month
-    *d *e *nest ACCUMULATOR_IVL D   	// current day
-    *h *e *nest ACCUMULATOR_IVL H   	// current hour
+    *y *p *nest ACCUMULATOR_IVL Y   	// run (aka year or annual)
+    *m *p *nest ACCUMULATOR_IVL M   	// current month
+    *d *p *nest ACCUMULATOR_IVL D   	// current day
+    *h *p *nest ACCUMULATOR_IVL H   	// current hour
 *END		// ACCUMULATOR
 //=============================================================================
 RECORD MTR_IVL "meter interval sub" *SUBSTRUCT  // substruct for one meter for one interval for entire building
