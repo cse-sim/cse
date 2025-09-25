@@ -66,7 +66,7 @@ jobs:
       - name: Upload executable artifact
         uses: actions/upload-artifact@v4
         with:
-          name: CSE_${{ matrix.os }}-${{ matrix.os_ver }}-${{ matrix.arch }}bit_${{ matrix.config }}
+          name: CSE-${{ matrix.os }}-${{ matrix.os_ver }}-${{ matrix.arch }}bit-${{ matrix.config }}
           path: |
             build/CSE*
             build/cse*
@@ -86,7 +86,7 @@ jobs:
       - name: Upload documentation
         uses: actions/upload-artifact@v4
         with:
-          name: Documentation-${{ matrix.os }}-${{ matrix.os_ver }}
+          name: Documentation-${{ matrix.os }}-${{ matrix.os_ver }}-${{ matrix.arch }}
           path: |
             doc/build
       - name: Check test failure
