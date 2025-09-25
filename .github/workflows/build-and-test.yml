@@ -62,7 +62,7 @@ jobs:
         with:
           python-version: "3.13"
       - name: Build CSE
-        run: cmake -DBUILD_ARCHITECTURE=${{ matrix.arch }} -DCOMPILER_ID=${{ matrix.compiler }} -DCONFIGURATION=${{ matrix.config }} -DBUILD_DIRECTORY=build -DBUILD_DOCS_WITH_ALL -P cmake/configure-and-build.cmake
+        run: cmake -DBUILD_ARCHITECTURE=${{ matrix.arch }} -DCOMPILER_ID=${{ matrix.compiler }} -DCONFIGURATION=${{ matrix.config }} -DBUILD_DIRECTORY=build -DBUILD_DOCS_WITH_ALL=ON -P cmake/configure-and-build.cmake
       - name: Upload executable artifact
         uses: actions/upload-artifact@v4
         with:

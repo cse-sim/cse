@@ -23,7 +23,7 @@ jobs:
         with:
           python-version: "3.13"
       - name: Build CSE
-        run: cmake -DBUILD_ARCHITECTURE=32 -DCOMPILER_ID=msvc -DCONFIGURATION=Release -DBUILD_DIRECTORY=build -DBUILD_DOCS_WITH_ALL -P cmake/configure-and-build.cmake
+        run: cmake -DBUILD_ARCHITECTURE=32 -DCOMPILER_ID=msvc -DCONFIGURATION=Release -DBUILD_DIRECTORY=build -DBUILD_DOCS_WITH_ALL=ON -P cmake/configure-and-build.cmake
       - name: Upload executable to release assets
         uses: softprops/action-gh-release@v2
         with:
