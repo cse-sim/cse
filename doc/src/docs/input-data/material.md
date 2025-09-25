@@ -40,7 +40,7 @@ Conductivity of material. Note that conductivity is *always* stated for a 1 foot
 
 {{
   member_table({
-    "units": "Btuh-ft/ft^2^-^o^F",
+    "units": "Btuh-ft/ft^2^-°F",
     "legal_range": "*x* > 0", 
     "default": "*none*",
     "required": "Yes",
@@ -56,9 +56,9 @@ Temperature at which matCond is rated. See matCondCT (next).
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*x* > 0", 
-    "default": "70 ^o^F",
+    "default": "70 °F",
     "required": "No",
     "variability": "constant" 
   })
@@ -72,7 +72,7 @@ Coefficient for temperature adjustment of matCond in the forward difference surf
 
 {{
   member_table({
-    "units": "^o^F^-1^",
+    "units": "°F^-1^",
     "legal_range": "", 
     "default": "0",
     "required": "No",
@@ -90,7 +90,7 @@ Specific heat of material.
 
 {{
   member_table({
-    "units": "Btu/lb-^o^F",
+    "units": "Btu/lb-°F",
     "legal_range": "*x* ≥ 0", 
     "default": "0 (thermally massless)",
     "required": "No",
@@ -122,7 +122,7 @@ Nominal R-value per foot of material. Appropriate for insulation materials only 
 
 {{
   member_table({
-    "units": "ft^2^-^o^F/Btuh",
+    "units": "ft^2^-°F/Btuh",
     "legal_range": "*x* > 0", 
     "default": "*none*",
     "required": "No",

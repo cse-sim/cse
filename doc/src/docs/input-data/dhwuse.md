@@ -89,7 +89,7 @@ Mixed-water use temperature at the fixture. Cannot be specified when wuHotF is g
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "x ≤ 0", 
     "default": "0",
     "required": "when wuHeatRecEF is given or parent DHWSYS includes DHWHEATREC(s)",

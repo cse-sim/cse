@@ -18,7 +18,7 @@ Name of METER object, if any, to which DHWSOLARSYS electrical energy use is reco
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*name of a METER*", 
     "default": "*not recorded*",
     "required": "No",
@@ -34,7 +34,7 @@ Specific heat for the collector fluid.
 
 {{
   member_table({
-    "units": "Btu/lbm-^o^F",
+    "units": "Btu/lbm-°F",
     "legal_range": "x > 0", 
     "default": "0.9",
     "required": "No",
@@ -100,7 +100,7 @@ Temperature limit for the tank collector.
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "x ≥ 0", 
     "default": "180.0",
     "required": "No",
@@ -116,7 +116,7 @@ Heat transfer coefficient for the tank multiplied by area.
   
 {{
   member_table({
-    "units": "Btuh/^o^F",
+    "units": "Btuh/°F",
     "legal_range": "", 
     "default": "",
     "required": "No",
@@ -146,7 +146,7 @@ Total tank insulation resistance, built-in plus exterior wrap.
   
 {{
   member_table({
-    "units": "ft^2^-^o^F/Btuh",
+    "units": "ft^2^-°F/Btuh",
     "legal_range": "", 
     "default": "",
     "required": "No",
@@ -178,7 +178,7 @@ Surrounding temperature.
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "", 
     "default": "",
     "required": "No",

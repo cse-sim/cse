@@ -54,7 +54,7 @@ Coolplant primary loop supply temperature setpoint: setpoint temperature for chi
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*x* > 0", 
     "default": "44",
     "required": "No",

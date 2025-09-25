@@ -56,7 +56,7 @@ Inlet temperature of first DHWLOOPSEG.
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*x* > 0", 
     "default": "DHWSYS wsTUse",
     "required": "No",

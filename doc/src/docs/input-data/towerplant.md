@@ -33,7 +33,7 @@ Setpoint temperature for water leaving towers.
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*x* &gt; 0", 
     "default": "85",
     "required": "No",
@@ -306,7 +306,7 @@ Design outdoor drybulb temperature (needed to convert *ctVfDs* from cfm to lb/hr
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*x* &gt; 0", 
     "default": "93.5",
     "required": "No",
@@ -322,7 +322,7 @@ Design outdoor wetbulb temperature.
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*x* &gt; 0", 
     "default": "78",
     "required": "No",
@@ -338,7 +338,7 @@ Design leaving water temperature.
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*x* &gt; 0", 
     "default": "85",
     "required": "No",
@@ -404,7 +404,7 @@ Off-design outdoor drybulb temperature.
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*x* &gt; 0", 
     "default": "93.5",
     "required": "No",
@@ -420,7 +420,7 @@ Off-design outdoor wetbulb temperature.
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*x* &gt; 0", 
     "default": "78",
     "required": "No",
@@ -436,7 +436,7 @@ Off-design leaving water temperature.
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*x* &gt; 0", 
     "default": "85",
     "required": "No",
@@ -526,7 +526,7 @@ Temperature of makeup water from mains, used to replace water lost by blowdown, 
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*x* &gt; 0", 
     "default": "60",
     "required": "No",

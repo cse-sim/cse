@@ -41,7 +41,7 @@ Local heating thermostat setpoint. Hourly expression may be used to schedule as 
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "x > 0", 
     "default": "*no thermostat control*",
     "required": "No",
@@ -160,7 +160,7 @@ Air heating thermostat set point; implies *set temperature* air capability. May 
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "x ≥ 0", 
     "default": "No thermostat-controlled air heating",
     "required": "No",
@@ -176,7 +176,7 @@ Air cooling thermostat set point; implies *set temperature* air capability. May 
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "x ≥ 0", 
     "default": "No thermostat-controlled air cooling",
     "required": "No",

@@ -137,9 +137,9 @@ Temperature drop between the fixture drain and DHWHEATREC drain-side inlet.  The
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*x* ≥ 0", 
-    "default": "4.6 ^o^F",
+    "default": "4.6 °F",
     "required": "No",
     "variability": "hourly" 
   })
@@ -153,9 +153,9 @@ Drain-side inlet water temperature during warmup.  During the warmup portion of 
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*x* > 0", 
-    "default": "65 ^o^F",
+    "default": "65 °F",
     "required": "No",
     "variability": "hourly" 
   })

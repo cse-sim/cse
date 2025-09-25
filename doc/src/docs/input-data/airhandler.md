@@ -100,7 +100,7 @@ Giving _ahTsSp_ is disallowed for an air handler with no economizer, no heat coi
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "_number_, RA^*^, WZ, CZ, ZN^**^, ZN2^**^,", 
     "default": "0",
     "required": "Yes, if coil(s) or economizer present",
@@ -157,9 +157,9 @@ Minimum supply temperature. Also used as cooling supply temperature setpoint val
 
 {{
   member_table({
-    "units": "^o^F",
-    "legal_range": "_no limit_; typically: 40 ≤ _x_ ≤ 140^o^", 
-    "default": "0^o^F",
+    "units": "°F",
+    "legal_range": "_no limit_; typically: 40 ≤ _x_ ≤ 140°", 
+    "default": "0°F",
     "required": "Only for _ahTsSp_=RA",
     "variability": "hourly" 
   })
@@ -169,9 +169,9 @@ Minimum supply temperature. Also used as cooling supply temperature setpoint val
 
 {{
   member_table({
-    "units": "^o^F",
-    "legal_range": "_no limit_; typically: 40 ≤ _x_ ≤ 140^o^", 
-    "default": "999^o^ F",
+    "units": "°F",
+    "legal_range": "_no limit_; typically: 40 ≤ _x_ ≤ 140°", 
+    "default": "999° F",
     "required": "Only for _asTsSp_=RA; recommend giving for _ahTsSp_=ZN",
     "variability": "hourly" 
   })
@@ -219,7 +219,7 @@ Cooling design supply temperature, for sizing coil vs fan.
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "x > 0", 
     "default": "_ahTsMn_",
     "required": "No",
@@ -235,7 +235,7 @@ Heating design supply temperature, for sizing coil vs fan.
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "x $>$ 0", 
     "default": "_ahTsMx_",
     "required": "No",
@@ -281,8 +281,8 @@ If return air moves outside the range _ahTsRaMn_ to _ahTsRaMx_, the supply tempe
 
 {{
   member_table({
-    "units": "^o^F",
-    "legal_range": "_no limit_; typically: 40 ≤ _x_ ≤ 140^o^", 
+    "units": "°F",
+    "legal_range": "_no limit_; typically: 40 ≤ _x_ ≤ 140°", 
     "default": "_none_",
     "required": " Only for _ahTsSp_=RA",
     "variability": "hourly" 
@@ -755,7 +755,7 @@ OFF, coil will not operate&comma; no matter how cold supply air is. A HW coil sh
 
 Type: _float_
 
-Total heating (output) capacity. For an ELECTRIC, AHP, GAS, or OIL coil, this capacity is always available. For an HW heating coil, when the total heat being requested from the coil's HEATPLANT would overload the HEATPLANT, the capacity of all HW coils connected to the plant (in TERMINALs as well as AIRHANDLERs) is reduced proportionately until the requested total heat is within the HEATPLANT's capacity. For AHP, this value represents the AHRI rated capacity at 47 ^o^F outdoor temperature.
+Total heating (output) capacity. For an ELECTRIC, AHP, GAS, or OIL coil, this capacity is always available. For an HW heating coil, when the total heat being requested from the coil's HEATPLANT would overload the HEATPLANT, the capacity of all HW coils connected to the plant (in TERMINALs as well as AIRHANDLERs) is reduced proportionately until the requested total heat is within the HEATPLANT's capacity. For AHP, this value represents the AHRI rated capacity at 47 °F outdoor temperature.
 
 {{
   member_table({
@@ -1094,7 +1094,7 @@ An error will occur unless _ahpTFrMn_ &lt; _ahpTFrPk_ &lt; _ahpTFrMx_ and _ahpTF
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "_x_ > 0", 
     "default": "_ahpTFrMn_: 17, _ahpTFrMx_: 47, _ahpTFrPk_: 42",
     "required": "No",
@@ -1164,7 +1164,7 @@ Heat pump low temperature cutout setpoints. Heat pump is disabled (only the supp
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "", 
     "default": "_ahpTOff_: 5, _ahpTOn_: 12",
     "required": "No",
@@ -1402,9 +1402,9 @@ Minimum (effective surface) temperature of coil (evaporator). Represents refrige
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "_x_ $>$ 0", 
-    "default": "40^o^F",
+    "default": "40°F",
     "required": "No",
     "variability": "constant" 
   })
@@ -1693,9 +1693,9 @@ Design (rating) entering air dry bulb temperature, used with DX and CHW cooling 
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "_x_ > 0", 
-    "default": "80^o^F (AHRI)",
+    "default": "80°F (AHRI)",
     "required": "No",
     "variability": "constant" 
   })
@@ -1709,9 +1709,9 @@ Design (rating) entering air wet bulb temperature, for CHW coils.
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "_x_ > 0", 
-    "default": "67^o^F (AHRI)",
+    "default": "67°F (AHRI)",
     "required": "No",
     "variability": "constant" 
   })
@@ -1725,9 +1725,9 @@ Design (rating) condenser temperature (outdoor air temperature) for DX coils.
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "_x_ > 0", 
-    "default": "95^o^F (AHRI)",
+    "default": "95°F (AHRI)",
     "required": "No",
     "variability": "constant" 
   })
@@ -1912,7 +1912,7 @@ Economizer outside air temperature high limit. The economizer is disabled (outsi
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "_number_ or RA", 
     "default": "RA (return air temperature)",
     "required": "No",
@@ -1928,7 +1928,7 @@ Economizer outside air enthalpy high limit. The economizer is disabled (outside 
 
 {{
   member_table({
-    "units": "Btu/^o^F",
+    "units": "Btu/°F",
     "legal_range": "_number_ or RA", 
     "default": "999 (enthalpy limit disabled)",
     "required": "No",
@@ -2334,7 +2334,7 @@ For _cchCM_ = PTC or PTC_CLO, the low temperature (max power) and high temperatu
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "", 
     "default": "_cchTMn_: 0; _cchTMx_: 150",
     "required": "No",
@@ -2350,9 +2350,9 @@ For _cchCM_ = PTC or PTC_CLO, how much warmer than the outdoor temp CSE assumes 
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "", 
-    "default": "20^o^F",
+    "default": "20°F",
     "required": "No",
     "variability": "constant" 
   })
@@ -2370,9 +2370,9 @@ For _cchCM_ = TSTAT, in subhours when compressor does not run, the crankcase hea
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "_cchTOff_ ≥ _cchTOn_", 
-    "default": "_cchTOn_: 72^o^F; _chcTOff_: _chcTOn_",
+    "default": "_cchTOn_: 72°F; _chcTOff_: _chcTOn_",
     "required": "No",
     "variability": "constant" 
   })

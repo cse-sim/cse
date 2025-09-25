@@ -65,7 +65,7 @@ Door U-value, NOT including surface (air film) conductances. Allows direct entry
 
 {{
   member_table({
-    "units": "Btuh/ft^2^-^o^F",
+    "units": "Btuh/ft^2^-°F",
     "legal_range": "x > 0", 
     "default": "Determined from *drCon*",
     "required": "if *drCon* not given",
@@ -113,7 +113,7 @@ Door exterior solar absorptivity. Applicable only if sfExCnd of owning surface i
 
 {{
   member_table({
-    "units": "Btuh/ft^2^-^o^F",
+    "units": "Btuh/ft^2^-°F",
     "legal_range": "x > 0", 
     "default": "same as owning surface",
     "required": "No",
@@ -177,7 +177,7 @@ Door interior surface (air film) conductance. Ignored if drModel = Forward_Diffe
 
 {{
   member_table({
-    "units": "Btuh/ft^2^-^o^F",
+    "units": "Btuh/ft^2^-°F",
     "legal_range": "x > 0", 
     "default": "same as owning surface",
     "required": "No",
@@ -193,7 +193,7 @@ Door exterior surface (air film) conductance. Ignored if drModel = Forward_Diffe
 
 {{
   member_table({
-    "units": "Btuh/ft^2^-^o^F",
+    "units": "Btuh/ft^2^-°F",
     "legal_range": "x $>$ 0", 
     "default": "same as owning surface",
     "required": "No",
@@ -334,7 +334,7 @@ The default hcFrc value (used when drInHcFrCoeff is not provided) is hConvF * zn
 
 {{
   member_table({
-    "units": "Btuh/ft^2^-^o^F",
+    "units": "Btuh/ft^2^-°F",
     "legal_range": "", 
     "default": "*inherited from parent surface*",
     "required": "No",

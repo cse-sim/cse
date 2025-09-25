@@ -130,7 +130,7 @@ Surface U-value (NOT including surface (air film) conductances). For surfaces fo
 
 {{
   member_table({
-    "units": "Btuh/ft^2^-^o^F",
+    "units": "Btuh/ft^2^-°F",
     "legal_range": "*x* > 0", 
     "default": "Determined from *sfCon*",
     "required": "if *sfCon* not given and if *sfExCnd* is not GROUND",
@@ -261,7 +261,7 @@ Exterior air temperature.
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*unrestricted*", 
     "default": "*none*",
     "required": "Required if *sfExCnd* = SPECIFIEDT",
@@ -314,7 +314,7 @@ other, 1.5")
 
 {{
   member_table({
-    "units": "Btuh/ft^2^-^o^F",
+    "units": "Btuh/ft^2^-°F",
     "legal_range": "*x* > 0", 
     "default": "*See above*",
     "required": "No",
@@ -337,7 +337,7 @@ sfExCnd = ADIABATIC,      not applicable")
 
 {{
   member_table({
-    "units": "Btuh/ft^2^-^o^F",
+    "units": "Btuh/ft^2^-°F",
     "legal_range": "*x* > 0", 
     "default": "see above",
     "required": "No",
@@ -484,7 +484,7 @@ The default hcFrc value (used when sfInHcFrCoeff is not provided) is hConvF * zn
 
 {{
   member_table({
-    "units": "Btuh/ft^2^-^o^F",
+    "units": "Btuh/ft^2^-°F",
     "legal_range": "",
     "default": "*see above*",
     "required": "No",
@@ -586,7 +586,7 @@ Conductances from outside face of surface to the weather file ground temperature
 
 {{
   member_table({
-    "units": "Btuh/ft^2^-^o^F",
+    "units": "Btuh/ft^2^-°F",
     "legal_range": "*x* ≥ 0", 
     "default": "see above",
     "required": "No",

@@ -72,7 +72,7 @@ Pipe insulation conductivity
 
 {{
   member_table({
-    "units": "Btuh-ft/ft^2^-^o^F",
+    "units": "Btuh-ft/ft^2^-°F",
     "legal_range": "*x* $>$ 0", 
     "default": "0.02167",
     "required": "No",
@@ -104,7 +104,7 @@ Combined radiant/convective exterior surface conductance between insulation (or 
 
 {{
   member_table({
-    "units": "Btuh/ft^2^-^o^F",
+    "units": "Btuh/ft^2^-°F",
     "legal_range": "*x* $>$ 0", 
     "default": "1.5",
     "required": "No",
@@ -193,7 +193,7 @@ Surrounding equivalent temperature.
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*x* $>$ 0", 
     "default": "*70*",
     "required": "No",

@@ -240,9 +240,9 @@ Zone temperature unmet load tolerance.  At the end of each subhour, if a conditi
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "x ≥ 0", 
-    "default": "1 ^o^F",
+    "default": "1 °F",
     "required": "No",
     "variability": "constant" 
   })
@@ -343,7 +343,7 @@ Default exterior surface (air film) conductance used for opaque and glazed surfa
 
 {{
   member_table({
-    "units": "Btuh/ft^2^-^o^F",
+    "units": "Btuh/ft^2^-°F",
     "legal_range": "*x* $>$ 0", 
     "default": "2.64",
     "required": "No",
@@ -355,11 +355,11 @@ Default exterior surface (air film) conductance used for opaque and glazed surfa
 
 Type: float
 
-Reference compass azimuth (0 = north, 90 = east, etc.). All zone orientations (and therefore surface orientations) are relative to this value, so the entire building can be rotated by changing bldgAzm only. If a value outside the range 0^o^ ≤ *x* $<$ 360^o^ is given, it is normalized to that range.
+Reference compass azimuth (0 = north, 90 = east, etc.). All zone orientations (and therefore surface orientations) are relative to this value, so the entire building can be rotated by changing bldgAzm only. If a value outside the range 0° ≤ *x* $<$ 360° is given, it is normalized to that range.
 
 {{
   member_table({
-    "units": "^o^ (degrees)",
+    "units": "° (degrees)",
     "legal_range": "unrestricted", 
     "default": "0",
     "required": "No",
@@ -482,7 +482,7 @@ WHOLEBUILDING, IZXFER (window and whole-house fan)
 RSYSOAV,       RSYS central fan integrated (CFI) outside air ventilation (OAV)", True)
 }}
 
-As noted, ventAvail is evaluated hourly, permitting flexible control strategy modeling.  The following example specifies that RSYSOAV (CFI) ventilation is available when the seven day moving average temperature is above 68 ^o^F, otherwise whole building ventilation is available between 7 and 11 PM, otherwise no ventilation.
+As noted, ventAvail is evaluated hourly, permitting flexible control strategy modeling.  The following example specifies that RSYSOAV (CFI) ventilation is available when the seven day moving average temperature is above 68 °F, otherwise whole building ventilation is available between 7 and 11 PM, otherwise no ventilation.
 
     ventAvail = (@weather.taDbAvg07 > 68)    ? RSYSOAV
               : ($hour >= 19 && $hour <= 23) ? WHOLEBUILDING
@@ -617,7 +617,7 @@ ASHWAT temperature change threshold -- full calculation is triggered by a change
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*x* $>$ 0", 
     "default": "1",
     "required": "No",
@@ -664,8 +664,8 @@ The following system variables (4.6.4) are determined from the weather file for 
 {{
   csv_table("$radBeam,        beam irradiance on tracking surface (integral for hour&comma; Btu/ft^2^).
 $radDiff,        diffuse irradiance on a horizontal surface (integral for hour&comma; Btu/ft^2^).
-$tDbO,           dry bulb temp (^o^F).
-$tWbO,           wet bulb temp (^o^F).
+$tDbO,           dry bulb temp (°F).
+$tWbO,           wet bulb temp (°F).
 $wO,             humidity ratio
 $windDirDeg,     wind direction (degrees&comma; NOT RADIANS; 0=N&comma; 90=E).
 $windSpeed,      wind speed (mph).")
@@ -751,9 +751,9 @@ Reference temperature (see above paragraph).
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*x* ≥ 0", 
-    "default": "60^o^",
+    "default": "60°",
     "required": "No",
     "variability": "constant" 
   })
@@ -991,7 +991,7 @@ Soil conductivity. Used in two-dimensional finite difference calculations for FO
 
 {{
   member_table({
-    "units": "Btuh-ft/ft^2^-^o^F",
+    "units": "Btuh-ft/ft^2^-°F",
     "legal_range": "*x* $>$ 0", 
     "default": "1.0",
     "required": "No",
@@ -1009,7 +1009,7 @@ Soil specific heat. Used in two-dimensional finite difference calculations for F
 
 {{
   member_table({
-    "units": "Btu/lb-^o^F",
+    "units": "Btu/lb-°F",
     "legal_range": "*x* $>$ 0", 
     "default": "0.1",
     "required": "No",
@@ -1328,7 +1328,7 @@ Heating outdoor dry bulb design temperature used for autosizing heating equipmen
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "", 
     "default": "*none*",
     "required": "No",
@@ -1344,7 +1344,7 @@ Heating outdoor design dry bulb temperature used for autosizing heating equipmen
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*x* ≥ 0", 
     "default": "derived assuming RH=.7",
     "required": "No",

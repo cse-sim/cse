@@ -24,7 +24,7 @@ U-value for the construction (NOT including surface (air film) conductances; see
 
 {{
   member_table({
-    "units": "Btuh/ft^2^-^o^F",
+    "units": "Btuh/ft^2^-°F",
     "legal_range": "x > 0", 
     "default": "calculated from LAYERs",
     "required": "if omitted, LAYERs must follow",

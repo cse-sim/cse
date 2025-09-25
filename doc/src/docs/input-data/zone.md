@@ -76,7 +76,7 @@ Nominal zone volume.
 
 Type: float
 
-Zone azimuth with respect to bldgAzm. All surface azimuths are relative to znAzm, so that the zone can be rotated by changing this member only. Values outside the range 0^o^ to 360^o^ are normalized to that range.
+Zone azimuth with respect to bldgAzm. All surface azimuths are relative to znAzm, so that the zone can be rotated by changing this member only. Values outside the range 0° to 360° are normalized to that range.
 
 {{
   member_table({
@@ -144,7 +144,7 @@ Zone "air" heat capacity: represents heat capacity of air, furniture, "light" wa
 
 {{
   member_table({
-    "units": "Btu/^o^F",
+    "units": "Btu/°F",
     "legal_range": "x ≥ 0", 
     "default": "3.5 * *znArea*",
     "required": "No",
@@ -176,7 +176,7 @@ Zone surface forced convection factor.  Default interior surface convective tran
 
 {{
   member_table({
-    "units": "Btuh/ft^2^-^o^F",
+    "units": "Btuh/ft^2^-°F",
     "legal_range": ".2", 
     "default": ".2",
     "required": "No",
@@ -224,7 +224,7 @@ Heating set point used (and required) when znModel=CZM and zone has no terminals
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "0 < znTH < znTC", 
     "default": "*none*",
     "required": "Per above",
@@ -240,7 +240,7 @@ Desired set point (temperature maintained with ventilation if possible) for znMo
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "x > 0; znTH < znTD < znTC", 
     "default": "*none*",
     "required": "if venting",
@@ -256,7 +256,7 @@ Cooling set point used (and required) when znModel=CZM and zone has no terminals
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "0 < znTC > znTH", 
     "default": "*none*",
     "required": "Per above",

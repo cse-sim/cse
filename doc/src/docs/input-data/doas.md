@@ -162,7 +162,7 @@ Caution: oaTEx is not checked for reasonableness.
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "", 
     "default": "Outdoor dry-bulb",
     "required": "No",
@@ -343,7 +343,7 @@ Heating setpoint for tempering and/or heat exchanger bypass.
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "default": "68", 
     "required": "No",
     "variability": "subhourly" 
@@ -390,7 +390,7 @@ Cooling setpoint for tempering and/or heat exchanger bypass.
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "default": "68", 
     "required": "No",
     "variability": "subhourly" 

@@ -44,7 +44,7 @@ Design supply temperature: temperature of primary water leaving chiller at which
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*x* > 0", 
     "default": "44",
     "required": "No",
@@ -60,7 +60,7 @@ Design condenser temperature: temperature of secondary water entering chiller co
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*x* > 0", 
     "default": "85",
     "required": "No",

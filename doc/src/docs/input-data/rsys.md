@@ -33,9 +33,9 @@ ASHPPKGROOM,  Packaged room air-source heat pump.
 ASHPHYDRONIC, Air-to-water heat pump with hydronic distribution. Compressor performance is approximated using the air-to-air model with adjusted efficiencies.
 ASHPPM, Air-to-air heat pump modeled per PERFORMANCMAPs specified via rsPerfMapHtg and rsPerfMapClg.
 WSHP,  Water-to-air heat pump.
-AC, Compressor-based cooling; no heating. Required ratings are SEER and capacity and EER at 95 ^o^F outdoor dry bulb.
+AC, Compressor-based cooling; no heating. Required ratings are SEER and capacity and EER at 95 °F outdoor dry bulb.
 ACPM, Compressor-based cooling modeled per PERFORMANCEMAP specified in rsPerfMapClg; no heating.
-ACPKGROOM, Packaged compressor-based cooling; no heating. Required ratings are capacity and EER at 95 ^o^F outdoor dry bulb.
+ACPKGROOM, Packaged compressor-based cooling; no heating. Required ratings are capacity and EER at 95 °F outdoor dry bulb.
 FURNACE,  Fuel-fired heating. Primary heating input energy is accumulated to end use HTG of meter rsFuelMtr.
 RESISTANCE,  Electric heating. Primary heating input energy is accumulated to end use HTG of meter rsElecMtr.
 ACPKGROOMFURNACE, Packaged room cooling and (separate) furnace heating.
@@ -264,7 +264,7 @@ Type: float
 
 Heating capacity, used when rsType is ACFURNACE, ACRESISTANCE, FURNACE, WSHP or RESISTANCE.
 
-If rsType=WSHP, rsCapH is at source fluid temperature = 68 ^o^F.
+If rsType=WSHP, rsCapH is at source fluid temperature = 68 °F.
 
 {{
   member_table({
@@ -284,9 +284,9 @@ Nominal heating temperature rise (across system, not at zone) used during autosi
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*x* > 0", 
-    "default": "30 ^o^F if heat pump else 50 ^o^F",
+    "default": "30 °F if heat pump else 50 °F",
     "required": "No",
     "variability": "constant" 
   })
@@ -344,7 +344,7 @@ For rsType=ASHP, Heating Seasonal Performance Factor (HSPF).
 
 Type: float
 
-For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 47 ^o^F.
+For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 47 °F.
 
 If rsType=ASHP and both rsCapC and rsCap47 are autosized, both are set to the larger consistent value using rsCapRat9547 (after application of rsFxCapH and rsFxCapC).
 
@@ -362,7 +362,7 @@ If rsType=ASHP and both rsCapC and rsCap47 are autosized, both are set to the la
 
 Type: float
 
-For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 35 ^o^F.  rsCap35 typically reflects reduced capacity due to reverse (cooling) heat pump operation for defrost.
+For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 35 °F.  rsCap35 typically reflects reduced capacity due to reverse (cooling) heat pump operation for defrost.
 
 {{
   member_table({
@@ -378,7 +378,7 @@ For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 35 ^o^
 
 Type: float
 
-For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 17 ^o^F.
+For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 17 °F.
 
 {{
   member_table({
@@ -394,7 +394,7 @@ For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 17 ^o^
 
 Type: float
 
-For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 95 ^o^F.
+For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 95 °F.
 
 {{
   member_table({
@@ -410,7 +410,7 @@ For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb te
 
 Type: float
 
-For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 47 ^o^F. For rsType=WSHP, rated heating coefficient of performance at source fluid temperature = 68 ^o^F.
+For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 47 °F. For rsType=WSHP, rated heating coefficient of performance at source fluid temperature = 68 °F.
 
 {{
   member_table({
@@ -426,7 +426,7 @@ For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb te
 
 Type: float
 
-For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 35 ^o^F.
+For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 35 °F.
 
 {{
   member_table({
@@ -442,7 +442,7 @@ For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb te
 
 Type: float
 
-For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 17 ^o^F.
+For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb temperature = 17 °F.
 
 {{
   member_table({
@@ -632,10 +632,10 @@ For rsType=ASHP, auxiliary heat annualized fuel utilization efficiency.
 
 Type: choice
 
-  Selects modeling options for ASHP outdoor coil defrosting when 17 ^o^F < TDbO < 45 ^o^F.  In this temperature range, heating capacity and/or efficiency are typically reduced due to frost accumulation on the outdoor coil.  
+  Selects modeling options for ASHP outdoor coil defrosting when 17 °F < TDbO < 45 °F.  In this temperature range, heating capacity and/or efficiency are typically reduced due to frost accumulation on the outdoor coil.  
 
 {{
-  csv_table("NONE,       Defrost is not modeled.  When 17 ^o^F < TDbO < 45 ^o^F&comma; capacity and efficiency are determined by interpolation using unmodified 17 ^o^F and 47 ^o^F data.
+  csv_table("NONE,       Defrost is not modeled.  When 17 °F < TDbO < 45 °F&comma; capacity and efficiency are determined by interpolation using unmodified 17 °F and 47 °F data.
   REVCYCLE,   Reverse compressor (cooling) operation.  Net capacity and efficiency is derived from rsCap17/rsCOP17 and rsCap35/rsCOP35 using linear interpolation.  Auxiliary heat is not modeled.
   REVCYCLEAUX,  Reverse compressor (cooling) operation with provision of sufficient auxiliary heat to make up the loss of heating capacity.  Auxiliary heating is typically used to prevent cold air delivery to zones during the defrost cycle.")
 }}
@@ -702,7 +702,7 @@ Cooling rated Seasonal Energy Efficiency Ratio (SEER).
 
 Type: float
 
-Cooling Energy Efficiency Ratio (EER) at standard AHRI rating conditions (outdoor drybulb of 95 ^o^F and entering air at 80 ^o^F drybulb and 67 ^o^F wetbulb). For rsType=WSHP, rated EER at fluid source temperature = 86 ^o^F.
+Cooling Energy Efficiency Ratio (EER) at standard AHRI rating conditions (outdoor drybulb of 95 °F and entering air at 80 °F drybulb and 67 °F wetbulb). For rsType=WSHP, rated EER at fluid source temperature = 86 °F.
 
 {{
   member_table({
@@ -718,7 +718,7 @@ Cooling Energy Efficiency Ratio (EER) at standard AHRI rating conditions (outdoo
 
 Type: float
 
-Net cooling capacity at standard rating conditions (outdoor drybulb temperature = 95 ^o^F for air source or fluid source temperature = 86 ^o^F for water source).
+Net cooling capacity at standard rating conditions (outdoor drybulb temperature = 95 °F for air source or fluid source temperature = 86 °F for water source).
 
 If rsType=ASHP and both rsCapC and rsCap47 are autosized, both are set to the larger consistent value using rsCapRat9547 (after application of rsFxCapH and rsFxCapC).
 
@@ -742,7 +742,7 @@ Nominal cooling temperature fall (across system, not zone) used during autosizin
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*x* $<$ 0", 
     "default": "-25",
     "required": "No",
@@ -823,7 +823,7 @@ Type: float
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "", 
     "default": "(no lockout)",
     "required": "No",
@@ -1074,7 +1074,7 @@ OAV inlet (source) air temperature.  Supply air temperature at the zone is gener
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*x* ≥ 0", 
     "default": "Dry-bulb temperature from weather file",
     "required": "No",
@@ -1090,9 +1090,9 @@ Type: float
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*x* $>$ 0", 
-    "default": "5 ^o^F",
+    "default": "5 °F",
     "required": "No",
     "variability": "hourly" 
   })
@@ -1170,7 +1170,7 @@ Air dry-bulb temperature at the outdoor portion of this system.
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*x* ≥ 0", 
     "default": "From weather file",
     "required": "No",

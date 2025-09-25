@@ -222,7 +222,7 @@ Air dry-bulb temperature surrounding duct segment. <!-- TODO: what is humidity? 
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "*unrestricted*", 
     "default": "*none*",
     "required": "Required if *sfExCnd* = SPECIFIEDT",
@@ -238,7 +238,7 @@ Insulation thermal resistance *not including* surface conductances. dsInsulR and
 
 {{
   member_table({
-    "units": "ft^2^-^o^F-hr / Btu",
+    "units": "ft^2^-°F-hr / Btu",
     "legal_range": "x ≥ 0", 
     "default": "0",
     "required": "No",
@@ -250,7 +250,7 @@ Insulation thermal resistance *not including* surface conductances. dsInsulR and
 
 Type: matName
 
-Name of insulation MATERIAL. The conductivity of this material at 70 ^o^F is combined with dsInsulR to derive the duct insulation thickness. If omitted, a typical fiberglass material is assumed having conductivity of 0.025 Btu/hr-ft^2^-F at 70 ^o^F and a conductivity coefficient of .00418 1/F (see MATERIAL). In addition, insulation conductivity is adjusted during the simulation in response its average temperature.  As noted with dsInsulR, duct insulation is modeled as pure conductance -- MATERIAL matDens and matSpHt are ignored.
+Name of insulation MATERIAL. The conductivity of this material at 70 °F is combined with dsInsulR to derive the duct insulation thickness. If omitted, a typical fiberglass material is assumed having conductivity of 0.025 Btu/hr-ft^2^-F at 70 °F and a conductivity coefficient of .00418 1/F (see MATERIAL). In addition, insulation conductivity is adjusted during the simulation in response its average temperature.  As noted with dsInsulR, duct insulation is modeled as pure conductance -- MATERIAL matDens and matSpHt are ignored.
 
 {{
   member_table({
@@ -286,7 +286,7 @@ Outside (exposed) surface convection coefficient.
 
 {{
   member_table({
-    "units": "Btuh/ft^2^-^o^F",
+    "units": "Btuh/ft^2^-°F",
     "legal_range": "x ≥ 0", 
     "default": ".54",
     "required": "No",

@@ -46,7 +46,7 @@ Tank heat loss coefficient.
 
 {{
   member_table({
-    "units": "Btuh/^o^F",
+    "units": "Btuh/°F",
     "legal_range": "x ≥ 0", 
     "default": "Derived from wtVol and wtInsulR",
     "required": "No",
@@ -78,7 +78,7 @@ Specifies total tank insulation resistance. The input value should represent the
 
 {{
   member_table({
-    "units": "ft^2^-^o^F/Btuh",
+    "units": "ft^2^-°F/Btuh",
     "legal_range": "x ≥ 0.01", 
     "default": "0",
     "required": "No",
@@ -110,7 +110,7 @@ Tank surround temperature.
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "x ≥ 0", 
     "default": "70",
     "required": "No",
@@ -126,8 +126,8 @@ Tank average water temperature.
 
 {{
   member_table({
-    "units": "^o^F",
-    "legal_range": "> 32 ^o^F", 
+    "units": "°F",
+    "legal_range": "> 32 °F", 
     "default": "Parent DHWSYSTEM wsTUse",
     "required": "No",
     "variability": "hourly" 

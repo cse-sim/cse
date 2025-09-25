@@ -74,7 +74,7 @@ Fit slope
 
 {{
   member_table({
-    "units": "Btuh/ft^2-^o^F",
+    "units": "Btuh/ft^2-°F",
     "legal_range": "", 
     "default": "-0.727",
     "required": "No",
@@ -218,7 +218,7 @@ Collector piping surround temperature.
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "x ≥ 32", 
     "default": "70.0",
     "required": "No",
@@ -264,7 +264,7 @@ Temperature difference between the tank and collector outlet where pump turns on
   
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "", 
     "default": "10.0",
     "required": "No",
@@ -280,7 +280,7 @@ Temperature difference between the tank and collector outlet where pump turns of
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "", 
     "default": "5.0",
     "required": "No",

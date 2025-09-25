@@ -40,7 +40,7 @@ Perimeter conduction per unit length.
 
 {{
   member_table({
-    "units": "Btuh/ft-^o^F",
+    "units": "Btuh/ft-°F",
     "legal_range": "*x* > 0", 
     "default": "*none*",
     "required": "Yes",

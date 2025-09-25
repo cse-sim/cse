@@ -114,7 +114,7 @@ The temperature coefficient how the efficiency of the module varies with the cel
 
 {{
   member_table({
-    "units": "1/^o^F",
+    "units": "1/°F",
     "legal_range": "*no restrictions*", 
     "default": "-0.00206",
     "required": "No",
@@ -126,7 +126,7 @@ The temperature coefficient how the efficiency of the module varies with the cel
 
 Type: choice
 
-The type of array describes mounting and tracking options. Roof mounted arrays have a higher installed nominal operating cell temperature (INOCT) of 120 ^o^F compared to the default of 113 ^o^F. Array self-shading is not currently calculated for adjacent rows of modules within an array.
+The type of array describes mounting and tracking options. Roof mounted arrays have a higher installed nominal operating cell temperature (INOCT) of 120 °F compared to the default of 113 °F. Array self-shading is not currently calculated for adjacent rows of modules within an array.
 
 {{
   member_table({
@@ -156,9 +156,9 @@ The tilt of the photovoltaic array from horizontal.  Values outside the range 0 
 
 The following figures illustrate the use of both pvTilt and pvAzm for various configurations:
 
-![Fixed, south facing, tilted at 40^o^](../assets/images/pv_fixed.png)
+![Fixed, south facing, tilted at 40°](../assets/images/pv_fixed.png)
 
-![One-axis tracker, south facing, tilted at 20^o^](../assets/images/pv_tilted_tracker_south.png)
+![One-axis tracker, south facing, tilted at 20°](../assets/images/pv_tilted_tracker_south.png)
 
 ![One-axis tracker, horizontal aligned North/South (more common)](../assets/images/pv_horiz_tracker_south.png)
 
@@ -168,7 +168,7 @@ The following figures illustrate the use of both pvTilt and pvAzm for various co
 
 Type: float
 
-Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the range 0^o^ ≤ *x* $<$ 360^o^ is given, it is normalized to that range. For one-axis tracking, defines the azimuth of the rotation axis. Not used for two-axis tracking arrays. Should be omitted if pvVertices is given.
+Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the range 0° ≤ *x* $<$ 360° is given, it is normalized to that range. For one-axis tracking, defines the azimuth of the rotation axis. Not used for two-axis tracking arrays. Should be omitted if pvVertices is given.
 
 {{
   member_table({

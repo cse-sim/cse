@@ -144,8 +144,8 @@ Specifies cold (mains) water temperature supplying this DHWSYS.  DHWHEATER suppl
 
 {{
   member_table({
-    "units": "^o^F",
-    "legal_range": "> 32 ^o^F", 
+    "units": "°F",
+    "legal_range": "> 32 °F", 
     "default": "Mains temp from weather file",
     "required": "No",
     "variability": "hourly" 
@@ -162,8 +162,8 @@ CAUTION: wsTInletTest is intended for testing and model validation studies and s
 
 {{
   member_table({
-    "units": "^o^F",
-    "legal_range": "> 32 ^o^F", 
+    "units": "°F",
+    "legal_range": "> 32 °F", 
     "default": "",
     "required": "No",
     "variability": "subhourly" 
@@ -178,8 +178,8 @@ Cold water inlet design temperature for sizing.
 
 {{
   member_table({
-    "units": "^o^F",
-    "legal_range": "x > 32 ^o^F", 
+    "units": "°F",
+    "legal_range": "x > 32 °F", 
     "default": "Annual minimums mains temperature",
     "required": "No",
     "variability": "constant" 
@@ -621,8 +621,8 @@ Hot water delivery temperature (at output of water heater(s) and at point of use
 
 {{
   member_table({
-    "units": "^o^F",
-    "legal_range": "> 32 ^o^F", 
+    "units": "°F",
+    "legal_range": "> 32 °F", 
     "default": "120",
     "required": "No",
     "variability": "hourly" 
@@ -639,8 +639,8 @@ CAUTION: wsTUseTest is intended for testing and model validation studies and sho
 
 {{
   member_table({
-    "units": "^o^F",
-    "legal_range": "> 32 ^o^F", 
+    "units": "°F",
+    "legal_range": "> 32 °F", 
     "default": "",
     "required": "No",
     "variability": "subhourly" 
@@ -655,8 +655,8 @@ Type: float
 
 {{
   member_table({
-    "units": "^o^F",
-    "legal_range": "> 32 ^o^F", 
+    "units": "°F",
+    "legal_range": "> 32 °F", 
     "default": "wsTUse",
     "required": "No",
     "variability": "hourly" 
@@ -671,8 +671,8 @@ Type: float
 
 {{
   member_table({
-    "units": "^o^F",
-    "legal_range": "> 32 ^o^F", 
+    "units": "°F",
+    "legal_range": "> 32 °F", 
     "default": "wsTSetPoint",
     "required": "No",
     "variability": "hourly" 
@@ -687,8 +687,8 @@ Specifies the design (sizing) set point temperature.
 
 {{
   member_table({
-    "units": "^o^F",
-    "legal_range": "x > 32 ^o^F", 
+    "units": "°F",
+    "legal_range": "x > 32 °F", 
     "default": "wsTUse",
     "required": "No",
     "variability": "constant" 
@@ -719,8 +719,8 @@ Design (sizing) source air temperature for HPWH DHWHEATERs.
 
 {{
   member_table({
-    "units": "^o^F",
-    "legal_range": "x > 32 ^o^F", 
+    "units": "°F",
+    "legal_range": "x > 32 °F", 
     "default": "Heating design temperature",
     "required": "No",
     "variability": "At the start and at the end of interval" 
@@ -812,7 +812,7 @@ Note also that wsTSetpoint can be also be modified hourly to achieve load-shifti
 
 Type: float
 
-When (and only when) wsDRMethod=STATEOFCHARGE, wsTargetSOC specifies the target fraction of maximum tank heat content.  The tank is deemed fully charged when its entire contents is at wsTSetpoint and 0 charged at 110 ^o^F.  Schedules are used to indicate anticipated heat requirements. The STATEOFCHARGE method can be used in combined heat / DHW systems (see RSYS rsType=COMBINEDHEATDHW) when there is excess capacity during summer months, as shown in the following:
+When (and only when) wsDRMethod=STATEOFCHARGE, wsTargetSOC specifies the target fraction of maximum tank heat content.  The tank is deemed fully charged when its entire contents is at wsTSetpoint and 0 charged at 110 °F.  Schedules are used to indicate anticipated heat requirements. The STATEOFCHARGE method can be used in combined heat / DHW systems (see RSYS rsType=COMBINEDHEATDHW) when there is excess capacity during summer months, as shown in the following:
 
 ```
 wsTargetSOC = select(

@@ -46,7 +46,7 @@ Approach 2. Enter gtU=U-factor and let the wnInH and wnExH default. This approac
 
 {{
   member_table({
-    "units": "Btuh/ft^2^-^o^F",
+    "units": "Btuh/ft^2^-°F",
     "legal_range": "*x* > 0", 
     "default": "*none*",
     "required": "No",
@@ -62,7 +62,7 @@ Fenestration system (including frame) U-factor evaluated at NFRC heating conditi
 
 {{
   member_table({
-    "units": "Btuh/ft^2^-^o^F",
+    "units": "Btuh/ft^2^-°F",
     "legal_range": "*x* > 0", 
     "default": "*none*",
     "required": "No",

@@ -165,7 +165,7 @@ Conductance between zones.
 
 {{
   member_table({
-    "units": "Btu/^o^F",
+    "units": "Btu/°F",
     "legal_range": "*x* ≥ 0", 
     "default": "0",
     "required": "No",
@@ -221,7 +221,7 @@ This will allow Z1's pressure to be realistic without inducing thermal loads tha
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "", 
     "default": "Outdoor dry-bulb",
     "required": "No",
@@ -309,7 +309,7 @@ Stairway angle for AIRNETHORIZ opening. Use 90 for an open hole. Note that 0 pre
 
 {{
   member_table({
-    "units": "^o^ degrees",
+    "units": "° degrees",
     "legal_range": "*x* > 0", 
     "default": "34",
     "required": "No",

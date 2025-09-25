@@ -40,7 +40,7 @@ Design dry-bulb temperature (maxiumum temperature on design day).
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "no-limitations?", 
     "default": "0.0",
     "required": "No",
@@ -57,7 +57,7 @@ Coincident daily dry-bulb range.
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "no-limitations?", 
     "default": "**none**",
     "required": "No",
@@ -73,7 +73,7 @@ Coincident wet-bulb design temperature.
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "no-limitations?", 
     "default": "**none**",
     "required": "No",
@@ -89,7 +89,7 @@ Coincident daily wet-bulb range.
 
 {{
   member_table({
-    "units": "^o^F",
+    "units": "°F",
     "legal_range": "no-limitations?", 
     "default": "**none**",
     "required": "No",

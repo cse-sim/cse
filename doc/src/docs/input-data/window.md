@@ -120,7 +120,7 @@ Approach 2. Enter wnU=U-factor and let the wnInH and wnExH default. Tnormally th
 
 {{
   member_table({
-    "units": "Btuh/ft^2^-^o^F",
+    "units": "Btuh/ft^2^-°F",
     "legal_range": "x > 0", 
     "default": "*none*",
     "required": "Yes",
@@ -136,7 +136,7 @@ Fenestration system (including frame) U-factor evaluated at NFRC heating conditi
 
 {{
   member_table({
-    "units": "Btuh/ft^2^-^o^F",
+    "units": "Btuh/ft^2^-°F",
     "legal_range": "x > 0", 
     "default": "gtUNFRC",
     "required": "Required when *wnModel* = ASHWAT",
@@ -192,7 +192,7 @@ The large default value of 10,000 represents a near-0 resistance, for the conven
 
 {{
   member_table({
-    "units": "Btuh/ft^2^-^o^F",
+    "units": "Btuh/ft^2^-°F",
     "legal_range": "x > 0", 
     "default": "10000",
     "required": "No",
@@ -208,7 +208,7 @@ Window exterior surface (air film) conductance.
 
 {{
   member_table({
-    "units": "Btuh/ft^2^-^o^F",
+    "units": "Btuh/ft^2^-°F",
     "legal_range": "x > 0", 
     "default": "same as owning surface",
     "required": "No",
@@ -323,7 +323,7 @@ The default hcFrc value (used when wnInHcFrCoeff is not provided) is hConvF * zn
 
 {{
   member_table({
-    "units": "Btuh/ft^2^-^o^F",
+    "units": "Btuh/ft^2^-°F",
     "legal_range": "", 
     "default": "*inherited from parent surface*",
     "required": "No",
