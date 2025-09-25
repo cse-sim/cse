@@ -42,7 +42,7 @@ Local heating thermostat setpoint. Hourly expression may be used to schedule as 
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "*no thermostat control*",
     "required": "No",
     "variability": "hourly" 
@@ -58,7 +58,7 @@ Minimum local heat output or set local heat output. If tuTLh is given, this is t
 {{
   member_table({
     "units": "Btuh",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0 if tuTLh given else no local heat",
     "required": "For set output local heat",
     "variability": "hourly" 
@@ -76,7 +76,7 @@ Maximum desired power, used when thermostat is calling for heat continuously, su
 {{
   member_table({
     "units": "Btuh",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "",
     "required": "Yes, if tuTLh given",
     "variability": "hourly" 
@@ -92,7 +92,7 @@ Setpoint priority: when there is more than one capability with the same setpoint
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "100",
     "required": "No",
     "variability": "constant" 
@@ -161,7 +161,7 @@ Air heating thermostat set point; implies *set temperature* air capability. May 
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "No thermostat-controlled air heating",
     "required": "No",
     "variability": "hourly" 
@@ -177,7 +177,7 @@ Air cooling thermostat set point; implies *set temperature* air capability. May 
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "No thermostat-controlled air cooling",
     "required": "No",
     "variability": "hourly" 
@@ -197,7 +197,7 @@ CSE will default tuVfDs to the largest of tuVfMn, tuVfMxH, and tuVfMxC unless a 
 {{
   member_table({
     "units": "cfm",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "largest of tuVfMn, tuVfMxH, and tuVfMxC if all are constant",
     "required": "Yes, if tuVfmn, tuVfmxH, or tuVfMxC is variable",
     "variability": "hourly" 
@@ -214,7 +214,7 @@ Sizing factor for autosized terminal air flows.  Default value (1.1) specifies 1
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "1.1",
     "required": "No",
     "variability": "constant" 
@@ -255,7 +255,7 @@ If either setpoint (tuTH or tuTC) is given, tuVfMn is the cfm used when the ther
 {{
   member_table({
     "units": "cfm",
-    "legal_range": "*AUTOSIZE* or *x* $\\ge$ 0", 
+    "legal_range": "*AUTOSIZE* or *x* ≥ 0", 
     "default": "if tuTH or tuTC given, else no air heat/cool",
     "required": "For set output air operation",
     "variability": "hourly" 
@@ -271,7 +271,7 @@ Maximum heating air flow rate, subject to air handler limitations. This terminal
 {{
   member_table({
     "units": "cfm",
-    "legal_range": "*AUTOSIZE* or *x* $\\ge$ 0", 
+    "legal_range": "*AUTOSIZE* or *x* ≥ 0", 
     "default": "*none*",
     "required": "If *tuTH* given",
     "variability": "hourly" 
@@ -287,7 +287,7 @@ Maximum cooling air flow rate, before air handler limitations, used when the the
 {{
   member_table({
     "units": "cfm",
-    "legal_range": "*AUTOSIZE* or *x* $\\ge$ 0", 
+    "legal_range": "*AUTOSIZE* or *x* ≥ 0", 
     "default": "*none*",
     "required": "If *tuTC* given",
     "variability": "hourly" 
@@ -303,7 +303,7 @@ Cool setpoint priority. The lowest numbered priority is used first when there ar
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -319,7 +319,7 @@ Heat setpoint priority. Lowest numbered priority is used first when there are eq
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -335,7 +335,7 @@ Leakage of supply air to return, increasing supply volume and return temperature
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "0.05",
     "required": "No",
     "variability": "constant" 
@@ -353,7 +353,7 @@ Supply air to return plenum heat loss as a fraction of supply air to return air 
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "0.1",
     "required": "No",
     "variability": "constant" 
@@ -394,7 +394,7 @@ Rated capacity of the heating coil. The coil will never supply more heat than it
 {{
   member_table({
     "units": "Btu/hr",
-    "legal_range": "*AUTOSIZE* or *x* $\\gt$ 0", 
+    "legal_range": "*AUTOSIZE* or *x* > 0", 
     "default": "*none*",
     "required": "Yes",
     "variability": "constant" 
@@ -410,7 +410,7 @@ Capacity factor for autosized terminal heating coil.  Default value (1.1) specif
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "1.1",
     "required": "No",
     "variability": "constant" 
@@ -488,7 +488,7 @@ Terminal fan schedule. May be scheduled with an hourly variable expression.
   csv_table("OFF,         fan does not run
   ON,          fan may run
   HEATING,     fan may run when local heat is in use
-  VAV,         fan may run when AIRHANDLER supply fan is on or when doing setback headting and ssCtrl is ZONE\_HEAT or BOTH (future).")
+  VAV,         fan may run when AIRHANDLER supply fan is on or when doing setback headting and ssCtrl is ZONE_HEAT or BOTH (future).")
 }}
 
 A series fan (see tfanType) runs whenever on; a parallel fan runs only enough to keep terminal cfm at terminal minimum plus fan cfm; thus it may not run at all when the VAV flow from the AIRHANDLER is sufficient.
@@ -512,7 +512,7 @@ Backdraft leakage when terminal fan off., as a fraction of tfanVfDs.
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "0.1 if fan present",
     "required": "No",
     "variability": "constant" 
@@ -528,7 +528,7 @@ Terminal fan design flow rate. To specify .x times zone or terminal cfm, use a C
 {{
   member_table({
     "units": "cfm",
-    "legal_range": "x $\\le$ 0", 
+    "legal_range": "x ≤ 0", 
     "default": "*none*",
     "required": "Yes (if fan present)",
     "variability": "constant" 
@@ -544,7 +544,7 @@ Terminal fan external static pressure.
 {{
   member_table({
     "units": "inches H2O",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0.3",
     "required": "No",
     "variability": "constant" 
@@ -560,7 +560,7 @@ Terminal fan/motor/drive combined efficiency.
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\le$ *x* $\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "0.08",
     "required": "No",
     "variability": "constant" 
@@ -573,11 +573,13 @@ Type: *k0, k1, k2, k3, x0*
 
 *k0* through *k3* are the coefficients of a cubic polynomial for the curve relating fan relative energy consumption to relative air flow above the minimum flow *x0*. Up to five *floats* may be given, separated by commas. 0 is used for any omitted trailing values. The values are used as follows:
 
-$$z  =  k_0  +  k_1 \cdot (x - x_0)|  +  k_2 \cdot (x - x_0)|^2  +  k_3 \cdot (x - x_0)|^3$$
+$$
+z  =  k_0  +  k_1 \cdot (x - x_0)|  +  k_2 \cdot (x - x_0)|^2  +  k_3 \cdot (x - x_0)|^3
+$$
 
 where:
 
--   $x$ is the relative fan air flow (as fraction of *tfanVfDs*; 0 $\le$ x $\le$ 1);
+-   $x$ is the relative fan air flow (as fraction of *tfanVfDs*; 0 ≤ x ≤ 1);
 -   $x_0$ is the minimum relative air flow (default 0);
 -   $(x - x_0)|$ is the "positive difference", i.e. $(x - x_0)$ if $x > x_0$; else 0;
 -   $z$ is the relative energy consumption.
@@ -617,7 +619,7 @@ Optional to indicates the end of terminal definition. Alternatively, the end of 
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "*none*",
     "required": "No",
     "variability": "constant" 

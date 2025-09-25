@@ -53,7 +53,7 @@ Heat plant pipe loss: heat assumed lost from piping connecting boilers to loads 
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "0.01",
     "required": "No",
     "variability": "constant" 
@@ -65,16 +65,16 @@ Heat plant pipe loss: heat assumed lost from piping connecting boilers to loads 
 
 Type: boilerName list, ALL_BUT and boilerName list, or ALL
 
-The commands *hpStage1* through *hpStage7* allow specification of up to seven *STAGES* in which BOILERs are activated as the load increases. Each stage may be specified with a list of up to seven names of BOILERs in the HEATPLANT, or with the word ALL, meaning all of the HEATPLANT's BOILERs, or with the word ALL\_BUT and a list of up to six names of BOILERs. Each stage should be more powerful than the preceding one. If you have less than seven stages, you may skip some of the commands *hpStage1* through *hpStage7* -- the used stage numbers need not be contiguous.
+The commands *hpStage1* through *hpStage7* allow specification of up to seven *STAGES* in which BOILERs are activated as the load increases. Each stage may be specified with a list of up to seven names of BOILERs in the HEATPLANT, or with the word ALL, meaning all of the HEATPLANT's BOILERs, or with the word ALL_BUT and a list of up to six names of BOILERs. Each stage should be more powerful than the preceding one. If you have less than seven stages, you may skip some of the commands *hpStage1* through *hpStage7* -- the used stage numbers need not be contiguous.
 
 If none of *hpStage1* through *hpStage7* are given, CSE supplies a single default stage containing all boilers.
 
-A comma must be entered between boiler names and after the word ALL\_BUT.
+A comma must be entered between boiler names and after the word ALL_BUT.
 
 {{
   member_table({
     "units": "",
-    "legal_range": "1 to 7 names;ALL\_BUT and 1 to 6 names;ALL", 
+    "legal_range": "1 to 7 names;ALL_BUT and 1 to 6 names;ALL", 
     "default": "*hpStage1* = ALL",
     "required": "No",
     "variability": "constant" 

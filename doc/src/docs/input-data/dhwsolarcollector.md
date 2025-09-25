@@ -13,7 +13,7 @@ Collector area.
 {{
   member_table({
     "units": "ft^2",
-    "legal_range": "$>$ 0", 
+    "legal_range": "> 0", 
     "default": "0",
     "required": "Yes",
     "variability": "constant" 
@@ -123,7 +123,7 @@ Incident angle modifier at 60 degree, from SRCC rating.
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0.72",
     "required": "No",
     "variability": "constant" 
@@ -155,7 +155,7 @@ Collector piping length.
 {{
   member_table({
     "units": "ft",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0.0",
     "required": "No",
     "variability": "Hourly and at the end of interval" 
@@ -187,7 +187,7 @@ Collector piping insulation thickness.
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "1.0",
     "required": "No",
     "variability": "Hourly and at the end of interval" 
@@ -219,7 +219,7 @@ Collector piping surround temperature.
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "x $\\geq$ 32", 
+    "legal_range": "x ≥ 32", 
     "default": "70.0",
     "required": "No",
     "variability": "hourly" 
@@ -233,7 +233,7 @@ Type: float
 {{
   member_table({
     "units": "Btu/h",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "from *scPumpflow*",
     "required": "No",
     "variability": "constant" 
@@ -249,7 +249,7 @@ Fraction of scPumpPwr added to liquid stream, the remainder is discarded.
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "1.0",
     "required": "No",
     "variability": "Every run" 

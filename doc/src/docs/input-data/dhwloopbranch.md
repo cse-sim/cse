@@ -25,7 +25,7 @@ Specifies the number of identical DHWLOOPBRANCHs. Note may be non-integer.
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -41,7 +41,7 @@ Length of branch.
 {{
   member_table({
     "units": "ft",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "constant" 
@@ -89,7 +89,7 @@ Pipe insulation thickness
 {{
   member_table({
     "units": "in",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -178,7 +178,7 @@ Adjustment factor applied to branch UA.  UA is derived (from wbSize, wbLength, w
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -210,7 +210,7 @@ Branch flow rate assumed during draw.
 {{
   member_table({
     "units": "gpm",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "2",
     "required": "No",
     "variability": "hourly" 
@@ -226,7 +226,7 @@ Number of times during the hour when the branch volume is discarded.
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "hourly" 

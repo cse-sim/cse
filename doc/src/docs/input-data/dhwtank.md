@@ -25,7 +25,7 @@ Number of identical tanks of this type. Any value $>1$ is equivalent to repeated
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -34,7 +34,9 @@ Number of identical tanks of this type. Any value $>1$ is equivalent to repeated
 
 Tank heat loss is calculated hourly (note that default heat loss is 0) --
 
-$$\text{qLoss} = \text{wtMult} \cdot (\text{wtUA} \cdot (\text{wtTTank} - \text{wtTEx}) + \text{wtXLoss})$$
+$$
+\text{qLoss} = \text{wtMult} \cdot (\text{wtUA} \cdot (\text{wtTTank} - \text{wtTEx}) + \text{wtXLoss})
+$$
 
 ### wtUA
 
@@ -45,7 +47,7 @@ Tank heat loss coefficient.
 {{
   member_table({
     "units": "Btuh/^o^F",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "Derived from wtVol and wtInsulR",
     "required": "No",
     "variability": "constant" 
@@ -61,7 +63,7 @@ Specifies tank volume.
 {{
   member_table({
     "units": "gal",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "constant" 
@@ -77,7 +79,7 @@ Specifies total tank insulation resistance. The input value should represent the
 {{
   member_table({
     "units": "ft^2^-^o^F/Btuh",
-    "legal_range": "x $\\ge$ 0.01", 
+    "legal_range": "x ≥ 0.01", 
     "default": "0",
     "required": "No",
     "variability": "constant" 
@@ -109,7 +111,7 @@ Tank surround temperature.
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "70",
     "required": "No",
     "variability": "hourly" 
@@ -125,7 +127,7 @@ Tank average water temperature.
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "$>$ 32 ^o^F", 
+    "legal_range": "> 32 ^o^F", 
     "default": "Parent DHWSYSTEM wsTUse",
     "required": "No",
     "variability": "hourly" 

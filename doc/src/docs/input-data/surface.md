@@ -49,7 +49,7 @@ Gross area of surface. (CSE computes the net area for simulation by subtracting 
 {{
   member_table({
     "units": "ft^2^",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "*none*",
     "required": "Yes",
     "variability": "constant" 
@@ -65,7 +65,7 @@ Surface tilt from horizontal. Values outside the range 0 to 360 are first normal
 {{
   csv_table("sfType = FLOOR, *sfTilt*=180&comma; default = 180 (fixed value)
 sfType = WALL, 60 $<$ *sfTilt* $<$ 180&comma; default = 90
-sfType = CEILING, 0 $\leq$ *sfTilt* $\leq$ 60&comma; default = 0")
+sfType = CEILING, 0 ≤ *sfTilt* ≤ 60&comma; default = 0")
 }}
 
 {{
@@ -89,7 +89,7 @@ Azimuth of surface with respect to znAzm. The azimuth used in simulating a surfa
     "units": "degrees",
     "legal_range": "unrestricted", 
     "default": "*none*",
-    "required": "Required if *sfTilt* $\\neq$ 0 and *sfTilt* $\\neq$ 180",
+    "required": "Required if *sfTilt* ≠ 0 and *sfTilt* ≠ 180",
     "variability": "constant" 
   })
 }}
@@ -102,15 +102,15 @@ Provides user control over how CSE models conduction for this surface.
 
 {{
   csv_table("QUICK,                               Surface is modeled using a simple conductance. Heat capacity effects are ignored. Either sfCon or sfU (next) can be specified.
-DELAYED&comma; DELAYED\_HOUR&comma; DELAYED\_SUBHOUR, Surface is modeled using a multi-layer finite difference technique that represents heat capacity effects. If the time constant of the surface is too short to accurately simulate&comma; a warning message is issued and the Quick model is used. The program **cannot** use the finite difference model if sfU rather than sfCon is specified.
+DELAYED&comma; DELAYED_HOUR&comma; DELAYED_SUBHOUR, Surface is modeled using a multi-layer finite difference technique that represents heat capacity effects. If the time constant of the surface is too short to accurately simulate&comma; a warning message is issued and the Quick model is used. The program **cannot** use the finite difference model if sfU rather than sfCon is specified.
 AUTO, Program selects Quick or the appropriate Delayed automatically according to the time constant of the surface (if sfU is specified&comma; Quick is selected).
-FD (or FORWARD\_DIFFERENCE),         Selects the forward difference model (used with short time steps and the CZM/UZM zone model).
+FD (or FORWARD_DIFFERENCE),         Selects the forward difference model (used with short time steps and the CZM/UZM zone model).
 KIVA,                                Uses a two-dimensional finite difference model to simulate heat flow through foundation surfaces.")
 }}
 
 {{
   member_table({
-    "legal_range": "QUICK, DELAYED, DELAYED\_HOUR, DELAYED\_SUBOUR, AUTO, 2D_FND",
+    "legal_range": "QUICK, DELAYED, DELAYED_HOUR, DELAYED_SUBOUR, AUTO, 2D_FND",
     "default": "AUTO", 
     "required": "No",
     "variability": "constant" 
@@ -131,7 +131,7 @@ Surface U-value (NOT including surface (air film) conductances). For surfaces fo
 {{
   member_table({
     "units": "Btuh/ft^2^-^o^F",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "Determined from *sfCon*",
     "required": "if *sfCon* not given and if *sfExCnd* is not GROUND",
     "variability": "constant" 
@@ -163,12 +163,12 @@ Note: When *sfExCnd* is GROUND, *sfCon* may be omitted to indicate:
 
 Type: float
 
-Sublayer thickness adjustment factor for FORWARD\_DIFFERENCE conduction model used with sfCon surfaces.  Material layers in the construction are divided into sublayers as needed for numerical stability.  sfLThkF allows adjustment of the thickness criterion used for subdivision.  A value of 0 prevents subdivision; the default value (0.5) uses layers with conservative thickness equal to half of an estimated safe value.  Fewer (thicker) sublayers improves runtime at the expense of accurate representation of rapid changes.
+Sublayer thickness adjustment factor for FORWARD_DIFFERENCE conduction model used with sfCon surfaces.  Material layers in the construction are divided into sublayers as needed for numerical stability.  sfLThkF allows adjustment of the thickness criterion used for subdivision.  A value of 0 prevents subdivision; the default value (0.5) uses layers with conservative thickness equal to half of an estimated safe value.  Fewer (thicker) sublayers improves runtime at the expense of accurate representation of rapid changes.
 
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0.5",
     "required": "No",
     "variability": "constant" 
@@ -198,7 +198,7 @@ Surface exterior absorptivity.
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "0.5",
     "required": "Required if *sfExCnd* = AMBIENT or *sfExCnd* = SPECIFIEDT",
     "variability": "monthly-hourly" 
@@ -214,7 +214,7 @@ Surface interior solar absorptivity.
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "sfType = CEILING, 0.2; sfType = WALL, 0.6; sfType = FLOOR, 0.8",
     "required": "No",
     "variability": "monthly-hourly" 
@@ -230,7 +230,7 @@ Surface exterior long wave (thermal) emittance.
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "0.9",
     "required": "No",
     "variability": "constant" 
@@ -246,7 +246,7 @@ Surface interior long wave (thermal) emittance.
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "0.9",
     "required": "No",
     "variability": "constant" 
@@ -294,7 +294,7 @@ Ground reflectivity for this surface.
 {{
   member_table({
     "units": "fraction",
-    "legal_range": "0 $\\leq$ *x* $\\leq$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "grndRefl",
     "required": "No",
     "variability": "Monthly - Hourly" 
@@ -305,7 +305,7 @@ Ground reflectivity for this surface.
 
 Type: float
 
-Inside surface (air film) conductance. Ignored for sfModel = Forward\_Difference. Default depends on the surface type.
+Inside surface (air film) conductance. Ignored for sfModel = Forward_Difference. Default depends on the surface type.
 
 {{
   csv_table("sfType = FLOOR or CEILING, 1.32
@@ -315,7 +315,7 @@ other, 1.5")
 {{
   member_table({
     "units": "Btuh/ft^2^-^o^F",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "*See above*",
     "required": "No",
     "variability": "constant" 
@@ -326,7 +326,7 @@ other, 1.5")
 
 Type: float
 
-Outside combined surface (air film) conductance. Ignored for sfModel = Forward\_Difference. The default value is dependent upon the exterior conditions:
+Outside combined surface (air film) conductance. Ignored for sfModel = Forward_Difference. The default value is dependent upon the exterior conditions:
 
 {{
   csv_table("sfExCnd = AMBIENT,        dflExH (Top-level member&comma; described above)
@@ -338,14 +338,14 @@ sfExCnd = ADIABATIC,      not applicable")
 {{
   member_table({
     "units": "Btuh/ft^2^-^o^F",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "see above",
     "required": "No",
     "variability": "constant" 
   })
 }}
 
-When sfModel = Forward\_Difference, several models are available for calculating inside and outside surface convective coefficients.  Inside surface faces can be exposed only to zone conditions. Outside faces may be exposed either to ambient conditions or zone conditions, based on sfExCnd.  Only UNIFIED and INPUT are typically used.  The other models were used during CSE development for comparison.  For details, see CSE Engineering Documentation.
+When sfModel = Forward_Difference, several models are available for calculating inside and outside surface convective coefficients.  Inside surface faces can be exposed only to zone conditions. Outside faces may be exposed either to ambient conditions or zone conditions, based on sfExCnd.  Only UNIFIED and INPUT are typically used.  The other models were used during CSE development for comparison.  For details, see CSE Engineering Documentation.
 
 {{
   csv_table("Model,            Exposed to ambient,              Exposed to zone
@@ -366,7 +366,7 @@ Type: choice
 
 <!-- TODO: How does this impact Kiva? -->
 
-Selects the model used for exterior surface convection when sfModel = Forward\_Difference.
+Selects the model used for exterior surface convection when sfModel = Forward_Difference.
 
 {{
   member_table({
@@ -387,7 +387,7 @@ Characteristic length of surface, used in derivation of forced exterior convecti
 {{
   member_table({
     "units": "ft",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "10",
     "required": "No",
     "variability": "constant" 
@@ -403,7 +403,7 @@ Exterior convection coefficient adjustment factor.  When sfExHcModel=INPUT, hc=s
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "1",
     "required": "No",
     "variability": "subhourly" 
@@ -442,7 +442,7 @@ Type: choice
 
 <!-- TODO How does this change for Kiva? -->
 
-  Selects the model used for the inside (zone) surface convection when sfModel = Forward\_Difference.
+  Selects the model used for the inside (zone) surface convection when sfModel = Forward_Difference.
 
 {{
   member_table({
@@ -463,7 +463,7 @@ Type: float
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "1",
     "required": "No",
     "variability": "subhourly" 
@@ -534,7 +534,7 @@ Needed for foundation wall height, otherwise ignored. Maybe combine with sfDepth
 {{
   member_table({
     "units": "ft",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "*none*",
     "required": "when *sfType* is WALL and *sfExtCnd* is GROUND",
     "variability": "constant" 
@@ -550,7 +550,7 @@ Exposed perimeter of foundation floors.
 {{
   member_table({
     "units": "ft",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "*none*",
     "required": "when *sfType* is FLOOR, *sfFnd* is set, and *sfExtCnd* is GROUND",
     "variability": "constant" 
@@ -569,7 +569,7 @@ Depth below grade of surface.  For walls, sfDepthBG is measured to the lower edg
 {{
   member_table({
     "units": "ft",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "*none*",
     "required": "No",
     "variability": "constant" 
@@ -587,7 +587,7 @@ Conductances from outside face of surface to the weather file ground temperature
 {{
   member_table({
     "units": "Btuh/ft^2^-^o^F",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "see above",
     "required": "No",
     "variability": "constant" 
@@ -603,7 +603,7 @@ Resistance overall construction resistance.  TODO: full documentation.
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "*none*",
     "required": "No",
     "variability": "constant" 
@@ -631,10 +631,10 @@ The following tables summarize the defaults and legal ranges of surface members 
   **Member** **WALL**                  **FLOOR**    **CEILING**
   ---------- ------------------------- ------------ -----------------------
   sfTilt     optional, default=90, 60  n.a. (fixed  optional, default=0, 0
-             $<$ *sfTilt* $<$ 180      at 180)      $\le$ *sfTilt* $\le$ 60
+             $<$ *sfTilt* $<$ 180      at 180)      ≤ *sfTilt* ≤ 60
 
   sfAzm      **required**              n.a.         **required if sfTilt
-                                                    $>$ 0**
+                                                    > 0**
   -------------------------------------------------------------------------
 
   -----------------------------------------------------------------------

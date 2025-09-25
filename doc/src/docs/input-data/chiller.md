@@ -29,7 +29,7 @@ Chiller design capacity, that is, the capacity at *chTsDs* and *chTcndDs* (next)
 {{
   member_table({
     "units": "Btuh",
-    "legal_range": "*x* $\\neq$ 0", 
+    "legal_range": "*x* ≠ 0", 
     "default": "*none*",
     "required": "Yes",
     "variability": "constant" 
@@ -45,7 +45,7 @@ Design supply temperature: temperature of primary water leaving chiller at which
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "*x* $\\gt$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "44",
     "required": "No",
     "variability": "constant" 
@@ -61,7 +61,7 @@ Design condenser temperature: temperature of secondary water entering chiller co
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "*x* $\\gt$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "85",
     "required": "No",
     "variability": "constant" 
@@ -74,7 +74,9 @@ Type: *a, b, c, d, e, f*
 
 Coefficients of bi-quadratic polynomial function of supply (ts) and condenser (tcnd) temperatures that specifies how capacity varies with these temperatures. This polynomial is of the form
 
-$$a + b \cdot ts + c \cdot ts^2 + d \cdot tcnd + e \cdot tcnd^2 + f \cdot ts \cdot tcnd$$
+$$
+a + b \cdot ts + c \cdot ts^2 + d \cdot tcnd + e \cdot tcnd^2 + f \cdot ts \cdot tcnd
+$$
 
 Up to six *float* values may be entered, separated by commas; CSE will use zero for omitted trailing values. If the polynomial does not evaluate to 1.0 when ts is chTsDs and tcnd is chTcndDs, a warning message will be issued and the coefficients will be adjusted (normalized) to make the value 1.0.
 
@@ -99,7 +101,7 @@ Chiller full-load COP (Coefficient Of Performance) at *chTsDs*and *chTcndDs*. Th
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\gt$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "4.2",
     "required": "No",
     "variability": "constant" 
@@ -115,7 +117,7 @@ Alternate input for COP: Full-load Energy Input Ratio (electrical input energy d
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\gt$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "*chCop* is defaulted",
     "required": "No",
     "variability": "constant" 
@@ -128,7 +130,9 @@ Type: *a, b, c, d, e, f*
 
 Coefficients of bi-quadratic polynomial function of supply (ts) and condenser (tcnd) temperatures that specifies how energy input varies with these temperatures. This polynomial is of the form
 
-$$a + b \cdot ts + c \cdot ts^2 + d \cdot tcnd + e \cdot tcnd^2 + f \cdot ts \cdot tcnd$$
+$$
+a + b \cdot ts + c \cdot ts^2 + d \cdot tcnd + e \cdot tcnd^2 + f \cdot ts \cdot tcnd
+$$
 
 Up to six *float* values may be entered, separated by commas; CSE will use zero for omitted trailing values. If the polynomial does not evaluate to 1.0 when ts is chTsDs and tcnd is chTcndDs, a warning message will be issued and the coefficients will be adjusted (normalized) to make the value 1.0.
 
@@ -147,11 +151,11 @@ The next three inputs permit specification of the CHILLER's part load energy inp
 {{
   csv_table("full, loadplr (part load ratio) = 1.0
  , Power input is full-load input&comma; as described above.
-compressor unloading region, 1.0 &gt; plr $\\ge$ *chMinUnldPlr*
+compressor unloading region, 1.0 &gt; plr ≥ *chMinUnldPlr*
  , Power input is the full-load input times the value of the *chPyEirUl* polynomial for the current plr&comma; that is&comma; *chPyEirUl*(plr).
 false loading region, *chMinUnldPlr* &gt; plr &gt; *chMinFsldPlr*
  , Power input in this region is constant at the value for the low end of the compressor unloading region&comma; i.e. *chPyEirUl*(*chMinUnldPlr*).
-cycling region,  *chMinFsldPlr* &gt; plr $\\ge$ 0
+cycling region,  *chMinFsldPlr* &gt; plr ≥ 0
  , In this region the chiller runs at the low end of the false loading region for the necessary fraction of the time&comma; and the power input is the false loading value correspondingly prorated&comma; i.e. *chPyEirUl*(*chMinUnldPlr*) plr / *chMinFsldPlr*.")
 }}
 
@@ -163,7 +167,9 @@ Type: *a, b, c, d*
 
 Coefficients of cubic polynomial function of part load ratio (plr) that specifies how energy input varies with plr in the compressor unloading region (see above). This polynomial is of the form
 
-$$a + b \cdot plr + c \cdot plr^2 + d \cdot plr^3$$
+$$
+a + b \cdot plr + c \cdot plr^2 + d \cdot plr^3
+$$
 
 Up to four *float* values may be entered, separated by commas; CSE will use zero for omitted trailing values. If the polynomial does not evaluate to 1.0 when plr is 1.0, a warning message will be issued and the coefficients will be adjusted (normalized) to make the value 1.0.
 
@@ -186,7 +192,7 @@ Minimum compressor unloading part load ratio (plr); maximum false loading plr. S
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "0.1",
     "required": "No",
     "variability": "constant" 
@@ -202,7 +208,7 @@ Minimum compressor false loading part load ratio (plr); maximum cycling plr. See
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ *chMinFsldPlr*", 
+    "legal_range": "0 ≤ *x* ≤ *chMinFsldPlr*", 
     "default": "0.1",
     "required": "No",
     "variability": "constant" 
@@ -218,7 +224,7 @@ Fraction of CHILLER compressor motor input power which goes to the condenser. Fo
 {{
   member_table({
     "units": "",
-    "legal_range": "0 &lt; *x* $\\le$ 1", 
+    "legal_range": "0 &lt; *x* ≤ 1", 
     "default": "1.0",
     "required": "No",
     "variability": "constant" 
@@ -252,7 +258,7 @@ Chiller primary pump flow in gallons per minute: amount of water pumped from thi
 {{
   member_table({
     "units": "gpm",
-    "legal_range": "*x* $\\gt$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "*chCapDs* / 5000",
     "required": "No",
     "variability": "constant" 
@@ -268,14 +274,14 @@ Chiller primary pump head loss (pressure). 0 may be specified to eliminate pump 
 {{
   member_table({
     "units": "ft H2O",
-    "legal_range": "*x* $\\ge$ 0", 
-    "default": "57.22\*",
+    "legal_range": "*x* ≥ 0", 
+    "default": "57.22^*^",
     "required": "No",
     "variability": "constant" 
   })
 }}
 
-\* May be temporary default for 10-31-92 version; prior value (65) may be restored.
+^*^May be temporary default for 10-31-92 version; prior value (65) may be restored.
 
 ### chppMotEff
 
@@ -286,7 +292,7 @@ Chiller primary pump motor efficiency.
 {{
   member_table({
     "units": "",
-    "legal_range": "0 &lt; *x* $\\le$ 1.0", 
+    "legal_range": "0 &lt; *x* ≤ 1.0", 
     "default": ".88",
     "required": "No",
     "variability": "constant" 
@@ -302,7 +308,7 @@ Chiller primary pump hydraulic efficiency
 {{
   member_table({
     "units": "",
-    "legal_range": "0 &lt; *x* $\\le$ 1.0", 
+    "legal_range": "0 &lt; *x* ≤ 1.0", 
     "default": "0.7",
     "required": "No",
     "variability": "constant" 
@@ -318,7 +324,7 @@ Chiller primary pump maximum overrun: factor by which flow demanded by coils can
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\ge$ 1.0", 
+    "legal_range": "*x* ≥ 1.0", 
     "default": "1.3",
     "required": "No",
     "variability": "constant" 
@@ -352,7 +358,7 @@ Chiller condenser pump flow in gallons per minute: amount of water pumped from t
 {{
   member_table({
     "units": "gpm",
-    "legal_range": "*x* $\\gt$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "*chCapDs* / 4000",
     "required": "No",
     "variability": "constant" 
@@ -368,14 +374,14 @@ Chiller condenser pump head loss (pressure). 0 may be specified to eliminate pum
 {{
   member_table({
     "units": "ft H2O",
-    "legal_range": "*x* $\\ge$ 0", 
-    "default": "45.78\*",
+    "legal_range": "*x* ≥ 0", 
+    "default": "45.78^*^",
     "required": "No",
     "variability": "constant" 
   })
 }}
 
-\* May be temporary default for 10-31-92 version; prior value (45) may be restored.
+^*^May be temporary default for 10-31-92 version; prior value (45) may be restored.
 
 ### chcpMotEff
 
@@ -386,7 +392,7 @@ Chiller condenser pump motor efficiency.
 {{
   member_table({
     "units": "",
-    "legal_range": "0 &lt; *x* $\\le$ 1.0", 
+    "legal_range": "0 &lt; *x* ≤ 1.0", 
     "default": ".88",
     "required": "No",
     "variability": "constant" 
@@ -402,7 +408,7 @@ Chiller condenser pump hydraulic efficiency
 {{
   member_table({
     "units": "",
-    "legal_range": "0 &lt; *x* $\\le$ 1.0", 
+    "legal_range": "0 &lt; *x* ≤ 1.0", 
     "default": "0.7",
     "required": "No",
     "variability": "constant" 
@@ -454,7 +460,7 @@ Auxiliary power used in full value if chiller is on for any fraction of subhour.
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "constant" 

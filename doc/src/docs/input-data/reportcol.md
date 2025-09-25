@@ -77,7 +77,7 @@ Space between (to left of) column, in character positions. Allows you to space c
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -93,7 +93,7 @@ Column width.
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "10",
     "required": "No",
     "variability": "constant" 
@@ -109,7 +109,7 @@ Number of digits after decimal point.
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "*flexible format*",
     "required": "No",
     "variability": "constant" 

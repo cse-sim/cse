@@ -10,7 +10,7 @@ After the object name, each member's description is introduced with a line of th
 
 -   *string*
 
--   \_\_\_\_*name* (object name for specified type of object)
+-   ____*name* (object name for specified type of object)
 
 -   *choice*
 
@@ -24,7 +24,7 @@ Each member's description continues with a table of the form:
   member_table({
     "units": "ft^2^",
     "legal_range": "x &gt; 0", 
-    "default": "wnHeight \\\* wnWidth",
+    "default": "wnHeight \\_ wnWidth",
     "required": "No",
     "variability": "constant" 
   })

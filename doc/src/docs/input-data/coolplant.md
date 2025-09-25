@@ -55,7 +55,7 @@ Coolplant primary loop supply temperature setpoint: setpoint temperature for chi
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "*x* $\\gt$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "44",
     "required": "No",
     "variability": "hourly" 
@@ -71,7 +71,7 @@ Coolplant pipe loss: heat assumed gained from primary loop piping connecting chi
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": ".01",
     "required": "No",
     "variability": "constant" 
@@ -101,16 +101,16 @@ Type: chillerName list, ALL_BUT and chillerName list, or ALL
 
 The commands *cpStage1* through *cpStage7* allow specification of up to seven *STAGES* in which chillers are activated as the load increases. CSE will use the first stage that can meet the load; if no stage will meet the load (output the heat requested by the coils at *cpTsSp*), the last COOLPLANT stage is used.
 
-Each stage may be specified with a list of up to seven names of CHILLERs in the COOLPLANT, or with the word ALL, meaning all of the COOLPLANT's CHILLERs, or with the word ALL\_BUT and a list of up to six names of CHILLERs. Each stage should be more powerful than the preceding one. If you have less than seven stages, you may skip some of the commands *cpStage1* through *cpStage7* -- the used stage numbers need not be contiguous.
+Each stage may be specified with a list of up to seven names of CHILLERs in the COOLPLANT, or with the word ALL, meaning all of the COOLPLANT's CHILLERs, or with the word ALL_BUT and a list of up to six names of CHILLERs. Each stage should be more powerful than the preceding one. If you have less than seven stages, you may skip some of the commands *cpStage1* through *cpStage7* -- the used stage numbers need not be contiguous.
 
 If none of *cpStage1* through *cpStage7* are given, CSE supplies a single default stage containing all chillers.
 
-A comma must be entered between chiller names and after the word ALL\_BUT.
+A comma must be entered between chiller names and after the word ALL_BUT.
 
 {{
   member_table({
     "units": "",
-    "legal_range": "1 to 7 names;<br>ALL\_BUT and 1 to 6 names;<br>ALL", 
+    "legal_range": "1 to 7 names;<br>ALL_BUT and 1 to 6 names;<br>ALL", 
     "default": "*cpStage1* = ALL",
     "required": "No",
     "variability": "constant" 

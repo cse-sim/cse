@@ -25,7 +25,7 @@ Number of identical pumps of this type. Any value $>1$ is equivalent to repeated
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0 ", 
+    "legal_range": "x > 0 ", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -41,7 +41,7 @@ Pump power.
 {{
   member_table({
     "units": "W",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "0",
     "required": "No",
     "variability": "hourly" 
@@ -57,7 +57,7 @@ Fraction of pump power that heats circulating liquid.  The remainder is discarde
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ x $\\le$ 1", 
+    "legal_range": "0 ≤ x ≤ 1", 
     "default": "1",
     "required": "No",
     "variability": "hourly" 

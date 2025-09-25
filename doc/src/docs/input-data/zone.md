@@ -49,7 +49,7 @@ Nominal zone floor area.
 {{
   member_table({
     "units": "ft^2^",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "*none*",
     "required": "Yes",
     "variability": "constant" 
@@ -65,7 +65,7 @@ Nominal zone volume.
 {{
   member_table({
     "units": "ft^3^",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "*none*",
     "required": "Yes",
     "variability": "constant" 
@@ -113,7 +113,7 @@ Nominal zone ceiling height relative to zone floor (typically 8 – 10 ft).
 {{
   member_table({
     "units": "ft",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "*znVol* / *znArea*",
     "required": "No",
     "variability": "constant" 
@@ -129,8 +129,8 @@ Nominal eave height above ground level. Used re calculation of local surface win
 {{
   member_table({
     "units": "ft",
-    "legal_range": "x $>$ 0", 
-    "default": "*znFloorZ + infStories\*8*",
+    "legal_range": "x > 0", 
+    "default": "*znFloorZ + infStories*8*",
     "required": "No",
     "variability": "constant" 
   })
@@ -145,8 +145,8 @@ Zone "air" heat capacity: represents heat capacity of air, furniture, "light" wa
 {{
   member_table({
     "units": "Btu/^o^F",
-    "legal_range": "x $\\geq$ 0", 
-    "default": "3.5 \* *znArea*",
+    "legal_range": "x ≥ 0", 
+    "default": "3.5 * *znArea*",
     "required": "No",
     "variability": "constant" 
   })
@@ -161,7 +161,7 @@ Zone air exchange rate used in determination of interior surface convective coef
 {{
   member_table({
     "units": "ACH",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "as modeled",
     "required": "No",
     "variability": "subhourly" 
@@ -193,7 +193,7 @@ Zone hygric inertia ratio.  In zone moisture balance calculations, the effective
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -209,7 +209,7 @@ Zone shade closure. Determines insolation through windows (see WINDOW members *w
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\leq$ *x* $\\leq$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "1 when cooling was used in *previous* hour, else 0",
     "required": "No",
     "variability": "hourly" 
@@ -291,7 +291,7 @@ Heating capacity at current conditions
 {{
   member_table({
     "units": "Btuh",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "*none*",
     "required": "No",
     "variability": "hourly" 
@@ -307,7 +307,7 @@ Rated heating capacity
 {{
   member_table({
     "units": "Btuh",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "*none*",
     "required": "No",
     "variability": "constant" 
@@ -323,7 +323,7 @@ Cooling capacity at current conditions
 {{
   member_table({
     "units": "Btuh",
-    "legal_range": "x $\\leq$ 0", 
+    "legal_range": "x ≤ 0", 
     "default": "*none*",
     "required": "No",
     "variability": "hourly" 
@@ -339,7 +339,7 @@ Rated cooling capacity
 {{
   member_table({
     "units": "Btuh",
-    "legal_range": "x $\\leq$ 0", 
+    "legal_range": "x ≤ 0", 
     "default": "*none*",
     "required": "No",
     "variability": "constant" 
@@ -359,7 +359,7 @@ Zone infiltration air changes per hour.
 {{
   member_table({
     "units": "1/hr",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0.5",
     "required": "No",
     "variability": "hourly" 
@@ -375,7 +375,7 @@ Zone effective leakage area (ELA).
 {{
   member_table({
     "units": "in^2^",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0.0",
     "required": "No",
     "variability": "hourly" 
@@ -399,7 +399,7 @@ Zone local shielding class, used in derivation of local wind speed for ELA infil
 {{
   member_table({
     "units": "",
-    "legal_range": "1 $\\leq$ *x* $\\leq$ 5", 
+    "legal_range": "1 ≤ *x* ≤ 5", 
     "default": "3",
     "required": "No",
     "variability": "constant" 
@@ -415,7 +415,7 @@ Number of stories in zone, used in ELA model.
 {{
   member_table({
     "units": "",
-    "legal_range": "1 $\\leq$ *x* $\\leq$ 3", 
+    "legal_range": "1 ≤ *x* ≤ 3", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -431,7 +431,7 @@ Wind speed modifier factor.  The weather file wind speed is multiplied by this f
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "derived from znEaveZ and infShld",
     "required": "No",
     "variability": "constant" 
@@ -485,7 +485,7 @@ Exhaust fan on fraction. On/off control assumed, so electricity requirement is p
 {{
   member_table({
     "units": "fraction",
-    "legal_range": "0 $\\leq$ x $\\leq$ 1", 
+    "legal_range": "0 ≤ x ≤ 1", 
     "default": "1",
     "required": "No",
     "variability": "hourly" 
@@ -494,8 +494,7 @@ Exhaust fan on fraction. On/off control assumed, so electricity requirement is p
 
 Example: The following would run an exhaust fan 70% of the time between 8 AM and 5 PM:
 
-        xfanFOn = select( (\$hour >= 7 && \$hour < 5), .7,
-                                              default, 0 );
+        xfanFOn = select( ($hour >= 7 && $hour < 5), .7, default, 0 );
 
 
 ### xfanVfDs
@@ -507,7 +506,7 @@ Exhaust fan design flow; 0 or not given indicates no fan.
 {{
   member_table({
     "units": "cfm",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0, no fan",
     "required": "If fan present",
     "variability": "constant" 
@@ -523,7 +522,7 @@ Exhaust fan external static pressure.
 {{
   member_table({
     "units": "inches",
-    "legal_range": "0.05 $\\leq$ *x* $\\leq$ 1.0", 
+    "legal_range": "0.05 ≤ *x* ≤ 1.0", 
     "default": "0.3",
     "required": "No",
     "variability": "constant" 
@@ -541,7 +540,7 @@ Fan input power per unit air flow (at design flow and pressure).
 {{
   member_table({
     "units": "W/cfm",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "derived from xfanEff",
     "required": "If xfanEff and xfanShaftBhp not present",
     "variability": "constant" 
@@ -557,7 +556,7 @@ Exhaust fan/motor/drive combined efficiency.
 {{
   member_table({
     "units": "fraction",
-    "legal_range": "0 $\\leq$ x $\\leq$ 1", 
+    "legal_range": "0 ≤ x ≤ 1", 
     "default": "0.08",
     "required": "No",
     "variability": "constant" 
@@ -573,7 +572,7 @@ Fan shaft power at design flow and pressure.
 {{
   member_table({
     "units": "BHP",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "derived from xfanElecPwr and xfanVfDs",
     "required": "If xfanElecPwr not present",
     "variability": "constant" 

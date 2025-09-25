@@ -18,7 +18,7 @@ Supply fan design or rated flow at rated pressure.
 {{
   member_table({
     "units": "cfm",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "Sum of referencing IZXFER supply flows",
     "required": "No",
     "variability": "constant" 
@@ -34,7 +34,7 @@ Design or rated fan pressure.
 {{
   member_table({
     "units": "inches H~2~O",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "0.3",
     "required": "No",
     "variability": "constant" 
@@ -68,7 +68,7 @@ Fan efficiency at design flow and pressure, as a fraction.
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "derived from *oaSupFanShaftBhp* if given, else 0.08",
     "required": "No",
     "variability": "constant" 
@@ -97,11 +97,13 @@ Type: $k_0$, $k_1$, $k_2$, $k_3$, $x_0$
 
 $k_0$ through $k_3$ are the coefficients of a cubic polynomial for the curve relating fan relative energy consumption to relative air flow above the minimum flow $x_0$. Up to five *floats* may be given, separated by commas. 0 is used for any omitted trailing values. The values are used as follows:
 
-$$z = k_0 + k_1 \cdot (x - x_0)|  +  k_2 \cdot (x - x_0)|^2 + k_3 \cdot (x - x_0)|^3$$
+$$
+z = k_0 + k_1 \cdot (x - x_0)|  +  k_2 \cdot (x - x_0)|^2 + k_3 \cdot (x - x_0)|^3
+$$
 
 where:
 
--   $x$ is the relative fan air flow (as fraction of oaSupFanVfDs; 0 $\le$ $x$ $\le$ 1);
+-   $x$ is the relative fan air flow (as fraction of oaSupFanVfDs; 0 ≤ $x$ ≤ 1);
 -   $x_0$ is the minimum relative air flow (default 0);
 -   $(x - x_0)|$ is the "positive difference", i.e. $(x - x_0)$ if $x > x_0$; else 0;
 -   $z$ is the relative energy consumption.
@@ -111,7 +113,7 @@ If $z$ is not 1.0 for $x$ = 1.0, a warning message is displayed and the coeffici
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "*0, 1, 0, 0, 0 (linear)*",
     "required": "No",
     "variability": "constant" 
@@ -179,7 +181,7 @@ Caution: oaWEx is not checked against saturation -- there is no verification tha
 {{
   member_table({
     "units": "",
-    "legal_range": "$\\gt$ 0", 
+    "legal_range": "> 0", 
     "default": "Outdoor humidity ratio",
     "required": "No",
     "variability": "subhourly" 
@@ -197,7 +199,7 @@ Exhaust fan design or rated flow at rated pressure.
 {{
   member_table({
     "units": "cfm",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "Sum of referencing IZXFER exhaust flows",
     "required": "No",
     "variability": "constant" 
@@ -247,7 +249,7 @@ Fan efficiency at design flow and pressure, as a fraction.
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "derived from *oaExhFanShaftBhp* if given, else 0.08",
     "required": "No",
     "variability": "constant" 
@@ -276,11 +278,13 @@ Type: $k_0$, $k_1$, $k_2$, $k_3$, $x_0$
 
 $k_0$ through $k_3$ are the coefficients of a cubic polynomial for the curve relating fan relative energy consumption to relative air flow above the minimum flow $x_0$. Up to five *floats* may be given, separated by commas. 0 is used for any omitted trailing values. The values are used as follows:
 
-$$z = k_0 + k_1 \cdot (x - x_0)|  +  k_2 \cdot (x - x_0)|^2 + k_3 \cdot (x - x_0)|^3$$
+$$
+z = k_0 + k_1 \cdot (x - x_0)|  +  k_2 \cdot (x - x_0)|^2 + k_3 \cdot (x - x_0)|^3
+$$
 
 where:
 
--   $x$ is the relative fan air flow (as fraction of oaExhFanVfDs; 0 $\le$ $x$ $\le$ 1);
+-   $x$ is the relative fan air flow (as fraction of oaExhFanVfDs; 0 ≤ $x$ ≤ 1);
 -   $x_0$ is the minimum relative air flow (default 0);
 -   $(x - x_0)|$ is the "positive difference", i.e. $(x - x_0)$ if $x > x_0$; else 0;
 -   $z$ is the relative energy consumption.
@@ -290,7 +294,7 @@ If $z$ is not 1.0 for $x$ = 1.0, a warning message is displayed and the coeffici
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "*0, 1, 0, 0, 0 (linear)*",
     "required": "No",
     "variability": "constant" 
@@ -355,7 +359,7 @@ Energy Input Ratio of the heating coil. This is the inverse of the coil efficien
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0",
     "required": "when modeling heating coil",
     "variability": "subhourly" 
@@ -402,7 +406,7 @@ Energy Input Ratio of the cooling coil. This is the inverse of the coil efficien
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0",
     "required": "when modeling cooling coil",
     "variability": "subhourly" 
@@ -418,7 +422,7 @@ Sensible Heat Ratio of the cooling coil. If the required sensible capacity of th
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\gt$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "1.0",
     "required": "No",
     "variability": "subhourly" 
@@ -469,7 +473,7 @@ Heat exchanger design or rated flow.
 {{
   member_table({
     "units": "cfm",
-    "legal_range": "*x* $\\gt$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "Average of supply and exhaust fan design flows",
     "required": "No",
     "variability": "constant" 
@@ -485,7 +489,7 @@ Heat exchanger flow fraction (of design flow) used for second set of effectivene
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\lt$ *x* $\\lt$ 1.0", 
+    "legal_range": "0 < *x* < 1.0", 
     "default": "0.75",
     "required": "No",
     "variability": "constant" 
@@ -501,7 +505,7 @@ Heat exchanger sensible effectiveness in heating mode at the design flow rate. S
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1.0", 
+    "legal_range": "0 ≤ *x* ≤ 1.0", 
     "required": "when modeling heat recovery",
     "variability": "constant" 
   })
@@ -516,7 +520,7 @@ Heat exchanger sensible effectiveness in heating mode at the second flow rate (*
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1.0", 
+    "legal_range": "0 ≤ *x* ≤ 1.0", 
     "default": "0",
     "required": "No",
     "variability": "constant" 
@@ -532,7 +536,7 @@ Heat exchanger latent effectiveness in heating mode at the design flow rate.
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1.0", 
+    "legal_range": "0 ≤ *x* ≤ 1.0", 
     "default": "0",
     "required": "No",
     "variability": "constant" 
@@ -548,7 +552,7 @@ Heat exchanger latent effectiveness in heating mode at the second flow rate (**o
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1.0", 
+    "legal_range": "0 ≤ *x* ≤ 1.0", 
     "default": "0",
     "required": "No",
     "variability": "constant" 
@@ -564,7 +568,7 @@ Heat exchanger sensible effectiveness in cooling mode at the design flow rate.
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1.0", 
+    "legal_range": "0 ≤ *x* ≤ 1.0", 
     "default": "0",
     "required": "No",
     "variability": "constant" 
@@ -580,7 +584,7 @@ Heat exchanger sensible effectiveness in cooling mode at the second flow rate (*
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1.0", 
+    "legal_range": "0 ≤ *x* ≤ 1.0", 
     "default": "0",
     "required": "No",
     "variability": "constant" 
@@ -596,7 +600,7 @@ Heat exchanger latent effectiveness in cooling mode at the design flow rate.
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1.0", 
+    "legal_range": "0 ≤ *x* ≤ 1.0", 
     "default": "0",
     "required": "No",
     "variability": "constant" 
@@ -612,7 +616,7 @@ Heat exchanger latent effectiveness in cooling mode at the second flow rate (**o
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1.0", 
+    "legal_range": "0 ≤ *x* ≤ 1.0", 
     "default": "0",
     "required": "No",
     "variability": "constant" 
@@ -644,7 +648,7 @@ Auxiliary power required to operate the heat recovery device (e.g., wheel motor,
 {{
   member_table({
     "units": "W",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "subhourly" 

@@ -35,7 +35,7 @@ Specific heat for the collector fluid.
 {{
   member_table({
     "units": "Btu/lbm-^o^F",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "0.9",
     "required": "No",
     "variability": "constant" 
@@ -51,7 +51,7 @@ Density for the collector fluid.
 {{
   member_table({
     "units": "lb/ft^3^",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "64.0",
     "required": "No",
     "variability": "constant" 
@@ -69,7 +69,7 @@ Type: float
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "hourly" 
@@ -85,7 +85,7 @@ Tank heat exchanger effectiveness.
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ x $\\le$ 0.99", 
+    "legal_range": "0 ≤ x ≤ 0.99", 
     "default": "0",
     "required": "No",
     "variability": "hourly" 
@@ -101,7 +101,7 @@ Temperature limit for the tank collector.
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "180.0",
     "required": "No",
     "variability": "constant" 

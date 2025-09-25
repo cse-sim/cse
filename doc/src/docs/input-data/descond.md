@@ -106,7 +106,7 @@ Wind speed for design conditions.
 {{
   member_table({
     "units": "mph",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0.0",
     "required": "No",
     "variability": "constant" 
@@ -147,7 +147,7 @@ Solar noon direct beam and diffuse horizontal irradiance. Cannot be given if dcT
 {{
   member_table({
     "units": "Btuh/ft^2^",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0 irradiance",
     "required": "No",
     "variability": "constant" 

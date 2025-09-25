@@ -25,7 +25,7 @@ Overall area of door.
 {{
   member_table({
     "units": "ft^2^",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "*none*",
     "required": "Yes",
     "variability": "constant" 
@@ -40,9 +40,9 @@ Provides user control over how CSE models conduction for this door:
 
 {{
   csv_table("QUICK,                               Surface is modeled using a simple conductance. Heat capacity effects are ignored. Either drCon or drU (next) can be specified.
-  DELAYED&comma; DELAYED\_HOUR&comma; DELAYED\_SUBOUR,  Surface is modeled using a multi-layer finite difference technique which represents heat capacity effects. If the time constant of the door is too short to accurately simulate&comma; a warning message is issued and the Quick model is used. drCon (next) must be specified -- the program cannot use the finite difference model if drU rather than drCon is specified.
+  DELAYED&comma; DELAYED_HOUR&comma; DELAYED_SUBOUR,  Surface is modeled using a multi-layer finite difference technique which represents heat capacity effects. If the time constant of the door is too short to accurately simulate&comma; a warning message is issued and the Quick model is used. drCon (next) must be specified -- the program cannot use the finite difference model if drU rather than drCon is specified.
   AUTO,                                Program selects Quick or appropriate Delayed automatically according to the time constant of the surface (if drU is specified&comma; Quick is selected).
-  FD or FORWARD\_DIFFERENCE,           Selects the forward difference model (used with short time steps and the CZM/UZM zone models)")
+  FD or FORWARD_DIFFERENCE,           Selects the forward difference model (used with short time steps and the CZM/UZM zone models)")
 }}
 
 {{
@@ -66,7 +66,7 @@ Door U-value, NOT including surface (air film) conductances. Allows direct entry
 {{
   member_table({
     "units": "Btuh/ft^2^-^o^F",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "Determined from *drCon*",
     "required": "if *drCon* not given",
     "variability": "constant" 
@@ -93,12 +93,12 @@ Name of construction for door.
 
 Type: float
 
-Sublayer thickness adjustment factor for FORWARD\_DIFFERENCE conduction model used with drCon surfaces.  Material layers in the construction are divided into sublayers as needed for numerical stability.  drLThkF allows adjustment of the thickness criterion used for subdivision.  A value of 0 prevents subdivision; the default value (0.5) uses layers with conservative thickness equal to half of an estimated safe value.  Fewer (thicker) sublayers improves runtime at the expense of accurate representation of rapid changes.
+Sublayer thickness adjustment factor for FORWARD_DIFFERENCE conduction model used with drCon surfaces.  Material layers in the construction are divided into sublayers as needed for numerical stability.  drLThkF allows adjustment of the thickness criterion used for subdivision.  A value of 0 prevents subdivision; the default value (0.5) uses layers with conservative thickness equal to half of an estimated safe value.  Fewer (thicker) sublayers improves runtime at the expense of accurate representation of rapid changes.
 
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0.5",
     "required": "No",
     "variability": "constant" 
@@ -114,7 +114,7 @@ Door exterior solar absorptivity. Applicable only if sfExCnd of owning surface i
 {{
   member_table({
     "units": "Btuh/ft^2^-^o^F",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "same as owning surface",
     "required": "No",
     "variability": "monthly-hourly" 
@@ -130,7 +130,7 @@ Door interior solar absorptivity.
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "0.5",
     "required": "No",
     "variability": "monthly-hourly" 
@@ -146,7 +146,7 @@ Door exterior long wave (thermal) emittance.
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "0.9",
     "required": "No",
     "variability": "constant" 
@@ -162,7 +162,7 @@ Door interior long wave (thermal) emittance.
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "0.9",
     "required": "No",
     "variability": "constant" 
@@ -173,12 +173,12 @@ Door interior long wave (thermal) emittance.
 
 Type: float
 
-Door interior surface (air film) conductance. Ignored if drModel = Forward\_Difference
+Door interior surface (air film) conductance. Ignored if drModel = Forward_Difference
 
 {{
   member_table({
     "units": "Btuh/ft^2^-^o^F",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "same as owning surface",
     "required": "No",
     "variability": "constant" 
@@ -189,7 +189,7 @@ Door interior surface (air film) conductance. Ignored if drModel = Forward\_Diff
 
 Type: float
 
-Door exterior surface (air film) conductance. Ignored if drModel = Forward\_Difference
+Door exterior surface (air film) conductance. Ignored if drModel = Forward_Difference
 
 {{
   member_table({
@@ -201,7 +201,7 @@ Door exterior surface (air film) conductance. Ignored if drModel = Forward\_Diff
   })
 }}
 
-  When drModel = Forward\_Difference, several models are available for calculating inside and outside surface convective coefficients.  Inside surface faces can be exposed only to zone conditions. Outside faces may be exposed either to ambient conditions or zone conditions, based on drExCnd.  Only UNIFIED and INPUT are typically used.  The other models were used during CSE development for comparison.  For details, see CSE Engineering Documentation.
+  When drModel = Forward_Difference, several models are available for calculating inside and outside surface convective coefficients.  Inside surface faces can be exposed only to zone conditions. Outside faces may be exposed either to ambient conditions or zone conditions, based on drExCnd.  Only UNIFIED and INPUT are typically used.  The other models were used during CSE development for comparison.  For details, see CSE Engineering Documentation.
 
 {{
   csv_table("Model,            Exposed to ambient,              Exposed to zone
@@ -218,7 +218,7 @@ Door exterior surface (air film) conductance. Ignored if drModel = Forward\_Diff
 
 Type: choice
 
-Selects the model used for exterior surface convection when drModel = Forward\_Difference.
+Selects the model used for exterior surface convection when drModel = Forward_Difference.
 
 {{
   member_table({
@@ -255,7 +255,7 @@ Exterior convection coefficient adjustment factor.  When drExHcModel=INPUT, hc=d
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "1",
     "required": "No",
     "variability": "subhourly" 
@@ -292,7 +292,7 @@ Exterior roughness factor.  Typical roughness values:
 
 Type: choice
 
-Selects the model used for the inside (zone) surface convection when drModel = Forward\_Difference.
+Selects the model used for the inside (zone) surface convection when drModel = Forward_Difference.
 
 {{
   member_table({
@@ -313,7 +313,7 @@ Interior convection coefficient adjustment factor.  When drInHcModel=INPUT, hc=d
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "1",
     "required": "No",
     "variability": "subhourly" 

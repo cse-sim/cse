@@ -47,7 +47,7 @@ Approach 2. Enter gtU=U-factor and let the wnInH and wnExH default. This approac
 {{
   member_table({
     "units": "Btuh/ft^2^-^o^F",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "*none*",
     "required": "No",
     "variability": "constant" 
@@ -63,7 +63,7 @@ Fenestration system (including frame) U-factor evaluated at NFRC heating conditi
 {{
   member_table({
     "units": "Btuh/ft^2^-^o^F",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "*none*",
     "required": "No",
     "variability": "constant" 
@@ -79,7 +79,7 @@ Glazing Solar Heat Gain Coefficient: fraction of normal beam insolation which ge
 {{
   member_table({
     "units": "fraction",
-    "legal_range": "*0* $\\leq$ *x* $\\leq$ *1*", 
+    "legal_range": "*0* ≤ *x* ≤ *1*", 
     "default": "*none*",
     "required": "Yes",
     "variability": "constant" 
@@ -95,7 +95,7 @@ SHGC multiplier with shades open. May be overriden in the specific window input.
 {{
   member_table({
     "units": "fraction",
-    "legal_range": "*0* $\\leq$ *x* $\\leq$ *1*", 
+    "legal_range": "*0* ≤ *x* ≤ *1*", 
     "default": "1.0",
     "required": "No",
     "variability": "Monthly - Hourly" 
@@ -111,7 +111,7 @@ SHGC multiplier with shades closed. May be overriden in the specific window inpu
 {{
   member_table({
     "units": "fraction",
-    "legal_range": "*0* $\\leq$ *x* $\\leq$ *1*", 
+    "legal_range": "*0* ≤ *x* ≤ *1*", 
     "default": "gtSMSO (no shades)",
     "required": "No",
     "variability": "Monthly - Hourly" 
@@ -127,7 +127,7 @@ Framing multiplier used if none given in window, for example .9 if frame and mul
 {{
   member_table({
     "units": "fraction",
-    "legal_range": "*0* $\\leq$ *x* $\\leq$ *1*", 
+    "legal_range": "*0* ≤ *x* ≤ *1*", 
     "default": "gtSHGCO",
     "required": "No",
     "variability": "Monthly - Hourly" 
@@ -140,13 +140,13 @@ Type: *float*
 
 Four float values separated by commas. Coefficients for incidence angle SHGC multiplier polynomial applied to gtSHGC to determine beam transmissivity at angles of incidence other than 90 degrees. The values are coefficients for first through fourth powers of the cosine of the incidence angle; there is no constant part. An error message will be issued if the coefficients do not add to one. They are used in the following computation:
 
-    angle = incidence angle of beam radiation, measured from normal to glass.
+angle = incidence angle of beam radiation, measured from normal to glass.
 
-    cosI = cos( angle)
+cosI = cos(angle)
 
-    angMult = a\*cosI + b\*cosI\^2 + c\*cosI\^3 + d\*cosI\^4
+angMult = a\*cosI + b\*cosI^2^ + c\*cosI^3^ + d\*cosI^4^
 
-    beamXmisvty = gtSHGCO \* angMult (shades open)
+beamXmisvty = gtSHGCO * angMult (shades open)
 
 {{
   member_table({
@@ -167,7 +167,7 @@ SHGC diffuse multiplier, applied to gtSHGC to determine transmissivity for diffu
 {{
   member_table({
     "units": "fraction",
-    "legal_range": "*0* $\\leq$ *x* $\\leq$ *1*", 
+    "legal_range": "*0* ≤ *x* ≤ *1*", 
     "default": "*none*",
     "required": "Yes",
     "variability": "constant" 
@@ -183,7 +183,7 @@ SHGC diffuse multiplier, applied to qtSHGC to determine transmissivity for diffu
 {{
   member_table({
     "units": "fraction",
-    "legal_range": "*0* $\\leq$ *x* $\\leq$ *1*", 
+    "legal_range": "*0* ≤ *x* ≤ *1*", 
     "default": "*none*",
     "required": "Yes",
     "variability": "constant" 
@@ -199,7 +199,7 @@ Number of glazings in the Glazetype (bare glass only, not including any interior
 {{
   member_table({
     "units": "",
-    "legal_range": "*0* $<$ *x* $\\leq$ *4*", 
+    "legal_range": "*0* $<$ *x* ≤ *4*", 
     "default": "2",
     "required": "No",
     "variability": "constant" 
@@ -247,7 +247,7 @@ Glazing dirt loss factor.
 {{
   member_table({
     "units": "fraction",
-    "legal_range": "*0* $\\leq$ *x* $\\leq$ *1*", 
+    "legal_range": "*0* ≤ *x* ≤ *1*", 
     "default": "0",
     "required": "No",
     "variability": "constant" 

@@ -25,7 +25,7 @@ Thickness of material. If specified, matThk indicates the discreet thickness of 
 {{
   member_table({
     "units": "ft",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "*none*",
     "required": "No",
     "variability": "constant" 
@@ -41,7 +41,7 @@ Conductivity of material. Note that conductivity is *always* stated for a 1 foot
 {{
   member_table({
     "units": "Btuh-ft/ft^2^-^o^F",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "*none*",
     "required": "Yes",
     "variability": "constant" 
@@ -57,7 +57,7 @@ Temperature at which matCond is rated. See matCondCT (next).
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "70 ^o^F",
     "required": "No",
     "variability": "constant" 
@@ -68,7 +68,7 @@ Temperature at which matCond is rated. See matCondCT (next).
 
 Type: float
 
-Coefficient for temperature adjustment of matCond in the forward difference surface conduction model. Each hour (not subhour), the conductivity of layers using this material are adjusted as followslrCond = matCond \* (1 + matCondCT\*(T~layer~ – matCondT))
+Coefficient for temperature adjustment of matCond in the forward difference surface conduction model. Each hour (not subhour), the conductivity of layers using this material are adjusted as followslrCond = matCond * (1 + matCondCT*(T~layer~ – matCondT))
 
 {{
   member_table({
@@ -91,7 +91,7 @@ Specific heat of material.
 {{
   member_table({
     "units": "Btu/lb-^o^F",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0 (thermally massless)",
     "required": "No",
     "variability": "constant" 
@@ -107,7 +107,7 @@ Density of material.
 {{
   member_table({
     "units": "lb/ft^3^",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0 (massless)",
     "required": "No",
     "variability": "constant" 
@@ -123,7 +123,7 @@ Nominal R-value per foot of material. Appropriate for insulation materials only 
 {{
   member_table({
     "units": "ft^2^-^o^F/Btuh",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "*none*",
     "required": "No",
     "variability": "constant" 

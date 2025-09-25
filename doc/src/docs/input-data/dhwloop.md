@@ -25,7 +25,7 @@ Number of identical loops of this type. Any value $>1$ is equivalent to repeated
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -41,7 +41,7 @@ Loop flow rate (when operating).
 {{
   member_table({
     "units": "gpm",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "6",
     "required": "No",
     "variability": "hourly" 
@@ -57,7 +57,7 @@ Inlet temperature of first DHWLOOPSEG.
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "DHWSYS wsTUse",
     "required": "No",
     "variability": "hourly" 
@@ -73,7 +73,7 @@ Fraction of hour that loop circulation operates.
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "1",
     "required": "No",
     "variability": "hourly" 
@@ -89,7 +89,7 @@ DHWLOOPSEG pipe heat loss adjustment factor.  DHWLOOPSEG UA is derived (from wgS
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -105,7 +105,7 @@ Specifies electrical power available to make up losses from DHWLOOPSEGs (loss fr
 {{
   member_table({
     "units": "W",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "hourly" 
@@ -121,7 +121,7 @@ Specifies the efficiency of loss makeup heating if any.  No effect when wlLossMa
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "1",
     "required": "No",
     "variability": "hourly" 

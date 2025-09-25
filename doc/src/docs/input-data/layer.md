@@ -45,7 +45,7 @@ Thickness of layer.
 {{
   member_table({
     "units": "ft",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "Required if *matThk* not specified in referenced *lrMat*",
     "required": "No",
     "variability": "constant" 
@@ -77,7 +77,7 @@ Fraction of layer that is framing. Must be specified if frmMat is specified. See
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\leq$ *x* $\\leq$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "*no framed layer*",
     "required": "Required if  *lrFrmMat* specified, else disallowed",
     "variability": "constant" 

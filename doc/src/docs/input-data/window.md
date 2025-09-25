@@ -27,7 +27,7 @@ Overall height of window (including frame).
 {{
   member_table({
     "units": "ft",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "*none*",
     "required": "Yes",
     "variability": "constant" 
@@ -43,7 +43,7 @@ Overall width of window (including frame).
 {{
   member_table({
     "units": "ft",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "*none*",
     "required": "Yes",
     "variability": "constant" 
@@ -59,8 +59,8 @@ Overall area of window (including frame).
 {{
   member_table({
     "units": "ft^2^",
-    "legal_range": "x $>$ 0", 
-    "default": "*wnHeight* \* *wnWidth*",
+    "legal_range": "x > 0", 
+    "default": "*wnHeight* * *wnWidth*",
     "required": "No",
     "variability": "constant" 
   })
@@ -75,7 +75,7 @@ Area multiplier; can be used to represent multiple identical windows.
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -121,7 +121,7 @@ Approach 2. Enter wnU=U-factor and let the wnInH and wnExH default. Tnormally th
 {{
   member_table({
     "units": "Btuh/ft^2^-^o^F",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "*none*",
     "required": "Yes",
     "variability": "constant" 
@@ -137,7 +137,7 @@ Fenestration system (including frame) U-factor evaluated at NFRC heating conditi
 {{
   member_table({
     "units": "Btuh/ft^2^-^o^F",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "gtUNFRC",
     "required": "Required when *wnModel* = ASHWAT",
     "variability": "constant" 
@@ -153,7 +153,7 @@ Window exterior long wave (thermal) emittance.
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "0.84",
     "required": "No",
     "variability": "constant" 
@@ -169,7 +169,7 @@ Window interior long wave (thermal) emittance.
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "0.84",
     "required": "No",
     "variability": "constant" 
@@ -193,7 +193,7 @@ The large default value of 10,000 represents a near-0 resistance, for the conven
 {{
   member_table({
     "units": "Btuh/ft^2^-^o^F",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "10000",
     "required": "No",
     "variability": "constant" 
@@ -209,7 +209,7 @@ Window exterior surface (air film) conductance.
 {{
   member_table({
     "units": "Btuh/ft^2^-^o^F",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "same as owning surface",
     "required": "No",
     "variability": "constant" 
@@ -254,7 +254,7 @@ Characteristic length of surface, used in derivation of forced exterior convecti
 {{
   member_table({
     "units": "ft",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "10",
     "required": "No",
     "variability": "constant" 
@@ -270,7 +270,7 @@ Exterior convection coefficient adjustment factor.  When wnExHcModel=INPUT, hc=w
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "1",
     "required": "No",
     "variability": "subhourly" 
@@ -281,7 +281,7 @@ Exterior convection coefficient adjustment factor.  When wnExHcModel=INPUT, hc=w
 
 Type: choice
 
-Selects the model used for the inside (zone) surface convection when wnModel = Forward\_Difference.
+Selects the model used for the inside (zone) surface convection when wnModel = Forward_Difference.
 
 {{
   member_table({
@@ -302,7 +302,7 @@ Interior convection coefficient adjustment factor.  When wnInHcModel=INPUT, hc=w
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "1",
     "required": "No",
     "variability": "subhourly" 
@@ -372,7 +372,7 @@ SHGC multiplier with shades open. Overrides gtSMSO.
 {{
   member_table({
     "units": "fraction",
-    "legal_range": "0 $\\leq$ *x* $\\leq$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "gtSMSO or 1",
     "required": "No",
     "variability": "Monthly - Hourly" 
@@ -388,7 +388,7 @@ SHGC multiplier with shades closed. Overrides gtSMSC
 {{
   member_table({
     "units": "fraction",
-    "legal_range": "0 $\leq$ *x* $\leq$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "wnSMSO or gtSMSC",
     "required": "No",
     "variability": "Monthly - Hourly" 
@@ -404,7 +404,7 @@ Number of glazings in the window (bare glass only, not including any interior or
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $<$ *x* $\leq$ 4", 
+    "legal_range": "0 $<$ *x* ≤ 4", 
     "default": "gtNGLZ",
     "required": "Required when *wnModel* = ASHWAT",
     "variability": "constant" 
@@ -452,7 +452,7 @@ Glazing dirt loss factor.
 {{
   member_table({
     "units": "fraction",
-    "legal_range": "0 $\\leq$ *x* $\\leq$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "*none*",
     "required": "No",
     "variability": "constant" 
@@ -468,7 +468,7 @@ Ground reflectivity for this window.
 {{
   member_table({
     "units": "fraction",
-    "legal_range": "0 $\\leq$ *x* $\\leq$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "sfGrndRefl",
     "required": "No",
     "variability": "Monthly - Hourly" 
@@ -484,7 +484,7 @@ View factor from this window to sky for diffuse radiation. For the shading effec
 {{
   member_table({
     "units": "fraction",
-    "legal_range": "0 $\\leq$ x $\\leq$ 1", 
+    "legal_range": "0 ≤ x ≤ 1", 
     "default": "0.5 - 0.5 cos(tilt) = .5 for vertical surface",
     "required": "No",
     "variability": "Monthly - Hourly" 
@@ -500,7 +500,7 @@ View factor from this window to ground for diffuse radiation. For the shading ef
 {{
   member_table({
     "units": "fraction",
-    "legal_range": "0 $\\leq$ x $\\leq$ 1", 
+    "legal_range": "0 ≤ x ≤ 1", 
     "default": "0.5 + 0.5 .5 for vertical surface",
     "required": "No",
     "variability": "Monthly - Hourly" 

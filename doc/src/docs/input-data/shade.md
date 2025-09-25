@@ -28,7 +28,7 @@ Depth of overhang (from plane of window to outside edge of overhang). A zero val
 {{
   member_table({
     "units": "ft",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "monthly-hourly" 
@@ -44,7 +44,7 @@ Distance from top of window to bottom of overhang.
 {{
   member_table({
     "units": "ft",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "monthly-hourly" 
@@ -60,7 +60,7 @@ Distance from left edge of window (as viewed from the outside) to the left end o
 {{
   member_table({
     "units": "ft",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "monthly-hourly" 
@@ -76,7 +76,7 @@ Distance from right edge of window (as viewed from the outside) to the right end
 {{
   member_table({
     "units": "ft",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "monthly-hourly" 
@@ -92,7 +92,7 @@ Height of flap hanging down from outer edge of overhang.
 {{
   member_table({
     "units": "ft",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "monthly-hourly" 
@@ -108,7 +108,7 @@ Depth of left fin from plane of window. A zero value indicates no fin.
 {{
   member_table({
     "units": "ft",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "monthly-hourly" 
@@ -124,7 +124,7 @@ Vertical distance from top of window to top of left fin.
 {{
   member_table({
     "units": "ft",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "monthly-hourly" 
@@ -140,7 +140,7 @@ Distance from left edge of window to left fin.
 {{
   member_table({
     "units": "ft",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "monthly-hourly" 
@@ -156,7 +156,7 @@ Vertical distance from bottom of window to bottom of left fin.
 {{
   member_table({
     "units": "ft",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "monthly-hourly" 
@@ -172,7 +172,7 @@ Depth of right fin from plane of window. A 0 value indicates no fin.
 {{
   member_table({
     "units": "ft",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "monthly-hourly" 
@@ -188,7 +188,7 @@ Vertical distance from top of window to top of right fin.
 {{
   member_table({
     "units": "ft",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "monthly-hourly" 
@@ -204,7 +204,7 @@ Distance from right edge of window to right fin.
 {{
   member_table({
     "units": "ft",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "monthly-hourly" 
@@ -220,7 +220,7 @@ Vertical distance from bottom of window to bottom of right fin.
 {{
   member_table({
     "units": "ft",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "monthly-hourly" 

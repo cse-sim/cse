@@ -109,7 +109,7 @@ Number of identical systems of this type (including all child objects). Any valu
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -129,7 +129,7 @@ Unless this DHWSYS is part of a shared-load group or includes DHWHEATREC(s), the
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -145,7 +145,7 @@ Specifies cold (mains) water temperature supplying this DHWSYS.  DHWHEATER suppl
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "$>$ 32 ^o^F", 
+    "legal_range": "> 32 ^o^F", 
     "default": "Mains temp from weather file",
     "required": "No",
     "variability": "hourly" 
@@ -163,7 +163,7 @@ CAUTION: wsTInletTest is intended for testing and model validation studies and s
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "$>$ 32 ^o^F", 
+    "legal_range": "> 32 ^o^F", 
     "default": "",
     "required": "No",
     "variability": "subhourly" 
@@ -179,7 +179,7 @@ Cold water inlet design temperature for sizing.
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "x $>$ 32 ^o^F", 
+    "legal_range": "x > 32 ^o^F", 
     "default": "Annual minimums mains temperature",
     "required": "No",
     "variability": "constant" 
@@ -195,7 +195,7 @@ Hourly hot water use (at the point of use).  See further info under wsDayUse.
 {{
   member_table({
     "units": "gal",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "hourly" 
@@ -213,7 +213,7 @@ CAUTION: wsUseTest is intended for testing and model validation studies and shou
 {{
   member_table({
     "units": "gal",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "",
     "required": "No",
     "variability": "subhourly" 
@@ -256,7 +256,7 @@ Water heater draw duration factor for faucets. Defined as the ratio of the actua
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0.0",
     "required": "No",
     "variability": "Hourly" 
@@ -272,7 +272,7 @@ Water heater draw duration factor for showers. Defined as the ratio of the actua
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0.0",
     "required": "No",
     "variability": "Hourly" 
@@ -288,7 +288,7 @@ Water heater draw duration factor for baths. Defined as the ratio of the actual 
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0.0",
     "required": "No",
     "variability": "Hourly" 
@@ -304,7 +304,7 @@ Water heater draw duration factor for clothes washers. Defined as the ratio of t
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "1.0",
     "required": "No",
     "variability": "Hourly" 
@@ -320,7 +320,7 @@ Water heater draw duration factor for dishwashers. Defined as the ratio of the a
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "1.0",
     "required": "No",
     "variability": "Hourly" 
@@ -336,7 +336,7 @@ Water heater draw duration factor for unknown end use. Defined as the ratio of t
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0.0",
     "required": "No",
     "variability": "Hourly" 
@@ -352,7 +352,7 @@ Draw water waste for faucets. Specifies additional draw volume per DHWUSE event 
 {{
   member_table({
     "units": "gal/draw",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0.0",
     "required": "No",
     "variability": "Hourly" 
@@ -368,7 +368,7 @@ Draw water waste for showers. Specifies additional draw volume per DHWUSE event 
 {{
   member_table({
     "units": "gal/draw",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0.0",
     "required": "No",
     "variability": "Hourly" 
@@ -384,7 +384,7 @@ Draw water waste for baths. Specifies additional draw volume per DHWUSE event (a
 {{
   member_table({
     "units": "gal/draw",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0.0",
     "required": "No",
     "variability": "Hourly" 
@@ -400,7 +400,7 @@ Draw water waste for clothes washers. Specifies additional draw volume per DHWUS
 {{
   member_table({
     "units": "gal/draw",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0.0",
     "required": "No",
     "variability": "Hourly" 
@@ -416,7 +416,7 @@ Draw water waste for dishwashers. Specifies additional draw volume per DHWUSE ev
 {{
   member_table({
     "units": "gal/draw",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0.0",
     "required": "No",
     "variability": "Hourly" 
@@ -432,7 +432,7 @@ Draw water waste for unknown end use. Specifies additional draw volume per DHWUS
 {{
   member_table({
     "units": "gal/draw",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0.0",
     "required": "No",
     "variability": "Hourly" 
@@ -448,7 +448,7 @@ Circulation loop return temperature for testing and validation.
 {{
   member_table({
     "units": "F",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0.0",
     "required": "No",
     "variability": "Subhourly" 
@@ -464,7 +464,7 @@ Circulation loop volume flow rate for testing and validation.
 {{
   member_table({
     "units": "gpm",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0.0",
     "required": "No",
     "variability": "Subhourly" 
@@ -494,7 +494,7 @@ Average amount of waste per day.
 {{
   member_table({
     "units": "gal/day",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "wsDayWasteBranchVolF * (Total DHWLOOPBRANCH vol)",
     "required": "No",
     "variability": "constant" 
@@ -510,7 +510,7 @@ Day waste scaling factor.
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -526,7 +526,7 @@ Relative faucet water draw for day of waste scheme.
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "0.0",
     "required": "No",
     "variability": "subhourly" 
@@ -542,7 +542,7 @@ Relative shower water draw for day of waste scheme.
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "0.0",
     "required": "No",
     "variability": "subhourly" 
@@ -558,7 +558,7 @@ Relative bath water draw for day of waste scheme.
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "0.0",
     "required": "No",
     "variability": "subhourly" 
@@ -574,7 +574,7 @@ Relative clothes washer water draw for day of waste scheme.
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "0.0",
     "required": "No",
     "variability": "subhourly" 
@@ -590,7 +590,7 @@ Relative dish washer water draw for day of waste scheme.
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "0.0",
     "required": "No",
     "variability": "subhourly" 
@@ -606,7 +606,7 @@ Unknown relative water draw for day of waste scheme.
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "0.0",
     "required": "No",
     "variability": "subhourly" 
@@ -622,7 +622,7 @@ Hot water delivery temperature (at output of water heater(s) and at point of use
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "$>$ 32 ^o^F", 
+    "legal_range": "> 32 ^o^F", 
     "default": "120",
     "required": "No",
     "variability": "hourly" 
@@ -640,7 +640,7 @@ CAUTION: wsTUseTest is intended for testing and model validation studies and sho
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "$>$ 32 ^o^F", 
+    "legal_range": "> 32 ^o^F", 
     "default": "",
     "required": "No",
     "variability": "subhourly" 
@@ -656,7 +656,7 @@ Type: float
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "$>$ 32 ^o^F", 
+    "legal_range": "> 32 ^o^F", 
     "default": "wsTUse",
     "required": "No",
     "variability": "hourly" 
@@ -672,7 +672,7 @@ Type: float
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "$>$ 32 ^o^F", 
+    "legal_range": "> 32 ^o^F", 
     "default": "wsTSetPoint",
     "required": "No",
     "variability": "hourly" 
@@ -688,7 +688,7 @@ Specifies the design (sizing) set point temperature.
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "x $>$ 32 ^o^F", 
+    "legal_range": "x > 32 ^o^F", 
     "default": "wsTUse",
     "required": "No",
     "variability": "constant" 
@@ -704,7 +704,7 @@ Running volume for design. Active volume (above aquastat) equals to a full tank 
 {{
   member_table({
     "units": "gal",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "0.0",
     "required": "No",
     "variability": "constant" 
@@ -720,7 +720,7 @@ Design (sizing) source air temperature for HPWH DHWHEATERs.
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "x $>$ 32 ^o^F", 
+    "legal_range": "x > 32 ^o^F", 
     "default": "Heating design temperature",
     "required": "No",
     "variability": "At the start and at the end of interval" 
@@ -736,7 +736,7 @@ Excess size factor for domestic hot water design. wsFxDes is applied when wsHeat
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "1.0",
     "required": "No",
     "variability": "constant" 
@@ -830,7 +830,7 @@ wsTargetSOC = select(
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\lt$ x $\\le$ 1", 
+    "legal_range": "0 < x ≤ 1", 
     "default": "0.9",
     "required": "No",
     "variability": "hourly" 
@@ -846,7 +846,7 @@ Specifies the standard distribution loss multiplier. See App B Eqn 4. To duplica
 {{
   member_table({
     "units": "",
-    "legal_range": "$>$ 0", 
+    "legal_range": "> 0", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -862,7 +862,7 @@ Distribution system multiplier. See RACM App B Eqn 4. To duplicate CEC 2016 meth
 {{
   member_table({
     "units": "",
-    "legal_range": "$>$ 0", 
+    "legal_range": "> 0", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -878,7 +878,7 @@ Waste factor. See RACM App B Eqn 1. wsWF is applied to hot water draws.  The def
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "1",
     "required": "No",
     "variability": "hourly" 
@@ -893,7 +893,9 @@ NOTE: Deprecated. Use wsSolarSys instead.
 
 Specifies the solar savings fraction, allowing recognition of externally-calculated solar water heating energy contributions.  The contributions are modeled by deriving an increased water heater feed temperature --
 
-$$tWHFeed = tInletAdj + wsSSF*(wsTUse-tInletAdj)$$
+$$
+tWHFeed = tInletAdj + wsSSF*(wsTUse-tInletAdj)
+$$
 
 where tInletAdj is the source cold water temperature *including any DHWHEATREC tempering* (that is, wsTInlet + heat recovery temperature increase, if any).  This model approximates the diminishing returns associated with combined preheat strategies such as drain water heat recovery and solar.
 
@@ -901,7 +903,7 @@ where tInletAdj is the source cold water temperature *including any DHWHEATREC t
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ x $\\le$ 0.99", 
+    "legal_range": "0 ≤ x ≤ 0.99", 
     "default": "",
     "required": "No",
     "variability": "hourly" 
@@ -933,7 +935,7 @@ Specifies electrical parasitic power to represent recirculation pumps or other s
 {{
   member_table({
     "units": "W",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "hourly" 
@@ -949,7 +951,7 @@ Maximum draw duration for the sizing window.
 {{
   member_table({
     "units": "Hr",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "4",
     "required": "No",
     "variability": "constant" 
@@ -965,7 +967,7 @@ Maximum load duration for the sizing window.
 {{
   member_table({
     "units": "Hr",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "12",
     "required": "No",
     "variability": "constant" 

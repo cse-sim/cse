@@ -25,7 +25,7 @@ Length of exposed perimeter.
 {{
   member_table({
     "units": "ft",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "*none*",
     "required": "Yes",
     "variability": "constant" 
@@ -41,7 +41,7 @@ Perimeter conduction per unit length.
 {{
   member_table({
     "units": "Btuh/ft-^o^F",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "*none*",
     "required": "Yes",
     "variability": "constant" 

@@ -121,7 +121,7 @@ Low speed for TWOSPEED fan, as a fraction of full speed cfm.
 {{
   member_table({
     "units": "",
-    "legal_range": "0 &lt; *x* $\le$ 1", 
+    "legal_range": "0 &lt; *x* ≤ 1", 
     "default": "0.5",
     "required": "No",
     "variability": "constant" 
@@ -170,7 +170,9 @@ Motor (and drive, if any) efficiency for tower fans.
 
 The next four items specify the coefficients of polynomial curves relating fan power consumption to average speed (cfm) for the various fan types. For the non-variable speed cases CSE uses linear polynomials of the form
 
-$$p = a + b \cdot \text{spd}$$
+$$
+p = a + b \cdot \text{spd}
+$$
 
 where *p* is the power consumption as a fraction of full speed power consumption, and *spd* is the average speed as a fraction of full speed. The linear relationship reflects the fact that the fans cycle to match partial loads. A non-0 value may be given for the constant part *a* to reflect start-stop losses. For the two speed fan, separate polynomials are used for low and high speed operation; the default coefficients assume power input varies with the cube of speed, that is, at low speed (*ctLoSpd*) the relative power input is *ctLoSpd3*. For the variable speed case a cubic polynomial is used.
 
@@ -196,7 +198,7 @@ Coefficients of linear fan power consumption polynomial $p = a + b \cdot \text{s
 
 Type: *a, b*
 
-Coefficients of linear fan power consumption polynomial $p = a + b \cdot \text{spd}$ for low speed of TWOSPEED fan, when *spd* $\le$ *ctLoSpd*.
+Coefficients of linear fan power consumption polynomial $p = a + b \cdot \text{spd}$ for low speed of TWOSPEED fan, when *spd* ≤ *ctLoSpd*.
 
 {{
   member_table({
@@ -253,7 +255,7 @@ The default value is the sum of the rejected (condenser) heats (including pump h
 {{
   member_table({
     "units": "Btuh",
-    "legal_range": "*x* $\neq$ 0", 
+    "legal_range": "*x* ≠ 0", 
     "default": "(sum of loads)/*ctN*",
     "required": "No",
     "variability": "constant" 
@@ -355,7 +357,7 @@ Off-design capacity, per tower.
 {{
   member_table({
     "units": "Btuh",
-    "legal_range": "*x* $\neq$ 0", 
+    "legal_range": "*x* ≠ 0", 
     "default": "(sum of loads)/*ctN*",
     "required": "No",
     "variability": "constant" 
@@ -366,12 +368,12 @@ Off-design capacity, per tower.
 
 Type: float
 
-Off-design air flow, per tower. Must differ from design air flow; thus *ctVfDs* and *ctVfOd* cannot both be defaulted if off-design conditions are being given. The off-design air and water flows must be chosen so that maOd/mwOd $\neq$ maDs/mwDs.
+Off-design air flow, per tower. Must differ from design air flow; thus *ctVfDs* and *ctVfOd* cannot both be defaulted if off-design conditions are being given. The off-design air and water flows must be chosen so that maOd/mwOd are not equal to maDs/mwDs.
 
 {{
   member_table({
     "units": "cfm",
-    "legal_range": "*x* &gt; 0; *x* $\neq$ *ctVfDs*", 
+    "legal_range": "*x* &gt; 0; *x* ≠ *ctVfDs*", 
     "default": "(sum of loads)/51/*ctN*",
     "required": "No",
     "variability": "constant" 
@@ -382,12 +384,12 @@ Off-design air flow, per tower. Must differ from design air flow; thus *ctVfDs* 
 
 Type: float
 
-Off-design water flow, per tower. Must differ from design water flow; thus, both cannot be defaulted if off-design conditions are being given. Value must be chosen so that maOd/mwOd $\neq$ maDs/mwDs.
+Off-design water flow, per tower. Must differ from design water flow; thus, both cannot be defaulted if off-design conditions are being given. Value must be chosen so that maOd/mwOd are not equal to maDs/mwDs.
 
 {{
   member_table({
     "units": "gpm",
-    "legal_range": "*x* &gt; 0; *x* $\neq$ *ctGpmDs*", 
+    "legal_range": "*x* &gt; 0; *x* ≠ *ctGpmDs*", 
     "default": "(sum of pumps)/*ctN*",
     "required": "No",
     "variability": "constant" 
@@ -450,7 +452,9 @@ Type: float
 
 Optional. Exponent in the formula
 
-$$\text{ntuA} = k \cdot (mwi/ma)^{ctK}$$
+$$
+\text{ntuA} = k \cdot (mwi/ma)^{ctK}
+$$
 
 where ntuA is the number of transfer units on the air side, mwi and ma are the water and air flows respectively, and k is a constant.
 
@@ -473,7 +477,7 @@ Fraction of air flow which occurs when tower fan is off, due to stack effect (co
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\le$ *x* $\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": ".18",
     "required": "No",
     "variability": "constant" 
@@ -491,7 +495,7 @@ Blowdown rate: fraction of inflowing water that is bled from the sump down the d
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\le$ *x* $\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": ".01",
     "required": "No",
     "variability": "constant" 
@@ -507,7 +511,7 @@ Drift rate: fraction of inflowing water that is blown out of tower as droplets w
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\le$ *x* $\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "0",
     "required": "No",
     "variability": "constant" 

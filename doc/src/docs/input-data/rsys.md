@@ -99,7 +99,7 @@ Specifies systems heating/cooling availability during simulation.
 
 Type: choice
 
-Generate performance map(s) for this RSYS. Comma-separated text is written to file PM\_[rsName].csv. This is a debugging capability that is not necessarily maintained.  The format of the generated csv text file may change and is unrelated to the PERFORMANCEMAP input scheme used via *rsPerfMapHtg* and *rsPerfMapClg*.
+Generate performance map(s) for this RSYS. Comma-separated text is written to file PM_[rsName].csv. This is a debugging capability that is not necessarily maintained.  The format of the generated csv text file may change and is unrelated to the PERFORMANCEMAP input scheme used via *rsPerfMapHtg* and *rsPerfMapClg*.
 
 {{
   member_table({
@@ -251,7 +251,7 @@ Heating Annual Fuel Utilization Efficiency (AFUE).
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $<$ x $\\le$ 1", 
+    "legal_range": "0 $<$ x ≤ 1", 
     "default": "0.9 if furnace, 1.0 if resistance",
     "required": "No",
     "variability": "constant" 
@@ -269,7 +269,7 @@ If rsType=WSHP, rsCapH is at source fluid temperature = 68 ^o^F.
 {{
   member_table({
     "units": "Btu/hr",
-    "legal_range": "*AUTOSIZE* or x $\\ge$ 0", 
+    "legal_range": "*AUTOSIZE* or x ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "constant" 
@@ -285,7 +285,7 @@ Nominal heating temperature rise (across system, not at zone) used during autosi
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "30 ^o^F if heat pump else 50 ^o^F",
     "required": "No",
     "variability": "constant" 
@@ -301,7 +301,7 @@ Heating autosizing capacity factor. If AUTOSIZEd, rsCapH or rsCap47 is set to rs
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "1.4",
     "required": "No",
     "variability": "constant" 
@@ -317,7 +317,7 @@ Heating operating fan power. For most rsTypes, heating air flow is calculated fr
 {{
   member_table({
     "units": "W/cfm",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "see above",
     "required": "No",
     "variability": "constant" 
@@ -511,7 +511,7 @@ For WSHP only: ratio of rsCapC to rsCapH.  Used to derive capacity during autosi
 {{
   member_table({
     "units": "",
-    "legal_range": ".3 $\\leq$ x $<$ 2", 
+    "legal_range": ".3 ≤ x $<$ 2", 
     "default": "0.8",
     "required": "No",
     "variability": "Start of a run" 
@@ -605,7 +605,7 @@ For rsType=ASHP, auxiliary heating capacity. If AUTOSIZEd, rsCapAuxH is set to t
 {{
   member_table({
     "units": "Btu/hr",
-    "legal_range": "*AUTOSIZE* or *x* $\\ge$ 0", 
+    "legal_range": "*AUTOSIZE* or *x* ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "constant" 
@@ -727,7 +727,7 @@ If rsType=WSHP and both rsCapC and rsCapH are autosized, both are set to the lar
 {{
   member_table({
     "units": "Btu/hr",
-    "legal_range": "*AUTOSIZE* or *x* $\\le$ 0 (x $>$ 0 coverted to $<$ 0)", 
+    "legal_range": "*AUTOSIZE* or *x* ≤ 0 (x $>$ 0 coverted to $<$ 0)", 
     "default": "*none*",
     "required": "Yes if rsType includes cooling",
     "variability": "constant" 
@@ -792,7 +792,7 @@ Standard air volumetric flow rate per nominal ton of cooling capacity.
 {{
   member_table({
     "units": "cfm/ton",
-    "legal_range": "150 $\\le$ x $\\le$ 500", 
+    "legal_range": "150 ≤ x ≤ 500", 
     "default": "350",
     "required": "No",
     "variability": "constant" 
@@ -808,7 +808,7 @@ Cooling fan power.
 {{
   member_table({
     "units": "W/cfm",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0.365",
     "required": "No",
     "variability": "constant" 
@@ -840,7 +840,7 @@ Type: float
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ x $\\le$ 0.5", 
+    "legal_range": "0 ≤ x ≤ 0.5", 
     "default": "ASHPHYDRONIC: 0.25 ASHP: derived from rsHSPF",
     "required": "No",
     "variability": "hourly" 
@@ -856,7 +856,7 @@ Cooling cyclic degradation coefficient, valid for configurations having compress
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ x $\\le$ 0.5", 
+    "legal_range": "0 ≤ x ≤ 0.5", 
     "default": "0",
     "required": "No",
     "variability": "hourly" 
@@ -936,7 +936,7 @@ Heating nominal capacity.  Provides type-independent probe source for RSYS heati
 {{
   member_table({
     "units": "Btu/hr",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "no heating: 0 heat pump: rsCap47 (input or AUTOSIZEd) other: rsCapH (input or AUTOSIZEd)",
     "required": "No",
     "variability": "daily" 
@@ -952,7 +952,7 @@ Cooling nominal capacity.  Provides type-independent probe source for RSYS cooli
 {{
   member_table({
     "units": "Btu/hr",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "no cooling: 0 other: rsCap95 (input or AUTOSIZEd)",
     "required": "No",
     "variability": "daily" 
@@ -1027,9 +1027,9 @@ Type: float
 {{
   member_table({
     "units": "cfm",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "*none*",
-    "required": "if rsOAVType $\ne$ NONE",
+    "required": "if rsOAVType ≠ NONE",
     "variability": "constant" 
   })
 }}
@@ -1043,7 +1043,7 @@ Type: float
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ x $\\le$ 1", 
+    "legal_range": "0 ≤ x ≤ 1", 
     "default": "0.2",
     "required": "No",
     "variability": "constant" 
@@ -1059,7 +1059,7 @@ Type: float
 {{
   member_table({
     "units": "W/cfm",
-    "legal_range": "0 < x $\\le$ 5", 
+    "legal_range": "0 < x ≤ 5", 
     "default": "per rsOAVTYPE FIXED: rsFanPwrC VARIABLE: NightBreeze vendor curve based on rsOAVvfDs",
     "required": "No",
     "variability": "constant" 
@@ -1075,7 +1075,7 @@ OAV inlet (source) air temperature.  Supply air temperature at the zone is gener
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "Dry-bulb temperature from weather file",
     "required": "No",
     "variability": "hourly" 
@@ -1109,7 +1109,7 @@ Name of zone to which relief air is directed during RSYS OAV operation, typicall
     "units": "",
     "legal_range": "*name of ZONE*", 
     "default": "*none*",
-    "required": "if rsOAVType $\ne$ NONE",
+    "required": "if rsOAVType ≠ NONE",
     "variability": "constant" 
   })
 }}
@@ -1155,7 +1155,7 @@ Entering air relative humidity (for model testing).
 {{
   member_table({
     "units": "W/cfm",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "Derived from entering air state",
     "required": "No",
     "variability": "constant" 
@@ -1171,7 +1171,7 @@ Air dry-bulb temperature at the outdoor portion of this system.
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "From weather file",
     "required": "No",
     "variability": "hourly" 

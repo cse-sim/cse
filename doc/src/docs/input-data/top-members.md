@@ -65,7 +65,7 @@ Note that "warm-up" days (see wuDays) occur before the start day specified by be
 {{
   member_table({
     "units": "",
-    "legal_range": "SUN,\\ MON,\\ TUE,\\ WED,\\ THU,\\ FRI,\\ SAT", 
+    "legal_range": "SUN, MON, TUE, WED, THU, FRI, SAT", 
     "default": "THU",
     "required": "No",
     "variability": "constant" 
@@ -95,7 +95,7 @@ Number of "warm-up" days used to initialize the simulator. Simulator initializat
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 365", 
+    "legal_range": "0 ≤ *x* ≤ 365", 
     "default": "7",
     "required": "No",
     "variability": "constant" 
@@ -111,7 +111,7 @@ Number of subhour steps used per hour in the simulation. 4 is the time-honored v
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "4",
     "required": "No",
     "variability": "constant" 
@@ -161,7 +161,7 @@ Specifies the convergence tolerance for humidity calculations in CNE models (no 
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0.0001",
     "required": "No",
     "variability": "constant" 
@@ -241,7 +241,7 @@ Zone temperature unmet load tolerance.  At the end of each subhour, if a conditi
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "1 ^o^F",
     "required": "No",
     "variability": "constant" 
@@ -257,7 +257,7 @@ Unmet load warning threshold.  A warning message is issued for each zone having 
 {{
   member_table({
     "units": "hr",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "150",
     "required": "No",
     "variability": "constant" 
@@ -289,7 +289,7 @@ The maximum ratio of growth between neighboring cells in the direction away from
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\geq$ 1.0", 
+    "legal_range": "x ≥ 1.0", 
     "default": "1.5",
     "required": "No",
     "variability": "constant" 
@@ -355,7 +355,7 @@ Default exterior surface (air film) conductance used for opaque and glazed surfa
 
 Type: float
 
-Reference compass azimuth (0 = north, 90 = east, etc.). All zone orientations (and therefore surface orientations) are relative to this value, so the entire building can be rotated by changing bldgAzm only. If a value outside the range 0^o^ $\leq$ *x* $<$ 360^o^ is given, it is normalized to that range.
+Reference compass azimuth (0 = north, 90 = east, etc.). All zone orientations (and therefore surface orientations) are relative to this value, so the entire building can be rotated by changing bldgAzm only. If a value outside the range 0^o^ ≤ *x* $<$ 360^o^ is given, it is normalized to that range.
 
 {{
   member_table({
@@ -376,7 +376,7 @@ Elevation of the building site. Used internally for the computation of barometri
 {{
   member_table({
     "units": "ft",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0 (sea level)",
     "required": "No",
     "variability": "constant" 
@@ -408,7 +408,7 @@ Run serial number for the simulation. Increments on each run in a session; appea
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\leq$ *x* $\leq$ 999", 
+    "legal_range": "0 ≤ *x* ≤ 999", 
     "default": "0",
     "required": "No",
     "variability": "constant" 
@@ -583,7 +583,7 @@ AirNet pressure warning threshold. A warning message is issued when the absolute
 {{
   member_table({
     "units": "lb/ft2",
-    "legal_range": "x $\\gt$ 0", 
+    "legal_range": "x > 0", 
     "default": "10",
     "required": "No",
     "variability": "constant" 
@@ -599,7 +599,7 @@ AirNet pressure error threshold.  The simulation terminates with a message if th
 {{
   member_table({
     "units": "lb/ft2",
-    "legal_range": "x $\\gt$ 0", 
+    "legal_range": "x > 0", 
     "default": "30",
     "required": "No",
     "variability": "constant" 
@@ -662,13 +662,13 @@ ASHWAT convection coefficient change threshold -- full calculation is triggered 
 The following system variables (4.6.4) are determined from the weather file for each simulated hour:
 
 {{
-  csv_table("\$radBeam,        beam irradiance on tracking surface (integral for hour&comma; Btu/ft^2^).
-\$radDiff,        diffuse irradiance on a horizontal surface (integral for hour&comma; Btu/ft^2^).
-\$tDbO,           dry bulb temp (^o^F).
-\$tWbO,           wet bulb temp (^o^F).
-\$wO,             humidity ratio
-\$windDirDeg,     wind direction (degrees&comma; NOT RADIANS; 0=N&comma; 90=E).
-\$windSpeed,      wind speed (mph).")
+  csv_table("$radBeam,        beam irradiance on tracking surface (integral for hour&comma; Btu/ft^2^).
+$radDiff,        diffuse irradiance on a horizontal surface (integral for hour&comma; Btu/ft^2^).
+$tDbO,           dry bulb temp (^o^F).
+$tWbO,           wet bulb temp (^o^F).
+$wO,             humidity ratio
+$windDirDeg,     wind direction (degrees&comma; NOT RADIANS; 0=N&comma; 90=E).
+$windSpeed,      wind speed (mph).")
 }}
 
 The following are the terms determined from the weather file for internal use, and can be referenced with the probes shown.
@@ -752,7 +752,7 @@ Reference temperature (see above paragraph).
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "60^o^",
     "required": "No",
     "variability": "constant" 
@@ -768,7 +768,7 @@ Reference relative humidity (see above).
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\leq$ *x* $\\leq$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "0.6",
     "required": "No",
     "variability": "constant" 
@@ -785,7 +785,7 @@ Global ground reflectivity, used except where other value specified with sfGrndR
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\leq$ *x* $\\leq$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "0.2",
     "required": "No",
     "variability": "Monthly-Hourly" 
@@ -803,7 +803,7 @@ Long-wave emittance of the exterior grade surface used in two-dimensional finite
 {{
   member_table({
     "units": "",
-    "legal_range": "0.0 $\le$ x $\le$ 1.0", 
+    "legal_range": "0.0 ≤ x ≤ 1.0", 
     "default": "0.8",
     "required": "No",
     "variability": "constant" 
@@ -820,7 +820,7 @@ Ground surface roughness. Used for convection and wind speed corrections in two-
 {{
   member_table({
     "units": "ft",
-    "legal_range": "x $\\geq$ 0.0", 
+    "legal_range": "x ≥ 0.0", 
     "default": "0.1",
     "required": "No",
     "variability": "constant" 
@@ -838,7 +838,7 @@ Minimum value for wind speed
 {{
   member_table({
     "units": "mph",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0.5",
     "required": "No",
     "variability": "constant" 
@@ -854,7 +854,7 @@ Wind Factor: multiplier for wind speeds read from weather file. windF is applied
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0.25",
     "required": "No",
     "variability": "constant" 
@@ -878,7 +878,7 @@ Specifies characteristics of ground terrain in the project region.
 {{
   member_table({
     "units": "",
-    "legal_range": "1 $\\leq$ *x* $\\leq$ 5", 
+    "legal_range": "1 ≤ *x* ≤ 5", 
     "default": "4",
     "required": "No",
     "variability": "constant" 
@@ -897,7 +897,7 @@ Multiplier for direct normal (beam) irradiance
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -913,7 +913,7 @@ Multiplier for diffuse horizonal irradiance.
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -926,7 +926,9 @@ Type: choice
 
 Enable/disable convection convective coefficient pressure modification factor.
 
-$$0.24 + 0.76 \cdot P_{Location}/P_{SeaLevel}$$
+$$
+0.24 + 0.76 \cdot P_{Location}/P_{SeaLevel}
+$$
 
 {{
   member_table({
@@ -1113,7 +1115,7 @@ The format of a TDV file is the same as an [IMPORTFILE][importfile] with the pro
 1,         TDV Data (TDV/Btu)&comma; *runNumber*&comma;   *runNumber* is not checked
 2,         *timestamp*                       optionally in quotes accessible via @TOP.TDVFileTimeStamp
 3,         *title*&comma; hour                     *title* (in quotes if it contains commas) accessible via @TOP.TDVFileTitle
-4,         tdvElec&comma; tdvFuel                  comma separated column names (optionally in quotes)\ not checked
+4,         tdvElec&comma; tdvFuel                  comma separated column names (optionally in quotes) not checked
 5 ..,      *valElec*&comma;*valFuel*               comma separated numerical values (8760 or 8784 rows) tdvElec is always in column 1&comma; tdvFuel always in column 2 column names in row 4 do not determine order", True)
 }}
 
@@ -1213,7 +1215,7 @@ Total lines per page to be assumed for reports. Number of lines used for text (i
 {{
   member_table({
     "units": "lines",
-    "legal_range": "*x* $\\ge$ 50", 
+    "legal_range": "*x* ≥ 50", 
     "default": "66",
     "required": "No",
     "variability": "constant" 
@@ -1229,7 +1231,7 @@ Number of lines to be skipped at the top of each report page (prior to header).
 {{
   member_table({
     "units": "lines",
-    "legal_range": "0 $\\geq$ *x* $\\geq$ 12", 
+    "legal_range": "0 ≥ *x* ≥ 12", 
     "default": "3",
     "required": "No",
     "variability": "constant" 
@@ -1245,7 +1247,7 @@ Number of lines reserved at the bottom of each report page. repBotM determines t
 {{
   member_table({
     "units": "lines",
-    "legal_range": "0 $\\geq$ *x* $\\geq$ 12", 
+    "legal_range": "0 ≥ *x* ≥ 12", 
     "default": "3",
     "required": "No",
     "variability": "constant" 
@@ -1261,7 +1263,7 @@ Characters per line for report headers and footers, user defined reports, and er
 {{
   member_table({
     "units": "characters",
-    "legal_range": "78 $\\leq$ *x* $\\leq$ 132", 
+    "legal_range": "78 ≤ *x* ≤ 132", 
     "default": "78",
     "required": "No",
     "variability": "constant" 
@@ -1343,7 +1345,7 @@ Heating outdoor design dry bulb temperature used for autosizing heating equipmen
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "derived assuming RH=.7",
     "required": "No",
     "variability": "hourly" 

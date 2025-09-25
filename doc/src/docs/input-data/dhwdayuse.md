@@ -71,7 +71,7 @@ Scale factor applied to all draws in this DHWDAYUSE.
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "1",
     "required": "No",
     "variability": "constant" 

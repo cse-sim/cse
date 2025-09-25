@@ -66,7 +66,7 @@ Distance between the grade level and the top of the foundation wall.
 {{
   member_table({
     "units": "ft",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0.5",
     "required": "No",
     "variability": "constant" 
@@ -82,7 +82,7 @@ Distance between the bottom of the slab and the bottom of the foundation wall. F
 {{
   member_table({
     "units": "ft",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0.0",
     "required": "No",
     "variability": "constant" 

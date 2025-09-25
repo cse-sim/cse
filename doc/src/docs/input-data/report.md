@@ -68,9 +68,9 @@ Type: choice
 Choice indicating report type. Report types may be described at greater length, with examples, in Section 6.
 
 {{
-  csv_table("ERR,     Error and warning messages. If there are any such messages&comma; they are also displayed on the screen *AND* written to a file with the same name as the input file and extension .ERR. Furthermore&comma; \* \*many error messages are repeated in the INP report.
+  csv_table("ERR,     Error and warning messages. If there are any such messages&comma; they are also displayed on the screen *AND* written to a file with the same name as the input file and extension .ERR. Furthermore&comma; many error messages are repeated in the INP report.
   LOG,     Run 'log'. As of July 1992&comma; contains only CSE version number; should be enhanced or deleted.??
-  INP,     Input echo: shows the portion of the input file used to specify this run. Does not repeat descriptions of objects left from prior runs in the same session when CLEAR is not used. Error and warning messages relating to specific lines of the input are repeated after or near the line to which they relate&comma; prefixed with '?'. Lines not used due to a preprocessor \#if command (Section 4.4.4) with a false expression are prefixed with a '0' in the leftmost column; all preprocessor command lines are prefixed with a '\#' in that column.
+  INP,     Input echo: shows the portion of the input file used to specify this run. Does not repeat descriptions of objects left from prior runs in the same session when CLEAR is not used. Error and warning messages relating to specific lines of the input are repeated after or near the line to which they relate&comma; prefixed with '?'. Lines not used due to a preprocessor #if command (see The Preprocessor) with a false expression are prefixed with a '0' in the leftmost column; all preprocessor command lines are prefixed with a '#' in that column.
   SUM,     Run summary. As of July 1992&comma; *NOT IMPLEMENTED*: generates no  output and no error message. Should be defined and implemented&comma; or else deleted??.
   ZDD,     Zone data dump. Detailed dump of internal simulation values&comma; useful for verifying that your input is as desired. Should be made less cryptic (July 1992)??. Requires *rpZone*.
   ZST,     Zone statistics. Requires *rpZone*.
@@ -84,7 +84,7 @@ Choice indicating report type. Report types may be described at greater length, 
 {{
   member_table({
     "units": "",
-    "legal_range": "*see above*", 
+    "legal_range": "*see above*",
     "default": "*none*",
     "required": "Yes",
     "variability": "constant" 
@@ -293,7 +293,7 @@ Characters per line for a UDT (user-defined report). If widths specified in REPO
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\ge$ -1", 
+    "legal_range": "*x* ≥ -1", 
     "default": "-1 (as wide as needed)",
     "required": "No",
     "variability": "constant" 

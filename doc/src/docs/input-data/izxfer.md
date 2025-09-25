@@ -92,7 +92,7 @@ Default values for izAFCat are generally adequate *except* that natural ventilat
 
 Type: znName
 
-Name of primary zone. Flow rates $>$ 0 are into the primary zone.
+Name of primary zone. Flow rates > 0 are into the primary zone.
 
 {{
   member_table({
@@ -147,7 +147,7 @@ Note izLinkedFlowMult has no effect on the air flow to or from the zone specifie
 {{
   member_table({
     "units": "--",
-    "legal_range": "*x* $\\gt$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -166,7 +166,7 @@ Conductance between zones.
 {{
   member_table({
     "units": "Btu/^o^F",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "hourly" 
@@ -182,7 +182,7 @@ Area of low or only vent (typically VentOff)
 {{
   member_table({
     "units": "ft^2^",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "hourly" 
@@ -198,7 +198,7 @@ Additional vent area (high vent or VentOn). If used in AIRNET, izAHi &gt; izALo 
 {{
   member_table({
     "units": "ft^2^",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "izALo",
     "required": "No",
     "variability": "hourly" 
@@ -242,7 +242,7 @@ See izTEx example just above.
 {{
   member_table({
     "units": "",
-    "legal_range": "$\\gt$ 0", 
+    "legal_range": "> 0", 
     "default": "Outdoor humidity ratio",
     "required": "No",
     "variability": "subhourly" 
@@ -262,7 +262,7 @@ Note that izCpr must be non-0 for izWindSpeed to have any effect.
 {{
   member_table({
     "units": "mph",
-    "legal_range": "$\\ge$ 0", 
+    "legal_range": "≥ 0", 
     "default": "Zone adjusted windspeed",
     "required": "No",
     "variability": "subhourly" 
@@ -278,7 +278,7 @@ Length or width of AIRNETHORIZ opening.
 {{
   member_table({
     "units": "ft",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "*none*",
     "required": "if izNVType = AIRNETHORIZ",
     "variability": "constant" 
@@ -294,7 +294,7 @@ Width or length of AIRNETHORIZ opening.
 {{
   member_table({
     "units": "ft",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "*none*",
     "required": "if izNVType = AIRNETHORIZ",
     "variability": "constant" 
@@ -310,7 +310,7 @@ Stairway angle for AIRNETHORIZ opening. Use 90 for an open hole. Note that 0 pre
 {{
   member_table({
     "units": "^o^ degrees",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "34",
     "required": "No",
     "variability": "constant" 
@@ -342,7 +342,7 @@ Vent discharge coefficient.
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "0.8",
     "required": "No",
     "variability": "constant" 
@@ -358,7 +358,7 @@ Fan design or rated flow at rated pressure.  For AIRNETHERV, this is the net air
 {{
   member_table({
     "units": "cfm",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0 (no fan)",
     "required": "If fan present",
     "variability": "constant" 
@@ -374,7 +374,7 @@ Wind pressure coefficient (for AIRNETEXT).
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "constant" 
@@ -390,7 +390,7 @@ Opening exponent (for AIRNETEXT).
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "0.5",
     "required": "No",
     "variability": "constant" 
@@ -406,7 +406,7 @@ Minimum volume flow rate (VentOff mode).
 {{
   member_table({
     "units": "cfm",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "izfanVfDs",
     "required": "No",
     "variability": "subhourly" 
@@ -422,7 +422,7 @@ Maximum volume flow rate (VentOn mode)
 {{
   member_table({
     "units": "cfm",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "izVfMin",
     "required": "No",
     "variability": "subhourly" 
@@ -438,7 +438,7 @@ Apparent sensible effectiveness for AIRNETHERV ventilator.  ASEF is a commonly-r
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ x $\\le$ 1", 
+    "legal_range": "0 ≤ x ≤ 1", 
     "default": "0",
     "required": "No",
     "variability": "subhourly" 
@@ -454,7 +454,7 @@ Sensible recovery efficiency (SRE) for AIRNETHERV ventilator.  Used as the sensi
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ x $\\le$ 1", 
+    "legal_range": "0 ≤ x ≤ 1", 
     "default": "0",
     "required": "No",
     "variability": "subhourly" 
@@ -470,7 +470,7 @@ Adjusted sensible recovery efficiency (ASRE) for AIRNETHERV ventilator.  The dif
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ x $\\le$ izSRE", 
+    "legal_range": "0 ≤ x ≤ izSRE", 
     "default": "0",
     "required": "No",
     "variability": "subhourly" 
@@ -486,7 +486,7 @@ Exhaust air transfer ratio for AIRNETHERV ventilator.  NetFlow = (1 - EATR)*(gro
 {{
   member_table({
     "units": "cfm",
-    "legal_range": "0 $\\le$ x $\\le$ 1", 
+    "legal_range": "0 ≤ x ≤ 1", 
     "default": "0",
     "required": "No",
     "variability": "subhourly" 
@@ -502,7 +502,7 @@ Latent heat recovery effectiveness for AIRNETHERV ventilator.  The default value
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ x $\\le$ 1", 
+    "legal_range": "0 ≤ x ≤ 1", 
     "default": "0",
     "required": "No",
     "variability": "subhourly" 
@@ -518,7 +518,7 @@ Fraction of fan heat added to supply air stream for AIRNETHERV ventilator.  Used
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ x $\\le$ 1", 
+    "legal_range": "0 ≤ x ≤ 1", 
     "default": "0",
     "required": "No",
     "variability": "subhourly" 
@@ -535,7 +535,7 @@ value other than 1 indicates unbalanced flow that effects the zone pressure.
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "1 (balanced)",
     "required": "No",
     "variability": "constant" 
@@ -551,7 +551,7 @@ Design or rated fan pressure.
 {{
   member_table({
     "units": "inches H~2~O",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "0.3",
     "required": "No",
     "variability": "constant" 
@@ -569,7 +569,7 @@ Fan input power per unit air flow (at design flow and pressure).
 {{
   member_table({
     "units": "W/cfm",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "derived from izfanEff and izfanShaftBhp",
     "required": "If izfanEff and izfanShaftBhp not present",
     "variability": "constant" 
@@ -585,7 +585,7 @@ Fan efficiency at design flow and pressure, as a fraction.
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "derived from *izfanShaftBhp* if given, else 0.08",
     "required": "No",
     "variability": "constant" 
@@ -601,7 +601,7 @@ Fan shaft brake horsepower at design flow and pressure.
 {{
   member_table({
     "units": "bhp",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "derived from *izfanEff*.",
     "required": "No",
     "variability": "constant" 
@@ -614,11 +614,13 @@ Type: $k_0$, $k_1$, $k_2$, $k_3$, $x_0$
 
 $k_0$ through $k_3$ are the coefficients of a cubic polynomial for the curve relating fan relative energy consumption to relative air flow above the minimum flow $x_0$. Up to five *floats* may be given, separated by commas. 0 is used for any omitted trailing values. The values are used as follows:
 
-$$z = k_0 + k_1 \cdot (x - x_0)|  +  k_2 \cdot (x - x_0)|^2 + k_3 \cdot (x - x_0)|^3$$
+$$
+z = k_0 + k_1 \cdot (x - x_0)|  +  k_2 \cdot (x - x_0)|^2 + k_3 \cdot (x - x_0)|^3
+$$
 
 where:
 
--   $x$ is the relative fan air flow (as fraction of izfan*VfDs*; 0 $\le$ $x$ $\le$ 1);
+-   $x$ is the relative fan air flow (as fraction of izfan*VfDs*; 0 ≤ $x$ ≤ 1);
 -   $x_0$ is the minimum relative air flow (default 0);
 -   $(x - x_0)|$ is the "positive difference", i.e. $(x - x_0)$ if $x > x_0$; else 0;
 -   $z$ is the relative energy consumption.
@@ -628,7 +630,7 @@ If $z$ is not 1.0 for $x$ = 1.0, a warning message is displayed and the coeffici
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "*0, 1, 0, 0, 0 (linear)*",
     "required": "No",
     "variability": "constant" 

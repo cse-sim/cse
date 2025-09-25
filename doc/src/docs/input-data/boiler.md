@@ -27,7 +27,7 @@ Heat output capacity of this BOILER.
 {{
   member_table({
     "units": "Btuh",
-    "legal_range": "*x* $\\gt$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "*none*",
     "required": "Yes",
     "variability": "constant" 
@@ -43,7 +43,7 @@ Boiler efficiency at steady-state full load, as a fraction. 1.0 may be specified
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\lt$ *x* $\\le$ 1.0", 
+    "legal_range": "0 < *x* ≤ 1.0", 
     "default": "0.8",
     "required": "No",
     "variability": "constant" 
@@ -59,7 +59,7 @@ Boiler Energy Input Ratio: alternate method of specifying efficiency.
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\ge$ 1.0", 
+    "legal_range": "*x* ≥ 1.0", 
     "default": "1/*blrEffR*",
     "required": "No",
     "variability": "constant" 
@@ -107,7 +107,7 @@ Boiler pump flow in gallons per minute: amount of water pumped from this boiler 
 {{
   member_table({
     "units": "gpm",
-    "legal_range": "*x* $\\gt$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "blrCap/10000",
     "required": "No",
     "variability": "constant" 
@@ -123,14 +123,14 @@ Boiler pump head loss (pressure). 0 may be specified to eliminate pump heat and 
 {{
   member_table({
     "units": "ft H2O",
-    "legal_range": "*x* $\\ge$ 0", 
-    "default": "114.45\*",
+    "legal_range": "*x* ≥ 0", 
+    "default": "114.45^*^",
     "required": "No",
     "variability": "constant" 
   })
 }}
 
-\* may be temporary value for 10-31-92 version; prior value of 35 may be restored.
+^*^ may be temporary value for 10-31-92 version; prior value of 35 may be restored.
 
 ### blrpMotEff
 
@@ -141,7 +141,7 @@ Boiler pump motor efficiency.
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\lt$ *x* $\\le$ 1.0", 
+    "legal_range": "0 < *x* ≤ 1.0", 
     "default": ".88",
     "required": "No",
     "variability": "constant" 
@@ -157,7 +157,7 @@ Boiler pump hydraulic efficiency
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\lt$ *x* $\\le$ 1.0", 
+    "legal_range": "0 < *x* ≤ 1.0", 
     "default": ".70",
     "required": "No",
     "variability": "constant" 
@@ -192,7 +192,7 @@ blrAuxOnAtAll=*float*,       Auxiliary power used in full value if boiler is on 
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $\\ge$ 0", 
+    "legal_range": "*x* ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "hourly" 
@@ -210,7 +210,7 @@ Additional input energy used in proportion to part load ratio when coil on, as f
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0.0",
     "required": "No",
     "variability": "hourly" 
@@ -242,7 +242,7 @@ Additional input energy when off for part or all of subhour.
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0.0",
     "required": "No",
     "variability": "hourly" 
@@ -274,7 +274,7 @@ Additional input energy when off for an entire subhour.
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0.0",
     "required": "No",
     "variability": "hourly" 
@@ -306,7 +306,7 @@ Additional input energy used in coil on for any part of subhour, for unforeseen 
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0.0",
     "required": "No",
     "variability": "hourly" 

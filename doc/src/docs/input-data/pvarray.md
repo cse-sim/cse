@@ -59,7 +59,7 @@ The rated photovoltaic system DC capacity/size as indicated by the nameplate.
 {{
   member_table({
     "units": "kW",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "*none*",
     "required": "Yes",
     "variability": "constant" 
@@ -99,7 +99,7 @@ The refraction index for the coating applied to the module cover. A value of 1.0
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\geq$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "1.3",
     "required": "No",
     "variability": "constant" 
@@ -168,7 +168,7 @@ The following figures illustrate the use of both pvTilt and pvAzm for various co
 
 Type: float
 
-Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the range 0^o^ $\leq$ *x* $<$ 360^o^ is given, it is normalized to that range. For one-axis tracking, defines the azimuth of the rotation axis. Not used for two-axis tracking arrays. Should be omitted if pvVertices is given.
+Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the range 0^o^ ≤ *x* $<$ 360^o^ is given, it is normalized to that range. For one-axis tracking, defines the azimuth of the rotation axis. Not used for two-axis tracking arrays. Should be omitted if pvVertices is given.
 
 {{
   member_table({
@@ -210,7 +210,9 @@ Type: float
 
   Shading Impact Factor (SIF) of the array used to represent the disproportionate impact on array output of partially shaded modules at the sub-array level. This impact is applied to the effective beam irradiance on the array:
 
-  $$I_{poa,beam,eff} = \max\left(I_{poa,beam}\cdot\left(1-SIF\cdot f_{sh}\right),0\right)$$
+  $$
+  I_{poa,beam,eff} = \max\left(I_{poa,beam}\cdot\left(1-SIF\cdot f_{sh}\right),0\right)
+  $$
 
   where $f_{sh}$ is the fraction of the array that is shaded.
 
@@ -218,7 +220,7 @@ Type: float
 
 {{
   member_table({
-    "legal_range": "*x* $\\geq$ 1.0",
+    "legal_range": "*x* ≥ 1.0",
     "default": "1.2", 
     "required": "No",
     "variability": "constant" 
@@ -268,7 +270,7 @@ Ground coverage ratio is. This is currently unused as array self-shading is not 
   ----------------------------------------------------------------------------------
   **Units**   **Legal Range**         **Default**   **Required**   **Variability**
   ----------- ---------------------   ------------- -------------- -----------------
-              0 &lt; *x* $\le$ 1.0    0.4           No             constant
+              0 &lt; *x* ≤ 1.0    0.4           No             constant
   ----------------------------------------------------------------------------------
 
 -->

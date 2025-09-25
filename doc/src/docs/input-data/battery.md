@@ -45,7 +45,7 @@ The charging efficiency of storing electricity into the BATTERY system. A value 
 {{
   member_table({
     "units": "",
-    "legal_range": "0 < x $\\le$ 1", 
+    "legal_range": "0 < x ≤ 1", 
     "default": "0.975",
     "required": "No",
     "variability": "hourly" 
@@ -61,7 +61,7 @@ The discharge efficiency for when the BATTERY system is discharging power. A val
 {{
   member_table({
     "units": "",
-    "legal_range": "0 < x $\\le$ 1", 
+    "legal_range": "0 < x ≤ 1", 
     "default": "0.975",
     "required": "No",
     "variability": "hourly" 
@@ -77,7 +77,7 @@ This is the maximum amount of energy that can be stored in the BATTERY system in
 {{
   member_table({
     "units": "kWh",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "16",
     "required": "No",
     "variability": "constant" 
@@ -93,7 +93,7 @@ The initial state of energy of the BATTERY system as a fraction of the total cap
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ x $\\le$ 0", 
+    "legal_range": "0 ≤ x ≤ 0", 
     "default": "1.0",
     "required": "No",
     "variability": "constant" 
@@ -109,7 +109,7 @@ The number of cycles on the battery at the beginning of the run.
 {{
   member_table({
     "units": "number of cycles",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "runly" 
@@ -125,7 +125,7 @@ The maximum rate at which the BATTERY can be charged in kilowatts (i.e., energy 
 {{
   member_table({
     "units": "kW",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "4",
     "required": "No",
     "variability": "hourly" 
@@ -141,7 +141,7 @@ The maximum rate at which the BATTERY can be discharged in kilowatts (i.e., ener
 {{
   member_table({
     "units": "kW",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "4",
     "required": "No",
     "variability": "hourly" 

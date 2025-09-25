@@ -75,7 +75,7 @@ Fraction of solar gain directed to specified surface when the owning window's in
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1,and sum of window's sgFSO's $\\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1,and sum of window's sgFSO's ≤ 1", 
     "default": "*none*",
     "required": "Yes",
     "variability": "monthly-hourly" 
@@ -91,7 +91,7 @@ Fraction of solar gain directed to specified surface when the owning window's in
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ *x* $\\le$ 1, and sum of window's sgFSC's $\\le$ 1", 
+    "legal_range": "0 ≤ *x* ≤ 1, and sum of window's sgFSC's ≤ 1", 
     "default": "*sgFSO*",
     "required": "No",
     "variability": "monthly-hourly" 
