@@ -36,34 +36,15 @@ Next, [About CSE][about-cse] will describe the program and the calculation techn
 
 Lastly, [Probe Definitions][probe-definitions] lists all available probes.
 
-<!--
-
-Finally, Appendix A gives an example CSE input file and the output it produces.
-
--->
 
 ## Installation
 
 ### Hardware and Software Requirements
 
-CSE is a 32-bit Microsoft Windows console application. That is, it runs at the command prompt on Windows Vista, Windows 7, Windows 8, and Windows 10.  Memory and disk space requirements depend on the size of projects being modeled, but are generally modest.
+CSE is a command line application. That is, it runs in a terminal.  Memory and disk space requirements depend on the size of projects being modeled, but are generally modest.
 
 To prepare input files, a text editor is required. Notepad will suffice, although a text editor intended for programming is generally more capable. Alternatively, some word processors can be used in "ASCII" or "text" or "non-document" mode.
-
-<!--
-### Installation Files
-
-(To be written.)
--->
 
 ### Installation Procedure
 
 Create a directory on your hard disk with the name \\CSE or some other name of your choice. Copy the files into that directory. Add the name of the directory to the PATH environment setting unless you intend to use CSE only from the CSE directory.
-
-<!--
-
-### Simple Test Run
-
-Page break field here (2)
-
--->
