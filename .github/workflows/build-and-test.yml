@@ -56,7 +56,6 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v5
         with:
-          enable-cache: false
           python-version: "3.13"
       - name: Build CSE
         uses: ./.github/actions/build-cse
@@ -108,6 +107,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v5
         with:
+          enable-cache: false
           python-version: "3.13"
       - name: Configure CMake
         run: cmake -P cmake/configure.cmake
