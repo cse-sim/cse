@@ -104,6 +104,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.13"
       - name: Configure CMake
         run: cmake -P cmake/configure.cmake
       - name: Download CSE artifact
