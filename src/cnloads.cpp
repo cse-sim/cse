@@ -1278,33 +1278,43 @@ RC ZNR::zn_AirRequest(		// determine air requirement given rs_asSup
 		orWarn("Flipped tSup  RSYS='%s', tPln=%0.3f, tSup=%0.3f, tSP=%0.1f, tZn=%0.3f\n",
 			rs->Name(), rs->rs_asOut.as_tdb, tSup0, zn_tzsp, tz);
 	}
+	if (zn_hcMode != RSYS::rsmOFF && zn_tzsp > 0.f)
+		orWarn("Inconsistent hcMode  RSYS='%s', hcMode=%d, tSP=%0.1f, tZn=%0.3f\n",
+			rs->Name(), zn_hcMode, zn_tzsp, tz);
 #endif
 
-	double amfSup0 = zn_AmfHvacCR(zn_tzsp, tSup0);	// dry air mass flow rate required to hold
+	// if zone needs conditioning
+	// Note: RSYS::rs_ZoneAirRequest() has no effect for air flow = 0, OK to skip calls
+	if (zn_hcMode != RSYS::rsmOFF)
+	{
+		// dry air mass flow rate required to hold setpoint, lbm/hr
+		double amfSup0 = zn_AmfHvacCR(zn_tzsp, tSup0);
+
 #if 0 && defined(_DEBUG)
-	double qLoad = zn_QAirCR(zn_tzsp);
-	// load at system, Btuh
-	double qLoad0 = rs->rs_asOut.as_QSenDiff2(rs->rs_asIn, amfSup0);
-	if (fabs(qLoad - qLoad0) > 5.)
-		printf("\nzn_AirRequest mismatch");
+		double qLoad = zn_QAirCR(zn_tzsp);
+		// load at system, Btuh
+		double qLoad0 = rs->rs_asOut.as_QSenDiff2(rs->rs_asIn, amfSup0);
+		if (fabs(qLoad - qLoad0) > 5.)
+			printf("\nzn_AirRequest mismatch");
 #endif
 
-	zn_rsAmfSysReq[0] = rs->rs_ZoneAirRequest(amfSup0, 0);	// notify system of requirement
-	CHECKFP(zn_rsAmfSysReq[0]);		// check for NaN etc (debug only)
+		zn_rsAmfSysReq[0] = rs->rs_ZoneAirRequest(amfSup0, 0);	// notify system of requirement
+		CHECKFP(zn_rsAmfSysReq[0]);		// check for NaN etc (debug only)
 
-	if (zn_hcMode == RSYS::rsmHEAT && rs->rs_CanHaveAuxHeat() && rs->rs_speedF==1.f)
-	{	// HP heating full speed: repeat calc with full aux
-		double tSup1 = rs->rs_asSupAux.as_tdb;
-		double amfSup1 = zn_AmfHvacCR(zn_tzsp, tSup1);
-		zn_rsAmfSysReq[1] = rs->rs_ZoneAirRequest(amfSup1, 1);
+		if (zn_hcMode == RSYS::rsmHEAT && rs->rs_CanHaveAuxHeat() && rs->rs_speedF==1.f)
+		{	// HP heating full speed: repeat calc with full aux
+			double tSup1 = rs->rs_asSupAux.as_tdb;
+			double amfSup1 = zn_AmfHvacCR(zn_tzsp, tSup1);
+			zn_rsAmfSysReq[1] = rs->rs_ZoneAirRequest(amfSup1, 1);
 #if defined( _DEBUG)
-		double qHt0 = amfSup0 * (tSup0 - zn_tzsp);
-		double qHt1 = amfSup1 * (tSup1 - zn_tzsp);
-		// zn_AmfHvacCR can return DBL_MAX
-		if (qHt0 > 0. && qHt0 < 1.e10 && qHt1 > 0. && qHt1 < 1.e10
-			&& frDiff(qHt0, qHt1) > .001)
-			printf("\nqHt mismatch");
+			double qHt0 = amfSup0 * (tSup0 - zn_tzsp);
+			double qHt1 = amfSup1 * (tSup1 - zn_tzsp);
+			// zn_AmfHvacCR can return DBL_MAX
+			if (qHt0 > 0. && qHt0 < 1.e10 && qHt1 > 0. && qHt1 < 1.e10
+				&& frDiff(qHt0, qHt1) > .001)
+				printf("\nqHt mismatch");
 #endif
+		}
 	}
 	return rc;
 }		// ZNR::zn_AirRequest
@@ -5418,7 +5428,7 @@ void RSYS::rs_ClearSubhrResults(
 	rs_amf = 0.;
 	rs_fanPwr = 0.f;
 	rs_amfReq[0] = rs_amfReq[1] = 0.;
-	rs_znLoad[0] = rs_znLoad[1] = 0.;
+	rs_znLoad[0] = rs_znLoad[1] = 0.f;
 	rs_asRet.as_Init();
 	rs_asIn.as_Init();
 	rs_twbIn = 0.;
@@ -5735,7 +5745,10 @@ double RSYS::rs_ZoneAirRequest(		// air quantity needed by zone
 	int iAux /*=0*/)	// 0 = primary mode (compressor)
 						// 1 = aux mode (aux alone or main+aux (ASHP heating only)
 // each zone needing conditioning requests air
-// returns RSYS (not supply register) amf needed to provide zone requirement
+// Note: no effect if znSupReq = 0 (OK to skip call)
+// 
+// returns RSYS amf (not supply register amf) needed to provide zone requirement, lbm/hr
+
 {
 	// handle impossible requests
 	//   supplyDT = tz - tSup
