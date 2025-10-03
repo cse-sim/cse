@@ -45,7 +45,6 @@ if (GIT_TAG MATCHES "^v[0-9]+\\.[0-9]+\\.[0-9]+(\\-[0-9A-Za-z-]+)?$")
   string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.([0-9]+)(\\-[0-9A-Za-z-]+)?$" "\\1" CSEVRSN_PATCH "${GIT_TAG}")
   if (GIT_TAG MATCHES "^v[0-9]+\\.[0-9]+\\.[0-9]+(\\-[0-9A-Za-z-]+)$")
     string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.[0-9]+(\\-[0-9A-Za-z-]+)$" "\\1" CSEVRSN_PRERELEASE "${GIT_TAG}")
-    message(STATUS "CSEVRSN_PRERELEASE is ${CSEVRSN_PRERELEASE}")
   endif()
 elseif(GIT_TAG MATCHES "^cse\\.[0-9]+$")
   # old version scheme
