@@ -611,7 +611,7 @@ RC FENAW::fa_Subhr(				// subhr calcs for single time step
 	// transmitted SW solar, Btuh/ft2
 	fa_pXS->xs_glzTrans = fa_mSolar * (sbcO.sb_sgTarg.st_bm*fa_BmTauF(iH) + sbcO.sb_sgTarg.st_df*fa_DfTauF());
 	
-#if defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 	if (fa_absSlr[nL] > 0.)
 	{
 		double trans2 = fa_mSolar * IrSItoIP(fa_absSlr[nL]);
