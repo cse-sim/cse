@@ -1725,6 +1725,8 @@ WFILE::~WFILE()
 
 	record::Copy( pSrc, options);	// verifies class (rt) same, copies whole derived class record. ancrec.cpp.
 
+	wf_TDVFileTitle.FixAfterCopy();
+
 	yac = new YACAM();		// overwrite yac pointer, if any
 	yacTDV = new YACAM();
 
@@ -2511,7 +2513,7 @@ RC WFILE::wf_TDVOpen(	// open California Time of Day Valuation (TDV) file
 //----------------------------------------------------------------------------
 void WFILE::wf_TDVInitHdrInfo()
 {	memset(  wf_TDVFileTimeStamp, 0, sizeof( wf_TDVFileTimeStamp));
-	memset(  wf_TDVFileTitle, 0, sizeof( wf_TDVFileTitle));
+	wf_TDVFileTitle.Release();
 }	// WFILE::wf_TDVInitHdrInfo
 //----------------------------------------------------------------------------
 RC WFILE::wf_TDVReadHdr( int erOp)		// read / decode TDV file header
@@ -2538,7 +2540,7 @@ RC WFILE::wf_TDVReadHdr( int erOp)		// read / decode TDV file header
 		rc = yacTDV->getLineCSV( erOp, 0, "C", _C( wf_TDVFileTimeStamp), NULL);
 	if (!rc)
 	{	// title
-		rc = yacTDV->getLineCSV( erOp, 0, "CC", _C( wf_TDVFileTitle), _C( T2), NULL);
+		rc = yacTDV->getLineCSV( erOp, 0, "SC", &wf_TDVFileTitle, _C( T2), NULL);
 		rc |= yacTDV->checkExpected( T2, "Hour");
 	}
 	if (!rc)

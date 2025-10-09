@@ -659,17 +659,16 @@ LOCAL RC FC lopNty4dt( 	// for DT- data type, get TY- type and PSOP to load it f
 		sz = 4;
 		break;
 
-	case DTANAME:
 	case DTWFLOC:			// char arrays used in WFILE, 1-94
 	case DTWFLID:			// ..
 	case DTWFLOC2:			// 10-94
-		lop = PSRATLODA;  		// record load char array (eg ANAME): makes dm copy, leaves ptr in stack
+		lop = PSRATLODA;  		// record load char array: makes dm copy, leaves ptr in stack
 		ty = TYSTR;
 		sz = 4;
 		break;
 
 	case DTCULSTR:
-		lop = PSRATLODS;  		// record load string: loads char * from record, duplicates.
+		lop = PSRATLODS;  		// record load string: loads pointer to CULSTR chars and leaves in stack
 		ty = TYSTR;
 		sz = 4;
 		break;

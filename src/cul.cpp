@@ -17,7 +17,7 @@
     redo dref table using field # not offset?
     redo exman.cpp:extab WHERE using field # not offset?
     FDNONE in srd.h or cnglob.h?
-    field constants or way to access fdTy eg for ANAME for ganame()?
+    field constants or way to access fdTy for ganame()?
 */
 
 /* hanging 12-25-90
@@ -2677,11 +2677,9 @@ LOCAL RC ganame(
 //          RC_SUM, RC_ALL, RC_ALLBUT, [RC_ELECTRIC]: returned if special word gotten and enabling flags on.
 //          other:  error, message issued, perNx done.
 {
-	// link to a fir in srfd.cpp to get field type of an ANAME, partly to
-	// excercise new fields limit code 2-92 -- later just check length here?
-
 	RC rc = xpr( TYID,				// TYID: string, implied quotes on unreserved undeclared words
-		sfirSFI[ SFI_NAME].fi_fdTy,	// get field type for an ANAME field so exman.cpp will check string length
+		sfirSFI[ SFI_NAME].fi_fdTy,	// get field type for a name field so exman.cpp to support checks
+									//    (no length check as of 10-2025)
     								// (we have no defines for fld types: not invariant: data\fields.def
 									// is rearrangable & product dependent) 2-91. Declared in rccn.h.
 		0, 0,						// 0 evfOk, useCl: require constant value

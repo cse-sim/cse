@@ -759,6 +759,7 @@ int YACAM::scanLine(			// scan file for line match
 // "control string" chars for YACAM::getLineCSV. Each letter uses a pointer from variable arg list
 //	I L F:	16-bit integer, 32-bit integer, float.
 //      C:	read quoted string to char[] array. Array size follows pointer in var arg list.
+//      S:	read quoted string to CULSTR
 //	    D:  date, month and day, no year, leap year flag from caller
 //      X:  skip (data discarded, no pointer advance)
 //   1-99:	repeat count for following char, using same pointer: for arrays or adjacent members of same type.
@@ -829,15 +830,9 @@ RC YACAM::getLineCSV( 	// read, decode, and store data per control string
 		{
 			// get token
 			char tok[ 256];				// token buffer
-#if 1
-			// experiment, 3-16-2017
 			rc = tokeCSV( tok, sizeof( tok), erOp, &pLn);
 			if (rc != RCOK && rc != RCEOF)
 				return RCBAD;
-#else
-			if (!strxtok( tok, pLn, ",", false))
-				return RCBAD;		// out of tokens
-#endif
 			erOp &= ~YAC_EOFOK;				// after first token clear no-message-on-eof option bit
 			strTrim( tok);
 
@@ -850,7 +845,11 @@ RC YACAM::getLineCSV( 	// read, decode, and store data per control string
 			  case 'X':
 				continue;
 
-				//case 'S': *(char **)p = strsave(tok);  size=sizeof(char **);  break;	// string to dm
+			  case 'S':	// string CULSTR
+				  ((CULSTR*)p)->Set( tok);
+				  size=sizeof(CULSTR);
+				  break;
+
 				//case 'T': *(char **)p = strtmp(tok);   size=sizeof(char **);  break;	// string to Tmpstr
 
 			  case 'C': 				     	// string to *p

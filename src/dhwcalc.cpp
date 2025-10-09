@@ -4015,6 +4015,11 @@ DHWHEATER::~DHWHEATER()		// d'tor
 	wh_HPWH.hw_pNodePowerExtra_W.vector::~vector<double>();
 	record::Copy( pSrc, options);
 	// base class calls FixUp() and (if _DEBUG) Validate()
+
+	// dup copied CULSTRs
+	wh_desc.FixAfterCopy();
+
+	// dup copied heap table
 	new(&wh_HPWH.hw_pNodePowerExtra_W) std::vector<double>(((const DHWHEATER*)pSrc)->wh_HPWH.hw_pNodePowerExtra_W);
 }		// DHWHEATER::Copy
 //---------------------------------------------------------------------------
@@ -4296,7 +4301,7 @@ void DHWHEATER::wh_SetDesc()		// build probable description
 		hpTy = strtprintf( " %s",getChoiTx( DHWHEATER_ASHPTY, 1));
 
 	const char* t = strtprintf( "%s %s%s", whSrcTx, whTyTx, hpTy);
-	strncpy0( wh_desc, t, sizeof( wh_desc));
+	wh_desc.Set(t);
 }		// DHWHEATER::wh_SetDesc
 //-----------------------------------------------------------------------------
 int DHWHEATER::wh_ReportBalErrorsIf() const

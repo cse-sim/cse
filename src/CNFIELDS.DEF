@@ -56,8 +56,6 @@ DBL           DBL          LMNONE    UNNONE
 IDATE         IDATE        LMNONE    UNNONE
 
 //----- Types required re RATs (Record Array Tables):
-// string for use in RATs:
-ANAME         ANAME        LMNONE    UNNONE
 // for reference (subscript) to a RAT or table:
 TI	      TI           LMGEZ     UNNONE
 //                                                        

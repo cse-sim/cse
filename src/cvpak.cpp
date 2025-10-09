@@ -409,8 +409,7 @@ x		}
 		data = (*(CULSTR*)data).CStr();
 		goto strjust;	// data is pointer to string
 
-	case DTCH:				// for char array or string ptr already dereferenced, rob 11-91
-	case DTANAME:			// char[ ] RAT name
+	case DTCH:				// for char array or string ptr already dereferenced
 strjust:
 		Cvnchars = snprintf( str, allocLen, sf[ lj], wid, mfw, data);
 		break;

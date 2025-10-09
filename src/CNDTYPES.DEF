@@ -11,8 +11,8 @@
 	        ??? UPDATE FOR CSE some done.
 		dtypes.h   #included in cnglob.h
 		dttab.cpp  data types table C source code
-		rcdef.exe  some values derived from here (incl DTANAME, DTTI
-			   1-91) are compiled into rcdef: if changed,
+		rcdef.exe  some values derived from here (incl DTTI, )
+			   are compiled into rcdef: if changed,
 			   run rcdef to produce dtypes.h, recompile
 			   & link same, run AGAIN for other files.
 
@@ -94,7 +94,6 @@ VOIDP    --		"void *"
 DOW      --		"short"  			// day of week, sun=0 in tdpak (1 less than DOWCH)
 MONTH    --		"short"  			// month, jan=1 in tdpak
 
-ANAME   -- 		"char[64]"			// name string for use in RATs:
 IDATE    --		"struct {SI year;SI month;SI mday;SI wday;}"
 ITIME    --     "struct {SI hour;SI min;SI sec;}"
 DOY      --     "short"    		
