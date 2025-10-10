@@ -783,7 +783,7 @@ RC YACAM::getLineCSV( 	// read, decode, and store data per control string
 	RC rc = RCOK;
 	mErOp = erOp;				// communicate error action to errFl/errFlLn
 	va_list pp;
-        void* p;
+    void* p;
 	va_start( pp, cstr);		// set up to get variable args, starting after cstr
 
 	char lnBuf[ YACAM_MAXLINELEN];

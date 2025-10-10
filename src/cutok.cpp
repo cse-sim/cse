@@ -564,7 +564,7 @@ LOCAL void cuppiClean(CLEANCASE /*cs*/)	// called from cuTokClean, above
 RC cufOpen(			// open and init CSE language input file
 
 	const char* fname, 	// file name input by user
-	char *dflExt ) 		// NULL or "" or default .extension incl leading "."
+	const char* dflExt ) 		// NULL or "" or default .extension incl leading "."
 {
 
 // init our char input stuff

@@ -110,7 +110,7 @@ extern FLOAT cuFlval;				// floating value of number
 void cuTokClean(CLEANCASE cs);		// init/clean up 10-93
 void cuUntok( void);  				// unget token
 int cuTok( void);					// get token
-RC cufOpen( const char* fname, char *dflExt);		// open file
+RC cufOpen( const char* fname, const char* dflExt);		// open file
 void cufClose( void);				// close file
 RC CDEC cuEr( int retokPar, MSGORHANDLE message, ...);
 RC CDEC cuEr( int shoTx, int shoCaret, int shoFnLn, int retokPar, int fileIx, int line, int isWarn, MSGORHANDLE fmt, ... );

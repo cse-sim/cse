@@ -168,7 +168,7 @@ static char ppIdtx[512+1] = { 0 };	// text of identifier, set by ppcId()
 
 // re getting preprocessed text.
 //   see pp.h for: ppOpen(), ppClose(), ppGet().
-static RC FC ppOpI( const char *fname, char *defex);
+static RC FC ppOpI( const char* fname, const char* defex);
 
 // executing pp cmds
 static RC   FC ppcDo( const char *p, int ppCase);
@@ -521,12 +521,12 @@ bool ppFindFile( 	// find file using paths specified with ppAddPaths. Issues no 
 	return bFound;
 }						// ppFindFile
 //==========================================================================
-RC FC ppOpen( const char* fname, char *defex) 	// open and init cal non-res user language main input source file
+RC FC ppOpen( const char* fname, const char* defex) 	// open and init cal non-res user language main input source file
 
 // searches current directory, and drives/directories per preceding ppAddPath calls.
 
 {
-	RC rc;
+	RC rc = RCOK;
 
 // if file already open, message and continue: insurance
 	if (is && inDepth)
@@ -545,11 +545,11 @@ RC FC ppOpen( const char* fname, char *defex) 	// open and init cal non-res user
 	return rc;				// another return above (CSE_E macro)
 }			// ppOpen
 //==========================================================================
-RC FC ppOpI( const char* fname, char *defex)		// inner pp file opener: adds an input source stack level
+RC FC ppOpI( const char* fname, const char* defex)		// inner pp file opener: adds an input source stack level
 
 {
 	INSTK * isi;
-	RC rc;
+	RC rc = RCOK;
 
 // standardize name (upper case) and conditionally use default extension
 	fname = strffix( fname, defex);		// to tmpstr
@@ -588,7 +588,8 @@ RC FC ppOpI( const char* fname, char *defex)		// inner pp file opener: adds an i
 	inDepth++;			// input nest level
 	is = isi;			// file-global inStk pointer
 	isf = isi;			// ditto to file: 'is' changes for macro
-	return RCOK;		// good return
+
+	return rc;		// good return
 	// more returns above
 }			// ppOpI
 //==========================================================================

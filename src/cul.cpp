@@ -383,7 +383,7 @@ SI FC cul( 	// public entry to compile user language commands from open input fi
 	  		//   4: clear input data, free input basAncs and DM alloc'd here:
 	  		//      call for max DM for last run, or re finding unfree'd DM. Uses no other args. Returns 1.
 	const char* fName,	// file name (case 1)
-	char* defex,	// default extension (must include leading period)
+	const char* defex,	// default extension (must include leading period)
 
 	CULT *cult,  	// top-level table, used if cs==1
 	record *e,   	// ptr to basAnc record (entry) to rcv top level data
@@ -1531,7 +1531,7 @@ x							dmfree( DMPP( *p));      		// free any prior string value: free ram, NUL
 						else if (c->ty==TYFL || c->ty==TYNC)	// floats: units.
 #else
 						else if ( c->ty==TYFL			// float: sep cult mbr; units.
-						||  c->ty==TYNC && !c->DFPI ) 	// number/choice is init as a number from .dff if .dfpi is 0.
+						||  (c->ty==TYNC && !c->DFPI) ) 	// number/choice is init as a number from .dff if .dfpi is 0.
 #endif
 						{
 							if (!ISNUM(c->DFF))				// keep nonNumeric value out of coprocessor!
@@ -1834,7 +1834,7 @@ LOCAL RC FC culRESET() 	// "unset" a member -- re-default it
 		else if (c->ty==TYFL || c->ty==TYNC)		// floats: units.
 #else
 		else if ( c->ty==TYFL				// float: sep cult mbr; units.
-		||  c->ty==TYNC && !c->DFPI ) 		// number/choice is defaulted as a number from .dff if .dfpi is 0.
+		||  (c->ty==TYNC && !c->DFPI) ) 		// number/choice is defaulted as a number from .dff if .dfpi is 0.
 #endif
 		{
 			if (!ISNUM(c->DFF))				// keep nonNumeric value out of coprocessor!
@@ -1953,7 +1953,7 @@ LOCAL RC FC culKDAT()	// do cul constant-data case per xSp
 	else if (c->ty==TYFL || c->ty==TYNC)			// floats: units.
 #else
 	else if ( c->ty==TYFL					// float: sep cult mbr; units.
-	||  c->ty==TYNC && !c->DFPI ) 			// number/choice: use .dff if .dfpi is 0.
+	||  (c->ty==TYNC && !c->DFPI) ) 			// number/choice: use .dff if .dfpi is 0.
 #endif
 	{
 		if (!ISNUM(c->DFF))					// keep nonNumeric value out of coprocessor!
@@ -2785,7 +2785,7 @@ LOCAL RC xpr(   	// our local expression compiler interface / checker
 	                                                          or accepted and ungotten:  verb, verb-like word, eof
 	   here reject those that are passed that we do not like. */
 
-	if ( tokTy==CUTCOM && !(f & ARRAY)						// comma ok if 'array' flag, 3-92
+	if ( (tokTy==CUTCOM && !(f & ARRAY))						// comma ok if 'array' flag, 3-92
 	 ||  tokTy==CUTRPR  ||  tokTy==CUTRB  ||  tokTy==CUTDEFA )
 		perNx( MH_S0249 );				// issue msg, scan to eof, verb, or after ';'.
 	// "expected ';' (or class name, member name, or verb)"
