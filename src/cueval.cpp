@@ -411,6 +411,7 @@ LOCAL RC FC cuEvalI(
 	static_assert( sizeof(SI)==sizeof(PSOP));		// assumed in (SI *) cast used in PSPKONN case
 
 	static bool bCoverageInited = false;
+	if (!bCoverageInited)
 	{	/* rc = */ CoverageInit();
 		bCoverageInited = true;
 	}

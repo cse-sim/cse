@@ -59,10 +59,6 @@ WHAT if we modify the smart terminal to shut off flow if supply temp is on wrong
   ****** UNTIL details thought thru, don't bother to try to implement smart terminals. *******   */
 
 //-----------------------------------------------------------------------------------------------------------------------------
-//--- constants, also hard-coded in cncult2.cpp for Top.absTol; also in cnah.cpp:
-const float RELoverABS = .01f;			// relative to absolute tolerance ratio: +-1 corrsponds to +- 1%.
-const float ABSoverREL = 1.f/RELoverABS;	// reciprocal thereof
-//---------------------------------------------------------------------------------------------------------------------------
 RC FC hvacIterSubhr()
 
 // Iterative (estimate-refine) part of hvac subhour computations for all zones/terminals/airHandlers
@@ -531,25 +527,38 @@ RC TU::tu_Setup()			// check and set up terminal record: call for each terminal 
 		SI vbl = FALSE;					// TRUE if any variable exprs given: don't default
 		float def = 0.f;					// use only > 0 values
 		if (sstat[TU_TUVFMN] & FsSET)     			// if minimum flow given
+		{
 			if (sstat[TU_TUVFMN] & FsAS)			// if being autoSized 7-95, its not constant nor variable
 				ausz++;						// set flag
 			else if (sstat[TU_TUVFMN] & FsVAL)			// else if set now (thus constant)
 				def = tuVfMn;					// use it as default (if > 0)
-			else  vbl++;					// not set, not autoSized --> must be variable, can't default
+			else
+				vbl++;					// not set, not autoSized --> must be variable, can't default
+		}
 		if (cmAr & cmStH)					// heat max only pertinent with tstat ctrl'd heat
+		{
 			if (sstat[TU_TUVFMXH] & FsSET)   			// if heat max flow given
+			{
 				if (sstat[TU_TUVFMXH] & FsAS)			// if being autoSized 7-95, its not constant nor variable
 					ausz++;					// set flag
 				else if (sstat[TU_TUVFMXH] & FsVAL)		// if set now (thus constant)
 					setToMax(def, tuVfMxH);  			// use it as default if larger
-				else  vbl++;					// not set --> must be variable, can't default
+				else
+					vbl++;					// not set --> must be variable, can't default
+			}
+		}
 		if (cmAr & cmStC)					// cool max only pertinent with tstat ctrl'd cool
+		{
 			if (sstat[TU_TUVFMXC] & FsSET)   			// if cool max flow given
+			{
 				if (sstat[TU_TUVFMXC] & FsAS)			// if being autoSized 7-95, its not constant nor variable
 					ausz++;					// set flag
 				else if (sstat[TU_TUVFMXC] & FsVAL)		// if set now (thus constant)
 					setToMax(def, tuVfMxC);  			// use it as default if larger
-				else  vbl++;					// not set --> must be variable, can't default
+				else
+					vbl++;					// not set --> must be variable, can't default
+			}
+		}
 		/* if any exprs given, don't use the constants or autoSizes -- require input.
 		   if only constants or autoSizes given, use max for main sim.
 		   if both constants & autoSizes given, don't store the constants b4 ausz phase: leave 0 for dynamic default.
@@ -2498,6 +2507,9 @@ ahReEst:		// come here to re-estimate ah supply temperature in current mode
 				   Turnoff happens: AH::setTsSp1 (some 0-flow cases), TU::tuEstimate (next subhour),
 				   and now in ZNR::ztuAbs at most once per subhour. 4-95. */
 
+			default:
+				break;
+
 			} // end switch zhxTy
 
 			// sums for humidity, for setpoint modes: add active-terminal contribution if any to sums from ztuAbs
@@ -2773,7 +2785,7 @@ RC ZNR::ztuAbs( 			// compute stuff for zn's terminals in given zone mode
 					&&  ah->isZNorZN2   					// if ah supply temp is under ZN or ZN2 control this hour
 					// don't turn on ah if no flow possible: just turns itself off again --> ah-tu nonconvergence, 10-96.
 					&&  (max( tu->tuVfMn, tu->tuVfMxH) > 0 || Top.tp_sizing && tu->vhAs.az_active)	// tuVfMxH==0 is allowed input.
-					&&  (ah->sfan.vfDs > 0 || Top.tp_sizing && ah->fanAs.az_active) )		// vfDs==0 could result from autoSizing.
+					&&  (ah->sfan.vfDs > 0 || (Top.tp_sizing && ah->fanAs.az_active)) )		// vfDs==0 could result from autoSizing.
 			{
 				TU *ctu = TuB.p + ah->ahCtu;			// point ZN/ZN2 control terminal for this air handler
 				ctu->wantMd = ahHEATING;			// have terminal tell ah that it wants heat
@@ -2808,7 +2820,7 @@ RC ZNR::ztuAbs( 			// compute stuff for zn's terminals in given zone mode
 					&&  ah->isZNorZN2   				// if ah supply temp is under ZN or ZN2 control this hour
 					// don't turn on ah if no flow possible: just turns itself off again --> ah-tu nonconvergence, 10-96.
 					&&  (max( tu->tuVfMn, tu->tuVfMxC) > 0 || Top.tp_sizing && tu->vcAs.az_active)	// tuVfMxC==0 is allowed input.
-					&&  (ah->sfan.vfDs > 0 || Top.tp_sizing && ah->fanAs.az_active) )		// vfDs==0 could result from autoSizing.
+					&&  (ah->sfan.vfDs > 0 || (Top.tp_sizing && ah->fanAs.az_active)) )		// vfDs==0 could result from autoSizing.
 			{
 				TU *ctu = TuB.p + ah->ahCtu;		// point ZN/ZN2 control terminal for this air handler
 				ctu->wantMd = ahCOOLING;			// have terminal tell ah that it wants coolth
@@ -2861,6 +2873,8 @@ haveFlow: ;					// other air handler cases join here with flow cz set
 			aSum += cz * tSup;				// accumulate supply t * flow, for aqHvO
 			wc1 += cz * (ah->ah_wSupLs + ah->ah_wSup)/2.;		// accumulate average supply hum rat * flow, for wcO1
 			wc += cz * ah->ah_wSup;					// accumulate latest supply hum rat * flow
+			break;
+		default:
 			break;
 		}
 	}
@@ -3098,6 +3112,8 @@ tzOhum: ;		// common exit for air cases. cz contains tu->cz.
 				}
 			break;
 #undef TOLF
+		default:
+			break;
 		}
 	}
 }				// ZNR::ztuMdSets
