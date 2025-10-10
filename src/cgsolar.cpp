@@ -244,7 +244,7 @@ LOCAL void sgrPut( const char* sgName, SGTARG* pTarg, float* pCtrl, BOO isSubhrl
 	BOO isEndIvl,
 #endif
 	double bmBm, double dfDf, double bmDf=0.);
-LOCAL void toSurfSide( TI xsi, SI si, TI czi, const double sgf[ socCOUNT][ sgcCOUNT]);
+LOCAL RC toSurfSide( TI xsi, SI si, TI czi, const double sgf[ socCOUNT][ sgcCOUNT]);
 LOCAL void toZoneCAir( TI zi, TI czi, float bmo, float dfo, float bmc, float dfc);
 
 //---------------------------------------------------------------------------
@@ -1109,7 +1109,7 @@ void ZNR::zn_DbDumpSGDIST(		// dump zone solar gain distribution values
 //=============================================================================
 // non-member solar gain functions
 //----------------------------------------------------------------------
-LOCAL void toSurfSide( 	// add SgR entries for solar gain to surface side
+LOCAL RC toSurfSide( 	// add SgR entries for solar gain to surface side
 
 	TI xsi, 			// which surface (XsR subscript)
 						//   if <0, no matching zone energy bal entry
@@ -1118,9 +1118,9 @@ LOCAL void toSurfSide( 	// add SgR entries for solar gain to surface side
 	const double sgf[ socCOUNT][ sgcCOUNT])		// gain factors
 // does not use accumulators -- is used to distribute accumulated gain.
 {
-	RC rc;
+	RC rc = RCOK;
 	// shades open
-	rc = sgrAdd( 					// create or add to SGRAT SgR record; zone total also; nop if gains small or zero.
+	rc |= sgrAdd( 					// create or add to SGRAT SgR record; zone total also; nop if gains small or zero.
 		si ? SGDTTSURFO : SGDTTSURFI,     	// add gain to surface outside or inzide
 		xsi,								// surface subscript
 		NULL,  								// no control variable (shades open)
@@ -1129,7 +1129,7 @@ LOCAL void toSurfSide( 	// add SgR entries for solar gain to surface side
 	// shades closed
 	float* ctrl		// control variable pointer for shades-closed difference
 		= czi ? &ZrB[ czi].i.znSC : NULL;
-	rc = sgrAdd(
+	rc |= sgrAdd(
 		si ? SGDTTSURFO : SGDTTSURFI,     	// add gain to mass outside or inzide
 		xsi,								// surface subscript
 		ctrl,
@@ -1143,6 +1143,8 @@ LOCAL void toSurfSide( 	// add SgR entries for solar gain to surface side
 		//  in which case, there should be a control zone
 		printf( "toSurfSide inconsistency\n");
 #endif
+
+	return rc;
 
 }		// toSurfSide
 //----------------------------------------------------------------------
@@ -1231,6 +1233,7 @@ o   BOO isEndIvl = FALSE;	// non-0 for end-time-interval gain (zone air), 0 for 
 #ifdef SOLAVNEND
 o		isEndIvl = TRUE;
 #endif
+	default:
 		break;
 	}
 

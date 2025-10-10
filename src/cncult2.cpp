@@ -1800,6 +1800,7 @@ void ZNR::addRIgDist( 	// add radiant internal gain distribution for gain origin
 		break;
 	case massO:
 		p = &MsR.p[targTi].outside.rIg;
+	default:
 		break;
 	}
 

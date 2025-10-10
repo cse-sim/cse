@@ -1257,7 +1257,7 @@ RC FC expTy(
 	gotTy = parSp->ty;					// refetch data type: some cases above change it
 	if (!(gotTy & wanTy) || (gotTy & ~wanTy))		// if still not a desired data type
 	{
-		char *got = "";
+		const char* got = "";
 		if ((gotTy & (TYNC))==TYNC)			// TYNC is both TYCH and TYFL bits
 			got = ", number/choice value found,"; 	// extra explanation: error might be obscure, or bug in new code
 		else if (gotTy==TYCH)

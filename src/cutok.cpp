@@ -37,8 +37,8 @@ LOCAL int uliFline = 0;		// input file line # (for error messages)
 LOCAL void cuppiClean( CLEANCASE cs);
 LOCAL void cuUnc();
 LOCAL int cuC();
-LOCAL int cuScanto( char *set);
-LOCAL void svFname( char *name, int len);
+LOCAL int cuScanto( const char* set);
+LOCAL void svFname( const char* name, int len);
 LOCAL void cufMark1();
 LOCAL void cufMark2();
 LOCAL void cufCline( int flag, int* pcol, char *s, size_t sSize );
@@ -698,7 +698,7 @@ x				return c;   		//  too long, assume not #line
 	// returns are in switch and above
 }			// cuC
 //==========================================================================
-LOCAL int cuScanto( char *set)		// pass characters in input file not in "set"
+LOCAL int cuScanto( const char* set)		// pass characters in input file not in "set"
 
 // intended to be faster than caller cuC() loop.
 
@@ -722,7 +722,7 @@ LOCAL int cuScanto( char *set)		// pass characters in input file not in "set"
 //===========================================================================
 LOCAL void svFname( 		// save #line file name (to last til end session); set uliFileIx
 
-	char *name, 	// ptr to #line command file name in buffer
+	const char* name, 	// ptr to #line command file name in buffer
 	int len )		// length. NOT null-terminated.
 
 // callers use uliFileIx, set here, for record.fileIx.

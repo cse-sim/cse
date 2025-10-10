@@ -4727,7 +4727,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 		if (!wh_HPWH.hw_pHPWH->canUseSoCControls())
 		{
 			rc |= oer("'%s' does not support StateOfCharge controls",
-				   wh_desc);
+				   GetDescription());
 		}
 		else
 		{

@@ -597,7 +597,7 @@ LOCAL RC FC lopNty4dt( 	// for DT- data type, get TY- type and PSOP to load it f
 	USI ty = 0, sz = 0;
 	PSOP lop = 0;
 
-	char* errorSub = NULL;			// say no error
+	const char* errorSub = nullptr;			// say no error
 	switch (dt)				// for dt, get load pseudo-op (lop) or error message insert text (errorSub)
 	{
 	case DTSI:			// 2-byte types that are or can be treated as integers

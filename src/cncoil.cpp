@@ -1950,10 +1950,8 @@ x	}
 #endif
 	DBL te = 0, he;
 	FLOAT we = 0;
-#ifdef DEBUG
-	SI cs1=0, cs2=0;					/* removed redundant init when BCC32 4.5 warned, 12-94.
-							   But init appears non-redundant, restored 7-95. */
-#endif
+	int cs1 = 0;
+	int cs2 = 0;
 	for (SI j = 1;  j++;  )
 	{
 

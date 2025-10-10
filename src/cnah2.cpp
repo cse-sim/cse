@@ -3049,6 +3049,7 @@ void AH::antRatTs()			// anticipated return air conditions for current (changed)
 					break;	// .. aCv stored in tu->aCv below.
 				case uMxC:
 					aCv = tu->cMxC;
+				default:
 					break;	// COORDINATE changes here with any changes in cnztu.cpp:ztuMdSets.
 				}
 				cz = tu->znC(aCv);					// .. zone flow for vav flow, after duct leak
