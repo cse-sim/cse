@@ -14,6 +14,7 @@ dependencies = [
     "python-slugify>=8.0.4",
     "pyyaml>=6.0.2",
     "types-pyyaml>=6.0.12.20250516",
+    "mkdocs-print-site-plugin"
 ]
 
 [dependency-groups]

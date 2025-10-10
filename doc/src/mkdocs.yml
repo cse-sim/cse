@@ -27,6 +27,22 @@ plugins:
   - macros
   - search
   - awesome-nav
+  - print-site:
+      add_to_navigation: false
+      print_page_title: 'CSE Documentation (Single Page)'
+      print_page_basename: 'single_page'
+      add_print_site_banner: false
+      # Table of contents
+      add_table_of_contents: true
+      toc_title: 'Table of Contents'
+      toc_depth: 6
+      # Content-related
+      add_full_urls: false
+      enumerate_headings: true
+      enumerate_figures: false
+      add_cover_page: false
+      include_css: true
+      enabled: true
 hooks:
   - hooks.py
 markdown_extensions:
