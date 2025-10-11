@@ -2784,7 +2784,7 @@ RC ZNR::ztuAbs( 			// compute stuff for zn's terminals in given zone mode
 					&&  (tu->ctrlsAi && tu->ctrlsAi==x->ai)	// if zhx's tu controls zhx's air handler 5-2-95
 					&&  ah->isZNorZN2   					// if ah supply temp is under ZN or ZN2 control this hour
 					// don't turn on ah if no flow possible: just turns itself off again --> ah-tu nonconvergence, 10-96.
-					&&  (max( tu->tuVfMn, tu->tuVfMxH) > 0 || Top.tp_sizing && tu->vhAs.az_active)	// tuVfMxH==0 is allowed input.
+					&&  (max( tu->tuVfMn, tu->tuVfMxH) > 0 || (Top.tp_sizing && tu->vhAs.az_active))	// tuVfMxH==0 is allowed input.
 					&&  (ah->sfan.vfDs > 0 || (Top.tp_sizing && ah->fanAs.az_active)) )		// vfDs==0 could result from autoSizing.
 			{
 				TU *ctu = TuB.p + ah->ahCtu;			// point ZN/ZN2 control terminal for this air handler
@@ -2819,7 +2819,7 @@ RC ZNR::ztuAbs( 			// compute stuff for zn's terminals in given zone mode
 					&&  (tu->ctrlsAi && tu->ctrlsAi==x->ai)		// if zhx's tu controls zhx's air handler 5-2-95
 					&&  ah->isZNorZN2   				// if ah supply temp is under ZN or ZN2 control this hour
 					// don't turn on ah if no flow possible: just turns itself off again --> ah-tu nonconvergence, 10-96.
-					&&  (max( tu->tuVfMn, tu->tuVfMxC) > 0 || Top.tp_sizing && tu->vcAs.az_active)	// tuVfMxC==0 is allowed input.
+					&&  (max( tu->tuVfMn, tu->tuVfMxC) > 0 || (Top.tp_sizing && tu->vcAs.az_active))	// tuVfMxC==0 is allowed input.
 					&&  (ah->sfan.vfDs > 0 || (Top.tp_sizing && ah->fanAs.az_active)) )		// vfDs==0 could result from autoSizing.
 			{
 				TU *ctu = TuB.p + ah->ahCtu;		// point ZN/ZN2 control terminal for this air handler

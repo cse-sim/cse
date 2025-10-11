@@ -1270,7 +1270,7 @@ RC ZNR::zn_AirRequest(		// determine air requirement given rs_asSup
 {
 	RC rc = RCOK;
 	double tSup0 = rs->rs_asSup.as_tdb;
-#if 1 && defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 	if ((options & 1) && !Top.isWarmup && rs->rs_speedF > 0.99f
 		&& (   (zn_hcMode == RSYS::rsmCOOL && tSup0 >= zn_tzsp)
 		    || (zn_hcMode == RSYS::rsmHEAT && tSup0 <= zn_tzsp && rs->rs_effHt > 0.f)))

@@ -306,13 +306,13 @@ RC PROBEOBJECT::po_DoProbe()
 
 	pF1 = pFi;						// fir entry for which preceding tokens (m chars) match
 	while (_strnicmp( mNameSought, pFi->fi_GetMName() + m, l)  	// while token does not match (continuation of) member name
-			||  isalnumW(pFi->fi_GetMName()[m])  			// .. or matching word/number in table
-			&&  isalnumW(pFi->fi_GetMName()[m+l]) )  		//    .. continues w/o delimiter (ie only initial substring given)
+			||  (isalnumW(pFi->fi_GetMName()[m])  			// .. or matching word/number in table
+			     &&  isalnumW(pFi->fi_GetMName()[m+l])) )  	//    .. continues w/o delimiter (ie only initial substring given)
 	{
 		pFi++;
 		Fn++;   				// try next fir table entry, incr field number
 		if ( !pFi->fi_fdTy					// if end fir table, not found
-			||  m && _strnicmp( pF1->fi_GetMName(), pFi->fi_GetMName(), m) )	/* if preceding m chars of this entry don't match
+			||  (m && _strnicmp( pF1->fi_GetMName(), pFi->fi_GetMName(), m)) )	/* if preceding m chars of this entry don't match
 	     							   (all entries with same beginning are together) */
 		{
 			pB = nullptr;
