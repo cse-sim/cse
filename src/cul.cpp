@@ -4107,22 +4107,24 @@ LOCAL void FC ratCultO( void)
 										//     eg DHWHEATER and DHWLOOPHEATER from DHWSYS
 	{
 		//if (b->isOwnable())       if an ownable-record basAnc: all are, 7-92.
-		if (xSp > xStk )  			// if nested (not top: no owner)
+		if (xSp > xStk)  			// if nested (not top: no owner)
+		{
 			if ((xSp-1)->c->f & NOTOWNED)  			// if embedding table entry flagged as "not indicating ownership" 11-91
 				xSp->cult->IFLAGS &= ~BEEN_HERE;	// clear nxRat's flag so this cult will be returned again when
-             										//  accessed by another entry -- may indicate its owner 12-10-91
+			//  accessed by another entry -- may indicate its owner 12-10-91
 			else
 			{
 				BP ownB = (xSp-1)->b;			// owner here is embedding basAnc
 				if (b->ownB != 0   				// if owner already set
-				 && b->ownB != ownB )  			// to another owner
-					per( MH_S0202,			// error message, cuparse.cpp
+				 && b->ownB != ownB)  			// to another owner
+					per(MH_S0202,			// error message, cuparse.cpp
 					//"cul.cpp:ratCultO: internal error: bad tables: \n"
 					//"    '%s' rat at %p is 'owned' by '%s' rat at %p and also '%s' rat at %p",
-					b->what, b, b->ownB->what, b->ownB, ownB->what, ownB );
+					b->what, b, b->ownB->what, b->ownB, ownB->what, ownB);
 				else
 					b->ownB = ownB;		// set owner
 			}
+		}
 	}
 }		// ratCultO
 
@@ -4691,23 +4693,26 @@ const char* basAnc::culMbrIdTx(	// return record field id from cult table
 	}
 
 	const char* tx = NULL;
-	for (CULT *c = NULL;  xnxC(c);  )	// loop CULT entries, using xStk[0], making addl xStk entries
+	for (CULT* c = NULL; xnxC(c); )	// loop CULT entries, using xStk[0], making addl xStk entries
+	{
 		if (
 #if 1	// another try, 4-9-2013
 			(xSp->b->rt==rt			// match rt not b so run basAncs, types basAncs work
-			 || xSp->b == this)		// also match b re ambiguous fn (e.g. among surface, door, window)
+			|| xSp->b == this)		// also match b re ambiguous fn (e.g. among surface, door, window)
 #elif 0	// experiment re ambiguous fn (e.g. among surface, door, window), 3-9-2012
 x			xSp->b == b					// seems to work for types basAncs?
 #else
 x			xSp->b->rt==b->rt			// (match rt not b so run basAncs, types basAncs work)
 #endif
-		 &&  c->cs==DAT
-		 &&  c->fn==fn)			// if data entry for desired field of basAnc of desired type
+			&& c->cs==DAT && c->fn==fn)			// if data entry for desired field of basAnc of desired type
+		{
 			if (!tx)  						// if first match
 				tx = c->id;					// remember it
-			else if (_stricmp( tx, c->id))  		// additional match: ignore if same name
-				return strtprintf( MH_S0276, tx, c->id);
-	// "[%s or %s: table ambiguity: recode this error message to not use cul.cpp:culMbrId]"
+		}
+		else if (_stricmp(tx, c->id))  		// additional match: ignore if same name
+			return strtprintf(MH_S0276, tx, c->id);
+			// "[%s or %s: table ambiguity: recode this error message to not use cul.cpp:culMbrId]"
+	}
 
 	if (tx)						// if name found
 		return tx;				// return it. Is unique if here.

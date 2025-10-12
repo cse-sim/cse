@@ -298,8 +298,8 @@ LOCAL void FC lisBufAppend( const char *p, int n=-1);
 LOCAL void FC lisBufOut( int n);
 LOCAL void FC lisWrite( char *p, int n);
 LOCAL int  FC lisCmp( const char* s, int i, int* pPlace, int* pnl);
-LOCAL int  FC isFileLisLine( char *p);
-LOCAL void FC lisBufInsert( int* pPlace, char *p, int n=-1);
+LOCAL int  FC isFileLisLine( const char *p);
+LOCAL void FC lisBufInsert( int* pPlace, const char* p, int n=-1);
 
 
 /*=================== COMMAND LINE INTERFACE department ===================*/
@@ -2186,7 +2186,7 @@ LOCAL int FC lisCmp( 		// multi-line compare text to listing text
 	}
 }		// lisCmp
 //-----------------------------------------------------------------------------------------------------------
-LOCAL int FC isFileLisLine( char *p)	// 0 if listing line is error message, ----- separator, or #line
+LOCAL int FC isFileLisLine( const char *p)	// 0 if listing line is error message, ----- separator, or #line
 {
 	return ( *p != '?'  				// is file line if not error message,
 			 &&  memcmp( p, "----", 4)			// not separator,
@@ -2230,13 +2230,13 @@ void FC lisInsertMsg( 				// insert error message in listing buffer
 LOCAL void FC lisBufInsert( 			// listing buffer inserter inner function
 
 	int* pPlace, 		// subscript of place to insert, returned updated to end of inserted text
-	char *p, 			// text
+	const char *p,		// text
 	int n/*=-1*/)		// length, default = use strlen
 
 {
 	int place = *pPlace;
 	if (n < 0)
-		n = static_cast<int>(strlen(p));
+		n = strlenInt(p);
 
 	while (n)				// may need repeated insertions for long message
 	{
@@ -2249,12 +2249,14 @@ LOCAL void FC lisBufInsert( 			// listing buffer inserter inner function
 			place -= m;
 		}
 
+#if 0
 		if (place==0)				// write direct if place is (now) at very beginning of buffer
 		{
 			lisWrite( p, n);
 			n = 0;
 		}
 		else					// move up tail of buffer and copy text into vacated space
+#endif
 		{
 			int hole = min( n, LISBUFSZ - lisBufN);		// smaller of req'd space, space avail at end buffer
 			if (hole)									// insurance
@@ -2283,7 +2285,7 @@ LOCAL void FC lisBufInsert( 			// listing buffer inserter inner function
 
 // char fetch & tokenize for pp cmds
 //unused: LOCAL void FC ppUntok( void);
-LOCAL SI FC ppScanto( char *set);
+LOCAL SI FC ppScanto( const char* set);
 LOCAL void FC ppUncNdc( void);
 
 // error messages
@@ -2420,7 +2422,7 @@ reget:	// here to start token decode over (eg after illegal char)
 		while (c >= '0' && c < '0' + base);	// 0-7, 0-9, or 0-f
 		ppUncDc();				// unget last (non-digit) char
 		ppTokty = CUTSI;				// say is integer, value in ppSival
-		if ( base==10 && tem > 32767L		// decimal: +- 32767 (no -32768)
+		if ( (base==10 && tem > 32767L)		// decimal: +- 32767 (no -32768)
 				||  tem > 65535L )			// 0x or 0o: user beware of -
 			ppErr( MH_P0070 );		// error message: "Number too large, truncated"
 
@@ -2605,7 +2607,7 @@ void FC ppUncDc()	// unget char returned by ppCDc
 }		// ppUncDc
 
 //==========================================================================
-LOCAL SI FC ppScanto( char *set)
+LOCAL SI FC ppScanto( const char *set)
 
 // pass characters at ppCNdc level not in "set", for ppCDc
 
@@ -2718,8 +2720,8 @@ LOCAL RC FC ppErv(
 		3) raw file line,
 		4) macro being expanded, right? */
 
-		if ( (  (shoTx & 4) &&  ppcIsClarg	  	// if cmd line arg requested
-		 || (shoTx & 2) && !ppcIsClarg ) 	// if preproc cmd line req'd
+		if ( (  ((shoTx & 4) &&  ppcIsClarg)	  	// if cmd line arg requested
+		 || ((shoTx & 2) && !ppcIsClarg) ) 	// if preproc cmd line req'd
 		 && ppcBp != NULL )			// ... and is present
 	{
 		tex = ppcBp;      		// current preprocessor cmd line, if doing one
@@ -2806,14 +2808,16 @@ x              	          isf->line, isf->Name() );
 
 // make up 'where': "<file>(<line>): Error/Warning: " text
 
-	if (shoFnLn)				// if requested
-	if (ppcIsClarg)					// if doing cmd line
-		snprintf( where, sizeof(where), "Command line: %s: ",
-				 isWarn ? "Warning" : "Error" );
-	else if (inDepth > 0 && isf)			// if a file is open
-		snprintf( where, sizeof(where), "%s(%d): %s: ",
-				 getFileName(isf->fileIx), isf->line,
-				 isWarn ? "Warning" : "Error" );
+		if (shoFnLn)				// if requested
+		{
+			if (ppcIsClarg)					// if doing cmd line
+				snprintf(where, sizeof(where), "Command line: %s: ",
+						 isWarn ? "Warning" : "Error");
+			else if (inDepth > 0 && isf)			// if a file is open
+				snprintf(where, sizeof(where), "%s(%d): %s: ",
+						 getFileName(isf->fileIx), isf->line,
+						 isWarn ? "Warning" : "Error");
+		}
 #endif
 
 

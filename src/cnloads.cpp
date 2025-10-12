@@ -1270,7 +1270,7 @@ RC ZNR::zn_AirRequest(		// determine air requirement given rs_asSup
 {
 	RC rc = RCOK;
 	double tSup0 = rs->rs_asSup.as_tdb;
-#if 0 && defined( _DEBUG)
+#if 1 && defined( _DEBUG)
 	if ((options & 1) && !Top.isWarmup && rs->rs_speedF > 0.99f
 		&& (   (zn_hcMode == RSYS::rsmCOOL && tSup0 >= zn_tzsp)
 		    || (zn_hcMode == RSYS::rsmHEAT && tSup0 <= zn_tzsp && rs->rs_effHt > 0.f)))
@@ -3275,7 +3275,7 @@ RC RSYS::rs_SetupCapH(		// set heating members that do not vary during simulatio
 {
 	RC rc = RCOK;
 
-	bool bAutosizeFazInit = options & 1;
+	// bool bAutosizeFazInit = options & 1;	not used
 	bool bAssumeNotAutosizing = options & 2;
 
 	if (rs_IsPMHtg())

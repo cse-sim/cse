@@ -1106,7 +1106,7 @@ bool FC IMPF::readRec()	 // get next import file record in buffer and init to sc
 	do						// repeat if encounter end of buffer
 		bufI2 += (USI)strcspn( buf + bufI2, "\r\n\f");	// advance to record terminating character (else end buffer)
 	while ( (!buf[bufI2]				// if got to end buffer
-			 || buf[bufI2]=='\r' && !buf[bufI2+1])	// or to \r at end buffer (need \r\n together for correct line count)
+			 || (buf[bufI2]=='\r' && !buf[bufI2+1]))	// or to \r at end buffer (need \r\n together for correct line count)
 			&&  readBuf() );				// read buffer full / if read any chars
 	// (readBuf false if eof or buf full, incl record longer than buf)
 	if (bufI1 >= bufI2)				// if no chars read

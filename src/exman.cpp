@@ -694,7 +694,7 @@ RC FC exPile(		// compile an expression from current input
 		CSE_E(uniLimCt(fdTy, gotTy, _ermTx, &v));	// check limits & apply units, with errMsg suitable for compile time. below.
 
 		if (gotTy == TYSI				// return the constant value in destination.  SI has 16 bit storage only
-		|| gotTy == TYCH && choiDt & DTBCHOICB)	// choice types with this bit on are 16 bits only
+		|| (gotTy == TYCH && choiDt & DTBCHOICB) )	// choice types with this bit on are 16 bits only
 		{
 			SI iV = static_cast<SI>(v);
 			*(SI*)pDest = iV;		// return lo 16 bits of value
@@ -1120,17 +1120,10 @@ RC addChafIf (		// conditionally register change flag in basAnc record for expr.
 		ex->ext_whChafNal = nuNal;
 	}
 
-#if 1
 	// store info to allow locating rat member even if rat is moved to new location
 	//    (as can happen at reallocation)
-	WHERE* w = new (&ex->ext_whChaf[ex->ext_whChafN++]) WHERE(ancN, i, o);
-#else
-	WHERE* w = &ex->ext_whChaf[ex->ext_whChafN++];	// point next available change-flag-where for expression
-
-	w->rr_ancN = ancN;				// store info to allow locating rat member
-	w->i  = i;					// ... even if rat is moved to new location
-	w->o  = o;					// ... (as can happen at reallocation)
-#endif
+	// use placement new
+	/* WHERE* w = */ new (&ex->ext_whChaf[ex->ext_whChafN++]) WHERE(ancN, i, o);
 #endif
 	return RCOK;
 }		// addChafIf
@@ -1437,10 +1430,12 @@ RC FC exInfo(		 	// return info on expression #
 	if (pTy)
 		*pTy = ex->ext_ty;
 	if (pv)
+	{
 		if (ex->ext_ty==TYSI)
-			*(SI *)pv = (SI)(INT)ex->ext_v;
+			*(SI*)pv = (SI)(INT)ex->ext_v;
 		else
 			*pv = ex->ext_v;			// caller cueval.cpp cupIncRef's pointer if string, 7-92.
+	}
 	return RCOK;
 }			// exInfo
 

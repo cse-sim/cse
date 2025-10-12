@@ -335,6 +335,7 @@ RC FC pnPrPg( char **ppp, SI x)
 
 }		/* prPrPg */
 
+#if 0	// reactivate optimization, 10-2025
 /* 7-4-90, 6.0: found compiled wrong with FC and -Osewzr: fetched BP+6,
    which I claim would be x, then tested in for > 0 as tho had nrows.
    Caused hang and/or qemm exceptions.  OK if cv-compiled.
@@ -345,6 +346,7 @@ Later 7-4-90, 6.0: under -Oswr, without FC, apparently compiled wrong again:
    Restore FC, try pragma.  */
 #pragma optimize("",off)	/* 6.0  7-4-90  compiled wrong */
 /*   not reverified with final -O options */
+#endif
 //===========================================================================
 LOCAL RC FC pnPrRows(
 
@@ -431,7 +433,9 @@ LOCAL RC FC pnPrRows(
 	*ppp = pp;				/* in case something moved PAGE */
 	return rc;
 }			/* pnPrRows */
+#if 0
 #pragma optimize("",on)			/* restore */
+#endif
 
 //===========================================================================
 LOCAL RC FC pnNewPrPage()	/* start new (continuation) printer page */

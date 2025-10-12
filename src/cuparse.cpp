@@ -2196,10 +2196,12 @@ LOCAL RC FC fcnChoose( SFST *f, USI wanTy) 	// do choose-type fcns for fcn() (f-
 
 	// messages if wrong # values for hourval
 	if (f->f & F1)					// if hourval
+	{
 		if (nAnDef < 24 && defa != 1)			// < 24 args w/o user default is error
-			return perNx( MH_S0041);   		// "hourval() requires values for 24 hours"
+			return perNx(MH_S0041);   		// "hourval() requires values for 24 hours"
 		else if (nAnDef > 24)    		 	// > 24 args gets warning
-			pWarnlc( MH_S0042);   		// "hourval() arguments in excess of 24 will be ignored"
+			pWarnlc(MH_S0042);   		// "hourval() arguments in excess of 24 will be ignored"
+	}
 
 	if (isKon)	// if constant index (1) or select all cond false (-1)
 	{
@@ -2723,12 +2725,14 @@ LOCAL RC   FC sysVar( SVST *v, USI wanTy)
 #endif
 			EE( emiLod( v->ty, v->p) )			// emit op code to load value
 			if (v->f & INC)				// on option, emit ++ (1-base for user)
+			{
 				if (v->ty==TYSI)
-					EE( emit( PSIINC) )
+					EE(emit(PSIINC))
 				else if (v->ty==TYFL)
-					EE( emit( PSFINC) )
-				//(else bad table entry)
-				parSp->ty = v->ty; 			// set type
+					EE(emit(PSFINC))
+					//(else bad table entry)
+			}
+			parSp->ty = v->ty; 			// set type
 		}
 		break;
 	}		// switch (v->cs)
@@ -3322,15 +3326,17 @@ LOCAL SI FC isKonExp(		// test if *parSp is a constant expression
 		if (*parSp->psp1==kop)		// if op code already constant-load
 		{
 			if (ppv)			// if not NULL, tell caller
+			{
 #if defined( USE_PSPKONN)
 				if (kop==PSPKONN)			// string inline in code
 				{
-					p = (const char *)(parSp->psp1 + 2);	// is after op code & length
+					p = (const char*)(parSp->psp1 + 2);	// is after op code & length
 					*ppv = &p;			// indirect like cuEvalR()
 				}
 				else			// other types [or string ptr in code]
 #endif
 					*ppv = parSp->psp1 + 1;	// point to value after op code
+			}
 			return 1;			// constant, but nothing to convert
 		}
 	}
@@ -3451,11 +3457,13 @@ LOCAL RC FC cnvPrevSf( 	// append (conversion) operation to ith previous express
 		if ( *(pspe-3)==PSKON4		// if frame contains 4-byte constant
 		 &&  pspe-3==parSpe->psp1 ) // and nothing more
 		{
-			if (!ISNUM(*(void **)(pspe-2)))			// test the constant value: if any non-number (cnglob.h macro)
-				if (ISNCHOICE(*(void **)(pspe-2)))			// conversion fails NOW
-					return perNx( MH_S0063);		// "Expected numeric value, found choice value".  Explain to user.
+			if (!ISNUM(*(void**)(pspe-2)))			// test the constant value: if any non-number (cnglob.h macro)
+			{
+				if (ISNCHOICE(*(void**)(pspe-2)))			// conversion fails NOW
+					return perNx(MH_S0063);		// "Expected numeric value, found choice value".  Explain to user.
 				else
-					return perNx( MH_S0064);   		// "Numeric value required".  (unexpected) NANDLE or bug.
+					return perNx(MH_S0064);   		// "Numeric value required".  (unexpected) NANDLE or bug.
+			}
 			return RCOK;						// its already a number, needn't store conversion
 		}
 	// else: LATER 2-92 consider looking for single probe in stack frame,

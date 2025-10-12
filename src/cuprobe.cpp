@@ -782,9 +782,9 @@ void FC showProbeNames(int showAll)
 			if (_stricmp( b->what, b2->what))
 				continue;							// name different, skip it
 			if (b2->ba_flags & RFINP ? inB : runB)				// same; ok if 1st input basAnc or 1st run basAnc with name
-				printf( msg( NULL, MH_U0025,		//"\nInternal error: Ambiguous class name '%s':\n"
-				b->what,  							//"   there are TWO %s rats with that .what. Change one of them.\n"
-				b->ba_flags & RFINP ? "input" : "run" ) );	// msg() gets disk text (and formats) -- printf does not.
+				printf( "%s", msg( NULL, MH_U0025,				//"\nInternal error: Ambiguous class name '%s':\n"
+							b->what,  							//"   there are TWO %s rats with that .what. Change one of them.\n"
+							b->ba_flags & RFINP ? "input" : "run" ) );	// msg() gets disk text (and formats) -- printf does not.
 			else
 			{
 				b2->ba_flags |= RFLOCAL;	// say this one displayed too

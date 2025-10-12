@@ -700,7 +700,7 @@ LOCAL USI pgcByto( const char **ps, USI *pnMax, const char *cods, SI bsF)
 		if (!c)				// if null after \ .
 			break;			// return nMax
 		if (strchr( cods, c)		// if c in chars given by caller
-		|| bsF && c=='\\')		// or \\ (non-leading if here)
+		 || (bsF && c=='\\') )		// or \\ (non-leading if here)
 			return n;			// return bytes before the \ .
 		++s;				// else point after \c
 	}					// and loop to look for next \ .

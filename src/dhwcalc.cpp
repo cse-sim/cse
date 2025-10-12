@@ -702,7 +702,6 @@ DHWSYS::~DHWSYS()
 //-------------------------------------------------------------------------------
 /*virtual*/ void DHWSYS::Copy( const record* pSrc, int options/*=0*/)
 {
-	options;
 	ws_dayUseName.Release();
 	record::Copy( pSrc, options);
 	ws_dayUseName.FixAfterCopy();
@@ -1753,7 +1752,7 @@ RC DHWSYS::ws_DoHourDWHR()		// current hour DHWHEATREC modeling (all DHWHEATRECs
 	// ws_qDWHRWH = 0.f;		// heat recovered to water heater inlet, Btu
 	// ws_whUseNoHR = 0.;		// check value: hour total hot water use w/o HR, gal
 								//  init'd by caller
-	int multiDraw = 0;
+	[[maybe_unused]] int multiDraw = 0;
 	// int nTk = Top.tp_NHrTicks();
 	for (int iTk=ws_iTk0DWHR; iTk < ws_iTkNDWHR; iTk++)
 	{	DHWTICK& tk = ws_ticks[ iTk];		// DHWSYS tick info
