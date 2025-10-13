@@ -43,41 +43,24 @@ LOCAL SI     FC pgGenrRc( SI, SI);
 LOCAL USI       pgcByto( const char **ps, USI *pnMax, const char* cods, SI bsF);  // no FC: has check_stack
 LOCAL USI    FC pgcStrWid( const char *s, USI nMax, SI bsF);
 
-#if 0	// no calls in CSE, 11-91. use pgalloce.
-x //========================================================================
-x char * FC pgalloc( rows, cols)
-x
-x // Initialize a page for output, abort on error
-x
-x SI rows;    // Number of rows in page (max value 255)
-x SI cols;    // Number of columns in page (max value 255)
-x
-x // Returns pointer to area allocated for page
-x{
-x char *pp;
-x
-x     pgalloce( rows, cols, &pp, ABT);
-x     return pp;
-x}		// pgalloc
-#endif
-
 //========================================================================
 RC FC pgalloce( 		// Initialize a page for output with error handling, for pgalloc
 
-	SI rows,		// Number of rows in page (max value 255)
-	SI cols,		// # of columns (max 254) (note PP->cols is 1 larger 11-91)
+	int rows,		// Number of rows in page (max value 255)
+	int cols,		// # of columns (max 254) (note PP->cols is 1 larger 11-91)
 	char **ppp, 	// POINTER TO where to return pointer
 	int erOp )		// error action: ABT, WRN, etc
 
 // returns RCOK or RCBAD;  pointer is returned via argument ONLY if ok.
 {
-	char *pp;
 
 	/* Initial allocation includes space for line lengths, enhancement pointer values, and page buffer.
 	   [Space for enhancement flag values is not allocated until needed.]  See pgwe() */
 
+	char* pp{ nullptr };
 	if (dmal( DMPP( pp), PGSIZE( rows, cols), erOp | DMZERO) != RCOK)	// dmpak.cpp
 		return RCBAD;							// if memory full (and not ABT), return error to caller
+
 	// appropriate uses of PP->cols changed to cols-1, or <= changed to <, when this added: many if's below.
 	pgsetup( pp, rows, cols+1);		// store rows, cols, init offset to segments, etc
 	// cols+1: extra byte per row for \0 at row output, eg in pgprput.cpp, rob 11-91.

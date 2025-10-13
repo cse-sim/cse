@@ -120,7 +120,7 @@ struct CSVItem		// one item (column)
 class CSVGen
 {
 	CSVItem* cg_pCI;	// array of CSVItems
-	int cg_iUx;			// unit system
+	// int cg_iUx;		// TODO unit system
 
 public:
 	CSVGen(CSVItem* pCI) : cg_pCI(pCI) {}

@@ -694,7 +694,7 @@ LOCAL RC  unsRun( UNS* onlyU);
 LOCAL int vrEvent( UNS* onlyU, UINT* pNxEv);
 LOCAL RC  endVrCase( UNS* u);
 LOCAL int getWholeText( UNS* onlyU);
-LOCAL RC  vruOut( UNS* u, char* s);
+LOCAL RC  vruOut( UNS* u, const char* s);
 LOCAL RC  vruHeadIf( UNS* u);
 LOCAL RC  vruFoot( UNS* u);
 LOCAL RC  vruWrite( UNS* u, const char* s, int n=-1);
@@ -940,6 +940,7 @@ LOCAL int runRange()
 // Finally, check if doable runs found
 
 	if (found1==0)					// if found no vr's ready to go
+	{
 		if (spl.voInfo->fName==NULL)			// if there is no more input, must be done
 		{
 			// poss addl check: scan uns for all fStat's == -2
@@ -949,6 +950,7 @@ LOCAL int runRange()
 			// presumably there are some fStat's == -1 (ready to open)
 			// fStat == 0 (open) or > 0 (done) means caller didn't do vruNuHan / vruNuf.
 			return 1;				// could not open any files, or something is wrong
+	}
 
 	return 0;					// normal good return, o1 and o2 set.
 }		// runRange
@@ -1484,7 +1486,7 @@ LOCAL int getWholeText( UNS* onlyU )		// read entire text into buffer, return it
 	return txLen;
 }			// getWholeText
 //---------------------------------------------------------------------------------------------------------------------------
-LOCAL RC vruOut( UNS* u, char* s) 	// output text to report file with optional page formatting
+LOCAL RC vruOut( UNS* u, const char* s) 	// output text to report file with optional page formatting
 
 // if a page-formatted file, supplies header at top each page and footer at bottom each page (form feed / enuf lf's).
 
@@ -1768,10 +1770,12 @@ RC vrBufMore()		// append additional data from spool file to unspool buffer
 		n = spl.runO2 - spl.bufO2;  		// read only enuf to get to it: might save buf data next run needs
 	int nAv = spl.buf2 - spl.p2;  			// bytes available in buffer
 	if (n > nAv)							// if too few bytes in buffer
+	{
 		if (nAv >= 2048)					// ... but at least 2048 bytes
 			n = nAv;    					// limit read to what will fit buffer -- defer copy-back.
 		else						// space is < n and < 2048
-			dropFront( UINT( spl.p - spl.p1));   // discard data at start of buf to make room for read.
+			dropFront(UINT(spl.p - spl.p1));   // discard data at start of buf to make room for read.
+	}
 	  											//   Discard all text up to p to be at an item boundary.
 	if (n > spl.buf2 - spl.p2)  			// again check space in buffer
 		n = spl.buf2 - spl.p2;  			// must be small buffer, reduce read to fit

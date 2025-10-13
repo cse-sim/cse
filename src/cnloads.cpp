@@ -1278,7 +1278,7 @@ RC ZNR::zn_AirRequest(		// determine air requirement given rs_asSup
 		orWarn("Flipped tSup  RSYS='%s', tPln=%0.3f, tSup=%0.3f, tSP=%0.1f, tZn=%0.3f\n",
 			rs->Name(), rs->rs_asOut.as_tdb, tSup0, zn_tzsp, tz);
 	}
-	if (zn_hcMode != RSYS::rsmOFF && zn_tzsp > 0.f)
+	if (zn_hcMode == RSYS::rsmOFF && zn_tzsp > 0.f)
 		orWarn("Inconsistent hcMode  RSYS='%s', hcMode=%d, tSP=%0.1f, tZn=%0.3f\n",
 			rs->Name(), zn_hcMode, zn_tzsp, tz);
 #endif

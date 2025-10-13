@@ -2250,12 +2250,16 @@ LOCAL void FC lisBufInsert( 			// listing buffer inserter inner function
 		}
 
 #if 0
-		if (place==0)				// write direct if place is (now) at very beginning of buffer
-		{
-			lisWrite( p, n);
-			n = 0;
-		}
-		else					// move up tail of buffer and copy text into vacated space
+x Code removed 10-2025 to allow p to be const char*
+x lisWrite() modifies *p in place; if p pointed to a string literal
+x    that would trigger an exception.  No exceptions have been seen.
+x Conclusion: this code never executed / not needed.
+x		if (place==0)				// write direct if place is (now) at very beginning of buffer
+x		{
+x			lisWrite( p, n);
+x			n = 0;
+x		}
+x		else					// move up tail of buffer and copy text into vacated space
 #endif
 		{
 			int hole = min( n, LISBUFSZ - lisBufN);		// smaller of req'd space, space avail at end buffer
@@ -3288,12 +3292,13 @@ const int MAXVAL = 16384;	// max #define value size.
 
 		// start or end quoted text (re whether to decomment above)
 		if (c=='"')			// a quote ...
-			if (inQuotes==0)
+		{	if (inQuotes==0)
 				inQuotes++;		// always opens "text"
 			else if (afBs==0)
-				inQuotes = 0;		// ends "text" only if not after \
+				inQuotes = 0;		// ends "text" only if not after backslash
+		}
 
-		// store char, count length.  Unstored \ is overwritten next iteration.
+		// store char, count length.  Unstored backslash is overwritten next iteration.
 		if (n <= MAXVAL)				// unless too long
 			theVal[n] = (char)c;			// store char
 		else if (n==MAXVAL)			// msg once per define only

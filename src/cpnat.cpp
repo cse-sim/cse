@@ -179,7 +179,7 @@ f	}		/* pnSetFooter */
 #endif	/* FOOTERS */
 
 //===========================================================================
-RC FC pnAlloc( char **ppp, SI rows, SI cols, int erOp)
+RC FC pnAlloc( char **ppp, int rows, int cols, int erOp)
 
 /* allocate a pgpak PAGE for use thru cpnat.c */
 /* clears per-table stuff: "continued" posn, # head rows */
@@ -219,10 +219,10 @@ void FC pnTitle(
 
 	char **ppp,	/* (used to put s in page)
 		   CAUTION info retained for only 1 page at a time */
-	SI row,		/* 0 or title row */
-	SI col, 	/* 0 or title text left col if text given,
+	int row,		/* 0 or title row */
+	int col, 	/* 0 or title text left col if text given,
 		   or exact left col for "continued" if s is NULL */
-	char *s ) 	/* title text, NULL for none */
+	const char *s ) 	/* title text, NULL for none */
 {
 	thConRow = row;
 	thConCol = col;		/* strlen(s)+1 conditionally added below */

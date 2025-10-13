@@ -48,7 +48,7 @@ struct SYTBH	// symbol table header (base) structure
 const int DUPOK=EROP2;	// no error (and no add) if same id, tokTy, casi. stbk match NOT checked! (size not known)
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
-RC FC syLu(  SYTBH *sytbh, char *id, BOO casi, SI *pTokty=NULL, void **pStb=NULL);
+RC FC syLu(  SYTBH *sytbh, char *id, BOO casi, int* pTokty=NULL, void **pStb=NULL);
 RC FC syAdd( SYTBH *sytbh, SI tokTy, BOO casi, STBK* stbk, int op);
 RC FC syDel( SYTBH *sytbh, SI tokTy, BOO casi, BOO nearId, char *id, BOO uBad=FALSE, void **pStb=NULL);
 RC FC sySort( SYTBH *sytbh);

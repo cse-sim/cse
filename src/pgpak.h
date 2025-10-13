@@ -16,8 +16,6 @@
 	   Caller keeps pointer (type char *, PAGE struct is private).
 	   PAGES can hold attribute/enhancement information with text. */
 
-	// CSE variant 9-13-91: includes some txpak.h defns so that file is not needed.
-
 
 // PAGE structure.   NB pgpak:pgralloc() makes assumptions about order of "segments" in buffer; change with care.
 struct PAGE
@@ -85,7 +83,6 @@ struct PAGE
    Duplicate define here is to cause error if bits not maintained to match
    in pgbuildr.h and pgpak.h. */
 #define PBFILL 0x0100 	/* Causes pgfille not pgw in certain pgbuildr methods;
-			   see pgbuildr.h. rob 2-90. */
 
 
 /*------------- GENERIC row/col values for pgw, pgwe, pgfille -------------*/
@@ -112,7 +109,7 @@ const int PGOPSTAY = EROP7;	// restore "cursor" row-col after writing: so caller
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
 //   pgpak.cpp
-extern RC     FC pgalloce( SI, SI, char * *, int erOp);
+extern RC     FC pgalloce( int rows, int cols, char * *, int erOp);
 extern void   FC pgfree( char * *);
 extern void   FC pgDelrows( char **ppp, SI row, SI nrows);
 extern void   FC pgw( char **, USI, SI, SI, const char *);
@@ -154,9 +151,9 @@ extern RC     FC pgVrPut( SI vrh, SI isFmt, char *pp, USI flags, SI row1, SI nro
 void FC pnSetVrh( SI vrh);
 void FC pnSetTxRows( SI lpp);
 void FC pnSetHeader( char **ppp, SI fmt, SI row, SI col);
-RC   FC pnAlloc( char **ppp, SI rows, SI cols, int erOp);
+RC   FC pnAlloc( char **ppp, int rows, int cols, int erOp);
 void FC pnFree( char **ppp);
-void FC pnTitle( char **ppp, SI row, SI col, char *s);
+void FC pnTitle( char **ppp, int row, int col, const char *s);
 void FC pnSetTh( SI thRows);
 RC   FC pnPgIf( char **ppp, SI badness, SI x);
 RC   FC pnPrPg( char **ppp, SI x);

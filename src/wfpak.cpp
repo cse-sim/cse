@@ -1082,8 +1082,8 @@ RC WDSLRHR::whs_GenSubhrRad1TRNSYS(		// subhr interpolation, TRNSYS algorithm
 #endif
 
 // debug aid: track case being handled for msgs
-	const char* tag[scCOUNT] = { "   ", "   "};
 #if defined( _DEBUG)
+const char* tag[scCOUNT] = { "   ", "   "};
 #define TAG( s) tag[ iC] = s
 #else
 // do nothing in release
@@ -2121,37 +2121,41 @@ LOCAL RC FC decodeFld( 		// decode one by-column-number field to internal -- pot
 		else	// DTSI or DTFLOAT -- numeric
 		{
 			// initial syntax check
-			char *pNext = pBeg;				// pointer to input text. Note already deblanked above
-			if (strchr( "+-", *pNext))   pNext++;		// if sign present, pass it
+			const char *pNext = pBeg;				// pointer to input text. Note already deblanked above
+			if (strchr( "+-", *pNext))
+				pNext++;		           // if sign present, pass it
 			if (!isdigitW(*pNext))				// if no digit, it is not a valid number
 				rc |= err( erOp, 					// conditionally issue message. prefixes "Error:\n  ".
 					MH_R1102,			// "Missing or invalid number at offset %d in %s %s"
-					(int)srcOff, what, which );
+					srcOff, what, which );
 			else								// has digit, finish decoding
 			{
 				if (dt==DTSI)				// 16-bit integer
 				{
 					int tI = atoi(pBeg);			// get value. C library function.
 					*(SI *)dest = (SI)tI;			// convert if necess (if 32-bit int), store
-					while (isdigitW(*pNext))  pNext++;   	// pass digits for final syntax check below
+					while (isdigitW(*pNext))
+						pNext++;   	// pass digits for final syntax check below
 				}
 				else if (dt==DTFLOAT)			// 32-bit floating point value
 				{
-					double tD = strtod( pBeg, &pNext);	// decode to double, return next char ptr. C library function.
+					char* str_end = nullptr;
+					double tD = strtod( pBeg, &str_end);	// decode to double, return next char ptr. C library function.
 					*(float *)dest = (float)tD;		// convert to float and store.
+					pNext = str_end;				// pt after chars converted (strtod return char* str_end)
 				}
 				else
 				{
-					rc |= err( PWRN, 						// bad table. unconditional error.
-					MH_R1103, what );				// "Bad decoding table for %s in wfpak.cpp"
-					pNext = "";							// suppress error message just below
+					rc |= err( PWRN, MH_R1103, what );	// bad table. unconditional error.
+														// "Bad decoding table for %s in wfpak.cpp"
+					pNext = "";				// suppress error message just below
 				}
 			}
-			if (*pNext)						// if number did not use all of input
+			if (*pNext)		// if number did not use all of input
 				rc |= err( erOp,
 				MH_R1104,			// "Unrecognized characters after number at offset %d in %s %s"
 				"Unrecognized characters after number at offset %d in %s %s",
-				(int)srcOff, what, which );
+				  srcOff, what, which );
 		}
 		*pEnd = cSave;			// restore char after data
 		srcOff += srcLen;
@@ -2368,12 +2372,11 @@ RC WFILE::wf_CSWOpen(	// open California CSW weather file
 		rc = err( erOp,	"file '%s' is not a valid CSW weather file", wfName);
 
 	WStr city, state, country;	// temporaries
-	int nHL = 0;		// # of header lines read
 	if (!rc)
 	{	char ln[ WFMAXLNLEN];		// big enuf
 		RC rc1;
 		int bSeenHourlyData = FALSE;		// set 1 when "Hourly Data" encountered
-		for (nHL=0; ; nHL++)
+		for (int nHL=0; ; nHL++)
 		{	// read header line-by-line
 			int len = yac->line( ln, sizeof( ln), IGN);
 			if (len < 0)

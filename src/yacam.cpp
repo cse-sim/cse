@@ -491,7 +491,7 @@ state	    -------- -------- -------- -------- -------- -------- -------- -------
 		else                    ct=7;
 
 		// perform action for char type in state
-		char savc = NULL;
+		char savc{ '\0' };
 		int reDo;
 		do
 		{
@@ -627,7 +627,7 @@ static const unsigned char asTab[ 5][9] = 	// [state][ct]
 	{  // get and classify character
 	   // Note extra char types inherited from toke()
 	   //   retained for possible future use, 6-21-05
-		char c;
+		char c{ '\0' };
 		if (ppBuf)
 		{	c= **ppBuf;
 			if (c == '\0')
@@ -710,7 +710,7 @@ int YACAM::line( 	// return current line
 // returns -1 if clean EOF before 1st char
 //         else >= 0 = line length
 {
-	char c = NULL;
+	char c{ '\0' };
 	int iC;
 	for (iC=0; iC < lineSz; iC++)
 	{	c = getC( erOp);

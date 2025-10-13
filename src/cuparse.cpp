@@ -570,7 +570,7 @@ LOCAL SYTBH symtab = { NULL, 0 };
 // many tentatively decl in cuparsex.h for [cumain.cpp 10-90 and now] cuprobe.cpp 12-91.
 
  /*--- CURRENT TOKEN INFO.  Set mainly by toke().  Not changed by unToke(). */
- SI tokTy = 0;   		// current token type (CUT__ define; cuTok ret val)
+ int tokTy = 0;   		// current token type (CUT__ define; cuTok ret val)
  SI prec = 0;    		// "prec" (precedence) from opTbl[]. PR__ defines.
  SI nextPrec = 0;		// "prec" of ungotten (ie next) token, ONLY valid after expTy()/expr()/unToke().
  LOCAL SI lastPrec = 0;	// "prec" of PRIOR token (0 at bof) NOT after unToke.
@@ -682,9 +682,9 @@ LOCAL RC   FC emitPtr( void** p);
 LOCAL RC   FC emitStr(const char* s, int sLen);
 #endif
 LOCAL RC   FC emiBufFull( void);
-LOCAL SI   FC tokeTest( SI tokTyPar);
-LOCAL SI   FC tokeIf2( SI tokTy1, SI tokTy2);
-LOCAL SI CDEC tokeIfn( SI tokTy1, ... );
+LOCAL bool tokeTest( int tokTyPar);
+LOCAL bool tokeIf2( int tokTy1, int tokTy2);
+LOCAL bool tokeIfn( int tokTy1, ... );
 LOCAL void FC cuptokeClean( CLEANCASE cs);
 LOCAL RC   FC addLocalSyms( void);
 LOCAL const char* FC before( const char* tx, int aN);
@@ -4107,52 +4107,54 @@ LOCAL RC FC emiBufFull( void)		// pseudo-code buffer full handler
 
 
 //===========================================================================
-LOCAL SI FC tokeTest( SI tokTyPar)		// get next token, return nz if it is token of specified type.
+LOCAL bool tokeTest( int tokTyPar)		// get next token, return nz if it is token of specified type.
 {
 	return (toke()		// get token, cuparse.cpp. sets cutok.cpp:cuToktx.
 	== tokTyPar);   	// true if is specified token type
 }			// tokeTest
 //===========================================================================
-SI FC tokeNot( SI tokTyPar)			// get next token, return nz if it is NOT token of specified type.
+bool tokeNot( int tokTyPar)			// get next token, return nz if it is NOT token of specified type.
 {
 	return (toke()		// get token, cuparse.cpp. sets cutok.cpp:cuToktx.
 	!= tokTyPar);   	// false if is specified token type
 }			// tokeNot
 //===========================================================================
-SI FC tokeIf( SI tokTyPar)			// return nz if next token is token of specified type, else unget token.
+bool tokeIf( int tokTyPar)			// return nz if next token is token of specified type, else unget token.
 {
 	if (toke()			// get token, cuparse.cpp. sets cutok.cpp:cuToktx.
 	== tokTyPar)   	// if is requested token type
-		return 1;
+		return true;
 	unToke();			// wrong type.  unget token (cuparse.cpp)
-	return 0;
+	return false;
 }		// tokeIf
 //===========================================================================
-LOCAL SI FC tokeIf2( SI tokTy1, SI tokTy2)  	// return nz if next token is token of either specified type, else unget.
+LOCAL bool tokeIf2( int tokTy1, int tokTy2)  	// return nz if next token is token of either specified type, else unget.
 {
 	if ( toke()			// get token, cuparse.cpp. sets cutok.cpp:tokTy.
-	== tokTy1   	// if is requested token type
+    	== tokTy1   	// if is requested token type
 	|| tokTy==tokTy2 )	// or other requested type
-		return 1;		// return TRUE
+		return true;		// return TRUE
 	unToke();			// wrong type.  unget token (cuparse.cpp)
-	return 0;
+	return false;
 }		// tokeIf2
 //===========================================================================
-LOCAL SI CDEC tokeIfn( SI tokTy1, ...)	// return nz if next token is of any type in 0-terminated list, else unget token.
+LOCAL bool tokeIfn( int tokTy1, ...)	// return nz if next token is of any type in 0-terminated list, else unget token.
 {
-	va_list list;   SI thisArg;
 
 	toke();			// get token, cuparse.cpp. sets cutok.cpp:tokTy.
-	thisArg = tokTy1;			// 1st arg
+
+	va_list list;
 	va_start( list, tokTy1);		// set up to fetch more args
+
+	int thisArg{ tokTy1 };
 	while (thisArg > 0)			// 0 (or -1) arg terminates list
 	{
 		if (tokTy==thisArg)    		// if token type matches
-			return 1;			// say found
-		thisArg = va_arg( list, SI);	// next arg (stdarg.h)
+			return true;			// say found
+		thisArg = va_arg( list, int);	// next arg (stdarg.h)
 	}
 	unToke();				// unget token (cuparse.cpp)
-	return 0;				// not found
+	return false;				// not found
 }		// tokeIfn
 
 /*==================== VARIABLES for toke() - unToke() ====================*/
@@ -4189,7 +4191,7 @@ LOCAL void FC cuptokeClean([[maybe_unused]] CLEANCASE cs)	// cleanup for toke - 
 
 }		// cuptokeClean
 //==========================================================================
-SI FC toke()	/* local token-getter -- cutok.cpp:cuTok + unary/binary resolution +
+int toke()	/* local token-getter -- cutok.cpp:cuTok + unary/binary resolution +
 		                         symbol table lookup + other refinements */
 
 /* sets: tokTy: token type: CUTxxx defines, cutok.h.
