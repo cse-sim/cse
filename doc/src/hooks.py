@@ -2,6 +2,7 @@
 # # Note: Edits to hooks do not get captured by MkDocs' built-in reloading mechanism.
 # If you change the hooks, you must manually stop and restart the server.
 import copy
+import logging
 import re
 from pathlib import Path
 from typing import List, Optional, TypedDict
@@ -11,6 +12,31 @@ from parsers.cndefns import DefinitionsParser
 from parsers.cnfields import FieldsParser
 from parsers.cnrecs import Field, FieldGroup, Record, RecordsParser
 from slugify import slugify
+
+root_logger = logging.getLogger("mkdocs")
+
+
+def on_startup(command, dirty):
+    class SuppressAutorefsWarnings(logging.Filter):
+        def filter(self, record):
+            message = record.getMessage()
+            should_suppress = record.levelno == logging.WARNING and (
+                message.startswith("mkdocs_autorefs: Multiple primary URLs found for")
+                or message.startswith("mkdocs_autorefs: Could not find closest primary URL")
+            )
+            return not should_suppress
+
+    # Autorefs uses several loggers, including _internal ones. Since I couldn't figure
+    # out which logger was responsible for issuing the warnings we want to suppress,
+    # simply attach the filter to all loggers that are part of the plugin.
+    autorefs_loggers = [
+        logging.getLogger(path)
+        for path in list(logging.root.manager.loggerDict.keys())
+        if path.startswith("mkdocs.plugins.mkdocs_autorefs")
+    ]
+
+    for logger in autorefs_loggers:
+        logger.addFilter(SuppressAutorefsWarnings())
 
 
 class RecordPrefixClass(TypedDict, total=False):
