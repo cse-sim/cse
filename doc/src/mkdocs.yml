@@ -16,9 +16,21 @@ theme:
     - navigation.footer
   # favicon: assets/favicon.ico
   # logo: assets/logo.svg
-  # palette:
-  #   primary: blue grey
-  #   accent: blue
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-night
+        name: Switch to system preference
 repo_name: cse
 repo_url: https://github.com/cse-sim/cse
 plugins:
