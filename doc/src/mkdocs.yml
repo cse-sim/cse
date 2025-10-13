@@ -61,6 +61,8 @@ markdown_extensions:
   - admonition
   - attr_list
   - def_list
+  - toc:
+      permalink: true
   - pymdownx.arithmatex:
       generic: true
   - pymdownx.blocks.caption
