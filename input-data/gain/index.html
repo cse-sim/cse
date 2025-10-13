@@ -12,24 +12,28 @@
         <meta name="author" content="CSE Authors">
       
       
-        <link rel="canonical" href="https://cse-sim.github.io/cse/">
+        <link rel="canonical" href="https://cse-sim.github.io/cse/input-data/gain/">
       
       
+        <link rel="prev" href="../zone/">
       
       
-      <link rel="icon" href="assets/images/favicon.png">
+        <link rel="next" href="../surface/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.4.10">
     
     
       
-        <title>California Simulation Engine - CSE Documentation</title>
+        <title>GAIN - CSE Documentation</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.fad675c6.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.fad675c6.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.356b1318.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.356b1318.min.css">
       
       
 
@@ -48,15 +52,15 @@
       
     
     
-      <link rel="stylesheet" href="css/print-site.css">
+      <link rel="stylesheet" href="../../css/print-site.css">
     
-      <link rel="stylesheet" href="css/print-site-material.css">
+      <link rel="stylesheet" href="../../css/print-site-material.css">
     
       <link rel="stylesheet" href="https://unpkg.com/katex@0/dist/katex.min.css">
     
-      <link rel="stylesheet" href="assets/stylesheets/extra_styles.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/extra_styles.css">
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -85,7 +89,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#overview" class="md-skip">
+        <a href="#gain" class="md-skip">
           Skip to content
         </a>
       
@@ -101,7 +105,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="CSE Documentation" class="md-header__button md-logo" aria-label="CSE Documentation" data-md-component="logo">
+    <a href="../.." title="CSE Documentation" class="md-header__button md-logo" aria-label="CSE Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -121,7 +125,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              California Simulation Engine
+              GAIN
             
           </span>
         </div>
@@ -241,7 +245,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="CSE Documentation" class="md-nav__button md-logo" aria-label="CSE Documentation" data-md-component="logo">
+    <a href="../.." title="CSE Documentation" class="md-nav__button md-logo" aria-label="CSE Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -270,7 +274,7 @@
   
   
     <li class="md-nav__item">
-      <a href="introduction/" class="md-nav__link">
+      <a href="../../introduction/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -289,7 +293,7 @@
   
   
     <li class="md-nav__item">
-      <a href="operation/" class="md-nav__link">
+      <a href="../../operation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -308,7 +312,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-structure/" class="md-nav__link">
+      <a href="../../input-structure/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -325,6 +329,8 @@
       
   
   
+    
+  
   
     
     
@@ -453,17 +459,17 @@
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="input-data/" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -480,7 +486,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             Input Data
@@ -495,7 +501,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/top-members/" class="md-nav__link">
+      <a href="../top-members/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -515,7 +521,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/holiday/" class="md-nav__link">
+      <a href="../holiday/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -535,7 +541,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/descond/" class="md-nav__link">
+      <a href="../descond/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -555,7 +561,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/material/" class="md-nav__link">
+      <a href="../material/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -575,7 +581,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/construction/" class="md-nav__link">
+      <a href="../construction/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -595,7 +601,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/foundation/" class="md-nav__link">
+      <a href="../foundation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -615,7 +621,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/fndblock/" class="md-nav__link">
+      <a href="../fndblock/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -635,7 +641,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/layer/" class="md-nav__link">
+      <a href="../layer/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -655,7 +661,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/glazetype/" class="md-nav__link">
+      <a href="../glazetype/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -675,7 +681,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/meter/" class="md-nav__link">
+      <a href="../meter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -695,7 +701,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwmeter/" class="md-nav__link">
+      <a href="../dhwmeter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -715,7 +721,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/afmeter/" class="md-nav__link">
+      <a href="../afmeter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -735,7 +741,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/loadmeter/" class="md-nav__link">
+      <a href="../loadmeter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -755,7 +761,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/accumulator/" class="md-nav__link">
+      <a href="../accumulator/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -775,7 +781,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/zone/" class="md-nav__link">
+      <a href="../zone/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -793,9 +799,29 @@
                 
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="input-data/gain/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    GAIN
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -804,6 +830,176 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#gain-zones" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gain zones
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Gain zones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gnname" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnName
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gnzone" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnZone
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gnpower" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnPower
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gnmeter" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnMeter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gnenduse" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnEndUse
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gnfrzn" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnFrZn
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gnfrpl" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnFrPl
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gnfrrtn" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnFrRtn
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gnfrrad" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnFrRad
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gnfrlat" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnFrLat
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gndlfrpow" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnDlFrPow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gnctrldhwsys" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnCtrlDHWSYS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gnctrldhwmeter" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnCtrlDHWMETER
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gnctrldhwenduse" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnCtrlDHWEndUse
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#endgain" class="md-nav__link">
+    <span class="md-ellipsis">
+      endGain
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -815,7 +1011,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/surface/" class="md-nav__link">
+      <a href="../surface/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -835,7 +1031,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/window/" class="md-nav__link">
+      <a href="../window/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -855,7 +1051,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/shade/" class="md-nav__link">
+      <a href="../shade/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -875,7 +1071,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/sgdist/" class="md-nav__link">
+      <a href="../sgdist/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -895,7 +1091,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/door/" class="md-nav__link">
+      <a href="../door/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -915,7 +1111,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/perimeter/" class="md-nav__link">
+      <a href="../perimeter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -935,7 +1131,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/terminal/" class="md-nav__link">
+      <a href="../terminal/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -955,7 +1151,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/izxfer/" class="md-nav__link">
+      <a href="../izxfer/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -975,7 +1171,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/doas/" class="md-nav__link">
+      <a href="../doas/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -995,7 +1191,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/rsys/" class="md-nav__link">
+      <a href="../rsys/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1015,7 +1211,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/ductseg/" class="md-nav__link">
+      <a href="../ductseg/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1035,7 +1231,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/performancemap/" class="md-nav__link">
+      <a href="../performancemap/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1055,7 +1251,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwdayuse/" class="md-nav__link">
+      <a href="../dhwdayuse/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1075,7 +1271,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwuse/" class="md-nav__link">
+      <a href="../dhwuse/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1095,7 +1291,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwsys/" class="md-nav__link">
+      <a href="../dhwsys/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1115,7 +1311,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwheater/" class="md-nav__link">
+      <a href="../dhwheater/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1135,7 +1331,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwloopheater/" class="md-nav__link">
+      <a href="../dhwloopheater/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1155,7 +1351,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwheatrec/" class="md-nav__link">
+      <a href="../dhwheatrec/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1175,7 +1371,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwtank/" class="md-nav__link">
+      <a href="../dhwtank/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1195,7 +1391,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwpump/" class="md-nav__link">
+      <a href="../dhwpump/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1215,7 +1411,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwloop/" class="md-nav__link">
+      <a href="../dhwloop/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1235,7 +1431,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwlooppump/" class="md-nav__link">
+      <a href="../dhwlooppump/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1255,7 +1451,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwloopseg/" class="md-nav__link">
+      <a href="../dhwloopseg/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1275,7 +1471,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwloopbranch/" class="md-nav__link">
+      <a href="../dhwloopbranch/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1295,7 +1491,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwsolarsys/" class="md-nav__link">
+      <a href="../dhwsolarsys/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1315,7 +1511,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/dhwsolarcollector/" class="md-nav__link">
+      <a href="../dhwsolarcollector/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1335,7 +1531,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/pvarray/" class="md-nav__link">
+      <a href="../pvarray/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1355,7 +1551,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/shadex/" class="md-nav__link">
+      <a href="../shadex/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1375,7 +1571,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/battery/" class="md-nav__link">
+      <a href="../battery/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1395,7 +1591,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/airhandler/" class="md-nav__link">
+      <a href="../airhandler/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1415,7 +1611,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/heatplant/" class="md-nav__link">
+      <a href="../heatplant/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1435,7 +1631,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/boiler/" class="md-nav__link">
+      <a href="../boiler/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1455,7 +1651,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/coolplant/" class="md-nav__link">
+      <a href="../coolplant/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1475,7 +1671,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/chiller/" class="md-nav__link">
+      <a href="../chiller/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1495,7 +1691,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/towerplant/" class="md-nav__link">
+      <a href="../towerplant/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1515,7 +1711,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/reportfile/" class="md-nav__link">
+      <a href="../reportfile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1535,7 +1731,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/report/" class="md-nav__link">
+      <a href="../report/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1555,7 +1751,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/reportcol/" class="md-nav__link">
+      <a href="../reportcol/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1575,7 +1771,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/exportfile/" class="md-nav__link">
+      <a href="../exportfile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1595,7 +1791,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/export/" class="md-nav__link">
+      <a href="../export/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1615,7 +1811,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/exportcol/" class="md-nav__link">
+      <a href="../exportcol/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1635,7 +1831,7 @@
   
   
     <li class="md-nav__item">
-      <a href="input-data/importfile/" class="md-nav__link">
+      <a href="../importfile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1662,7 +1858,7 @@
   
   
     <li class="md-nav__item">
-      <a href="output-reports/" class="md-nav__link">
+      <a href="../../output-reports/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1849,7 +2045,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="probe-definitions/" class="md-nav__link ">
+            <a href="../../probe-definitions/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -1881,7 +2077,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/AFMETER/" class="md-nav__link">
+      <a href="../../probe-definitions/AFMETER/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1901,7 +2097,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/accumulator/" class="md-nav__link">
+      <a href="../../probe-definitions/accumulator/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1921,7 +2117,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/ahRes/" class="md-nav__link">
+      <a href="../../probe-definitions/ahRes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1941,7 +2137,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/airHandler/" class="md-nav__link">
+      <a href="../../probe-definitions/airHandler/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1961,7 +2157,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/Battery/" class="md-nav__link">
+      <a href="../../probe-definitions/Battery/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1981,7 +2177,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/boiler/" class="md-nav__link">
+      <a href="../../probe-definitions/boiler/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2001,7 +2197,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/chiller/" class="md-nav__link">
+      <a href="../../probe-definitions/chiller/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2021,7 +2217,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/construction/" class="md-nav__link">
+      <a href="../../probe-definitions/construction/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2041,7 +2237,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/coolPlant/" class="md-nav__link">
+      <a href="../../probe-definitions/coolPlant/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2061,7 +2257,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DESCOND/" class="md-nav__link">
+      <a href="../../probe-definitions/DESCOND/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2081,7 +2277,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWDayUse/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWDayUse/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2101,7 +2297,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWHeater/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWHeater/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2121,7 +2317,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWHeatRec/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWHeatRec/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2141,7 +2337,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWLoop/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWLoop/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2161,7 +2357,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWLoopBranch/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWLoopBranch/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2181,7 +2377,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWLoopHeater/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWLoopHeater/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2201,7 +2397,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWLoopPump/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWLoopPump/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2221,7 +2417,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWLoopSeg/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWLoopSeg/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2241,7 +2437,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWMETER/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWMETER/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2261,7 +2457,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWPump/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWPump/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2281,7 +2477,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWSolarCollector/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWSolarCollector/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2301,7 +2497,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWSolarSys/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWSolarSys/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2321,7 +2517,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWSYS/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWSYS/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2341,7 +2537,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWSYSRES/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWSYSRES/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2361,7 +2557,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWTank/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWTank/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2381,7 +2577,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DHWUse/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWUse/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2401,7 +2597,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DUCTSEGRes/" class="md-nav__link">
+      <a href="../../probe-definitions/DUCTSEGRes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2421,7 +2617,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/DuctSeg/" class="md-nav__link">
+      <a href="../../probe-definitions/DuctSeg/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2441,7 +2637,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/doas/" class="md-nav__link">
+      <a href="../../probe-definitions/doas/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2461,7 +2657,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/door/" class="md-nav__link">
+      <a href="../../probe-definitions/door/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2481,7 +2677,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/export/" class="md-nav__link">
+      <a href="../../probe-definitions/export/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2501,7 +2697,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/exportCol/" class="md-nav__link">
+      <a href="../../probe-definitions/exportCol/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2521,7 +2717,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/exportFile/" class="md-nav__link">
+      <a href="../../probe-definitions/exportFile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2541,7 +2737,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/foundation/" class="md-nav__link">
+      <a href="../../probe-definitions/foundation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2561,7 +2757,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/foundationBlock/" class="md-nav__link">
+      <a href="../../probe-definitions/foundationBlock/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2581,7 +2777,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/gain/" class="md-nav__link">
+      <a href="../../probe-definitions/gain/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2601,7 +2797,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/glazeType/" class="md-nav__link">
+      <a href="../../probe-definitions/glazeType/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2621,7 +2817,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/heatPlant/" class="md-nav__link">
+      <a href="../../probe-definitions/heatPlant/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2641,7 +2837,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/holiday/" class="md-nav__link">
+      <a href="../../probe-definitions/holiday/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2661,7 +2857,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/Inverse/" class="md-nav__link">
+      <a href="../../probe-definitions/Inverse/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2681,7 +2877,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/impFileFldNames/" class="md-nav__link">
+      <a href="../../probe-definitions/impFileFldNames/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2701,7 +2897,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/importFile/" class="md-nav__link">
+      <a href="../../probe-definitions/importFile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2721,7 +2917,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/izXfer/" class="md-nav__link">
+      <a href="../../probe-definitions/izXfer/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2741,7 +2937,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/LOADMETER/" class="md-nav__link">
+      <a href="../../probe-definitions/LOADMETER/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2761,7 +2957,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/layer/" class="md-nav__link">
+      <a href="../../probe-definitions/layer/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2781,7 +2977,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/mass/" class="md-nav__link">
+      <a href="../../probe-definitions/mass/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2801,7 +2997,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/material/" class="md-nav__link">
+      <a href="../../probe-definitions/material/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2821,7 +3017,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/meter/" class="md-nav__link">
+      <a href="../../probe-definitions/meter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2841,7 +3037,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/PERFORMANCEMAP/" class="md-nav__link">
+      <a href="../../probe-definitions/PERFORMANCEMAP/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2861,7 +3057,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/PipeSeg/" class="md-nav__link">
+      <a href="../../probe-definitions/PipeSeg/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2881,7 +3077,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/PMGRIDAXIS/" class="md-nav__link">
+      <a href="../../probe-definitions/PMGRIDAXIS/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2901,7 +3097,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/PMLOOKUPDATA/" class="md-nav__link">
+      <a href="../../probe-definitions/PMLOOKUPDATA/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2921,7 +3117,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/PVArray/" class="md-nav__link">
+      <a href="../../probe-definitions/PVArray/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2941,7 +3137,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/perimeter/" class="md-nav__link">
+      <a href="../../probe-definitions/perimeter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2961,7 +3157,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/RSYS/" class="md-nav__link">
+      <a href="../../probe-definitions/RSYS/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2981,7 +3177,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/RSYSRes/" class="md-nav__link">
+      <a href="../../probe-definitions/RSYSRes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3001,7 +3197,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/report/" class="md-nav__link">
+      <a href="../../probe-definitions/report/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3021,7 +3217,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/reportCol/" class="md-nav__link">
+      <a href="../../probe-definitions/reportCol/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3041,7 +3237,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/reportFile/" class="md-nav__link">
+      <a href="../../probe-definitions/reportFile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3061,7 +3257,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/SHADEX/" class="md-nav__link">
+      <a href="../../probe-definitions/SHADEX/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3081,7 +3277,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/sgdist/" class="md-nav__link">
+      <a href="../../probe-definitions/sgdist/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3101,7 +3297,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/shade/" class="md-nav__link">
+      <a href="../../probe-definitions/shade/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3121,7 +3317,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/surface/" class="md-nav__link">
+      <a href="../../probe-definitions/surface/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3141,7 +3337,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/terminal/" class="md-nav__link">
+      <a href="../../probe-definitions/terminal/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3161,7 +3357,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/top/" class="md-nav__link">
+      <a href="../../probe-definitions/top/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3181,7 +3377,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/towerPlant/" class="md-nav__link">
+      <a href="../../probe-definitions/towerPlant/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3201,7 +3397,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/weather/" class="md-nav__link">
+      <a href="../../probe-definitions/weather/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3221,7 +3417,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/weatherFile/" class="md-nav__link">
+      <a href="../../probe-definitions/weatherFile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3241,7 +3437,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/weatherNextHour/" class="md-nav__link">
+      <a href="../../probe-definitions/weatherNextHour/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3261,7 +3457,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/window/" class="md-nav__link">
+      <a href="../../probe-definitions/window/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3281,7 +3477,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/xsurf/" class="md-nav__link">
+      <a href="../../probe-definitions/xsurf/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3301,7 +3497,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/zhx/" class="md-nav__link">
+      <a href="../../probe-definitions/zhx/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3321,7 +3517,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/znRes/" class="md-nav__link">
+      <a href="../../probe-definitions/znRes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3341,7 +3537,7 @@
   
   
     <li class="md-nav__item">
-      <a href="probe-definitions/zone/" class="md-nav__link">
+      <a href="../../probe-definitions/zone/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3389,20 +3585,152 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#cse-user-manual" class="md-nav__link">
+  <a href="#gain-zones" class="md-nav__link">
     <span class="md-ellipsis">
-      CSE User Manual
+      Gain zones
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Gain zones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gnname" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnName
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#cse-source-code" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#gnzone" class="md-nav__link">
     <span class="md-ellipsis">
-      CSE Source Code
+      gnZone
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gnpower" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnPower
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gnmeter" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnMeter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gnenduse" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnEndUse
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gnfrzn" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnFrZn
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gnfrpl" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnFrPl
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gnfrrtn" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnFrRtn
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gnfrrad" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnFrRad
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gnfrlat" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnFrLat
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gndlfrpow" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnDlFrPow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gnctrldhwsys" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnCtrlDHWSYS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gnctrldhwmeter" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnCtrlDHWMETER
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gnctrldhwenduse" class="md-nav__link">
+    <span class="md-ellipsis">
+      gnCtrlDHWEndUse
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#endgain" class="md-nav__link">
+    <span class="md-ellipsis">
+      endGain
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3424,12 +3752,485 @@
   
 
 
-<h1 -="-" id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">¶</a></h1>
-<p>CSE is a general purpose building simulation model developed primarily to perform the required calculations for the California Building Energy Code Compliance for Residential buildings (<a href="http://www.bwilcox.com/BEES/BEES.html">CBECC-Res</a>) software.</p>
-<h2 -="-" id="cse-user-manual">CSE User Manual<a class="headerlink" href="#cse-user-manual" title="Permanent link">¶</a></h2>
-<p>This manual is presented as a multi-page HTML site. You can also view the entire manual as a <a href="./single_page">single page</a>.</p>
-<h2 -="-" id="cse-source-code">CSE Source Code<a class="headerlink" href="#cse-source-code" title="Permanent link">¶</a></h2>
-<p>The CSE source code is hosted on <a href="https://github.com/cse-sim/cse">GitHub</a>.</p>
+<h1 id="gain">GAIN<a class="headerlink" href="#gain" title="Permanent link">¶</a></h1>
+<p>A GAIN object adds sensible and/or latent heat to the <a class="autorefs autorefs-internal" href="../zone/#zone">ZONE</a>, and/or adds arbitrary energy use to a <a class="autorefs autorefs-internal" href="../meter/#meter">METER</a>. GAINs may be subobjects of <a class="autorefs autorefs-internal" href="../zone/#zone">ZONEs</a> and are normally given within the input for their <a class="autorefs autorefs-internal" href="../zone/#zone">ZONE</a>.  As many GAINs as desired (or none) may be given for each <a class="autorefs autorefs-internal" href="../zone/#zone">ZONE</a>.  Alternatively, GAINs may be subobjects of <a class="autorefs autorefs-internal" title="TOP Members" href="../top-members/#top-members">TOP</a> and specify <a class="autorefs autorefs-internal" href="#gnzone">gnZone</a> to specify their associate zone.</p>
+<p>Each gain has an amount of power (<a class="autorefs autorefs-internal" href="#gnpower">gnPower</a>), which may optionally be accumulated to a <a class="autorefs autorefs-internal" href="../meter/#meter">METER</a> (<a class="autorefs autorefs-internal" href="#gnmeter">gnMeter</a>). The power may be distributed to the zone, plenum, or return as sensible heat with an optional fraction radiant, or to the zone as latent heat (moisture addition), or not.</p>
+<h2 id="gain-zones">Gain zones<a class="headerlink" href="#gain-zones" title="Permanent link">¶</a></h2>
+<p>The gain to the zone may be further divided into convective sensible, radiant sensible and latent heat via the <a class="autorefs autorefs-internal" href="#gnfrrad">gnFrRad</a> and <a class="autorefs autorefs-internal" href="#gnfrlat">gnFrLat</a> members; the plenum and return gains are assumed all convective sensible.</p>
+<p>In the CSE zone mode, the radiant internal gain is distributed to the surfaces in the zone, rather than going directly to the zone "air" heat capacity (<a class="autorefs autorefs-internal" href="../zone/#zncair">znCAir</a>). A simple model is used -- all surfaces are assumed to be opaque and to have the same (infrared) absorptivity -- even windows. Along with the assumption that the zone is spherical (implicit in the current treatment of solar gains), this allows distribution of gains to surfaces in proportion to their area, without any absorptivity or transmissivity calculations. The gain for windows and quick-model surfaces is assigned to the <a class="autorefs autorefs-internal" href="../zone/#zncair">znCAir</a>, except for the portion which conducts through the surface to the other side rather than through the surface film to the adjacent zone air; the gain to massive (delayed-model) surfaces is assigned to the side of surface in the zone with the gain.</p>
+<p>Radiant internal gains are included in the IgnS (Sensible Internal Gain) column in the zone energy balance reports. (They could easily be shown in a separate IgnR column if desired.) Any energy transfer shows two places in the ZEB report, with opposite signs, so that the result is zero -- otherwise it wouldn't be an energy balance. The rest of the reporting story for radiant internal gains turns out to be complex. The specified value of the radiant gain (<a class="autorefs autorefs-internal" href="#gnpower">gnPower</a> * <a class="autorefs autorefs-internal" href="#gnfrzn">gnFrZn</a> * <a class="autorefs autorefs-internal" href="#gnfrrad">gnFrRad</a>) shows in the IgnS column. To the extent that the gain heats the zone, it also shows negatively in the Masses column, because the zone CAir is lumped with the other masses. To the extent that the gain heats massive surfaces, it also shows negatively in the masses column. To the extent that the gain conducts through windows and quick-model surfaces, it shows negatively in the Conduction column. If the gain conducts through a quick-model surface to another zone, it shows negatively in the Izone (Interzone) column, positively in the Izone column of the receiving zone, and negatively in the receiving zone's Masses or Cond column.</p>
+<h3 id="gnname">gnName<a class="headerlink" href="#gnname" title="Permanent link">¶</a></h3>
+<p>Name of gain; follows the word GAIN if given.</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td><em>63 characters</em></td>
+<td><em>none</em></td>
+<td>No</td>
+<td>constant</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gnzone">gnZone<a class="headerlink" href="#gnzone" title="Permanent link">¶</a></h3>
+<p>Type: <a class="autorefs autorefs-internal" href="../zone/#znname">znName</a></p>
+<p>Name of <a class="autorefs autorefs-internal" href="../zone/#zone">ZONE</a> to which heat gains are added.  Omitted when GAIN is given as a <a class="autorefs autorefs-internal" href="../zone/#zone">ZONE</a> subobject.  If a <a class="autorefs autorefs-internal" title="TOP Members" href="../top-members/#top-members">TOP</a> subobject (i.e., not a <a class="autorefs autorefs-internal" href="../zone/#zone">ZONE</a> subobject) and znZone is omitted, heat gains are discarded but energy use is still recorded to <a class="autorefs autorefs-internal" href="#gnmeter">gnMeter</a>.  This feature can be used to represent energy uses that our outside of conditioned zones (e.g. exterior lighting).</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td><em>name of <a class="autorefs autorefs-internal" href="../zone/#zone">ZONE</a></em></td>
+<td><em>parent zone if any</em></td>
+<td>No</td>
+<td>constant</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gnpower">gnPower<a class="headerlink" href="#gnpower" title="Permanent link">¶</a></h3>
+<p>Type: float</p>
+<p>Rate of heat addition/energy use. Negative gnPower values may be used to represent heat removal/energy generation. <a class="autorefs autorefs-internal" href="../../input-structure/#expressions">Expressions</a> containing functions are commonly used with this member to schedule the gain power on a daily and/or hourly basis. Refer to the functions section in Section 4 for details and examples.</p>
+<p>All gains, including electrical, are specified in Btuh units unless associated with DHW use (see <a class="autorefs autorefs-internal" href="#gnctrldhwsys">gnCtrlDHWSYS</a>), in which case gnPower is specified in Btuh/gal.  Note that meter reporting of internal gain is in MBtu (millions of Btu) by default.  </p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Btuh</td>
+<td><em>no restrictions</em></td>
+<td><em>none</em></td>
+<td>Yes</td>
+<td>hourly</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gnmeter">gnMeter<a class="headerlink" href="#gnmeter" title="Permanent link">¶</a></h3>
+<p>Type: choice</p>
+<p>Name of meter by which this GAIN's <a class="autorefs autorefs-internal" href="#gnpower">gnPower</a> is recorded. If omitted, gain is assigned to no meter and energy use is not accounted in CSE simulation reports; thus, gnMeter should only be omitted for "free" energy sources.</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td><em>name of <a class="autorefs autorefs-internal" href="../meter/#meter">METER</a></em></td>
+<td><em>none</em></td>
+<td>No</td>
+<td>constant</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gnenduse">gnEndUse<a class="headerlink" href="#gnenduse" title="Permanent link">¶</a></h3>
+<p>Type: choice</p>
+<p>Meter end use to which the GAIN's energy use should be accumulated.</p>
+<div class="no-header-table"></div>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clg</td>
+<td>Cooling</td>
+</tr>
+<tr>
+<td>Htg</td>
+<td>Heating (includes heat pump compressor)</td>
+</tr>
+<tr>
+<td>HPBU</td>
+<td>Heat pump resistance heating (backup and defrost)</td>
+</tr>
+<tr>
+<td>DHW</td>
+<td>Domestic (service) hot water</td>
+</tr>
+<tr>
+<td>DHWBU</td>
+<td>Domestic (service) hot water heating backup (HPWH resistance)</td>
+</tr>
+<tr>
+<td>DHWMFL</td>
+<td>Domestic (service) hot water heating multi-family loop pumping and loss makeup</td>
+</tr>
+<tr>
+<td>FANC</td>
+<td>Fans, AC and cooling ventilation</td>
+</tr>
+<tr>
+<td>FANH</td>
+<td>Fans, heating</td>
+</tr>
+<tr>
+<td>FANV</td>
+<td>Fans, IAQ venting</td>
+</tr>
+<tr>
+<td>FAN</td>
+<td>Fans, other purposes</td>
+</tr>
+<tr>
+<td>AUX</td>
+<td>HVAC auxiliaries such as pumps</td>
+</tr>
+<tr>
+<td>PROC</td>
+<td>Process</td>
+</tr>
+<tr>
+<td>LIT</td>
+<td>Lighting</td>
+</tr>
+<tr>
+<td>RCP</td>
+<td>Receptacles</td>
+</tr>
+<tr>
+<td>EXT</td>
+<td>Exterior lighting</td>
+</tr>
+<tr>
+<td>REFR</td>
+<td>Refrigeration</td>
+</tr>
+<tr>
+<td>DISH</td>
+<td>Dishwashing</td>
+</tr>
+<tr>
+<td>DRY</td>
+<td>Clothes drying</td>
+</tr>
+<tr>
+<td>WASH</td>
+<td>Clothes washing</td>
+</tr>
+<tr>
+<td>COOK</td>
+<td>Cooking</td>
+</tr>
+<tr>
+<td>USER1</td>
+<td>User-defined category 1</td>
+</tr>
+<tr>
+<td>USER2</td>
+<td>User-defined category 2</td>
+</tr>
+<tr>
+<td>BT</td>
+<td>Battery charge power</td>
+</tr>
+<tr>
+<td>PV</td>
+<td>Photovoltaic power generation</td>
+</tr>
+</tbody>
+</table>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td><em>Codes listed above</em></td>
+<td><em>none</em></td>
+<td>Required if <a class="autorefs autorefs-internal" href="#gnmeter">gnMeter</a> is given</td>
+<td>constant</td>
+</tr>
+</tbody>
+</table>
+<p>The <a class="autorefs autorefs-internal" href="#gnfrzn">gnFrZn</a>, <a class="autorefs autorefs-internal" href="#gnfrpl">gnFrPl</a>, and <a class="autorefs autorefs-internal" href="#gnfrrtn">gnFrRtn</a> members allow you to allocate the gain among the zone, the zone's plenum, and the zone's return air flow. Values that total to more than 1.0 constitute an error. If they total less than 1, the unallocated portion of the gain is recorded by the meter (if specified) but not transferred into the building. By default, all of the gain not directed to the return or plenum goes to the zone.</p>
+<h3 id="gnfrzn">gnFrZn<a class="headerlink" href="#gnfrzn" title="Permanent link">¶</a></h3>
+<p>Type: float</p>
+<p>Fraction of gain going to zone. <a class="autorefs autorefs-internal" href="#gnfrlat">gnFrLat</a> (below) gives portion of this gain that is latent, if any; the remainder is sensible.</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>0 ≤ <em>x</em> ≤ 1</td>
+<td>1.</td>
+<td>No</td>
+<td>hourly</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gnfrpl">gnFrPl<a class="headerlink" href="#gnfrpl" title="Permanent link">¶</a></h3>
+<p>Type: float</p>
+<p>Fraction of gain going to plenum.</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td><a class="autorefs autorefs-internal" href="#gnfrzn">gnFrZn</a> + gnFrPl + <a class="autorefs autorefs-internal" href="#gnfrrtn">gnFrRtn</a> ≤ 1</td>
+<td>0.</td>
+<td>No</td>
+<td>hourly</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gnfrrtn">gnFrRtn<a class="headerlink" href="#gnfrrtn" title="Permanent link">¶</a></h3>
+<p>Type: float</p>
+<p>Fraction of gain going to return.</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td><a class="autorefs autorefs-internal" href="#gnfrzn">gnFrZn</a> + <a class="autorefs autorefs-internal" href="#gnfrpl">gnFrPl</a> + gnFrRtn ≤ 1</td>
+<td>0.</td>
+<td>No</td>
+<td>hourly</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gnfrrad">gnFrRad<a class="headerlink" href="#gnfrrad" title="Permanent link">¶</a></h3>
+<p>Type: float</p>
+<p>Fraction of total gain going to zone (<a class="autorefs autorefs-internal" href="#gnfrzn">gnFrZn</a>) that is radiant rather than convective or latent.</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>0 ≤ <em>x</em> ≤ 1</td>
+<td>0.0</td>
+<td>No</td>
+<td>hourly</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gnfrlat">gnFrLat<a class="headerlink" href="#gnfrlat" title="Permanent link">¶</a></h3>
+<p>Type: float</p>
+<p>Fraction of total gain going to zone (<a class="autorefs autorefs-internal" href="#gnfrzn">gnFrZn</a>) that is latent heat (moisture addition).</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>0 ≤ <em>x</em> ≤ 1</td>
+<td>0.0</td>
+<td>No</td>
+<td>hourly</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gndlfrpow">gnDlFrPow<a class="headerlink" href="#gndlfrpow" title="Permanent link">¶</a></h3>
+<p>Type: float</p>
+<p>Hourly power reduction factor, typically used to modify lighting power to account for
+daylighting.</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>0 ≤ <em>x</em> ≤ 1</td>
+<td>1.0</td>
+<td>No</td>
+<td>hourly</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gnctrldhwsys">gnCtrlDHWSYS<a class="headerlink" href="#gnctrldhwsys" title="Permanent link">¶</a></h3>
+<p>Type: <a class="autorefs autorefs-internal" href="../dhwsys/#dhwsysname">dhwsysName</a></p>
+<p>Name of a <a class="autorefs autorefs-internal" href="../dhwsys/#dhwsys">DHWSYS</a> whose water use modulates <a class="autorefs autorefs-internal" href="#gnpower">gnPower</a>.  For example, electricity use of water-using appliances (e.g. dishwasher or clothes washer) can be modeled based on water use, ensuring that the uses are synchronized.  When this feature is used, <a class="autorefs autorefs-internal" href="#gnpower">gnPower</a> should be specified in Btuh/gal.</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td><em>name of a <a class="autorefs autorefs-internal" href="../dhwsys/#dhwsys">DHWSYS</a></em></td>
+<td>no <a class="autorefs autorefs-internal" href="../dhwsys/#dhwsys">DHWSYS</a>/GAIN linkage</td>
+<td>No</td>
+<td>constant</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gnctrldhwmeter">gnCtrlDHWMETER<a class="headerlink" href="#gnctrldhwmeter" title="Permanent link">¶</a></h3>
+<p>Type: <a class="autorefs autorefs-internal" href="../dhwmeter/#dhwmtrname">dhwMtrName</a></p>
+<p>Allows gains to track water usage such as dishwashers, clothes washers, etc.</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td><em>name of <a class="autorefs autorefs-internal" href="../dhwmeter/#dhwmeter">DHWMETER</a></em></td>
+<td>0</td>
+<td>No</td>
+<td>constant</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gnctrldhwenduse">gnCtrlDHWEndUse<a class="headerlink" href="#gnctrldhwenduse" title="Permanent link">¶</a></h3>
+<p>Type: dhwEndUseName</p>
+<p>Name of the <a class="autorefs autorefs-internal" href="../dhwsys/#dhwsys">DHWSYS</a> end use consumption that modulates <a class="autorefs autorefs-internal" href="#gnpower">gnPower</a>.  See <a class="autorefs autorefs-internal" href="../dhwmeter/#dhwmeter">DHWMETER</a> for DHW end use definitions.</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>DHW end use</td>
+<td>Total</td>
+<td>No</td>
+<td>constant</td>
+</tr>
+</tbody>
+</table>
+<h3 id="endgain">endGain<a class="headerlink" href="#endgain" title="Permanent link">¶</a></h3>
+<p>Optional to indicate the end of the GAIN definition. Alternatively, the end of the gain definition can be indicated by <a class="autorefs autorefs-internal" title="END and ENDxxxx" href="../../input-structure/#end-and-endxxxx">END</a> or by the declaration of another object.</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td><em>none</em></td>
+<td>No</td>
+<td>constant</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Related <a class="autorefs autorefs-internal" href="../../input-structure/#probes">Probes</a>:</strong></p>
+<ul>
+<li>@<a class="autorefs autorefs-internal" href="../../probe-definitions/gain/#p_gain">gain</a></li>
+</ul>
 
 
 
@@ -3446,6 +4247,44 @@
       
         <footer class="md-footer">
   
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../zone/" class="md-footer__link md-footer__link--prev" aria-label="Previous: ZONE">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                ZONE
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../surface/" class="md-footer__link md-footer__link--next" aria-label="Next: SURFACE">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                SURFACE
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
     
   
   <div class="md-footer-meta md-typeset">
@@ -3474,12 +4313,12 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": ".", "features": ["content.code.copy", "toc.follow", "navigation.instant", "navigation.indexes", "navigation.footer"], "search": "assets/javascripts/workers/search.c7dda4d7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "toc.follow", "navigation.instant", "navigation.indexes", "navigation.footer"], "search": "../../assets/javascripts/workers/search.c7dda4d7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="assets/javascripts/bundle.6c14ae12.min.js"></script>
+      <script src="../../assets/javascripts/bundle.6c14ae12.min.js"></script>
       
-        <script src="js/print-site.js"></script>
+        <script src="../../js/print-site.js"></script>
       
         <script src="https://unpkg.com/katex@0/dist/katex.min.js"></script>
       
@@ -3487,7 +4326,7 @@
       
         <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
       
-        <script src="assets/javascript/extra_js.js"></script>
+        <script src="../../assets/javascript/extra_js.js"></script>
       
     
   </body>
