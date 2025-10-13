@@ -478,14 +478,12 @@ class ProbeWriter:
         except FileNotFoundError:
             # File doesn't exist, so write the new content
             pass
-        except Exception:
-            # print(f"Error reading file {path}: {e}")
+        except Exception as e:
+            root_logger.error(f"Error reading file {path}: {e}")
             return
 
         if new_content == current_content:
-            # TODO: Add logging, so this can be added to a debug-level output.
-            # print(f"Content of {filename} is already identical, no write performed.")
-            pass
+            root_logger.debug(f"Content of {filename} is already identical, no write performed.")
         else:
             with open(path, "w") as f:
                 f.write(new_content)
