@@ -1,0 +1,90 @@
+site_author: CSE Authors
+site_description: Documentation Website for CSE
+site_dir: ../build
+site_name: CSE Documentation
+site_url: "https://cse-sim.github.io/cse/"
+copyright: "&copy 2025 The CSE Authors. All rights reserved."
+watch:
+  - main.py
+theme:
+  name: material
+  features:
+    - content.code.copy
+    - toc.follow
+    - navigation.instant
+    - navigation.indexes
+    - navigation.footer
+  # favicon: assets/favicon.ico
+  # logo: assets/logo.svg
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-night
+        name: Switch to system preference
+repo_name: cse
+repo_url: https://github.com/cse-sim/cse
+plugins:
+  - autorefs:
+      resolve_closest: true
+  - macros
+  - search
+  - awesome-nav
+  - print-site:
+      add_to_navigation: false
+      print_page_title: 'CSE Documentation (Single Page)'
+      print_page_basename: 'single_page'
+      add_print_site_banner: false
+      # Table of contents
+      add_table_of_contents: true
+      toc_title: 'Table of Contents'
+      toc_depth: 6
+      # Content-related
+      add_full_urls: false
+      enumerate_headings: true
+      enumerate_figures: false
+      add_cover_page: false
+      include_css: true
+      enabled: true
+hooks:
+  - hooks.py
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.blocks.caption
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tilde
+extra_css:
+  - https://unpkg.com/katex@0/dist/katex.min.css
+  - assets/stylesheets/extra_styles.css
+extra_javascript:
+  - https://unpkg.com/katex@0/dist/katex.min.js
+  - https://unpkg.com/katex@0/dist/contrib/auto-render.min.js
+  - https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js
+  - assets/javascript/extra_js.js

@@ -90,11 +90,11 @@ static const double PATM = 101325.;		// Atmospheric pressure (Pa)
 ///////////////////////////////////////////////////////////////////////////////
 static int awOptions = 0;		// ASHWAT global options (none defined, 9-2016)
 static void* awMsgContext = NULL;
-static void (*pMsgCallBackFunc)( void* msgContext, AWMSGTY msgTy, const string& msg) = NULL;
+static void (*pMsgCallBackFunc)( void* msgContext, AWMSGTY msgTy, const std::string& msg) = NULL;
 //-----------------------------------------------------------------------------
 void ASHWAT_Setup(		// setup message reporting linkage
 	void* _msgContext,		// caller's context passed to MsgCallBackFunc
-	void (*_pMsgCallBackFunc)( void* msgContext, AWMSGTY msgTy, const string& msg),
+	void (*_pMsgCallBackFunc)( void* msgContext, AWMSGTY msgTy, const std::string& msg),
 	int options /*=0*/)		// options TBD
 // duplicate calls harmless
 {
@@ -251,7 +251,7 @@ int Solve(			// matrix solver
 }  // A2D::Solve
 };	// class A2D
 //-----------------------------------------------------------------------------
-static string awStrFromBF(		// convert blank-filled to string
+static std::string awStrFromBF(		// convert blank-filled to string
 	const char* s,
 	size_t sDim)
 {
@@ -303,7 +303,7 @@ static const char* awStrToZF(		// safe c-string copy with truncate
 #define FCGET( s) s
 #endif		// FORTRAN_TRANSITION
 //-----------------------------------------------------------------------------
-static string stringFmtV( const char* fmt, va_list ap=NULL)
+static std::string stringFmtV( const char* fmt, va_list ap=NULL)
 {
 	static const int maxLen = 2000;
 	char buf[ maxLen];
@@ -314,7 +314,7 @@ static string stringFmtV( const char* fmt, va_list ap=NULL)
 	return fmt;
 }		// ::stringFmtV
 //-----------------------------------------------------------------------------
-static string stringFmt( const char* fmt, ...)
+static std::string stringFmt( const char* fmt, ...)
 {	va_list ap; va_start( ap, fmt);
 	return stringFmtV( fmt, ap);
 }		// ::stringFmt
@@ -324,7 +324,7 @@ static bool MessageV(
 	const char* fmt,
 	va_list ap=NULL)
 {
-	string msg = stringFmtV( fmt, ap);
+	std::string msg = stringFmtV( fmt, ap);
 	if (pMsgCallBackFunc)
 		(*pMsgCallBackFunc)( awMsgContext, msgTy, msg);	// transmit message to caller
 	else
@@ -344,21 +344,21 @@ static bool Message(
 }	// ::Message
 //------------------------------------------------------------------------------
 static bool AddMsgV(		// add message to array of messages
-	vector< string> &msgs,		// array of messages
+	std::vector< std::string> &msgs,		// array of messages
 	const char* what,			// context for message
 	const char* fmt,			// message (vsprintf'd if !ap)
 	va_list ap=NULL)			// optional args for fmt
 // add message to array
 // returns false (handy in some contexts)
 {
-	string msgText = stringFmtV( fmt, ap);
-	string msg = string( what) + ": " + msgText;
+	std::string msgText = stringFmtV( fmt, ap);
+	std::string msg = std::string( what) + ": " + msgText;
 	msgs.push_back( msg);
 	return false;
 }  // AddMsgV
 //------------------------------------------------------------------------------
 static bool AddMsg(			// add message to array of messages
-	vector< string> &msgs,		// array of messages
+	std::vector< std::string> &msgs,		// array of messages
 	const char* what,			// context for message
 	const char* fmt,
 	...)
@@ -369,9 +369,9 @@ static bool AddMsg(			// add message to array of messages
 }	// AddMsg
 //------------------------------------------------------------------------------
 bool AppendMsg(		// append message with break;
-	string comboMsg,		// combined string
-	const string msg,		// message to append
-	const string brk)		// break (e.g. "; ")
+	std::string comboMsg,		// combined string
+	const std::string msg,		// message to append
+	const std::string brk)		// break (e.g. "; ")
 // append messgage
 // returns false (handy in some contexts)
 {
@@ -448,7 +448,7 @@ static double P01(		//  constrain property to range 0 - 1
 //------------------------------------------------------------------------------
 static bool CheckFixPropRange(		// check property value
 	double &p, const char* pName,	// property
-	vector< string> &msgs,	// msg array
+	std::vector< std::string> &msgs,	// msg array
 	const char* what,		// context for error msg
 	double pMin=0.,			// allowed min
 	double pMax=1.)			// allowed max
@@ -471,7 +471,7 @@ static bool CheckFixPropPair(
 	int opt,				// what to check: 1: p1==p2, 2: p1+p2 <= 1
 	double& p1, const char* p1Name,	// property 1 (returned possibly updated)
 	double& p2, const char* p2Name,	// property 2 (returned possibly updated)
-	vector< string> &msgs,			// msg array (new msg(s) added)
+	std::vector< std::string> &msgs,			// msg array (new msg(s) added)
 	const char* what)				// context for error msgs
 // check/fix property pair per opt
 // returns false iff error and fix
@@ -518,7 +518,7 @@ static bool CheckFixProp2Pair(	// check/fix linked property pairs per opt
 	int opt,  // what to check: 1: p1==p2, 2: p1+p2 <= 1
 	double &p1a, double &p1b, const char* p1Name,
 	double &p2a, double &p2b, const char* p2Name,
-	vector< string> &msgs,	// message array
+	std::vector< std::string> &msgs,	// message array
 	const char* what)		// context for error msgs
 // returns false iff value error / fix
 {
@@ -1469,13 +1469,13 @@ bool CFSTY::cf_Thermal(		// layer temps / heat fluxes
 	double QInConvX = (1.-FHR_IN)*Ucg*(TAE_OUT - TIN) + Cx*( TRMIN - TIN) + NConv*ISOL;
 	double QInRadX = FHR_IN*Ucg*(TAE_OUT - TRMIN) + Cx*(TIN-TRMIN) + NRad*ISOL;
 
-	if (vNEQ( QInConv, QInConvX, .0002))
+	if (vNEQ( QInConv, QInConvX, .0003))
 	{	Message( msgERR, "QConv mismatch");
-		vNEQ( QInConv, QInConvX, .0002);
+		vNEQ( QInConv, QInConvX, .0003);	// re-call for debugging
 	}
-	if (vNEQ( QInRad, QInRadX, .0002))
+	if (vNEQ( QInRad, QInRadX, .001))
 	{	Message( msgERR, "QRad mismatch");
-		vNEQ( QInRad, QInRadX, .0002);
+		vNEQ( QInRad, QInRadX, .001);		// re-call for debugging
 	}
 #endif
 
@@ -5003,7 +5003,7 @@ bool CFSLAYER::cl_Reverse(			// reverse a layer
 	CFSLAYER& LR) const		// returned: reversed layer
 // returns true iff success
 {
-	string sID = FCGET( ID);
+	std::string sID = FCGET( ID);
 	sID += "_Rev";
 	LR.cl_SetID( sID.c_str());
 	
@@ -5334,7 +5334,7 @@ void CFSSWP::csw_SpecularEstimateDiffuseProps()		// diffuse properties
 }    // CFSSWP::csw_SpecularEstimateDiffuseProps
 
 //-----------------------------------------------------------------------------
-string CFSSWP::DbFmt( const char* tag/*=""*/) const	// formatted string for e.g. DbDump()
+std::string CFSSWP::DbFmt( const char* tag/*=""*/) const	// formatted string for e.g. DbDump()
 // returns self-description w/o \n
 {
 	return stringFmt(
@@ -5390,7 +5390,7 @@ CFSLWP& CFSLWP::clw_Reverse()	// reverse long-wave properties in place
 	return *this;
 }  // CFSLWP::clw_Reverse
 //------------------------------------------------------------------------------
-string CFSLWP::DbFmt(		// formatted string for debugging
+std::string CFSLWP::DbFmt(		// formatted string for debugging
 	const char* tag/*=""*/) const
 // returns self-description
 {
@@ -5466,7 +5466,7 @@ double CFSGAP::cg_HConvGap(		// convective coeff for gap
 	return hc;
 }  // CFSGAP::cg_HConvGap
 //-----------------------------------------------------------------------------
-string CFSGAP::DbFmt( const char* tag/*=""*/) const
+std::string CFSGAP::DbFmt( const char* tag/*=""*/) const
 // returns self-description w/o \n
 {
 	return stringFmt( "%s%s ty=%d W=%0.3f Weff=%0.3f",
@@ -5593,7 +5593,7 @@ int CFSTY::cf_HasControlledShade() const	// check for controlled shade layer
 }  // CFSTY::cf_HasControlledShade
 //-----------------------------------------------------------------------------
 bool CFSLAYER::cl_CheckFix(		// verify CFSLAYER validity
-	vector< string> &msgs,	// message array (new messages appended)
+	std::vector< std::string> &msgs,	// message array (new messages appended)
 	const char* what)		// context for message(s)
 // set bad items to valid defaults if possible
 // returns true iff all data OK
@@ -5618,10 +5618,10 @@ bool CFSLAYER::cl_CheckFix(		// verify CFSLAYER validity w/ message reporting)
 // returns true iff all data OK
 //    else false (msgs reported)
 {
-	vector< string> msgs;
+	std::vector< std::string> msgs;
 	bool bRet = cl_CheckFix( msgs, what);
 	if (!bRet)
-	{	vector< string>::const_iterator  pos;
+	{	std::vector< std::string>::const_iterator  pos;
 		for (pos=msgs.begin(); pos!=msgs.end(); ++pos)
 			Message( msgWRN, pos->c_str());
 	}
@@ -5721,7 +5721,7 @@ void CFSLAYER::cl_FillDefaultsSWP(		// fill defaulted properties
 //------------------------------------------------------------------------------
 bool CFSLAYER::cl_CheckFixLWP(	// check layer long wave properties
 	CFSLWP& lwp,			// properties (may be within *this)
-	vector< string> &msgs,	// msg array
+	std::vector< std::string> &msgs,	// msg array
 	const char* what)		// context for messages
 // returns true iff LWP OK
 //    else false, LWP.xxx changed to legal but NOT necessarily consistent values
@@ -5736,7 +5736,7 @@ bool CFSLAYER::cl_CheckFixLWP(	// check layer long wave properties
 //------------------------------------------------------------------------------
 bool CFSLAYER::cl_CheckFixSWP(	// check short wave properties
 	CFSSWP& swp,			// properties (may be within *this)
-	vector< string> &msgs,	// msg array
+	std::vector< std::string> &msgs,	// msg array
 	const char* what)		// context for messages
 
 // checks input layer properties
@@ -5829,7 +5829,7 @@ bool CFSLAYER::cl_CheckFixSWP(	// check short wave properties
 }  // CFSLAYER::cl_CheckFixSWP
 //------------------------------------------------------------------------------
 bool CFSLAYER::cl_CheckFixGeom(		// check and apply limits to geometric values
-	vector< string> &msgs,		// msg array (any new messages appended)
+	std::vector< std::string> &msgs,		// msg array (any new messages appended)
 	const char* what)			// context for messages
 // returns true iff no corrections
 //         false otherwise, msg(s) added
@@ -5879,11 +5879,11 @@ bool CFSLAYER::cl_CheckFixGeom(		// check and apply limits to geometric values
 }  // CFSLAYER::cl_CheckFixGeom
 //------------------------------------------------------------------------------
 bool CFSTY::cf_Finalize(			// complete CFS after BuildCFS or data input
-	string* pMsg/*=NULL*/)		// optionally returned: error msg(s)
+	std::string* pMsg/*=NULL*/)		// optionally returned: error msg(s)
 // returns true iff OK
 //         false if error (msg explains)
 {
-	string msg;
+	std::string msg;
 	bool LVBPREV = false;		// true iff previous layer is VB
 	for (int iL=1; iL<=NL; iL++)
 	{
