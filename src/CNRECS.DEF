@@ -1373,16 +1373,15 @@ RECORD XSURF "xsurf sub" *SUBSTRUCT	// for PRI, SFI, XSRAT.
     // solar gain distributions: [partly] based on SGDIST inputs
     *r SI nsgdist	 		// Number of SG distributions
     // SGDIST sgdist[ HSMXSGDIST]:
-    *array HSMXSGDIST	// =8 (2-95), cndefns.h. explicit solar gain distribs
-       *r			// min variation here: no members set at input time
-       *nest SGDIST sgdist	// solar gain distribution (struct just above).  set: cncult3.cpp:cnuSgDist().
+     *r *array HSMXSGDIST *nest SGDIST sgdist	// =8 (2-95), cndefns.h. explicit solar gain distribs
+    			// *r -> min variation here: no members set at input time
+                // *nest SGDIST sgdist -> solar gain distribution (struct just above).  set: cncult3.cpp:cnuSgDist().
 
     // runtime values
     *s *e FLOAT xs_glzTrans     // ASHWAT windows: transmitted solar gain, Btuh/ft2 (w/o cavity absorp adjustment)
     *s *e FLOAT xs_glzInward    // ASHWAT windows: inward flowing convective and LW radiant gain to zone, Btuh/ft2
 
-    *array XSMXTLRB *h *e
-		FLOAT xs_tLrB	// layer boundary temps re probes
+    *array XSMXTLRB *h *e FLOAT xs_tLrB	// layer boundary temps re probes
 						// populated at end of hour
 
 *END		// XSURF
@@ -1817,7 +1816,7 @@ RECORD COL "reportCol" *RAT	// holds info for columns in user-defined table repo
     TI nxColi		// for runtime: COL subscript of next column in this report, 0 if last one
 *END		// COL
 //=============================================================================
-RECORD DVRI "dvri" *hideall *RAT	// Date-dependent Virtual Report Info -- at runtime (DvriB)
+RECORD DVRI "dvri" *RAT *hideall	// Date-dependent Virtual Report Info -- at runtime (DvriB)
 	*prefix dv_
 	*ovrcopy
 	*declare "void dv_vpDHWMtrRow( struct RXPORTINFO* rxt, TI dhwMtri=-1);"
@@ -5753,8 +5752,8 @@ RECORD COIL "coil sub" *SUBSTRUCT	// COIL SUB RECORD
     *h OFFAVAILVC sched	// AVAIL when coil available, OFF when disabled, hourly, default AVAIL.
 
     			// sensible cap'y: see COOLCOIL.capsRat.
-    *s *e 			// *s *e for probes, cuz autoSize changes it. hourly for input purposes.
-       POWER_NZ captRat 	// total rated cap'y (Btuh), RQD except AHP, ?CHW, hrly vbl for furnaces, const for DX coil.
+    *s *e POWER_NZ captRat	// *s *e for probes, cuz autoSize changes it. hourly for input purposes.
+        	                // total rated cap'y (Btuh), RQD except AHP, ?CHW, hrly vbl for furnaces, const for DX coil.
     *f POWER captRat_As		// captRat determined by autoSizing, w less vbly for easier use in probes in main sim. 6-95.
     *f POWER captRat_AsNov	// raw captRat determined by autoSizing, before overSize added, for reports/probes. 7-95
     // cnausz.cpp code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
@@ -6690,8 +6689,7 @@ RECORD TU "terminal" *RAT		// TERMINAL
     //				   neither sp given but min flow given-->continuous output at that flow regardless of zone temp.
     *h TEMP_GZ tuTH    		// air heating set point (F). hourly. default: no tstat-controlled air heating.
     *h TEMP_GZ tuTC    		// air cooling set point (F). hourly. default: no tstat-controlled air cooling.
-    *s *e AFLOW_GEZ 
-    tuVfMn	// min flow (cfm actual air); if no setpoints given, this is "specified output".  hourly, dlf 0.
+    *s *e AFLOW_GEZ tuVfMn	// min flow (cfm actual air); if no setpoints given, this is "specified output".  hourly, dlf 0.
     *f AFLOW_GEZ tuVfMn_As	// .. as autoSized (for constant volume), less variable, for probing.
     *f AFLOW_GEZ tuVfMn_AsNov	// .. raw autoSized value before oversize added, for possible probes.
     //cnausz.cpp code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
@@ -6699,8 +6697,8 @@ RECORD TU "terminal" *RAT		// TERMINAL
 
     *i TI ai		// 0 or AH ss (subscript) for air handler serving tu (input as air handler name). RQD if sp or Mn given.
 
-    *s *e			            // *s *e cuz autoSize changes it... inputtable hourly. 7-20-95.
-       AFLOW_GEZ tuVfMxH	    // heating max flow (cfm actual air) b4 ah limits, hourly, RQD if TuTH given else disallowed
+    *s *e AFLOW_GEZ tuVfMxH	    // *s *e cuz autoSize changes it... inputtable hourly. 7-20-95.
+       	                        // heating max flow (cfm actual air) b4 ah limits, hourly, RQD if TuTH given else disallowed
     *f AFLOW_GEZ tuVfMxH_As	    // .. as determined by autoSizing, less variable, for probing.
     *f AFLOW_GEZ tuVfMxH_AsNov	// .. raw autoSizing result before oversize added, for report/probes.
     //cnausz.cpp code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
@@ -6940,6 +6938,7 @@ RECORD HEATPLANT "heatPlant" *RAT	// heating plant: contains BOILERs, serves HW 
     // autoSizing
     *s *e FLOAT qPk		// peak load re error autosizing overload message
     *s *e FLOAT qPkAs		// peak load on a converged autoSizing design day re error autosizing overload message
+    
  //prior values for runtime change-detection
     *s *e OFFONCH hpModePr
     *s *e POWER qPr

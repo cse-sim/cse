@@ -14,6 +14,10 @@ if (DEFINED EXECUTABLE_DIRECTORY)
     set(configure_command ${configure_command} -DCSE_EXECUTABLE_DIRECTORY=${EXECUTABLE_DIRECTORY})
 endif ()
 
+if (DEFINED BUILD_DOCS_WITH_ALL)
+    set(configure_command ${configure_command} -DCSE_BUILD_DOCUMENTATION=BuildWithAll)
+endif ()
+
 if ("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Windows")
     if (${COMPILER_ID} STREQUAL "msvc")
         # Explicitly set versions to guarantee computational stability
