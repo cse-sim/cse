@@ -29,7 +29,7 @@ document.querySelectorAll("section.print-page p:has(+ :is(h1, h2, h3, h4, h5, h6
   if (element.innerHTML !== '@nested-dl') return
 
   let currentElement = element.nextElementSibling
-  heading_level = currentElement.tagName.startsWith("H") ? currentElement.tagName : null
+  const heading_level = currentElement?.tagName.startsWith("H") ? currentElement.tagName : null
 
   if (!heading_level) return
 
@@ -39,7 +39,7 @@ document.querySelectorAll("section.print-page p:has(+ :is(h1, h2, h3, h4, h5, h6
     }
 
     currentElement = currentElement.nextElementSibling
-    if (currentElement.tagName === heading_level) {
+    if (currentElement?.tagName === heading_level) {
       break
     }
   }
