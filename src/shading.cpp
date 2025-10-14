@@ -515,7 +515,7 @@ RC SURFGEOM::gx_SetupShading(		// shading calcs setup
 	const CT3D* MT,			// point transformation matrix
 							//   (e.g. re bldgAzm rotation)
 							//   NULL -> no transformation
-	int options /*=0*/)		// options TBD
+	[[maybe_unused]] int options /*=0*/)		// options TBD
 // add this surface to the Penumbra model
 // returns RCOK: success or no geometry specified
 //    else RCBAD: bad geometry or addSurface fail

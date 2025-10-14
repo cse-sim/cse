@@ -359,16 +359,18 @@ RC PROBEOBJECT::po_FindMember()	// parse and look up probe member name in po_inB
 		// if not found, issue error message.  syntax ok if here.
 
 		if (!po_inB && !po_runB) 					// if found in neither input nor run records basAnc
+		{
 			if (!m)							// if first token of name
-				return perNx( MH_U0011, po_what, cuToktx); 	// "U0011: %s member '%s' not found"
+				return perNx(MH_U0011, po_what, cuToktx); 	// "U0011: %s member '%s' not found"
 			else
 			{	// fancier error message for partial match
-				const char* foundPart = strncpy0( NULL, f1->fi_GetMName(), m+1);		// truncate to Tmpstr
-				return perNx( MH_U0012,
+				const char* foundPart = strncpy0(NULL, f1->fi_GetMName(), m+1);		// truncate to Tmpstr
+				return perNx(MH_U0012,
 					//"U0012: %s member '%s%s' not found: \n"
 					//"    matched \"%s\" but could not match \"%s\"."
-					po_what,  foundPart, cuToktx,  foundPart, cuToktx );
+					po_what, foundPart, cuToktx, foundPart, cuToktx);
 			}
+		}
 
 		// match found for current token.  Done if end fir table member text; error if tables continue differently.
 

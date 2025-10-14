@@ -4,18 +4,6 @@
 
 // ancrec.h: record and record anchor base class definitions for cse
 
-
-// before #include, #define NEEDLIKECTOR if including file calls the anc<T> like-another constructor
-
-
-//************************
-//  unsuccessful OPTIONS
-//************************
-
-
-//---------------------------------------------------------------------------------------------------------------------------
-
-
 #ifndef ANCREC_H	// endif at end file
 #define ANCREC_H
 
@@ -91,7 +79,7 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
 													//   nullptr if none; see cuprobe.cpp
 
     basAnc();
-    basAnc( int flags, SFIR * fir, USI nFlds, const char * what, USI eSz, RCT rt, USI sOff, const CULT* pCult, int dontRegister=0 );
+    basAnc( int flags, SFIR * fir, USI nFlds, const char * what, USI eSz, RCT rt, USI sOff, const CULT* pCult, bool dontRegister=false );
     void FC regis();
     virtual ~basAnc();  								// destroyed in deriv classes, to use vf
     virtual record* ptr() = 0;							// access block ptr (in drv class: typed)
@@ -101,6 +89,7 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
 	virtual const record& rec(TI i) const = 0;   // ditto const
 	virtual record* GetAtSafe( int i) const	= 0;				// typed pointer to ith record or NULL
     virtual void* recMbr(TI i, USI off) = 0;					// point record i member by offset
+	virtual basAnc* CloneForType(const char* what, int _flags, BP _ownB) const = 0;
     void * FC recFld(TI i, SI fn);								// point record i member by FIELD # 3-92
     RC FC al( TI n, int erOp=ABT, BP _ownB=NULL);				// allocate records block. destroys old recs.
     RC FC reAl( TI n, int erOp=ABT);							// (re)allocate records block. keeps old recs <= n.
@@ -340,12 +329,11 @@ class record		// base class for records
 
 template <class T>  class anc : public basAnc
 { public:
-    anc( const char *what, SFIR *sFir, USI nFlds, RCT rt, CULT* pCULT=nullptr) 		// cpp'tor used for static instances
-        : basAnc( 0, sFir, nFlds, what, sizeof(T), rt, offsetof( T, sstat), pCULT)
+    anc( const char *what, SFIR *sFir, USI nFlds, RCT rt, const CULT* pCULT=nullptr, bool dontregister=false) 		// cpp'tor used for static instances
+        : basAnc( 0, sFir, nFlds, what, sizeof(T), rt, offsetof( T, sstat), pCULT, dontregister)
         { p = 0; }
-    anc( const BP src, int flags, char  *_what,  			// like-another constructor,
-         BP _ownB, int dontRegister=0 );    				//  code included only ifdef NEEDLIKECTOR.
     virtual ~anc();							// destroys records, and types anchor & its recs.
+	virtual anc<T>* CloneForType(const char* _what, int _flags, BP _ownB) const;
 
     T* p;									// typed pointer to record array storage block
 	virtual T* GetAtSafe( int i) const		// typed pointer to ith record or NULL
@@ -428,27 +416,24 @@ template <class T>  class anc : public basAnc
                                rp <= (record *)( (char *)ptr() + eSz*n );  \
                                IncP( DMPP( rp), eSz) )    \
                          if (((record *)rp)->r_status > 0)
+
 //=============================================================================
-#ifdef NEEDLIKECTOR		// define where this constructor is USED: avoids generating for classes where not used.
+template <class T> anc<T>* anc<T>::CloneForType(		// copy c-tor-ish re creating anc<T> for DEFTYPE
+	const char*_what,	// new 'what' -- generally "<source what> type" (in DM)
+	int _flags,		// flags
+	BP _ownB) const	// owner
+{
 
-template <class T> anc<T>::anc( const BP src, int flags, char *_what, BP _ownB, int dontRegister/*=0*/)
+	// make new anc<T> with data from *this
+	// combined with defaults from anc<T>::anc<T> and basAnc::basAnc
+	anc<T>* pC = new anc<T>(_what, fir, nFlds, rt, ba_pCULT, true);
+	
+    pC->ba_flags = _flags;	// caller specific values
+	pC->ownB = _ownB;
 
-	// like-another-with-records-deleted constructor.
+	return pC;
 
-	// Generates the same derived class as src, using generic code; assumes size of all anc<T>'s is the same.
-
-{				// for subsidiary types anchor, cul.cpp::ratTyR, 2-92; only used for one (arbitrary) T.
-    // must copy: virt fcns, fir,nFlds,eSz,sOff,rt.
-    memcpy( this, src, sizeof(anc<T>) );  		// bitwise copy ALL, to incude virt fcn table ptr.
-    ancN= nAl= n= 0; p= 0; tyB= 0; 			// clear what don't want: anchor #, records, ul stuff.
-    mn = 1;						// mn = 1 when no records allocated even if will be static
-    ba_flags = flags;  what = _what;  ownB = _ownB; 	// store members given by caller
-    if (!dontRegister)
-		regis();			// conditionally include in nextAnc iteration.
-							// CAUTION: don't regis() tyB's or any dm anc<T>'s without
-							// adding unregister logic to destructor, 10-93.
-}				// anc<T>::anc
-#endif	// NEEDLIKECTOR
+}	// anc<T>::CloneForType
 //-------------------------------------------------------------------------------------------------------------------------
 template <class T> anc<T>::~anc()			// destroy anchor: destroy its records and types.
 

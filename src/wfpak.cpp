@@ -2374,9 +2374,8 @@ RC WFILE::wf_CSWOpen(	// open California CSW weather file
 	WStr city, state, country;	// temporaries
 	if (!rc)
 	{	char ln[ WFMAXLNLEN];		// big enuf
-		RC rc1;
-		int bSeenHourlyData = FALSE;		// set 1 when "Hourly Data" encountered
-		for (int nHL=0; ; nHL++)
+		bool bSeenHourlyData{ false };		// set true when "Hourly Data" encountered
+		while (true)
 		{	// read header line-by-line
 			int len = yac->line( ln, sizeof( ln), IGN);
 			if (len < 0)
@@ -2395,7 +2394,7 @@ RC WFILE::wf_CSWOpen(	// open California CSW weather file
 			if (IsBlank( key))
 				continue;		// blank line: skip
 			if (strMatch( key, "Hourly Data"))		// beg of next section
-			{	bSeenHourlyData = TRUE;				// set to decode one more line
+			{	bSeenHourlyData = true;				// set to decode one more line
 				continue;
 			}
 			if (bSeenHourlyData)
@@ -2407,6 +2406,7 @@ RC WFILE::wf_CSWOpen(	// open California CSW weather file
 			}
 
 			// decode heading values by name
+			[[maybe_unused]] RC rc1{ RCOK };
 			if (strMatch( key, "City"))
 				city = val;
 			else if (strMatch( key, "State"))

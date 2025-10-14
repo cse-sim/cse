@@ -845,7 +845,7 @@ basAnc::basAnc()		// default c'tor (for derived copy c'tor
 	memset( (char *)this+SZVFTP, 0, sizeof(*this)-SZVFTP); // SZVFTP: virtFcnTblPtr: cnglob.h.
 }			// basAnc::basAnc
 //---------------------------------------------------------------------------------------------------------------------------
-basAnc::basAnc( int flags, SFIR * _fir, USI _nFlds, const char * _what, USI _eSz, RCT _rt, USI _sOff, const CULT* pCULT, int dontRegister/*=0*/ )
+basAnc::basAnc( int flags, SFIR * _fir, USI _nFlds, const char * _what, USI _eSz, RCT _rt, USI _sOff, const CULT* pCULT, bool dontRegister/*=false*/ )
 {
 	memset( (char *)this+SZVFTP, 0, sizeof(basAnc)-SZVFTP);		// zero all basAnc members but virtFcnTblPtr at front
 	ba_flags = flags;
@@ -858,6 +858,7 @@ basAnc::basAnc( int flags, SFIR * _fir, USI _nFlds, const char * _what, USI _eSz
 	mn = 1;				// min record subscript 1 (overwritten with 0 if static)
 	// ptr() = 0;		// is done in derived class constructor (deriv vf not avail here; ptr is pure!)
 	ba_pCULT = pCULT;	// pointer to associated input CULT table, nullptr = unknown
+	// ba_probeModernizeTable = nullptr;	// done by memset
 	if (!dontRegister)
 		regis();					// conditionally include anchor for nextAnc() iteration
 }					// basAnc::basAnc

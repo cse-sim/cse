@@ -50,9 +50,7 @@
 /*------------------------------- INCLUDES --------------------------------*/
 
 #include "srd.h"		// SFIR; sFdtab; GetDttab
-#define NEEDLIKECTOR	// say this .cpp file needs anc<T> like-another constructor: prevents generation for classes where not used.
 #include "ancrec.h"	// record: base class for rccn.h classes; anc<T> template definition.
-#undef NEEDLIKECTOR
 #include "rccn.h"		// SFI_  [VALNDT_]
 #include "msghans.h"	// MH_S0201 MH_S0202
 
@@ -3624,7 +3622,7 @@ LOCAL void FC adjOwTi(
 	BP b;
 	for (CULT *cc = c-1; nxOwRat( ownB, c, &cc, &b, 0); )	// loop over basAncs owned by ownB
 	{
-		for (SI i = 1;  i <= b->n;  i++)		// loop records in basAnc b
+		for (TI i = 1;  i <= b->n;  i++)		// loop records in basAnc b
 		{
 			record *e = &b->rec(i);	// point to record i (ancpak.cpp)
 			if (e->ownTi < minI)		// if owner out of range of interest
@@ -3645,8 +3643,6 @@ LOCAL RC FC ratTyR( BP b)		// if basAnc does not have secondary basAnc for types
 
 	if (b->tyB==0)			// if this anc does not already have secondary anc for types, make one
 	{
-		RC rc;
-
 		// generate constructor arguments: flags, what, ownB
 
 		int flags = RFTYS | RFNOEX;  				// say is "types" anchor, disable expression expansion
@@ -3657,14 +3653,15 @@ LOCAL RC FC ratTyR( BP b)		// if basAnc does not have secondary basAnc for types
 		BP _ownB = 0;
 		if (b->ownB)			// if basAnc is owned, then tyB's owner will be owners tyB
 		{
+			RC rc;
 			CSE_E( ratTyR(b->ownB) )    	// CALL SELF now to be sure owner already has tyB: if added later, ptr wd not get here
 			_ownB = b->ownB->tyB;
 		}
 
-		// make anc<T> of main anc's <T> (ie same derived class): use special constructor (of an arbitrary T)
-		// that COPIES given anc INCLUDING VIRTUAL FCNS.  Copies rt, eSz, sOff, etc; drops records, tyB.
+		// make anc<T> of main anc's <T> (ie same derived class): Copies rt, eSz, sOff, etc; drops records, tyB.
 		// CAUTION: must not register w/o adding unregister to d'tor.
-		b->tyB = (BP)new anc<ZNR>( b, flags, _what, _ownB, 1 );	// construct copy w/ no records; do not register.  ancrec.h.
+		b->tyB = b->CloneForType( _what, flags, _ownB);	// construct copy w/ no records; do not register
+
 		if (!b->tyB)
 		{
 			//  (known inconsistency: out of memory messages from

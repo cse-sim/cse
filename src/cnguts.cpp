@@ -2176,9 +2176,8 @@ void LOCAL accumulatorsAccum(
 }	// accumulatorsAccum
 //-----------------------------------------------------------------------------
 RC ACCUMULATOR::acm_CkF(
-	int options)
+	[[maybe_unused]] int options)
 {
-	options;
 	return RCOK;
 
 }	// ACCUMULATOR::acm_CkF

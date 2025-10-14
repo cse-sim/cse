@@ -20,15 +20,15 @@
 // PAGE structure.   NB pgpak:pgralloc() makes assumptions about order of "segments" in buffer; change with care.
 struct PAGE
 {
-    SI rows, cols;	// Number of rows and columns in page
-    SI rlw, clw; 	// 1-based position of last char put in page, maintained by pgwe(), can be outside page boundaries.
-    USI flags;		// flags (defs just below): PGISUP, PGCON, .
+    int rows, cols;	// Number of rows and columns in page
+    int rlw, clw; 	// 1-based position of last char put in page, maintained by pgwe(), can be outside page boundaries.
+    int flags;		// flags (defs just below): PGISUP, PGCON, .
   // offsets relative to pb[0] ("Virtual Offsets") for 3 (formerly 5) "segments" of buffer
     // next 2 segments are 1 byte per row, offset is for 1-based subscript
-    SI llenvo;		// bytes: "line lengths" (max used 1-based column (1 more byte avail for \0 in pgVrPut, 11-91))
-    SI lbegvo;		// bytes: line begs (min used 1-based col in row)
+    int llenvo;		// bytes: "line lengths" (max used 1-based column (1 more byte avail for \0 in pgVrPut, 11-91))
+    int lbegvo;		// bytes: line begs (min used 1-based col in row)
     // next segment is full rows, offset for subscript = 1-based row*col
-    SI pgbvo;		// offset to text buffer - rows*(cols+1) bytes.  +1 for \0 added by rob, 11-91
+    int pgbvo;		// offset to text buffer - rows*(cols+1) bytes.  +1 for \0 added by rob, 11-91
     unsigned char pb[1];	// Beg of page buffer -- where -vo's point.
 };
 
@@ -38,7 +38,7 @@ struct PAGE
 
 //--- Useful macros
 #define PP ((PAGE *)pp)						// for accessing PAGE pp when pp is declared as char *
- #define PGSIZE(r,c) ( sizeof(PAGE) + (r)*((c)+3+1) - 1 )	// allocation size for # rows and cols; +1 for null 11-91
+#define PGSIZE(r,c) ( sizeof(PAGE) + (r)*((c)+3+1) - 1 )	// allocation size for # rows and cols; +1 for null 11-91
 								// c here is 1 less than stored .cols.
 #define LINELEN(r) ( PP->pb + PP->llenvo + (r) )		// points to line length for row
 #define LINEBEG(r) ( PP->pb + PP->lbegvo + (r) )		// .. beginning
@@ -82,7 +82,7 @@ struct PAGE
 /*--- pgw fmt: Bit used by pgbuildr in pgpak format word.
    Duplicate define here is to cause error if bits not maintained to match
    in pgbuildr.h and pgpak.h. */
-#define PBFILL 0x0100 	/* Causes pgfille not pgw in certain pgbuildr methods;
+#define PBFILL 0x0100 	// Causes pgfille not pgw in certain pgbuildr methods
 
 
 /*------------- GENERIC row/col values for pgw, pgwe, pgfille -------------*/
@@ -111,10 +111,10 @@ const int PGOPSTAY = EROP7;	// restore "cursor" row-col after writing: so caller
 //   pgpak.cpp
 extern RC     FC pgalloce( int rows, int cols, char * *, int erOp);
 extern void   FC pgfree( char * *);
-extern void   FC pgDelrows( char **ppp, SI row, SI nrows);
+extern void   FC pgDelrows( char** ppp, int row, int nrows);
 extern void   FC pgw( char **, USI, SI, SI, const char *);
 extern RC     FC pgwe( char **, USI, SI, SI, const char *, int erOp);
-extern void   FC pgwrep( char **, USI, SI, SI, const char *, SI);
+extern void   FC pgwrep( char** ppp, USI fmt, int row, int col, const char* s, int len);
 extern RC     FC pgfille( char * *, USI, SI, SI, const char *, int erOp);
 extern SI     FC pgnrows( char *,USI);
 extern SI     FC pgcrow( char *);
