@@ -152,13 +152,8 @@ TOWLOADCASE  --  "enum { tldMIN, tldSP, tldMAX }"
 // pointer to XFILE structure (xiopak.h), added 1-94 for use in WFILE.
 XFILEP  --     "XFILE *"
 //
-// arrays used in WFILE record, 1-94
-WFLOC   --     "char[32]"			// weather file location string (+ \0 + fill byte)
-WFLID   --     "char[18]"			// weather file location id string ( + \0 + fill byte)
-
 WFileFormat -- "enum WFileFormat { UNK=-1,BSGS=1,BSGSdemo,ET1,ET2,CSW,T24DLL,EPW }" 
 									// open wthr file type (comments: wfpak.h)
-WFLOC2  --      "char[22]"			// "location 2" field in ET1 weather files
 YACAMP  --	   "class YACAM *"	    
 WDYEARP  --	   "class WDYEAR *"	    
 

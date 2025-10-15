@@ -520,7 +520,6 @@ RC SURFGEOM::gx_SetupShading(		// shading calcs setup
 // returns RCOK: success or no geometry specified
 //    else RCBAD: bad geometry or addSurface fail
 {
-	options;
 	gx_pnIdx = -1;		// no associated Penumbra surface
 	RC rc = RCOK;
 	if (gx_sgDet && !gx_IsEmpty())

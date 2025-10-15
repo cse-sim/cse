@@ -796,8 +796,8 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
      *declare "int wf_IsPacked() const { return wFileFormat==BSGS || wFileFormat==BSGSdemo || wFileFormat==ET1 || wFileFormat==ET2; }"
 
  // Header info: from file hdr decode or computed from hourly
-    *r WFLOC loc		// char loc[]  Location (for ET, is loc 1 only: city etc).
-    *r WFLID lid		// char lid[]  Location ID
+    *r CULSTR loc		// Location (for ET, is loc 1 only: city etc).
+    *r CULSTR lid		// Location ID
     *r SI yr			// Year of weather data (00 - 99, -1 if N/A)
     *r SI jd1			// Julian day of first weather record (-1 if not known)
     *r SI jdl			// Julian day of last weather record (ditto)
@@ -811,7 +811,7 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
     *f float tMainsMinYr    // annual minimum cold water temp, F
     *r SI solartime		// TRUE if file is in solar time
  //additional header items for ET1 file
-    *r WFLOC2 loc2		// char[] location 2 (state or country, etc)
+    *r CULSTR loc2		// location 2 (state or country, etc)
     *r SI isLeap		// non-0 if weather file is for a leap year (Feb 29 counted in dates) -- possible future use
     *r SI firstDdm		// month 1-12 of first design day in file
     *r SI lastDdm		// month 1-12 of last design day in file
@@ -832,7 +832,7 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
     // *array 12 *r float atmois	// monthly aveage atmospheric moisture, for daylight calcs
 
 // TDV file header info
-    *f WFLOC wf_TDVFileTimeStamp	// timestamp string
+    *f CULSTR wf_TDVFileTimeStamp	// timestamp string
 	*f CULSTR wf_TDVFileTitle		// title string (identifies file CZ, fuel, vintage, )
 
  //internal

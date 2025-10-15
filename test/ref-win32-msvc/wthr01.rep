@@ -2,9 +2,9 @@
 
 Annual User-defined Report
 
- WF Name                                            WF lat TOP lat   WF lon  TOP lon  WF TZ TOP TZ  WF elev TOP elev TDVDesc
- -------------------------------------------------- ------ ------- -------- -------- ------ ------ -------- -------- ------------------------------
- CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw      38.510  38.510  -121.50  -121.50  -8.00  -8.00     23.0     23.0 Test TDV data
+ WF Name                                            WF lat TOP lat   WF lon  TOP lon  WF TZ TOP TZ  WF elev TOP elev TDVDesc              TDVTimeStamp
+ -------------------------------------------------- ------ ------- -------- -------- ------ ------ -------- -------- -------------------- ------------------------------
+ CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw      38.510  38.510  -121.50  -121.50  -8.00  -8.00     23.0     23.0 Test TDV data        Mon 30-Jun-25  09:36:47 am
 
 
 
@@ -2485,7 +2485,7 @@ Subhourly User-defined Report, Mon 03-Aug
 
 ! Log for Run 001:
 
-! CSE 0.927.0-rc2 for Win32 console
+! CSE 0.927.0-rc2+64bit-fixes.d8cc2a16.8.dirty for Win32 console
 
 
 
@@ -2692,7 +2692,8 @@ Input for Run 001:
           REPORTCOL colHead="TOP TZ" colVal=@top.timeZone colDec=2 colWid=6
           REPORTCOL colHead="WF elev" colVal=@weatherFile.elev colDec=1 colWid=8
           REPORTCOL colHead="TOP elev" colVal=@top.elevation  colDec=1 colWid=8
-          REPORTCOL colHead="TDVDesc" colVal=@weatherfile.tdvFileTitle colWid=30
+          REPORTCOL colHead="TDVDesc" colVal=@weatherfile.tdvFileTitle colWid=20
+          REPORTCOL colHead="TDVTimeStamp" colVal=@weatherfile.TDVFileTimeStamp colWid=30
         
         
 #       #define CSEBtuSF 1000
@@ -2783,9 +2784,9 @@ Input for Run 001:
 
 Annual User-defined Report
 
- WF Name                                            WF lat TOP lat   WF lon  TOP lon  WF TZ TOP TZ  WF elev TOP elev TDVDesc
- -------------------------------------------------- ------ ------- -------- -------- ------ ------ -------- -------- ------------------------------
- CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw      38.510  38.510  -121.50  -121.50  -8.00  -8.00     23.0     23.0 Test TDV data
+ WF Name                                            WF lat TOP lat   WF lon  TOP lon  WF TZ TOP TZ  WF elev TOP elev TDVDesc              TDVTimeStamp
+ -------------------------------------------------- ------ ------- -------- -------- ------ ------ -------- -------- -------------------- ------------------------------
+ CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw      38.510  38.510  -121.50  -121.50  -8.00  -8.00     23.0     23.0 Test TDV data        Mon 30-Jun-25  09:36:47 am
 
 
 
@@ -5258,7 +5259,7 @@ Subhourly User-defined Report, Mon 03-Aug
 
 ! Log for Run 002:
 
-! CSE 0.927.0-rc2 for Win32 console
+! CSE 0.927.0-rc2+64bit-fixes.d8cc2a16.8.dirty for Win32 console
 
 
 
@@ -5274,9 +5275,9 @@ Input for Run 002:
 
 Annual User-defined Report
 
- WF Name                                            WF lat TOP lat   WF lon  TOP lon  WF TZ TOP TZ  WF elev TOP elev TDVDesc
- -------------------------------------------------- ------ ------- -------- -------- ------ ------ -------- -------- ------------------------------
- CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw      38.510  38.510  -121.50  -121.50  -8.00  -8.00     23.0     23.0 Test TDV data
+ WF Name                                            WF lat TOP lat   WF lon  TOP lon  WF TZ TOP TZ  WF elev TOP elev TDVDesc              TDVTimeStamp
+ -------------------------------------------------- ------ ------- -------- -------- ------ ------ -------- -------- -------------------- ------------------------------
+ CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw      38.510  38.510  -121.50  -121.50  -8.00  -8.00     23.0     23.0 Test TDV data        Mon 30-Jun-25  09:36:47 am
 
 
 
@@ -7749,7 +7750,7 @@ Subhourly User-defined Report, Mon 03-Aug
 
 ! Log for Run 003:
 
-! CSE 0.927.0-rc2 for Win32 console
+! CSE 0.927.0-rc2+64bit-fixes.d8cc2a16.8.dirty for Win32 console
 
 
 
@@ -7765,9 +7766,9 @@ Input for Run 003:
 
 Annual User-defined Report
 
- WF Name                                            WF lat TOP lat   WF lon  TOP lon  WF TZ TOP TZ  WF elev TOP elev TDVDesc
- -------------------------------------------------- ------ ------- -------- -------- ------ ------ -------- -------- ------------------------------
- CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw      38.510  38.510  -121.50  -121.50  -8.00  -8.00     23.0     23.0 Test TDV data
+ WF Name                                            WF lat TOP lat   WF lon  TOP lon  WF TZ TOP TZ  WF elev TOP elev TDVDesc              TDVTimeStamp
+ -------------------------------------------------- ------ ------- -------- -------- ------ ------ -------- -------- -------------------- ------------------------------
+ CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw      38.510  38.510  -121.50  -121.50  -8.00  -8.00     23.0     23.0 Test TDV data        Mon 30-Jun-25  09:36:47 am
 
 
 
@@ -10240,7 +10241,7 @@ Subhourly User-defined Report, Mon 03-Aug
 
 ! Log for Run 004:
 
-! CSE 0.927.0-rc2 for Win32 console
+! CSE 0.927.0-rc2+64bit-fixes.d8cc2a16.8.dirty for Win32 console
 
 
 
@@ -10257,18 +10258,18 @@ Input for Run 004:
 
 
 
-! CSE 0.927.0-rc2 for Win32 console run(s) done: Thu 09-Oct-25  12: pm
+! CSE 0.927.0-rc2+64bit-fixes.d8cc2a16.8.dirty for Win32 console run(s) done: Tue 14-Oct-25   4:1 pm
 
 ! Executable:   d:\cse\builds\cse.exe
-!               09-Oct-25  11: am   (VS 14.29    3378176 bytes)  (HPWH 1.26.0)
+!               14-Oct-25   4:1 pm   (VS 14.29    3392000 bytes)  (HPWH 1.26.0)
 ! Command line: -x!  -t1 wthr01
 ! Input file:   D:\cse\test\wthr01.cse
 ! Report file:  D:\CSE\TEST\WTHR01.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.21     Calls = 4         T/C = 0.0520
+!                Input:  Time = 0.19     Calls = 4         T/C = 0.0483
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 2.44     Calls = 4         T/C = 0.6088
-!              Reports:  Time = 0.02     Calls = 4         T/C = 0.0040
-!                Total:  Time = 2.68     Calls = 1         T/C = 2.6750
+!           Simulation:  Time = 2.00     Calls = 4         T/C = 0.4988
+!              Reports:  Time = 0.01     Calls = 4         T/C = 0.0033
+!                Total:  Time = 2.22     Calls = 1         T/C = 2.2180

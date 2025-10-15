@@ -127,11 +127,7 @@ AHMODE        AHMODE	   LMNONE    UNNONE	// air handler mode enum 3-92
 TOWLOADCASE   TOWLOADCASE  LMNONE    UNNONE	// TOWERPLANT load case enum 9-92
 COILUSED      COILUSED     LMNONE    UNNONE	// AH coil used 12-92
 
-WFLOC         WFLOC        LMNONE    UNNONE	// arrays used in WFILE record 1-94
-WFLID         WFLID        LMNONE    UNNONE	// ..
-
 WFileFormat   WFileFormat  LMNONE    UNNONE	// open weather file type (see wfpak.h)
-WFLOC2	      WFLOC2       LMNONE    UNNONE	// "location 2" field in E10v1+ weather files
 YACAMP        YACAMP       LMNONE    UNNONE
 WDYEARP       WDYEARP      LMNONE    UNNONE
 
