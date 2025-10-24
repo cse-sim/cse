@@ -1306,7 +1306,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 
 		if (IsSet( DHWSYS_DAYUSENAME))
 		{	// beg of day: locate DHWDAYUSE, set ws_dayUsei
-			if (WduR.findRecByNm1( ws_dayUseName, &ws_dayUsei, NULL))
+			if (basAnc::FindRecByName( &WduR, ws_dayUseName, basAnc::frn1STMATCH, nullptr, &ws_dayUsei) !=  RCOK)
 				return orMsg( ERRRT+SHOFNLN, "DHWDAYUSE '%s' not found.", ws_dayUseName.CStr());
 		}
 

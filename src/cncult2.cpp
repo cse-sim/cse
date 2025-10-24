@@ -1995,7 +1995,7 @@ RC ckRefPt(	// check / access ref from one RAT to another
 	record* p = NULL;
 
 // check argument
-	if (toBase->validate( "cncult2.cpp:ckRefPt", WRN))
+	if (basAnc::ba_ValidateSafe( toBase, "cncult2.cpp:ckRefPt", WRN) != RCOK)
 		rc = RCBAD;
 	else
 	{

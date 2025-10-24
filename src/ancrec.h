@@ -82,7 +82,7 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
     basAnc( int flags, SFIR * fir, USI nFlds, const char * what, USI eSz, RCT rt, USI sOff, const CULT* pCult, bool dontRegister=false );
     void FC regis();
     virtual ~basAnc();  								// destroyed in deriv classes, to use vf
-    virtual record* ptr() = 0;							// access block ptr (in drv class: typed)
+    virtual record* ptr() const = 0;					// access block ptr (in drv class: typed)
 	virtual void** pptr() = 0;
 	virtual void setPtr( record* r) = 0;
     virtual record& rec(TI i) = 0;   // { return (record)((char *)ptr() + i*eSz); }	// access record i
@@ -100,12 +100,27 @@ class basAnc    	// base class for record anchors: basAnc<recordName>
     static BP FC anc4n( USI an, int erOp=ABT);   				// access anchor by anchor #
     static RC FC findAnchorByNm( char *what, BP *b);
     static int FC ancNext( size_t &an, BP *_b);						// iterate anchors
-    RC validate( const char* fcnName, int erOp=ABT, SI noStat=0);		// check for valid anchor
+	static RC ba_ValidateSafe(const basAnc* _this, const char* fcnName, int erOp = ABT, bool noStat = false);
+    RC ba_Validate( const char* fcnName, int erOp=ABT, bool noStat=false) const;		// check for valid anchor
 	record* Get1stForOwner(int ss);
     RC findRecByNm1( const char* _name, TI *_i, record **_r);    		// find record by 1st match on name
+	RC findRecByNm1X( const char* _name, TI *_i, record **_r);    		// find record by 1st match on name
+
     RC findRecByNmU( const char* _name, TI *_i, record **_r);  			// find record by unique name match
+	RC findRecByNmUX( const char* _name, TI *_i, record **_r);  			// find record by unique name match
+
     RC findRecByNmO( const char* _name, TI ownTi, TI *_i, record **_r);	// find record by name and owner subscript
+	RC findRecByNmOX( const char* _name, TI ownTi, TI *_i, record **_r);	// find record by name and owner subscript
+
     RC findRecByNmDefO( const char* _name, TI ownTi, record **_r1, record **_r2 );	// find record by name, and owner if ambiguous
+    RC findRecByNmDefOX( const char* _name, TI ownTi, record **_r1, record **_r2 );	// find record by name, and owner if ambiguous
+
+
+	static constexpr int frn1STMATCH = 0;
+	static constexpr int frnUNIQUE  = 0x40000000;
+	static constexpr int frnACCEPTNONOWNER = 0x20000000;
+	static constexpr int frnTIMASK = 0x01ffffff;
+	static RC FindRecByName(const basAnc* _b, const char* _name, int ownerTIOpt=0, record** pr1=nullptr, TI* pTi=nullptr, record** pr2=nullptr);
 	const char* getChoiTx( int fn, int options=0, SI chan=-1, BOOL* bIsHid=NULL) const;
 	const char* culMbrIdTx(int fn) const;
 	int culMbrArrayDim(int fn) const;
@@ -363,7 +378,7 @@ template <class T>  class anc : public basAnc
 		}
 	}	// GetAtGud
 
-    virtual record* ptr()		{ return p; } 		// access block ptr (in base class / generic code)
+    virtual record* ptr() const { return p; } 		// access block ptr (in base class / generic code)
 	virtual void** pptr()		{ return (void **)&p; }
 	virtual void setPtr( record* r) { p = (T*)r; }
     virtual record& rec(TI i)	{ return p[i]; }		// access record i in base/generic code
@@ -402,13 +417,12 @@ template <class T>  class anc : public basAnc
 //-----  variant with condition
 #define RLUPC( B, rp, C) for (rp=(B).p+(B).mn;  rp <= (B).p + (B).n;  rp++) if (rp->r_status > 0 && (C))
 
-#if 0
-0 unused
-0 //----- macro to loop over records of generic anchor (record type not known) (hook to change re skipping deleted records)
-0 #define RLUPGEN( B, rp)  for ( rp = (record *)( (char *)(B).ptr() + (B).eSz*(B).mn );  \
-0                               rp <= (record *)( (char *)(B).ptr() + (B).eSz*(B).n );  \
-0                               (char *)rp += (B).eSz )    \
-0                         if (((record *)rp)->r_status > 0)
+#if 1
+ //----- macro to loop over records of generic anchor (record type not known) (hook to change re skipping deleted records)
+ #define RLUPGEN( B, rp)  for ( rp = (record *)( (char *)(B).ptr() + (B).eSz*(B).mn );  \
+                               rp <= (record *)( (char *)(B).ptr() + (B).eSz*(B).n );  \
+                               IncP( DMPP( rp), (B).eSz) )    \
+                         if (((record *)rp)->r_status > 0)
 #endif
 
 //----- macro to loop over records of generic anchor in member fcn (hook to change re skipping deleted records)

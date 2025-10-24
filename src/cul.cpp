@@ -436,11 +436,13 @@ x	trace = 1;
 			err( PWRN, MH_S0204);     // "cul(): NULL RAT entry arg (e)"
 			return 1;
 		}
-		if (e->b->validate("cul.cpp:cul",WRN))  return 1;
+		if (basAnc::ba_ValidateSafe( e->b, "cul.cpp:cul", WRN) != RCOK)
+			return 1;
 
 		// autosize flag pointer and flag
 		pAuszF = _pAuszF;		// store argument pointer or NULL given by caller
-		if (pAuszF)  *pAuszF = FALSE;	// say no AUTOSIZE commands yet seen
+		if (pAuszF)
+			*pAuszF = FALSE;	// say no AUTOSIZE commands yet seen
 
 		// init top-level context stack frame
 		memset( xSp, 0, sizeof(XSTK) );	// zero it: inits many members
@@ -1224,26 +1226,30 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 			// "owned" basAnc record names need only be unique for same owner:
 			if ( !defTy			// type names must be globally unique
 			  && xSp > xStk )		// insurance: if command is nested
-			{
-				if (b->findRecByNmO( name,   			// find basAnc record by name/owner, ancrec.cpp
-				xSp->i,  			//  owner subscript. always here??
-				NULL, NULL)==RCOK )  		//   if found
+			{	// find basAnc record by name/owner
+				//   old comment: xSp->i: owner subscript, always here?
+				if (basAnc::FindRecByName(b, name, xSp->i) == RCOK)
+				{	// record found: duplicate name
 					// if owner ti can be set != xSp->i, then check again at END.<<<<
 					perlc( 			// errMsg, show input line and ^. cuparse.cpp.
 						scWrapIf( 							// strtcat w conditional \n
-							strtprintf( MH_S0227, c->id, name.CStr() ),	// "duplicate %s name '%s' in "
-							xSp->b->rec(xSp->i).objIdTx( 1 ),	// owner class & obj name, etc
+							strtprintf(MH_S0227, c->id, name.CStr()),	// "duplicate %s name '%s' in "
+							xSp->b->rec(xSp->i).objIdTx(1),	// owner class & obj name, etc
 							"\n    "), getCpl()); 						// \n between if wd be longer
+				}
 				// and continue here (?) (perlc prevents RUN)
 			}
-			else 						// not ownable or not in ownable context
-				if ( (defTy  ?  b->tyB->findRecByNm1( name, NULL, NULL)  	// search basAnc's types basAnc if defining a type
-				:  b  ?  b->findRecByNm1( name, NULL, NULL)  	// else the basAnc itself
-				:  RCBAD )==RCOK )				// NULL b ??: unsure while converting code, sometime if possible
-					// if any record with same name found found
-					perlc( MH_S0228, c->id,  defTy ? " type" : "",  name.CStr());	// "duplicate %s%s name '%s'"
+			else
+			{	// not ownable or not in ownable context
+				// defining a type (defTy): search b->tyB (basAnc's types basAnc)
+				//    (Future: if necessary to avoid defTy ambiguity, also search b)
+				// else basAnc itself
+				if (basAnc::FindRecByName(defTy ? b->tyB : b, name) == RCOK)
+				{	// if any record with same name found found
+					perlc(MH_S0228, c->id, defTy ? " type" : "", name.CStr());	// "duplicate %s%s name '%s'"
+				}
+			}
 			// and continue here (?) (perlc prevents RUN)
-			// if necessary to avoid (future) ambiguity during defTy, also search regular table (b).
 		}
 
 // add record to specified basAnc
@@ -1280,7 +1286,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 		if (typeName.IsSet())
 		{
 			record *typeE;
-			if (b->tyB->findRecByNm1( typeName, NULL, /*VV*/ &typeE) != RCOK)
+			if (basAnc::FindRecByName(b->tyB, typeName, basAnc::frn1STMATCH, &typeE) != RCOK)
 				perlc( MH_S0229, c->id, typeName.CStr());  		// "%s type '%s' not found"
 			// and continue here with raw record (perlc prevents RUN)
 			else					// found
@@ -3452,7 +3458,8 @@ LOCAL RC ratPutTy( record *e, CULT *c)
 
 #ifdef DEBUG
 // check argument
-	if (b->validate("cul:ratPutTy",WRN))  return RCBAD;
+	if (basAnc::ba_ValidateSafe( b, "cul:ratPutTy", WRN) != RCOK)
+		return RCBAD;
 #endif
 
 // require record to be LAST in basAnc -- else have no way to delete  ( <<<< believe no longer true 1-92, fix if need found)
@@ -3637,7 +3644,7 @@ LOCAL RC FC ratTyR( BP b)		// if basAnc does not have secondary basAnc for types
 // returns RCOK/RCFATAL
 {
 #ifdef DEBUG
-	if (b->validate("ratTyR",WRN))	// check argument
+	if (basAnc::ba_ValidateSafe( b, "ratTyR", WRN) != RCOK)	// check argument
 		return RCFATAL;
 #endif
 
@@ -4041,16 +4048,19 @@ LOCAL RC ratLuDefO(	// look up basAnc record by name, resolving ambiguities usin
 		what = b->what;
 	if (defO==0)						// if no default owner given
 	{
-		rc = b->findRecByNm1( name, NULL, /*VV*/ &e);		// find first record with given name, ancrec.cpp
+		rc = basAnc::FindRecByName(b, name, basAnc::frn1STMATCH, &e);	// find first record with given name
 		if (rc)
 			ms = strtprintf( MH_S0278, what, name);	// format ms "%s '%s' not found" to Tmpstr.  Also used below.
 	}
 	else
 	{
-		rc = b->findRecByNmDefO( name, defO, /*VV*/ &e, /*VV*/ &e2);	// find record by name & dfl owner, ancrec.cpp
-		if (rc)								// (RCBAD not found, RCBAD2 ambiguous 1-92)
+		// if (defO) err(PABT, "Hit");
+
+		rc = basAnc::FindRecByName( b, name, defO | basAnc::frnACCEPTNONOWNER, &e, nullptr, &e2);
+		// rc: RCOK: found, RCBAD=not found, RCBAD2=ambiguous
+		if (rc)
 		{
-			if (e)							// if bad and entrie(s) returned, is ambiguous match
+			if (e && e2)					// if bad and entrie(s) returned, is ambiguous match
 				ms = strtprintf( MH_S0279,				// "ambiguous name: \n"
 					what, name, e->whatIn(),			// "    %s '%s' exists in %s\n"
 					e2->whatIn() );				// "    and also in %s" */

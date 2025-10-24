@@ -1043,12 +1043,14 @@ jmp:
 			defO = *IPI++;			// get 0 or default owner subscript for ambiquity resolution
 			p = *SPP;				// get ptr to name string from stack. no pop: will overwrite.
 			const char* pName = strTrim( (char *)p);	// trim in place
-			if (defO				// if defO given (owning input record subscript)
-			 && b->ownB )    		// if owning-basAnc pointer set in probed basAnc (should be set in run rat
-								   //    only if subscripts in owning run rat match input subscripts)
-				trc = b->findRecByNmDefO( pName, defO, SPPR, NULL);	// seek rcd by name & defO, repl ptr in stk.
-			else
-				trc = b->findRecByNmU( pName, NULL, SPPR);	// seek unique record by name, replace ptr in stk.
+			// if defO given (owning input record subscript)
+			// and owning-basAnc pointer set in probed basAnc (should be set in run rat
+			//    only if subscripts in owning run rat match input subscripts)
+			int ownerTIOpt = defO && b->ownB	
+				? defO | basAnc::frnACCEPTNONOWNER	// seek rcd by name & defO, accept alt owner if unique
+				: basAnc::frnUNIQUE;				// seek any rcd iff unique
+			trc = basAnc::FindRecByName(b, pName, ownerTIOpt, SPPR);
+
 			if (trc)
 			{
 				ms = strtprintf(

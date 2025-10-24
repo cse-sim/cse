@@ -48,7 +48,8 @@ record::record(BP _b, TI i, SI noZ/*=0*/)  	// construct record i of basAnc b, z
 					b->n++ : additional record in static array.
 	   CAUTION can be called from statSetup (til eliminated). */
 
-	_b->validate("record::record");		// abort if base bad -- we depend on it for size
+	basAnc::ba_ValidateSafe(_b, "record::record");	// abort if base bad -- we depend on it for size
+
 	if (!noZ)							// can be suppressed for data-init (static) records
 		memset((char *)this + SZVFTP, 0, _b->eSz - SZVFTP);	/* zero all members of DERIVED CLASS record
 								   except virtFcnTblPtr in 1st 2 or 4 bytes (ancrec.h define) */
@@ -130,7 +131,7 @@ int record::FldValInt(int fn) const
 //-----------------------------------------------------------------------------
 int record::IsNameMatch( const char* _name) const
 {
-	return !_stricmp( _name, Name());
+	return _stricmp(_name, Name()) == 0;
 }		// record::IsNameMatch
 //-----------------------------------------------------------------------------
 /*virtual*/ void record::Copy(	// copy user and ul data and r_status from another record of same type
@@ -141,8 +142,8 @@ int record::IsNameMatch( const char* _name) const
 	if (!b || !pSrc)					// (or gud? wd error here if init then destroyed)
 		err( PABT, MH_X0051);  			// err msg "record::Copy(): unconstructed destination or !pSrc"
 #if defined( _DEBUG)
-	b->validate("Copy() dest");				// abort if records not well anchored
-	pSrc->b->validate("Copy() src");
+	basAnc::ba_ValidateSafe(b, "Copy() dest");				// abort if records not well anchored
+	basAnc::ba_ValidateSafe(pSrc->b, "Copy() src");
 #endif
 
 	// bitwise copy members preceding name (not including internal members)
@@ -981,11 +982,9 @@ RC FC basAnc::reAl( TI _n, int erOp/*=ABT*/)		// allocate space for n (0=default
 // called automatically from basAnc::add if needed.
 // could use explicitly to expand to n spaces at once when n known, for speed & non-fragmentation.
 
-/* #if 1: note: b4 2-95, This was named al() and called externally with intent of clearing! and allocating,
-                as well as from add() to expand. If any external calls intended to keep records, change to reAl().*/
 {
 #ifdef DEBUG2
-	if (validate("basAnc::reAl", erOp))
+	if (basAnc::ba_ValidateSafe( this, "basAnc::reAl", erOp) != RCOK)
 		return RCBAD;	// check anchor
 #endif
 	if (_n < 1)
@@ -1038,7 +1037,7 @@ RC basAnc::add(		// construct record i (0 = next). Allocs if nec.
 	const char* _name /*=NULL*/)	// optional name for added record
 {
 #ifdef DEBUG2
-	if (validate("basAnc::add", erOp))	// check anchor
+	if (ba_ValidateSafe( this, "basAnc::add", erOp) != RCOK)	// check anchor
 		return RCBAD;
 #endif
 	if (!i)						// if we are to choose record number
@@ -1053,12 +1052,7 @@ RC basAnc::add(		// construct record i (0 = next). Allocs if nec.
 	if ( i >= nAl  					// if (more) record spaces must be allocated (nAl is +1; i,n are not)
 	 ||  !ptr() )   				// insurance
 	{
-#if 1	// add bigger chunks for big records, 9-3-2024
 		TI _n = max(i, nAl + max(5, 1024/eSz));	// new count: add 5 or 1K's worth (at least callers req'd rec #)
-#else
-0		UINT sz = (UINT)nAl*eSz + 1024;	// new size in bytes to add 1 + 1K's worth of record spaces (nAl is +1)
-0		TI _n = max( sz/eSz, UINT( i));	// add 1 + 1K's worth of spaces, or to req'd rec # if more.
-#endif
 		if (reAl(_n, erOp))
 			return RCBAD; 		// (re)alloc rec spaces 1.._n, init nAl, ptr(), space[0], etc. above.
 	}
@@ -1073,7 +1067,7 @@ RC basAnc::add(		// construct record i (0 = next). Allocs if nec.
 //---------------------------------------------------------------------------------------------------------------------------
 RC FC basAnc::del( TI i, int erOp/*=ABT*/)			// delete (squeeze out) ith record
 {
-	if (validate("basAnc::del", erOp))	// check anchor ('this') vs its record block
+	if (ba_ValidateSafe( this, "basAnc::del", erOp) != RCOK)	// check anchor ('this') vs its record block
 		return RCBAD;
 	desRec(i);							// conditionally destroy the record being deleted
 	for (  ;  i < n;  i++)  			// loop over following records except last
@@ -1176,19 +1170,28 @@ int FC basAnc::ancNext( size_t &an, BP * _b)		// (registered) record anchor iter
 	return 0;
 }			// basAnc::ancNext
 //---------------------------------------------------------------------------------------------------------------------------
-RC basAnc::validate(	// validate an anchor: check self-consistency of anchor and its entry 0
+/*static*/ RC basAnc::ba_ValidateSafe(
+	const basAnc* _this,
+	const char* fcnName,	// calling fcn name, for err msgs.
+	int erOp /*=ABT*/,		// reporting control. ABT-->PABT, WRN-->PWRN here.
+	bool noStat /*=false*/) // false: caller's action OK on static-storage anchor. true: not ok.
+{
+	return _this == nullptr
+		? err(erOp, MH_X0054, fcnName) // "%s() called for NULL object pointer 'this'".
+		: _this->ba_Validate(fcnName, erOp|PROGERR, noStat);	
+
+}	// basAnc::ba_ValidateSafe
+//---------------------------------------------------------------------------------------------------------------------------
+RC basAnc::ba_Validate(	// validate an anchor: check self-consistency of anchor and its entry 0
 
 	const char* fcnName,	// calling fcn name, for err msgs.
 	int erOp /*=ABT*/,		// reporting control. ABT-->PABT, WRN-->PWRN here.
-	SI noStat /*=0*/ )		// 0: caller's action OK on static-storage anchor. nz: not ok.
+	bool noStat /*=false*/ ) const // false: caller's action OK on static-storage anchor. true: not ok.
 
 // if error, issues message, returns non-RCOK if not ABT
 {
-	record *p = ptr();					// fetch NULL or dm block ptr from derived class anchor
+	const record *p = ptr();			// fetch NULL or dm block ptr from derived class anchor
 	erOp |= PROGERR;					// any errors here are internal errors (cnglob.h)
-
-	if (this==nullptr)						// test for NULL this
-		return err( erOp, MH_X0054, fcnName);	// "%s() called for NULL object pointer 'this'".
 
 	if ((p && (p->rt != rt			// check self-consistency: if bk alloc'd & rt does not match
 				|| p->b != this))	//     or bk 0 doesn't point back at base
@@ -1199,10 +1202,43 @@ RC basAnc::validate(	// validate an anchor: check self-consistency of anchor and
 		return err( erOp, MH_X0056, fcnName);  	// "%s(): illegal use of static-storage anchor"
 
 	return RCOK;							// if here, all OK
-}			// basAnc::validate
+}			// basAnc::ba_Validate
+
+
 //---------------------------------------------------------------------------------------------------------------------------
-RC basAnc::findRecByNm1(		// find record by 1st match on name, RCOK if found, no msg here.
-	// can and should all uses be changed to findRecByNmU ?? <<<<
+RC basAnc::findRecByNm1( 		// find record by name and owner subscript (first match).  No msg here.
+	// see also findRecByNmDefO().
+	const char* _name, 	// name to look for
+	TI* _i,       		// NULL or receives subscript of entry if found
+	record** _r)   	// NULL or receives entry ptr if found
+{
+
+	record* r1Old = nullptr;
+	
+	int iRec = 0;
+
+	RC rcOld = findRecByNm1X(_name, &iRec, &r1Old);
+
+
+	RC rcNew = FindRecByName(this, _name, 0, _r, _i);
+
+	bool rGood = !_r || (_r && *_r == r1Old);
+
+	if (rcOld != rcNew || !rGood || (_i && iRec != *_i))
+	{
+		record* r1NewX;
+		RC rcX = FindRecByName(this, _name, 0, &r1NewX);
+		err(PABT, "findRecByNm1 mismatch");
+	}
+
+	return rcNew;
+
+}
+
+
+//---------------------------------------------------------------------------------------------------------------------------
+RC basAnc::findRecByNm1X(		// find record by 1st match on name, RCOK if found, no msg here.
+										// can and should all uses be changed to findRecByNmU ?? <<<<
 	const char* _name, 	// record name to look for
 	TI *_i,       	// NULL or receives subscript of entry if found
 	record **_r )   	// NULL or receives entry ptr if found
@@ -1211,7 +1247,7 @@ RC basAnc::findRecByNm1(		// find record by 1st match on name, RCOK if found, no
 		return RCBAD;				// return NOT FOUND if called for NULL anc pointer (occurs re types if .tyB 0)
 	record *r;
 	RLUPTHIS(r)						// loop over records, setting r to point to each good one
-	if (r->IsNameMatch( _name))		// if matches (disregarding unexpected excess chars 11-94)
+	if (r->IsNameMatch( _name))		// if matches
 	{
 		if (_i)  *_i = r->ss;  			// found. return info
 		if (_r)  *_r = r;				// ..
@@ -1219,8 +1255,32 @@ RC basAnc::findRecByNm1(		// find record by 1st match on name, RCOK if found, no
 	}
 	return RCBAD;					// not found return
 }			// basAnc::findRecByNm1
+
 //---------------------------------------------------------------------------------------------------------------------------
-RC basAnc::findRecByNmU( 		// find record by unique name match.  RCBAD not found, RCBAD2 ambiguous, no msgs here.
+RC basAnc::findRecByNmU( 		// find record by name and owner subscript (first match).  No msg here.
+	// see also findRecByNmDefO().
+	const char* _name, 	// name to look for
+	TI* _i,       		// NULL or receives subscript of entry if found
+	record** _r)   	// NULL or receives entry ptr if found
+{
+	record* r1Old = nullptr;
+	
+	int iRec = 0;
+
+	RC rcOld = findRecByNmUX(_name, &iRec, &r1Old);
+
+	RC rcNew = FindRecByName(this, _name, frnUNIQUE, _r, _i);
+
+	bool rGood = !_r || (_r && *_r == r1Old);
+
+	if (rcOld != rcNew || !rGood || (_i && (*_i != iRec)))
+		err(PABT, "findRecByNmU mismatch");
+
+	return rcNew;
+
+}
+//---------------------------------------------------------------------------------------------------------------------------
+RC basAnc::findRecByNmUX( 		// find record by unique name match.  RCBAD not found, RCBAD2 ambiguous, no msgs here.
 	const char* _name, 	// record name to look for
 	TI *_i,      		// NULL or receives subscript of entry if found
 	record **_r )   	// NULL or receives entry ptr if found
@@ -1246,8 +1306,9 @@ RC basAnc::findRecByNmU( 		// find record by unique name match.  RCBAD not found
 		*_r = r1;					// ..
 	return RCOK;						// good return
 }			// basAnc::findRecByNmU
+
 //---------------------------------------------------------------------------------------------------------------------------
-RC basAnc::findRecByNmO( 		// find record by name and owner subscript (first match).  No msg here.
+RC basAnc::findRecByNmOX( 		// find record by name and owner subscript (first match).  No msg here.
 	// see also findRecByNmDefO().
 	const char* _name, 	// name to look for
 	TI ownTi,		 	// required owner subscript (should be non-0)
@@ -1269,10 +1330,66 @@ RC basAnc::findRecByNmO( 		// find record by name and owner subscript (first mat
 	}
 	return RCBAD;					// not found return
 }			// basAnc::findRecByNmO
+
 //---------------------------------------------------------------------------------------------------------------------------
+RC basAnc::findRecByNmO( 		// find record by name and owner subscript (first match).  No msg here.
+	// see also findRecByNmDefO().
+	const char* _name, 	// name to look for
+	TI ownTi,		 	// required owner subscript (should be non-0)
+	TI* _i,       		// NULL or receives subscript of entry if found
+	record** _r)   	// NULL or receives entry ptr if found
+{
+	record* r1Old = nullptr;
+	
+	int iRec = 0;
+
+	RC rcOld = findRecByNmOX(_name, ownTi, &iRec, &r1Old);
+
+	RC rcNew = FindRecByName(this, _name, ownTi, _r);
+
+	if (rcOld != rcNew || (_r != nullptr && (r1Old != *_r || (*_r != nullptr && iRec != (*_r)->ss))))
+		err(PABT, "findRecByNmO mismatch");
+
+	return rcNew;
+
+}
+//----------------------------------------------------------------------------------------
 RC basAnc::findRecByNmDefO( 			// find record by name, and owner if ambiguous
 
-	// Accepts unambiguous match with another owner; returns info for caller to do detailed err msg if ambiguous; no msg here.
+	// Accepts unambiguous match with another owner;
+	// returns info for caller to do detailed err msg if ambiguous; no msg here.
+	// DOUBLE CAUTION: following recoded 3-92 without specific test:
+	//// CAUTION: currently 1-92 does not check for multiple entries with same owner TI.
+
+	const char* _name,	// name to look for
+	TI ownTi,		 	// default owner subscript
+	record** _r1,  		// NULL or rcvs entry ptr if any found; rcvs NULL if no match
+	record** _r2)  	// NULL or receives duplicate entry ptr if ambiguous
+{
+
+	record* r1Old = nullptr;
+	record* r2Old = nullptr;
+
+	RC rcOld = findRecByNmDefOX(_name, ownTi, &r1Old, &r2Old);
+
+	RC rcNew = FindRecByName(this, _name, ownTi|frnACCEPTNONOWNER, _r1, nullptr, _r2);
+
+	if (rcOld != rcNew || (_r1 != nullptr && r1Old != *_r1) || (_r2 != nullptr && r2Old != *_r2))
+	{
+		RC rcNewX = FindRecByName(this, _name, ownTi|frnACCEPTNONOWNER, _r1, nullptr, _r2);
+		err(PABT, "findRecByNmDefO mismatch");
+	}
+
+	return rcNew;
+}
+
+
+
+//---------------------------------------------------------------------------------------------------------------------------
+RC basAnc::findRecByNmDefOX( 			// find record by name, and owner if ambiguous
+
+	// Accepts unambiguous match with another owner;
+	// returns info for caller to do detailed err msg if ambiguous; no msg here.
 	// DOUBLE CAUTION: following recoded 3-92 without specific test:
 	//// CAUTION: currently 1-92 does not check for multiple entries with same owner TI.
 
@@ -1287,7 +1404,8 @@ RC basAnc::findRecByNmDefO( 			// find record by name, and owner if ambiguous
 {
 	// add isOwnable check if it is possible for anchor to be non-ownAble, 2-92.
 	if (_r1)  *_r1 = NULL;			// init to "not found" as opposed to "ambiguous"
-	if (this==nullptr)  return RCBAD;   // return NOT FOUND if called for NULL anc pointer (ocurs re types if .tyB 0)
+	if (this==nullptr)
+		return RCBAD;   // return NOT FOUND if called for NULL anc pointer (ocurs re types if .tyB 0)
 	SI oSeen=0, nHits=0;			// no name matches found yet
 	record *r, *r1=NULL, *r2=NULL;
 	RLUPTHIS(r)					// loop over records, setting r to point to each good one
@@ -1306,7 +1424,112 @@ RC basAnc::findRecByNmDefO( 			// find record by name, and owner if ambiguous
 	if (nHits==1)  return RCOK;			// unique match: found
 	if (_r2)  *_r2 = r2;			// second found record address
 	return RCBAD2;				// nHits > 1: ambiguous
-}			// basAnc::findRecByNmDefO
+}			// basAnc::findRecByNmDefOX
+
+#if 0
+/*static*/ RC basAnc::FindRecByName(
+	const basAnc* _b,	// basAnc in which to search
+						//  may be nullptr (returns RCBAD)
+	const char* _name, 	// name to look for
+	TI ownerTIOpt,	 	// options and/or required owner subscript
+						//   
+	TI* pTi /*=nullptr*/,       		// NULL or receives subscript of entry if found
+	record** pRp /*=nullptr*/)   	// NULL or receives entry ptr if found
+
+{
+	RC rc = FindRecByName(_b, _name, ownerTIOpt, pRp, pTi);
+
+	return RC
+
+	
+
+	}
+	
+}
+#endif
+
+//---------------------------------------------------------------------------------------------------------------------------
+/*static*/ RC basAnc::FindRecByName( 		// inner find record by unique name match
+	const basAnc* _b,		// basAnc in which to search
+	const char* _name, 		// record name to look for
+	int ownerTIOpt /*=0*/,	// low bits = TI of owner (0=don't care)
+							// hi bits:
+							//   frn1STMATCH: accept 1st match
+							//   frnUNIQUE: check for uniqueness (search all entries)
+							//   frnACCEPTNONOWNER: accept non-owner match when unambiguous name match
+	record **pr1 /*=nullpr*/,   // nullptr or receives entry ptr if found
+	TI* pTi /*=nullptr*/,		// nullptr or receives TI (subscript) of record found
+	record **pr2 /*=nullptr*/)	// nullptr or receives 2nd entry found
+
+
+// returns:   found: RCOK,   *pr1 set.
+//         no match: RCBAD,  *pr1 nullptr
+//  ambiguous match: RCBAD2, *pr1 and *pr2 point to 1st 2 matching entries
+{
+	RC rc = RCBAD;
+
+	record* r1{ nullptr };	// return values
+	record* r2{ nullptr };
+	TI ti1{ 0 };
+
+	// Treat _b==nullptr as "not found" (RCBAD)
+	//   WHY: occurs re DEFTYPE and _b->tyB==nullptr
+	//        (there may be additional cases)
+	if (_b)		// if no basAnc, return RCBAD
+	{
+		// bool b1stMatch = ownerTIOpt & frn1STMATCH implied by !(frnUNIQUE || frnACCEPTNONOWNER)
+		TI ownerTi = ownerTIOpt & frnTIMASK;
+		bool bUnique = ownerTIOpt & frnUNIQUE;
+		bool bAcceptNonOwner = ownerTIOpt & frnACCEPTNONOWNER;
+		record* r;
+		int nHits = 0;
+		bool ownerSeen = false;
+		RLUPGEN(*_b, r)					// loop over records, setting r to point to each good one
+		{
+			if (!bAcceptNonOwner
+			 || (!ownerSeen || (ownerTi != 0 && ownerTi == r->ownTi)))		// if no owned match yet or correct owner
+			{
+				if (!r->IsNameMatch(_name))
+					continue;	// no name match
+				if (ownerTi != 0)
+				{	if (r->ownTi == ownerTi)
+					{	// owner matches
+						if (!ownerSeen && bAcceptNonOwner)
+							nHits = 0;		// forget any name matches with wrong owner
+						ownerSeen = true;
+					}
+					else if (!bAcceptNonOwner)
+						continue;
+				}
+
+				if (++nHits == 1)		// if 1st match
+				{
+					r1 = r;		// first found
+					ti1 = r->ss;
+					rc = RCOK;
+					if (!(bUnique || bAcceptNonOwner))
+						break;
+					// else continue
+				}
+				else if (nHits == 2)	// if 2nd match
+				{	// 2nd found
+					r2 = r;
+					rc = RCBAD2;		// bad (ambigous) return
+					break;
+				}
+			}
+		}
+	}
+
+	// return results
+	if (pr1)
+		*pr1 = r1;
+	if (pTi)
+		*pTi = ti1;
+	if (pr2)
+		*pr2 = r2;
+	return rc;
+}			// basAnc::FindRecByName
 //-----------------------------------------------------------------------------
 const char* basAnc::getChoiTx( 	// return text of given value for a choice data type, for error messages
 	int fn, 	// field number. rccn.h define, eg AHU_TSU.  Field must have a "choicb" data type.

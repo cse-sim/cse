@@ -479,9 +479,10 @@ RC PROBEOBJECT::po_TryImInProbe()
 		TI defO = ratDefO(b);		/* get 0 or input record subscript in b->ownB of context in which current
 						   expr is being evaluated.  Returns 0 if not "owned record" basAnc, if its .ownB
 						   is 0, or cur expr not embedded in stmt group for such a record. cul.cpp. */
-		RC trc = defO
-			? b->findRecByNmDefO(name, defO, &e, NULL)	// seek record (ancrec.cpp) by name & defO, ret ptr if found.
-			: b->findRecByNmU(name, NULL, &e);    	// seek unique record (ancpak.cpp) by name, ret ptr if found.
+		int ownerTIOpt = defO
+			? defO | basAnc::frnACCEPTNONOWNER		// seek by owner, match non-owned iff owned not found
+			: basAnc::frnUNIQUE;					// search all / match iff unique
+		RC trc = basAnc::FindRecByName(b, name, ownerTIOpt, &e);
 		/*if (!evfOk)					as below; add if found ambiguity error occurs here
 									when caller fallthru to runtime probe could work */
 		if (trc==RCBAD2)							// if ambiguity (not resolved by defO)
