@@ -1472,6 +1472,41 @@ The general form of a probe is
 !!! tip
     The initial `@` is always necessary. And don't miss the period after the `]`.
 
+#### Ambiguous names
+
+Note that CSE often allows multiple objects of the same type with the same name.  For example:
+
+    GAIN G1 gnPower=100 ...
+
+    ZONE Z1
+       ...
+       GAIN G1 gnPower=200 ...
+       ...
+
+No problem so far.  However, suppose some reporting is added:
+
+    REPORT RP1 rpType=UDT ...
+       REPORTCOL colHead="Gain" colVal=@GAIN["G1"].gnPower ...
+
+The REPORTCOL colVal probe is ambiguous -- CSE cannot determine which "GAIN G1" is being referenced.  An "ambiguous name" error message is issued and the simulation does not run.  There is no provision in the probe syntax to provide context information resolve such ambiguity.
+
+__However__, there is a simple work-around --
+
+!!! tip
+    Do not use ambiguous names, especially for objects that are likely to be probed.
+
+An unambiguous version of the above example might look like this:
+
+    GAIN TOPG1 gnPower=100 ...
+
+    ZONE Z1
+       ...
+       GAIN Z1G1 gnPower=200 ...
+       ...
+
+    REPORT RP1 rpType=UDT ...
+       REPORTCOL colHead="Gain" colVal=@GAIN["Z1G1"].gnPower ...
+
 #### probes.txt
 
 How do you find out what the probe-able member names are? CSE will display the a list of the latest class and member names if invoked with the -p switch. Use the command line
