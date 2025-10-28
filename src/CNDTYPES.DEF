@@ -83,13 +83,9 @@ ULI      --		"uint32_t"
 #endif
 
 FLOAT    --		"float"			
-FLOATP   --		"float *"
-// PERCENT  --  "float"    				// restoring PERCENT restores code in cvpak.cpp
 DBL        --   "double"
 
 CULSTR   --     "struct CULSTR"		// string accessed via 4 byte handle
-
-VOIDP    --		"void *"
 
 DOW      --		"short"  			// day of week, sun=0 in tdpak (1 less than DOWCH)
 MONTH    --		"short"  			// month, jan=1 in tdpak
@@ -105,9 +101,6 @@ SHOY     --     "unsigned"			// subhour of year: (jday*24 + ihr)*4 + subhr
 IDATETIME  -- 	"struct {SI year;SI month;SI mday;SI wday;SI hour;SI min;SI sec;}"
 LDATETIME  --   "time_t"		
 SGTARGP  --	"struct SGTARG *"			// pointer to SGTARG for SGRAT.targ
-MASSLAYERP --	"struct MASSLAYER *"
-MASSMODELP --	"class MASSMODEL *"
-IZXRATP --		"class IZXRAT *"
 				
 VALNDT    --	"struct VALNDT"		// value and data type, for user-defined reports
                         			// code in cul.cpp,exman.cpp assumes .val is 1st member.*/
@@ -150,9 +143,6 @@ AHMODE    --  "enum { ahOFF=0,ahFAN=1,ahHEATBIT=2,ahHEATING=3,ahCOOLBIT=4,ahCOOL
 //			 tldMAX: full power, tpTs >= setpoint
 TOWLOADCASE  --  "enum { tldMIN, tldSP, tldMAX }"
 
-// pointer to XFILE structure (xiopak.h), added 1-94 for use in WFILE.
-XFILEP  --     "XFILE *"
-//
 // arrays used in WFILE record, 1-94
 WFLOC   --     "char[32]"			// weather file location string (+ \0 + fill byte)
 WFLID   --     "char[18]"			// weather file location id string ( + \0 + fill byte)
@@ -185,8 +175,6 @@ RIGDIST   --  "struct { RIGTARGTY targTy; TI targTi; float targFr; RIGTARG * tar
 																		// rIg distrib info table entry
 RIGDISTP  --  "RIGDIST *"						// (array) ptr, for ZNR.rIgDist
 
-ZNRP		--	"class ZNR *"
-XSURFP	--	"struct XSURF *"
 DUCTSEGP -- "class DUCTSEG*"
 PIPESEGP -- "class PIPESEG*"
 

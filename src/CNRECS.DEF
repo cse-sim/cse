@@ -1155,7 +1155,7 @@ x  *h RIGTARG sb_rIg  	// radiant internal gain target (float) (Btuh).  TODO
 RECORD SBC "SBC" *SUBSTRUCT *BASECLASS SBCBASE		// surface boundary condition substructure
 // Partial overlap with MASSBC and SBC, should merge?
   *prefix sb_
-  *declare "void sb_Init( XSURFP xs, int si);"
+  *declare "void sb_Init( XSURF* xsParent, int side);"
   *declare "void sb_SGFInit();"
   *declare "virtual double sb_AreaNet() const;"
   *declare "virtual int sb_Class() const;"
@@ -1177,7 +1177,7 @@ RECORD SBC "SBC" *SUBSTRUCT *BASECLASS SBCBASE		// surface boundary condition su
   *declare "const char* sb_SideText();"
   *declare "static void sb_DbPrintf( const char* tag, const SBC& sbcO, const SBC& sbcI);"
 
-  *r XSURFP sb_pXS		// parent pointer
+  *declare "XSURF* sb_pXS;"		// parent pointer
   *r int sb_si			// side of *sb_pXS represented by this SBC
 						//   0=inside, 1=outside
   *r DBL sb_fcWind		// wind constant re sb_hcFrc (includes roughness, unit conversion, height adj, ...)
@@ -1579,10 +1579,12 @@ RECORD MSRAT "mass" *RAT 	// Masses run rat
 	*r *nest MASSBC outside // outside...
 	*r UH_GZ ms_UNom   		// overall uval incl nominal surface films, Btuh/ft2-F
 							//   used for reporting only
-	*r FLOAT ms_tc 			// time constant (con->hc/sfInH) as used to default sfModel & isSubhrly, for reporting, 1-95
+	*r FLOAT ms_tc 			// time constant (con->hc/sfInH) as used to default sfModel & isSubhrly, for reporting
 
-	// re-work interval energy balance info, 2-3-2012
-	// *h *e DBL ms_qBal		// total hour energy balance error for this mass, Btu
+    *declare "class MASSMODEL* ms_pMM;"	// pointer to runtime mass model for this mass (type determined per input)
+							        //   see mspak.h
+
+	// interval energy balance info
 	*h *e *hide *array IVLDATADIM DBL ms_qBal		// net energy balance during interval, Btu
 	*declare "double& ms_QBal( int ivl) { return IvlData( ms_qBal, ivl); }"
 	*h *e *hide *array IVLDATADIM DBL ms_qIE		// internal energy at beg of interval, Btu
@@ -1594,9 +1596,6 @@ RECORD MSRAT "mass" *RAT 	// Masses run rat
 	*declare "int& ms_Flags( int ivl) { return IvlData( ms_flags, ivl); }"
    	*s *e *hide INT ms_ebErrCount	// count of short-interval (day/hour/subhour) energy balance errors
 									//   detected for this zone; s/b 0; used to suppress excessive msgs
-
-	*r MASSMODELP ms_pMM	// pointer to runtime mass model for this mass (type determined per input)
-							//   see mspak.h
 
 *END			// MSRAT
 
@@ -2893,7 +2892,7 @@ RECORD ANDAT "AirNet data sub" *SUBSTRUCT		// working data for AirNet
    *declare "void ad_SetFromFixedAVF( double avf);"
    *declare "void ad_DupHERV( const ANDAT& ad);"
 
-   *r *hide IZXRATP ad_pIZXRAT	// parent pointer
+   *declare "IZXRAT* ad_pIZXRAT;"	// parent pointer
    *h AREA_GEZ ad_Ae		// effective vent area, ft2; function of vent type and iz_cd
    *h AREA_GEZ ad_AeLin		// modified iz_Ae, ft2; prevents discontinuity at delPLinear
    *s *e DBL ad_pres1       // pressure at z1 side of element, lbf/sf (for pressure-dependent)
