@@ -104,6 +104,8 @@ typedef std::map< int, std::string> WMapIntStr;
 typedef std::string WStr;
 #endif
 
+typedef time_t LDATETIME;
+
 #if defined( NODTYPES)
 // fixed subset of dtypes.h
 // avoid circular use of dtypes.h in e.g. rcdef
@@ -119,12 +121,8 @@ typedef long LI;
 typedef unsigned long ULI;
 #endif
 typedef unsigned char UCH;
-typedef struct { SI year; SI month; SI mday; SI wday; } IDATE;
-typedef struct { SI hour; SI min; SI sec; } ITIME;
 typedef short DOY;
 typedef unsigned SHOY;
-typedef struct { SI year; SI month; SI mday; SI wday; SI hour; SI min; SI sec; } IDATETIME;
-typedef time_t LDATETIME;
 
 #else
 
@@ -256,6 +254,9 @@ const int defaultCpl = 78;	// default chars/line, used when Top.repCpl not avail
 #include "strpak.h"
 #include "psychro.h"
 #include "vecpak.h"		// Uses min and max definitions
+#if !defined( NODTYPES)
+#include "tdpak.h"
+#endif
 
 /*---------------------- global macros and defines -------------------------*/
 // useful constants

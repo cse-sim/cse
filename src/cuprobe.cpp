@@ -653,11 +653,13 @@ LOCAL RC FC lopNty4dt( 	// for DT- data type, get TY- type and PSOP to load it f
 		sz = 4;
 		break;
 
+#if defined (DTLDATETIME)
 	case DTLDATETIME:			// show dateTime as number (?)
 		lop = PSRATLODL;  		// record load long: converts it float, potentially loosing some precision.
 		ty = TYFL;
 		sz = 4;
 		break;
+#endif
 
 	case DTANAME:
 	case DTWFLOC:			// char arrays used in WFILE, 1-94
@@ -705,9 +707,6 @@ w          break;
 	case DTSGTARGP:
 
 	// unprobe-able types: structures (to probe, make *substructs so they appear as their individual members)
-	case DTIDATETIME:
-	case DTIDATE:
-	case DTITIME:
 #ifdef DTVALNDT		// tentatively made *substruct
 	case DTVALNDT:
 #endif

@@ -91,19 +91,15 @@ DOW      --		"short"  			// day of week, sun=0 in tdpak (1 less than DOWCH)
 MONTH    --		"short"  			// month, jan=1 in tdpak
 
 ANAME   -- 		"char[64]"			// name string for use in RATs:
-IDATE    --		"struct {SI year;SI month;SI mday;SI wday;}"
-ITIME    --     "struct {SI hour;SI min;SI sec;}"
 DOY      --     "short"    		
 SHOY     --     "unsigned"			// subhour of year: (jday*24 + ihr)*4 + subhr
 									//  using jDay 1..365, ihr 0..23, subhr 0..3. 
 									//  value 0 thus reserved for unset. Rob 11-93.
-// CAUTION: code in tdpak.cpp (at least) assumes IDATETIME is same as an IDATE followed by an ITIME. 9-89.
-IDATETIME  -- 	"struct {SI year;SI month;SI mday;SI wday;SI hour;SI min;SI sec;}"
-LDATETIME  --   "time_t"		
+// IDATETIME  -- 	"struct {SI year;SI month;SI mday;SI wday;SI hour;SI min;SI sec;}"
 SGTARGP  --	"struct SGTARG *"			// pointer to SGTARG for SGRAT.targ
-				
+
 VALNDT    --	"struct VALNDT"		// value and data type, for user-defined reports
-                        			// code in cul.cpp,exman.cpp assumes .val is 1st member.*/
+                        			// code assumes .val is 1st member.
 
 // change ids to be like ZHXTY (bits already match)?
 // TCCM      -- 	// terminal capability control method

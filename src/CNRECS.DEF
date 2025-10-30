@@ -456,7 +456,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 						// autoSizing: "heating design day", or month for cooling.
     *d CULSTR dateStr  	// Date being simulated as string
 						// autoSizing: eg "heating design day" or "Jul cooling design day".
-    *d IDATE tp_date  	// Date: .month is 1-12, .mday 1-31, .wday 0-6. set/used: cnguts. used:cuparse;cgsolar;cgresult;cgenbal.
+    *declare "IDATE tp_date;"  // Date: .month is 1-12, .mday 1-31, .wday 0-6. set/used: cnguts. used:cuparse;cgsolar;cgresult;cgenbal.
 						// autoSizing: cool: near-mid-month day as used for solar calcs; heat: Dec 21. jDay ditto.
     *d DOY jDay			// Day of year now simulating, 1..365. set: tp_MainSimI; used:cnguts;cuparse;cgwthr;cgsolar;cgresult.
     *d DOY xJDay		// extended jDay: same for main sim, 512 heat autosizing, 529-540 cooling autosizing.
@@ -1701,19 +1701,20 @@ RECORD MAT "material" *RAT	// material (for construction layer) input info
 *declare "{	mt_CondAB( mt_cond, mt_condCT, mt_condTRat, A, B); }"
 
  //input.  *i's cuz VEOI's in cncult.
-    *i LEN_GZ mt_thk    	// -1 or optional default thickness, ft
-    *i CNDVY_GZ mt_cond 	// conductivity, Btuh-ft/ft2-F (at mt_condTRat)
-    *i FLOAT mt_condTRat	// rating temp for mt_cond, F (typically 70 F)
-    *i FLOAT mt_condCT		// conductivity temp coefficient, 1/F
-							//   condAtT = mt_cond*(1 + mt_condCT*(T - mt_condTRat)
-    *i SPECHEAT mt_spHt 	// specific heat, Btu/lb-F
-    *i DENSITY mt_dens  	// 0 (massless) or density, lb/ft3
-    *i RESVY_GZ mt_rNom 	// nominal R of insulation, ft2-F/Btuh-ft
-							//  = resistance of 1 ft2 per ft thick.
-							//  documentation only (typically round number, e.g. 13)
-							// -1 = not given
-	// derived.  *r: set in input check/setup.
-    *r HC_VOL mt_vhc  		// volumetric heat capac (Btu/ft3-F): mt_spHt*mt_dens
+*i LEN_GZ mt_thk    	// -1 or optional default thickness, ft
+*i CNDVY_GZ mt_cond 	// conductivity, Btuh-ft/ft2-F (at mt_condTRat)
+*i FLOAT mt_condTRat	// rating temp for mt_cond, F (typically 70 F)
+*i FLOAT mt_condCT		// conductivity temp coefficient, 1/F
+						//   condAtT = mt_cond*(1 + mt_condCT*(T - mt_condTRat)
+*i SPECHEAT mt_spHt 	// specific heat, Btu/lb-F
+*i DENSITY mt_dens  	// 0 (massless) or density, lb/ft3
+*i RESVY_GZ mt_rNom 	// nominal R of insulation, ft2-F/Btuh-ft
+						//  = resistance of 1 ft2 per ft thick.
+						//  documentation only (typically round number, e.g. 13)
+						// -1 = not given
+// derived.  *r: set in input check/setup.
+*r HC_VOL mt_vhc  		// volumetric heat capac (Btu/ft3-F): mt_spHt*mt_dens
+
 *END		// MAT
 
 //=============================================================================
@@ -1723,37 +1724,37 @@ RECORD FOUNDATION "foundation" *RAT	// foundation input info
 *declare "RC fd_SetupKiva();"
 
  //input
- *i LEN fd_wlHtAbvGrd		// Height of foundation wall above grade
- *i LEN fd_wlDpBlwSlb		// Depth of foundation wall below the slab
- *i TI fd_wlConi			// Foundation wall construction (CON subscript)
+    *i LEN fd_wlHtAbvGrd		// Height of foundation wall above grade
+    *i LEN fd_wlDpBlwSlb		// Depth of foundation wall below the slab
+    *i TI fd_wlConi			// Foundation wall construction (CON subscript)
 
-*END		// FND
+    *END		// FND
 
-//=============================================================================
-RECORD FNDBLOCK "foundationBlock" *RAT	// foundation component input info
-*prefix fb_
+    //=============================================================================
+    RECORD FNDBLOCK "foundationBlock" *RAT	// foundation component input info
+    *prefix fb_
 
- //input
- *i TI fb_mati				// Material (MAT subscript) for this component
- *i FBXREFCH fb_x1Ref		// Point 1 X reference
- *i FBZREFCH fb_z1Ref		// Point 1 Z reference
- *i FLOAT fb_x1				// Point 1 X value (relative to reference)
- *i FLOAT fb_z1				// Point 1 X value (relative to reference)
- *i FBXREFCH fb_x2Ref		// Point 2 X reference (defaults to Point 1 X reference)
- *i FBZREFCH fb_z2Ref		// Point 2 Z reference (defaults to Point 1 Z reference)
- *i FLOAT fb_x2				// Point 2 X value (relative to reference)
- *i FLOAT fb_z2				// Point 2 X value (relative to reference)
+     //input
+    *i TI fb_mati				// Material (MAT subscript) for this component
+    *i FBXREFCH fb_x1Ref		// Point 1 X reference
+    *i FBZREFCH fb_z1Ref		// Point 1 Z reference
+    *i FLOAT fb_x1				// Point 1 X value (relative to reference)
+    *i FLOAT fb_z1				// Point 1 X value (relative to reference)
+    *i FBXREFCH fb_x2Ref		// Point 2 X reference (defaults to Point 1 X reference)
+    *i FBZREFCH fb_z2Ref		// Point 2 Z reference (defaults to Point 1 Z reference)
+    *i FLOAT fb_x2				// Point 2 X value (relative to reference)
+    *i FLOAT fb_z2				// Point 2 X value (relative to reference)
 
-*END		// FDC
+    *END		// FDC
 
-//========================================================================================================
-RECORD RFI "reportFile" *RAT	// REPORTFILE (RfiB) and EXPORTFILE (XfiB) (.what altered) input records.
+    //========================================================================================================
+    RECORD RFI "reportFile" *RAT	// REPORTFILE (RfiB) and EXPORTFILE (XfiB) (.what altered) input records.
     *prefix rf_
     *ovrcopy
-	*declare "RC rf_CkF( int isExport);"
-	*declare "RC rf_CkF2( int isExport);"
+    *declare "RC rf_CkF( int isExport);"
+    *declare "RC rf_CkF2( int isExport);"
     *declare "RC rf_CheckForDupFileName();"
-	*declare "int rf_CheckAccessAndAlias( const char* fName, char* &fNameAlias, const char** ppMsg=NULL);"
+    *declare "int rf_CheckAccessAndAlias( const char* fName, char* &fNameAlias, const char** ppMsg=NULL);"
  //input
     *i CULSTR rf_fileName	// file name, path optional.  *i cuz VEOI in cncult.
     *r FILESTATCH fileStat	// fresh(overwrite,default)/new(err if exists)/append
@@ -1761,14 +1762,14 @@ RECORD RFI "reportFile" *RAT	// REPORTFILE (RfiB) and EXPORTFILE (XfiB) (.what a
  //derived
     *r SI fileStatChecked	// check fileStat only once to prevent "file exists" error or re-setting "overWrite" on later run
     *r SI overWrite			// append if 0.  set by fileStat=fresh, cleared on use, so addl runs do not erase earlier output.
-	*r SI wasNotEmpty			// nz if existed and size > 0 at fileStat check
-*END		// RFI
-//=============================================================================
-RECORD RI "report" *RAT	// REPORT (RiB) and EXPORT (XiB) (.what altered) input records
+    *r SI wasNotEmpty			// nz if existed and size > 0 at fileStat check
+    *END		// RFI
+    //=============================================================================
+    RECORD RI "report" *RAT	// REPORT (RiB) and EXPORT (XiB) (.what altered) input records
     *prefix ri_
     *ovrcopy
-	*declare "RC ri_CkF();"
-	*declare "RC ri_oneRxp();"
+    *declare "RC ri_CkF();"
+    *declare "RC ri_oneRxp();"
  //input                .ownTi is owning reportFile or exportFile subscript
     *i TI zi 		// zone for zone-specific reports. Can be TI_SUM, TI_ALL.
     *i TI mtri		// meter to report/export for meter-specific reports. Can be TI_SUM, TI_ALL.
@@ -1794,15 +1795,15 @@ RECORD RI "report" *RAT	// REPORT (RiB) and EXPORT (XiB) (.what altered) input r
     *r SI wid		// total col width for user-defined report
  //generated
     *r INT vrh		// assigned virtual report handle, used from here to build UnspoolInfo.
-*END		// RI
-//=============================================================================
-RECORD COL "reportCol" *RAT	// holds info for columns in user-defined table reports and exports
-					// for report input rat (RcoliB) and run rat (RcolB)
-					// and export input rat (XcoliB) and run rat (XcolB) (.what fudged at runtime)
+    *END		// RI
+    //=============================================================================
+    RECORD COL "reportCol" *RAT	// holds info for columns in user-defined table reports and exports
+                        // for report input rat (RcoliB) and run rat (RcolB)
+                        // and export input rat (XcoliB) and run rat (XcolB) (.what fudged at runtime)
     *excon
     *exdes
     *ovrcopy
-	*declare "virtual RC Validate( int options=0);"
+    *declare "virtual RC Validate( int options=0);"
 
  //input		.ownTi is RI subscript of owning report/export.   Column order is order of input.
     *i CULSTR colHead  	// column head string, in dm.  *i cuz VEOI in cncult.cpp:rpColT[].
