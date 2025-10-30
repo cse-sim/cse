@@ -21,7 +21,7 @@ Number of identical water heaters of this type. Any value $>1$ is equivalent to 
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -103,7 +103,7 @@ Nominal heating capacity, available only for a limited HPWH types.
 {{
   member_table({
     "units": "Btuh",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "0",
     "required": "No",
     "variability": "constant" 
@@ -119,7 +119,7 @@ Storage tank volume. Must be omitted or 0 for instantaneous whTypes.  Used by HP
 {{
   member_table({
     "units": "gal",
-    "legal_range": "$\\ge$ 0.1 (caution: small values may cause runtime errors)", 
+    "legal_range": "≥ 0.1 (caution: small values may cause runtime errors)", 
     "default": "per whASHPType if HPWH else 50",
     "required": "For some HPWH configurations, see above",
     "variability": "constant" 
@@ -135,7 +135,7 @@ Running storage volume is the volume above aquastat. Requires the total volume b
 {{
   member_table({
     "units": "gal",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "0",
     "required": "No",
     "variability": "constant" 
@@ -164,7 +164,7 @@ below.  Calculation methods are documented in RACM, Appendix B.
 {{
   member_table({
     "units": "",
-    "legal_range": "$>$ 0 *Caution: maximum not checked. Unrealistic values will cause runtime errors and/or invalid results*", 
+    "legal_range": "> 0 *Caution: maximum not checked. Unrealistic values will cause runtime errors and/or invalid results*", 
     "default": "*See above*",
     "required": "*See above*",
     "variability": "constant" 
@@ -182,7 +182,7 @@ activated via DHWSYS wsCalcMode=PRERUN.  See RACM Appendix B.
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "Calculated via DHWSYS PreRun mechanism",
     "required": "When whType = SMALLSTORAGE and PreRun not used",
     "variability": "constant" 
@@ -199,7 +199,7 @@ whType=SMALLSTORAGE and whHeatSrc=ASHPX, the compressor performance will be adju
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "*none*",
     "required": "when whType= INSTANTANEOUSUEF",
     "variability": "constant" 
@@ -215,7 +215,7 @@ Annual electricity use assumed in UEF rating derivation.  Used when whType=INSTA
 {{
   member_table({
     "units": "kWh",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "*none*",
     "required": "when whType= INSTANTANEOUSUEF",
     "variability": "constant" 
@@ -231,7 +231,7 @@ Annual fuel use assumd in UEF rating derivation, used when whType=INSTANTANEOUSU
 {{
   member_table({
     "units": "therms",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "*none*",
     "required": "when whType= INSTANTANEOUSUEF",
     "variability": "constant" 
@@ -247,7 +247,7 @@ Maximum flow rate assumed in UEF rating derivation.  Used when whType=INSTANTANE
 {{
   member_table({
     "units": "gpm",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "*none*",
     "required": "when whType= INSTANTANEOUSUEF",
     "variability": "constant" 
@@ -263,7 +263,7 @@ Instantaneous water heater standby power (electricity consumed when heater is no
 {{
   member_table({
     "units": "W",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "4",
     "required": "No",
     "variability": "constant" 
@@ -279,7 +279,7 @@ Instanteous water heater load carry forward factor -- approximate number of hour
 {{
   member_table({
     "units": "",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -315,7 +315,7 @@ whZone and whTEx cannot both be specified.
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "whZone air temperature if specified, else 70 ^o^F",
     "required": "No",
     "variability": "hourly" 
@@ -499,7 +499,7 @@ To model a heat pump that uses outdoor air as its heat source, omit whASHPSrcZn 
 {{
   member_table({
     "units": "^o^F",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "70 ^o^F (used only when whASHPSrcZn and whZone not specified)",
     "required": "No",
     "variability": "hourly" 
@@ -515,7 +515,7 @@ Type: float
 {{
   member_table({
     "units": "^o^C",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "7.22",
     "required": "No",
     "variability": "constant" 
@@ -531,7 +531,7 @@ Type: float
 {{
   member_table({
     "units": "W",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "4500",
     "required": "No",
     "variability": "constant" 
@@ -547,7 +547,7 @@ Type: float
 {{
   member_table({
     "units": "W",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "whResHtPwr",
     "required": "No",
     "variability": "constant" 
@@ -579,7 +579,7 @@ Tank insulation resistance for heat pump water heater.
 {{
   member_table({
     "units": "hr-F/Btuh",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "-1",
     "required": "No",
     "variability": "constant" 
@@ -595,7 +595,7 @@ Type: float
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $\\le$ x $\\le$ 1", 
+    "legal_range": "0 ≤ x ≤ 1", 
     "default": "HPWH default (0?) ",
     "required": "No",
     "variability": "constant" 
@@ -627,7 +627,7 @@ Water heating efficiency, used in modeling whType=LARGESTORAGE and whType=LARGEI
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $<$ whEff $\\leq$ 1", 
+    "legal_range": "0 > whEff $\\leq$ 1", 
     "default": ".82",
     "required": "No",
     "variability": "constant" 
@@ -643,7 +643,7 @@ Standby loss, used in modeling whType=LARGESTORAGE.
 {{
   member_table({
     "units": "Btuh",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "constant" 
@@ -659,7 +659,7 @@ Pilot light consumption, included in fuel energy use of DHWHEATERs with whHeatSr
 {{
   member_table({
     "units": "Btuh",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "hourly" 
@@ -675,7 +675,7 @@ Parasitic electricity power, included in electrical energy use of all DHWHEATERs
 {{
   member_table({
     "units": "W",
-    "legal_range": "x $\\ge$ 0", 
+    "legal_range": "x ≥ 0", 
     "default": "0",
     "required": "No",
     "variability": "hourly" 
@@ -691,7 +691,7 @@ Water heater energy use modifiers.  Multiplies calculated use of electricity (wh
 {{
   member_table({
     "units": "",
-    "legal_range": "$\\ge$ 0", 
+    "legal_range": "≥ 0", 
     "default": "1",
     "required": "No",
     "variability": "subhourly" 

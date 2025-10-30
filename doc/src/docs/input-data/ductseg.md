@@ -271,7 +271,7 @@ Duct leakage. Return duct leakage is modeled as if it all occurs at the segment 
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $<$ x ≤ 1", 
+    "legal_range": "0 < x ≤ 1", 
     "default": "*none*",
     "required": "No",
     "variability": "constant" 

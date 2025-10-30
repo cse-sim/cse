@@ -168,7 +168,7 @@ The following figures illustrate the use of both pvTilt and pvAzm for various co
 
 Type: float
 
-Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the range 0° ≤ *x* $<$ 360° is given, it is normalized to that range. For one-axis tracking, defines the azimuth of the rotation axis. Not used for two-axis tracking arrays. Should be omitted if pvVertices is given.
+Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the range 0° ≤ *x* < 360° is given, it is normalized to that range. For one-axis tracking, defines the azimuth of the rotation axis. Not used for two-axis tracking arrays. Should be omitted if pvVertices is given.
 
 {{
   member_table({
@@ -253,7 +253,7 @@ Ground reflectance used for calculating reflected solar incidence on the array.
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $<$ *x* $<$ 1.0", 
+    "legal_range": "0 < *x* < 1.0", 
     "default": "0.2",
     "required": "No",
     "variability": "hourly" 
@@ -300,7 +300,7 @@ AC inverter efficiency at rated DC power.
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $<$ *x* $<$ 1.0", 
+    "legal_range": "0 < *x* < 1.0", 
     "default": "0.96",
     "required": "No",
     "variability": "constant" 
@@ -333,7 +333,7 @@ Fraction of total DC energy lost. The total loss from a system is aggregated fro
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $<$ *x* $<$ 1.0", 
+    "legal_range": "0 < *x* < 1.0", 
     "default": "0.14",
     "required": "No",
     "variability": "hourly" 
