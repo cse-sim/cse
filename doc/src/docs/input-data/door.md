@@ -194,7 +194,7 @@ Door exterior surface (air film) conductance. Ignored if drModel = Forward_Diffe
 {{
   member_table({
     "units": "Btuh/ft^2^-°F",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "same as owning surface",
     "required": "No",
     "variability": "constant" 
@@ -239,7 +239,7 @@ Characteristic length of surface, used in derivation of forced exterior convecti
 {{
   member_table({
     "units": "ft",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "10",
     "required": "No",
     "variability": "constant" 

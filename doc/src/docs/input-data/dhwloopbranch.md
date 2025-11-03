@@ -57,7 +57,7 @@ Nominal size of pipe. CSE assumes the pipe outside diameter = size + 0.125 in.
 {{
   member_table({
     "units": "in",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "*none*",
     "required": "Yes",
     "variability": "constant" 
@@ -73,7 +73,7 @@ Pipe insulation conductivity
 {{
   member_table({
     "units": "Btuh-ft/ft^2^-°F",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "0.02167",
     "required": "No",
     "variability": "constant" 
@@ -105,7 +105,7 @@ Combined radiant/convective exterior surface conductance between insulation (or 
 {{
   member_table({
     "units": "Btuh/ft^2^-°F",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "1.5",
     "required": "No",
     "variability": "hourly" 
@@ -146,7 +146,7 @@ Boundary conditions for adjacent zones.
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "0.0",
     "required": "No",
     "variability": "runly" 
@@ -162,7 +162,7 @@ External boundary conditions.
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "70.0",
     "required": "No",
     "variability": "runly" 
@@ -194,7 +194,7 @@ Surrounding equivalent temperature.
 {{
   member_table({
     "units": "°F",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "*70*",
     "required": "No",
     "variability": "hourly" 

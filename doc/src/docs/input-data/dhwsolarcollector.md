@@ -27,7 +27,7 @@ Number of identical collectors, default 1
 {{
   member_table({
     "units": "",
-    "legal_range": "$>$ 0", 
+    "legal_range": "> 0", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -91,7 +91,7 @@ Fit y-intercept
 {{
   member_table({
     "units": "*none*",
-    "legal_range": "$>$ 0", 
+    "legal_range": "> 0", 
     "default": "0.758",
     "required": "No",
     "variability": "constant" 
@@ -107,7 +107,7 @@ Mass flow rate for collector loop SRCC rating.
 {{
   member_table({
     "units": "lb/h-ft^2^",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "14.79",
     "required": "No",
     "variability": "constant" 
@@ -139,7 +139,7 @@ Collector loop operating mass flow rate.
 {{
   member_table({
     "units": "lb/h-ft^2^",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "0.0",
     "required": "No",
     "variability": "constant" 
@@ -171,7 +171,7 @@ Collector piping insulation conductivity.
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "0.02167",
     "required": "No",
     "variability": "Hourly and at the end of interval" 
@@ -203,7 +203,7 @@ Collector piping heat transfer coefficient.
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "1.5",
     "required": "No",
     "variability": "Hourly and at the end of interval" 

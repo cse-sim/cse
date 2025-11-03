@@ -52,7 +52,7 @@ Fan input power per unit air flow (at design flow and pressure).
 {{
   member_table({
     "units": "W/cfm",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "derived from oaSupFanEff and oaSupFanShaftBhp",
     "required": "If oaSupFanEff and oaSupFanShaftBhp not present",
     "variability": "constant" 
@@ -84,7 +84,7 @@ Fan shaft brake horsepower at design flow and pressure.
 {{
   member_table({
     "units": "bhp",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "derived from *oaSupFanEff*.",
     "required": "No",
     "variability": "constant" 
@@ -215,7 +215,7 @@ Design or rated fan pressure.
 {{
   member_table({
     "units": "inches H~2~O",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "0.3",
     "required": "No",
     "variability": "constant" 
@@ -233,7 +233,7 @@ Fan input power per unit air flow (at design flow and pressure).
 {{
   member_table({
     "units": "W/cfm",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "derived from oaExhFanEff and oaExhFanShaftBhp",
     "required": "If oaExhFanEff and oaExhFanShaftBhp not present",
     "variability": "constant" 
@@ -265,7 +265,7 @@ Fan shaft brake horsepower at design flow and pressure.
 {{
   member_table({
     "units": "bhp",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "derived from *oaExhFanEff*.",
     "required": "No",
     "variability": "constant" 

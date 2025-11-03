@@ -251,7 +251,7 @@ Heating Annual Fuel Utilization Efficiency (AFUE).
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $<$ x ≤ 1", 
+    "legal_range": "0 < x ≤ 1", 
     "default": "0.9 if furnace, 1.0 if resistance",
     "required": "No",
     "variability": "constant" 
@@ -333,7 +333,7 @@ For rsType=ASHP, Heating Seasonal Performance Factor (HSPF).
 {{
   member_table({
     "units": "Btu/Wh",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "*none*",
     "required": "Yes if rsType=ASHP",
     "variability": "constant" 
@@ -351,7 +351,7 @@ If rsType=ASHP and both rsCapC and rsCap47 are autosized, both are set to the la
 {{
   member_table({
     "units": "Btu/Wh",
-    "legal_range": "*AUTOSIZE* or *x* $>$ 0", 
+    "legal_range": "*AUTOSIZE* or *x* > 0", 
     "default": "Calculated from rsCapC",
     "required": "No",
     "variability": "constant" 
@@ -367,7 +367,7 @@ For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 35 °F
 {{
   member_table({
     "units": "Btu/Wh",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "Calculated from rsCap47 and rsCap17",
     "required": "No",
     "variability": "constant" 
@@ -383,7 +383,7 @@ For rsType=ASHP, rated heating capacity at outdoor dry-bulb temperature = 17 °F
 {{
   member_table({
     "units": "Btu/Wh",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "Calculated from rsCap47",
     "required": "No",
     "variability": "constant" 
@@ -399,7 +399,7 @@ For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb te
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "Calculated from rsCap95",
     "required": "No",
     "variability": "constant" 
@@ -415,7 +415,7 @@ For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb te
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "Estimated from rsHSPF, rsCap47, and rsCap17",
     "required": "No",
     "variability": "constant" 
@@ -431,7 +431,7 @@ For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb te
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "Calculated from rsCap35, rsCap47, rsCap17, rsCOP47, and rsCOP17",
     "required": "No",
     "variability": "constant" 
@@ -447,7 +447,7 @@ For rsType=ASHP, rated heating coefficient of performance at outdoor dry-bulb te
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "Calculated from rsHSPF, rsCap47, and rsCap17",
     "required": "No",
     "variability": "constant" 
@@ -463,7 +463,7 @@ For rsType=ASHP, ratio of rsCAP17 over rsCAP47.
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "Based on HSPF or\nother correlations",
     "required": "No",
     "variability": "Start of a run" 
@@ -479,7 +479,7 @@ For all heatpump types, heating compressor charge factor.  The heating gross (co
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "1 (no effect)",
     "required": "No",
     "variability": "constant" 
@@ -495,7 +495,7 @@ Ratio of rsCAP95 to rsCAP47.  This ratio is used for inter-defaulting rsCap47 an
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "See above",
     "required": "No",
     "variability": "constant" 
@@ -511,7 +511,7 @@ For WSHP only: ratio of rsCapC to rsCapH.  Used to derive capacity during autosi
 {{
   member_table({
     "units": "",
-    "legal_range": ".3 ≤ x $<$ 2", 
+    "legal_range": ".3 ≤ x < 2", 
     "default": "0.8",
     "required": "No",
     "variability": "Start of a run" 
@@ -621,7 +621,7 @@ For rsType=ASHP, auxiliary heat annualized fuel utilization efficiency.
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "0.9 if rsTypeAuxH=FURNACE else 1",
     "required": "No",
     "variability": "constant" 
@@ -659,7 +659,7 @@ Nominal target for sensible heat ratio (for fancoil).
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "0.7",
     "required": "No",
     "variability": "subhour" 
@@ -675,7 +675,7 @@ Type: float
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -691,7 +691,7 @@ Cooling rated Seasonal Energy Efficiency Ratio (SEER).
 {{
   member_table({
     "units": "Btu/Wh",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "*none*",
     "required": "Yes",
     "variability": "constant" 
@@ -707,7 +707,7 @@ Cooling Energy Efficiency Ratio (EER) at standard AHRI rating conditions (outdoo
 {{
   member_table({
     "units": "Btu/Wh",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "Estimated from SEER unless WSHP",
     "required": "Yes for WSHP else No",
     "variability": "constant" 
@@ -727,7 +727,7 @@ If rsType=WSHP and both rsCapC and rsCapH are autosized, both are set to the lar
 {{
   member_table({
     "units": "Btu/hr",
-    "legal_range": "*AUTOSIZE* or *x* ≤ 0 (x $>$ 0 coverted to $<$ 0)", 
+    "legal_range": "*AUTOSIZE* or *x* ≤ 0 (x > 0 coverted to < 0)", 
     "default": "*none*",
     "required": "Yes if rsType includes cooling",
     "variability": "constant" 
@@ -743,7 +743,7 @@ Nominal cooling temperature fall (across system, not zone) used during autosizin
 {{
   member_table({
     "units": "°F",
-    "legal_range": "*x* $<$ 0", 
+    "legal_range": "*x* < 0", 
     "default": "-25",
     "required": "No",
     "variability": "constant" 
@@ -759,7 +759,7 @@ Cooling autosizing capacity factor. rsCapC is set to rsFxCapC $\times$ (peak des
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "1.4",
     "required": "No",
     "variability": "constant" 
@@ -776,7 +776,7 @@ Cooling compressor charge factor.  The cooling gross (compressor only) COP is mo
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "1 (no effect)",
     "required": "No",
     "variability": "constant" 
@@ -872,7 +872,7 @@ Heating efficiency factor.  At each time step, the heating efficiency is multipl
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "1",
     "required": "No",
     "variability": "subhourly" 
@@ -888,7 +888,7 @@ Backup auxiliary heating efficiency factor.  At each time step, the backup heati
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "1",
     "required": "No",
     "variability": "subhourly" 
@@ -904,7 +904,7 @@ Defrost auxiliary heating efficiency factor.  At each time step, the defrost aux
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "1",
     "required": "No",
     "variability": "subhourly" 
@@ -920,7 +920,7 @@ Cooling efficiency factor.  At each time step, the cooling efficiency is multipl
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "1",
     "required": "No",
     "variability": "subhourly" 
@@ -1091,7 +1091,7 @@ Type: float
 {{
   member_table({
     "units": "°F",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "5 °F",
     "required": "No",
     "variability": "hourly" 
