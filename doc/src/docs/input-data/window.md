@@ -404,7 +404,7 @@ Number of glazings in the window (bare glass only, not including any interior or
 {{
   member_table({
     "units": "",
-    "legal_range": "0 $<$ *x* ≤ 4", 
+    "legal_range": "0 < *x* ≤ 4", 
     "default": "gtNGLZ",
     "required": "Required when *wnModel* = ASHWAT",
     "variability": "constant" 

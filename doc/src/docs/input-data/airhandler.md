@@ -236,7 +236,7 @@ Heating design supply temperature, for sizing coil vs fan.
 {{
   member_table({
     "units": "°F",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "_ahTsMx_",
     "required": "No",
     "variability": "hourly" 
@@ -569,7 +569,7 @@ Fan input power per unit air flow (at design flow and pressure).
 {{
   member_table({
     "units": "W/cfm",
-    "legal_range": "_x_ $>$ 0", 
+    "legal_range": "_x_ > 0", 
     "default": "derived from rfanEff and rfanShaftBhp",
     "required": "If rfanEff and rfanShaftBhp not present",
     "variability": "constant" 
@@ -776,7 +776,7 @@ Capacity sizing multiplier for autoSized heating coils. The default value (1.1) 
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "1.1",
     "required": "No",
     "variability": "constant" 
@@ -959,7 +959,7 @@ Ratio of ahccCapTRat to ahhcCapTRat. This ratio is used for defaulting of AUTOSI
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "See above",
     "required": "No",
     "variability": "constant" 
@@ -1321,7 +1321,7 @@ For coil specification conditions (a.k.a. rating conditions or design conditions
 {{
   member_table({
     "units": "Btuh",
-    "legal_range": "_AUTOSIZE_ or _x_ $>$ 0", 
+    "legal_range": "_AUTOSIZE_ or _x_ > 0", 
     "default": "_none_",
     "required": "Yes",
     "variability": "constant" 
@@ -1337,7 +1337,7 @@ Sensible (heat-removing) rated capacity of cooling coil. Not used with CHW coils
 {{
   member_table({
     "units": "Btuh",
-    "legal_range": "_x_ $>$ 0", 
+    "legal_range": "_x_ > 0", 
     "default": "_none_",
     "required": "Yes",
     "variability": "constant" 
@@ -1353,7 +1353,7 @@ Rated sensible heat ratio (_ahccCapSRat_/_ahccCapTRat_) for cooling coil. Defaul
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "based on _ahccVfRperTon_",
     "required": "No",
     "variability": "constant" 
@@ -1369,7 +1369,7 @@ Capacity sizing multiplier for autoSized cooling coils. The default value (1.1) 
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "1.1",
     "required": "No",
     "variability": "constant" 
@@ -1403,7 +1403,7 @@ Minimum (effective surface) temperature of coil (evaporator). Represents refrige
 {{
   member_table({
     "units": "°F",
-    "legal_range": "_x_ $>$ 0", 
+    "legal_range": "_x_ > 0", 
     "default": "40°F",
     "required": "No",
     "variability": "constant" 
@@ -1419,7 +1419,7 @@ Exponent in power relationship expressing coil effectiveness as a function of re
 {{
   member_table({
     "units": "",
-    "legal_range": "_x_ $<$ 0", 
+    "legal_range": "_x_ < 0", 
     "default": "-0.4",
     "required": "No",
     "variability": "constant" 
@@ -1576,7 +1576,7 @@ Upper limit for value of pydxCaptF.
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "1.05",
     "required": "No",
     "variability": "constant" 
@@ -1760,7 +1760,7 @@ Design default _ahccVfR_ per ton (12000 Btuh) of _ahhcCapTRat_.
 {{
   member_table({
     "units": "",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "400.0",
     "required": "No",
     "variability": "constant" 

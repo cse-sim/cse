@@ -129,7 +129,7 @@ Number of subhour ticks used per *nSubSteps* for DHWSYS simulation.
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "60/nSubSteps",
     "required": "No",
     "variability": "constant" 
@@ -145,7 +145,7 @@ Endtest convergence tolerance for internal iteration in CNE models (no effect fo
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "0.001",
     "required": "No",
     "variability": "constant" 
@@ -177,7 +177,7 @@ Monthly energy balance error tolerance for internal consistency checks. Smaller 
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "0.0001",
     "required": "No",
     "variability": "constant" 
@@ -193,7 +193,7 @@ Daily energy balance error tolerance.
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "0.0001",
     "required": "No",
     "variability": "constant" 
@@ -209,7 +209,7 @@ Hourly energy balance error tolerance.
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "0.0001",
     "required": "No",
     "variability": "constant" 
@@ -225,7 +225,7 @@ Sub-hourly energy balance error tolerance.
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "0.0001",
     "required": "No",
     "variability": "constant" 
@@ -273,7 +273,7 @@ The minimum cell dimension used in the two-dimensional finite difference calcula
 {{
   member_table({
     "units": "ft",
-    "legal_range": "x $>$ 0", 
+    "legal_range": "x > 0", 
     "default": "0.066",
     "required": "No",
     "variability": "constant" 
@@ -344,7 +344,7 @@ Default exterior surface (air film) conductance used for opaque and glazed surfa
 {{
   member_table({
     "units": "Btuh/ft^2^-°F",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "2.64",
     "required": "No",
     "variability": "constant" 
@@ -355,7 +355,7 @@ Default exterior surface (air film) conductance used for opaque and glazed surfa
 
 Type: float
 
-Reference compass azimuth (0 = north, 90 = east, etc.). All zone orientations (and therefore surface orientations) are relative to this value, so the entire building can be rotated by changing bldgAzm only. If a value outside the range 0° ≤ *x* $<$ 360° is given, it is normalized to that range.
+Reference compass azimuth (0 = north, 90 = east, etc.). All zone orientations (and therefore surface orientations) are relative to this value, so the entire building can be rotated by changing bldgAzm only. If a value outside the range 0° ≤ *x* < 360° is given, it is normalized to that range.
 
 {{
   member_table({
@@ -551,7 +551,7 @@ AirNet absolute convergence tolerance. Ideally, calculated zone air pressures sh
 {{
   member_table({
     "units": "lbm/sec",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "0.00125 (about 1 cfm)",
     "required": "No",
     "variability": "constant" 
@@ -567,7 +567,7 @@ AirNet relative convergence tolerance.  See AnTolAbs just above.
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "0.0001",
     "required": "No",
     "variability": "constant" 
@@ -618,7 +618,7 @@ ASHWAT temperature change threshold -- full calculation is triggered by a change
 {{
   member_table({
     "units": "°F",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "1",
     "required": "No",
     "variability": "constant" 
@@ -634,7 +634,7 @@ ASHWAT solar change threshold -- full calculation is triggered by a fractional c
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "0.05",
     "required": "No",
     "variability": "constant" 
@@ -650,7 +650,7 @@ ASHWAT convection coefficient change threshold -- full calculation is triggered 
 {{
   member_table({
     "units": "",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "0.1",
     "required": "No",
     "variability": "constant" 
@@ -976,7 +976,7 @@ Soil diffusivity, used in derivation of ground temperature.  CSE calculates a gr
 {{
   member_table({
     "units": "ft^2^/hr",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "0.025",
     "required": "No",
     "variability": "constant" 
@@ -992,7 +992,7 @@ Soil conductivity. Used in two-dimensional finite difference calculations for FO
 {{
   member_table({
     "units": "Btuh-ft/ft^2^-°F",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "1.0",
     "required": "No",
     "variability": "constant" 
@@ -1010,7 +1010,7 @@ Soil specific heat. Used in two-dimensional finite difference calculations for F
 {{
   member_table({
     "units": "Btu/lb-°F",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "0.1",
     "required": "No",
     "variability": "constant" 
@@ -1028,7 +1028,7 @@ Soil density. Used in two-dimensional finite difference calculations for FOUNDAT
 {{
   member_table({
     "units": "lb/ft^3^",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "115",
     "required": "No",
     "variability": "constant" 
@@ -1046,7 +1046,7 @@ Far-field width. Distance from foundation to the lateral, zero-flux boundary con
 {{
   member_table({
     "units": "ft",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "130",
     "required": "No",
     "variability": "constant" 
@@ -1078,7 +1078,7 @@ Deep-ground depth. Distance from exterior grade to the deep-ground boundary. Use
 {{
   member_table({
     "units": "ft",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "130",
     "required": "No",
     "variability": "constant" 
@@ -1095,7 +1095,7 @@ Deep-ground temperature. Used when deepGrndCnd=WATERTABLE.
 {{
   member_table({
     "units": "F",
-    "legal_range": "*x* $>$ 0", 
+    "legal_range": "*x* > 0", 
     "default": "Annual average drybulb temperature",
     "required": "No",
     "variability": "hourly" 
