@@ -34,13 +34,8 @@ struct IDATETIME
 	SI sec;		// 0 - 59
 };		// struct IDATETIME
 
-struct IDATE
-{
-	SI year;
-	SI month;
-	SI mday;
-	SI wday;
-};		// struct IDATE
+// defined in cnglob.h due to uses in cnrecs.def
+// struct IDATE { SI year; 	SI month; SI mday; 	SI wday; };
 
 struct ITIME
 {
