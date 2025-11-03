@@ -1122,6 +1122,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#ambiguous-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ambiguous names
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#probestxt" class="md-nav__link">
     <span class="md-ellipsis">
       probes.txt
@@ -4989,6 +4998,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#ambiguous-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ambiguous names
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#probestxt" class="md-nav__link">
     <span class="md-ellipsis">
       probes.txt
@@ -6391,6 +6409,36 @@ colVal = @terminal[NorthHot].cz;    // terminal air flow to zone (Btuh/F)
 <p class="admonition-title">Tip</p>
 <p>The initial <code>@</code> is always necessary. And don't miss the period after the <code>]</code>.</p>
 </div>
+<h4 id="ambiguous-names">Ambiguous names<a class="headerlink" href="#ambiguous-names" title="Permanent link">¶</a></h4>
+<p>Note that CSE often allows multiple objects of the same type with the same name.  For example:</p>
+<div class="language-text highlight"><pre><span></span><code>GAIN G1 gnPower=100 ...
+
+ZONE Z1
+   ...
+   GAIN G1 gnPower=200 ...
+   ...
+</code></pre></div>
+<p>No problem so far.  However, suppose some reporting is added:</p>
+<div class="language-text highlight"><pre><span></span><code>REPORT RP1 rpType=UDT ...
+   REPORTCOL colHead="Gain" colVal=@GAIN["G1"].gnPower ...
+</code></pre></div>
+<p>The <a class="autorefs autorefs-internal" href="../input-data/reportcol/#reportcol">REPORTCOL</a> <a class="autorefs autorefs-internal" href="../input-data/exportcol/#colval">colVal</a> probe is ambiguous -- CSE cannot determine which "<a class="autorefs autorefs-internal" href="../input-data/gain/#gain">GAIN</a> G1" is being referenced.  An "ambiguous name" error message is issued and the simulation does not run.  There is no provision in the probe syntax to provide context information resolve such ambiguity.</p>
+<p><strong>However</strong>, there is a simple work-around --</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Do not use ambiguous names, especially for objects that are likely to be probed.</p>
+</div>
+<p>An unambiguous version of the above example might look like this:</p>
+<div class="language-text highlight"><pre><span></span><code>GAIN TOPG1 gnPower=100 ...
+
+ZONE Z1
+   ...
+   GAIN Z1G1 gnPower=200 ...
+   ...
+
+REPORT RP1 rpType=UDT ...
+   REPORTCOL colHead="Gain" colVal=@GAIN["Z1G1"].gnPower ...
+</code></pre></div>
 <h4 id="probestxt">probes.txt<a class="headerlink" href="#probestxt" title="Permanent link">¶</a></h4>
 <p>How do you find out what the probe-able member names are? CSE will display the a list of the latest class and member names if invoked with the -p switch. Use the command line</p>
 <div class="language-text highlight"><pre><span></span><code>    CSE -p &gt; probes.txt

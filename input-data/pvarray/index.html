@@ -4138,7 +4138,7 @@
 <p><img alt="One-axis tracker, horizontal aligned East/West (less common)" src="../../assets/images/pv_horiz_tracker_east.png"/></p>
 <h3 id="pvazm">pvAzm<a class="headerlink" href="#pvazm" title="Permanent link">¶</a></h3>
 <p>Type: float</p>
-<p>Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the range 0° ≤ <em>x</em> <span class="arithmatex">\(&lt;\)</span> 360° is given, it is normalized to that range. For one-axis tracking, defines the azimuth of the rotation axis. Not used for two-axis tracking arrays. Should be omitted if <a class="autorefs autorefs-internal" href="#pvvertices">pvVertices</a> is given.</p>
+<p>Photovoltaic array azimuth (0 = north, 90 = east, etc.). If a value outside the range 0° ≤ <em>x</em> &lt; 360° is given, it is normalized to that range. For one-axis tracking, defines the azimuth of the rotation axis. Not used for two-axis tracking arrays. Should be omitted if <a class="autorefs autorefs-internal" href="#pvvertices">pvVertices</a> is given.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -4259,7 +4259,7 @@
 <tbody>
 <tr>
 <td></td>
-<td>0 <span class="arithmatex">\(&lt;\)</span> <em>x</em> <span class="arithmatex">\(&lt;\)</span> 1.0</td>
+<td>0 &lt; <em>x</em> &lt; 1.0</td>
 <td>0.2</td>
 <td>No</td>
 <td>hourly</td>
@@ -4321,7 +4321,7 @@ Ground coverage ratio is. This is currently unused as array self-shading is not 
 <tbody>
 <tr>
 <td></td>
-<td>0 <span class="arithmatex">\(&lt;\)</span> <em>x</em> <span class="arithmatex">\(&lt;\)</span> 1.0</td>
+<td>0 &lt; <em>x</em> &lt; 1.0</td>
 <td>0.96</td>
 <td>No</td>
 <td>constant</td>
@@ -4400,7 +4400,7 @@ Ground coverage ratio is. This is currently unused as array self-shading is not 
 <tbody>
 <tr>
 <td></td>
-<td>0 <span class="arithmatex">\(&lt;\)</span> <em>x</em> <span class="arithmatex">\(&lt;\)</span> 1.0</td>
+<td>0 &lt; <em>x</em> &lt; 1.0</td>
 <td>0.14</td>
 <td>No</td>
 <td>hourly</td>

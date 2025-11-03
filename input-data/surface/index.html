@@ -4179,7 +4179,7 @@
 </tr>
 <tr>
 <td><a class="autorefs autorefs-internal" href="#sftype">sfType</a> = WALL</td>
-<td>60 <span class="arithmatex">\(&lt;\)</span> <em>sfTilt</em> <span class="arithmatex">\(&lt;\)</span> 180, default = 90</td>
+<td>60 &lt; <em>sfTilt</em> &lt; 180, default = 90</td>
 </tr>
 <tr>
 <td><a class="autorefs autorefs-internal" href="#sftype">sfType</a> = CEILING</td>
@@ -5137,7 +5137,7 @@ The following tables summarize the defaults and legal ranges of surface members 
   **Member** **WALL**                  **FLOOR**    **CEILING**
   ---------- ------------------------- ------------ -----------------------
   [sfTilt][sftilt]     optional, default=90, 60  n.a. (fixed  optional, default=0, 0
-             $<$ *sfTilt* $<$ 180      at 180)      ≤ *sfTilt* ≤ 60
+             < *sfTilt* < 180      at 180)      ≤ *sfTilt* ≤ 60
 
   [sfAzm][sfazm]      **required**              n.a.         **required if [sfTilt][sftilt]
                                                     > 0**
