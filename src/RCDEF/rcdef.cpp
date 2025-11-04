@@ -216,21 +216,8 @@ const int MAXDTH=700;		// max+1 data type handle. 800-->200 1-92 ->400 3-92. ->4
 const int MAXDTC=111;		// maximum number of choices for choice data type.
 //#define MAXARRAY  20		// largest number of record array structure members * NOT checked, but should be.
 const int MAXNAMEL = 40;	// Max length of name, etc ("s" token)
-const int MAXQSTRL = 512;   // Max length for quoted string ("q" token).  assumed >= MAXNAMEL for array allocations.
-		// 80->200 3-90 for huge struct data types eg MASSBC. ->128 5-95 when out of memory.
-const int MAXTOKS = 6;		// Maximum no. of tokens per action (size of arrays; max length format arg to InFile.GetToks). 10->6 10-92.
 const int AVFDS = 70;		// Max average # fields / record, for Rcdtab alloc.  Reduce if MAXRCS*RCDSIZE(AVFDS) approaches 64K.
 							// 25->40 3-92 after overflow with only 39 of 50 records. 40->50 10-92. ->40 5-95. ->50 7-95. */
-
-// InFile.GetToks return values (fcn value and in gtokRet)
-const int GTOK = 0;         // things seem ok
-const int GTEOF = 1;		// unexpected EOF
-const int GTEND = 2;        // first token was *END
-const int GTERR = 3;		// conversion error or *END in pos other than first.  Error message has been issued.
-int gtokRet = 0;                         // last InFile.GetToks call fcn return value
-char Sval[MAXTOKS][MAXQSTRL];   // String values of tokens read (s, d, f formats), and deQuoted value of q tokens.
-int Dval[MAXTOKS];               // Decimal Integer values of tokens (d)
-float Fval[MAXTOKS];            // Float values of tokens (f)
 
 // Predefined record types
 #define RTNONE 0000     // may be put in dtypes.h from here
@@ -320,13 +307,27 @@ char* cFilesDir=NULL;   // cpp output file path (from cmd line)
 bool Debug = false;		// iff true, token stream is displayed (from InFile.GetToks() during execution.  Set by D on command line.
 int Errcount = 0;		// Number of errors so far
 
+// InFile.GetToks return values (fcn value and in gtokRet)
+const int MAXQSTRL = 512;   // Max length for quoted string ("q" token).  assumed >= MAXNAMEL for array allocations.
+		// 80->200 3-90 for huge struct data types eg MASSBC. ->128 5-95 when out of memory.
+const int MAXTOKS = 6;		// Maximum no. of tokens per action (size of arrays; max length format arg to InFile.GetToks). 10->6 10-92.
+
+const int GTOK = 0;         // things seem ok
+const int GTEOF = 1;		// unexpected EOF
+const int GTEND = 2;        // first token was *END
+const int GTERR = 3;		// conversion error or *END in pos other than first.  Error message has been issued.
+char Sval[MAXTOKS][MAXQSTRL];   // String values of tokens read (s, d, f formats), and deQuoted value of q tokens.
+int Dval[MAXTOKS];               // Decimal Integer values of tokens (d)
+float Fval[MAXTOKS];            // Float values of tokens (f)
 
 struct INFILE
 {
 	FILE* Fpm;			// current input stream, read by GetToks().  Note several files are opened
 	//  during command line checking; Fpm is set to each in sequence as they are used.
 
-	INFILE() : Fpm(nullptr) {}
+	int gtokRet;		// return value from most recent GetToks()
+
+	INFILE() : Fpm(nullptr), gtokRet(GTERR) {}
 	int Close() { fclose(Fpm); return 0;  }
 	int SetInputFile( FILE* fInput);
 	long GetFilePos();
@@ -910,7 +911,7 @@ LOCAL void Do_Dtypes(                      // do data types
 		ndtypes++;                                       // count data types
 	}  // data types token while loop
 
-	if (gtokRet != GTEND)                               // if 1st token not *END (InFile.GetToks at loop top)
+	if (InFile.gtokRet != GTEND)                               // if 1st token not *END (InFile.GetToks at loop top)
 		rcderr("Data types definitions do not end properly");
 
 // Write data type definitions to dtypes.hx, dttab.cpp
@@ -1305,7 +1306,7 @@ LOCAL void units(       // do units types, for rcdef main()
 			nuntypes++; /* count unit types read, for later output */
 		}
 	}
-	if (gtokRet != GTEND)               // if last gtok() (at top of loop) did not read *END
+	if (InFile.gtokRet != GTEND)               // if last gtok() (at top of loop) did not read *END
 		rcderr( "Units definitions do not end properly");
 
 	/* make units.h and untab.cpp */
@@ -1419,7 +1420,7 @@ LOCAL void limits( FILE* file_limitsh)  // do limit types
 	/* read limits info from def file */
 
 	nlmtypes = 0;
-	while (InFile.GetToks("s")==GTOK)                    // read typeName.  Sets gtokRet same as return value.
+	while (InFile.GetToks("s")==GTOK)                    // read typeName.  Sets InFile.gtokRet same as return value.
 	{
 		if (lmlut.lu_Find( Sval[0]) != LUFAIL)
 			rcderr("Duplicate limit type.");
@@ -1435,7 +1436,7 @@ LOCAL void limits( FILE* file_limitsh)  // do limit types
 		nlmtypes++;
 	}
 
-	if (gtokRet != GTEND)                       // unless *END gtok'd last
+	if (InFile.gtokRet != GTEND)                       // unless *END gtok'd last
 		rcderr("Limits definitions do not end properly");
 
 	/* Write limit definitions to .h file */
@@ -1475,7 +1476,7 @@ LOCAL void Do_Fields()     // do fields
 
 	/* loop to read field info from .def file */
 
-	while (InFile.GetToks("ssss") == GTOK)               // (sets gtokRet same as ret val)
+	while (InFile.GetToks("ssss") == GTOK)               // (sets InFile.gtokRet same as ret val)
 		/* read TypeName Datatype Limits Units
 				[0]      [1]      [2]    [3] */
 	{
@@ -1518,7 +1519,7 @@ LOCAL void Do_Fields()     // do fields
 		Fdtab[ val].untype = unlut.lu_Find( Sval[3]);
 		nfdtypes++;
 	}
-	if (gtokRet != GTEND)                               // if InFile.GetToks didn't read *END
+	if (InFile.gtokRet != GTEND)                               // if InFile.GetToks didn't read *END
 		rcderr("Fields definitions do not end properly");
 
 	printf(" %d field descriptors. ", nfdtypes);
@@ -1821,8 +1822,8 @@ LOCAL RC Do_Recs(                  // do records
 
 	/* top of records loop.  Process a between-records *word or a RECORD. */
 
-	InFile.GetToks("s");                         // read token, set Sval and gtokRet
-	while (gtokRet == GTOK)               // until *END or (unexpected) eof or error.  Sval[0] shd be "*file" or "RECORD".
+	InFile.GetToks("s");                         // read token, set Sval and InFile.gtokRet
+	while (InFile.gtokRet == GTOK)               // until *END or (unexpected) eof or error.  Sval[0] shd be "*file" or "RECORD".
 	{
 		bool excon = false;           // true iff record has explicit external constructor ..
 		bool exdes = false;           // .. destructor ..  (declare only in class defn output here; omit default code)
@@ -1837,7 +1838,7 @@ LOCAL RC Do_Recs(                  // do records
 		nexTokRec:;                            // come here after *word or error */
 			if (InFile.GetToks("s"))                      // get token to replace that used
 				rcderr("Error in records.def.");
-			continue;                            // repeat record loop. gtokRet set.
+			continue;                            // repeat record loop. InFile.gtokRet set.
 		}
 		if ((char*)rcdesc + RCDSIZE(MAXFDREC) >= rcdend)       // room for max rec recDescriptor?
 		{
@@ -1909,7 +1910,7 @@ LOCAL RC Do_Recs(                  // do records
 		rcPrefix[rcseq] = "";	// no prefix by default
 
 		// record typeName
-		if (InFile.GetToks("s"))                         // get next token: typeName (set gtokRet)
+		if (InFile.GetToks("s"))                         // get next token: typeName (set InFile.gtokRet)
 		{
 			rcderr( "Record name trouble.");
 			goto nexTokRec;                        // get token and reiterate record loop
@@ -1964,7 +1965,7 @@ x		{    printf( "\nRecord trap!");}
 
 		/* process record level * directives */
 
-		while (InFile.GetToks("s")==GTOK         // while next token (sets gtokRet) is ok
+		while (InFile.GetToks("s")==GTOK         // while next token (sets InFile.gtokRet) is ok
 				&& *Sval[0]=='*')        // ... and starts with '*'
 		{
 			int val = looksw( Sval[0]+1, rdirtab);    // look up word after * in table, rets special value
@@ -2116,7 +2117,7 @@ x		{    printf( "\nRecord trap!");}
 			fprintf( frc, "};		// %s\n\n", rcNam);
 		}
 
-		if (gtokRet != GTEND)                           // if last token gtok'd not *END
+		if (InFile.gtokRet != GTEND)                           // if last token gtok'd not *END
 			rcderr("Record definition error.");
 		else                                            // record def input ended correctly
 		{
@@ -2128,7 +2129,7 @@ x		{    printf( "\nRecord trap!");}
 
 			rctypes[rcseq] = rctype;            // now also save type + bits for dupl checking, wRcTd, *nest, .
 
-			InFile.GetToks("s");                         // get next token, set gtokRet for loop top
+			InFile.GetToks("s");                         // get next token, set InFile.gtokRet for loop top
 
 			// do stuff for this record in small record & field descriptor file
 			// CAUTION: do before rcdesc incremented.
@@ -2228,7 +2229,7 @@ x		{    printf( "\nRecord trap!");}
 		}
 	}   // Record loop (top ~500 lines up)
 
-	if (gtokRet != GTEND)                               // if last token gtok'd not *END
+	if (InFile.gtokRet != GTEND)                               // if last token gtok'd not *END
 		rcderr("Record definitions do not end properly");
 
 // Close final record include file.
@@ -2414,8 +2415,8 @@ LOCAL void rec_fds()
 
 	// fields loop begins here
 	for ( ;                     // first time, have token from above
-			gtokRet==GTOK;        // Leave loop if error or *END
-			InFile.GetToks("s") )          // After 1st time, get token, set gtokRet
+			InFile.gtokRet==GTOK;        // Leave loop if error or *END
+			InFile.GetToks("s") )          // After 1st time, get token, set InFile.gtokRet
 		// non-*END token is *directive, else field type.
 	{
 		// init for new field.  NB repeated in *directive cases that complete field: struct, nest. */
@@ -2466,7 +2467,7 @@ LOCAL void rec_fds()
 #endif
 				wrStr( frc, Sval[0], Dval[1], rcdesc, evf, ff);
 				/* read structure, conditionally write to output file, fill field info in record descriptor,
-				   calls self for nested structures. Uses/updates globals Nfields, Fdoff, gtokRet,
+				   calls self for nested structures. Uses/updates globals Nfields, Fdoff, InFile.gtokRet,
 				   NEEDS UPDATING to set fldNm[] -- 3-91 -- and fldFullNm[], 2-92. */
 				++nstrel;                                       // next structure member
 				// Note: a single field #define will be output by Do_Recs() for the entire structure (only one strel).
@@ -3212,12 +3213,14 @@ int INFILE::SetFilePos( long filePos)
 
 }	// INFILE::SetFilePos
 //----------------------------------------------------------------------
-int INFILE::PeekToks( const char* tokf)
+int INFILE::PeekToks( const char* tokf)		// retrieve future tokens
+// does NOT change file position
+// return values same as GetToks()
 {
 	long filePos = GetFilePos();
-	int gtRet = InFile.GetToks( tokf);
+	InFile.GetToks( tokf);	// sets .gtokRet
 	SetFilePos(filePos);
-	return gtRet;
+	return gtokRet;
 }		// INFILE::PeekNext
 //======================================================================
 int INFILE::GetToks(               // Retrieve tokens from input stream according to tokf
@@ -3234,7 +3237,7 @@ int INFILE::GetToks(               // Retrieve tokens from input stream accordin
 				Sval[]	string value (ALL types)
 				Dval[]	int value (d).
 				Fval[]	float value (f) */
-/* Returns (fcn value AND global gtokRet):
+/* Returns (fcn value AND this->gtokRet):
 		GTOK:       things seem ok
 		GTEOF:      unexpected EOF
 		GTEND:      first token was *END
