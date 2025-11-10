@@ -1269,11 +1269,11 @@ RECORD XSURF "xsurf sub" *SUBSTRUCT	// for PRI, SFI, XSRAT.
 	*declare "XSURF& Copy( const XSURF* pXS, int options=0);"
 	*declare "RC xs_Validate( int options=0);"
 	*declare "SBC& xs_SBC( int si) { return si ? xs_sbcO : xs_sbcI; }"
+	*declare "SBC& xs_FrmSBC( int si) { return si ? xs_frmSbcO : xs_frmSbcI; }"
 	*declare "const char* xs_Name() const;"
 	*declare "int xs_CanHaveExtSlr() const;"
 	*declare "RC xs_SetUNom();"
 	*declare "float& xs_AbsSlr( int io) { return xs_SBC( io).sb_absSlr; }"
-	*declare "float xs_AreaGlazed() const;"
 	*declare "void xs_SetRunConstants();"
 	*declare "void xs_AccumZoneValues();"
 	*declare "void xs_sbTest();"
@@ -1298,7 +1298,9 @@ RECORD XSURF "xsurf sub" *SUBSTRUCT	// for PRI, SFI, XSRAT.
     *z SI xs_ty		// type CTEXTWALL, CTINTWALL, CTWINDOW, CTMXWALL, CTPERIM, CTKIVA set by cult or code.
 
 	// inputs.  *r's where set by topCkf in at least some cases.
-    *r AREA_GZ xs_area	// (net) area, sf.  Reflects window multiplier.
+    *r AREA_GZ xs_area	// (net) area, ft2.  Reflects window multiplier.
+    *r AREA_GZ xs_areaGlz   // glazed area, ft2. nz iff window
+                            // reflects window multiplier and frame fraction
     *r ANGLE azm 		// azimuth (radians, 0 = North, Pi/2 = East)
     *r ANGLE tilt 		// tilt (radians, 0 = horiz up, Pi/2 = vert.
     *r *array 3 FLOAT xs_dircos	// outward normal direction cosines for given azm/tilt
@@ -1318,7 +1320,11 @@ RECORD XSURF "xsurf sub" *SUBSTRUCT	// for PRI, SFI, XSRAT.
     *mh FRAC sco    // window: SMSO: Solar Heat Gain Coef multiplier, shades Open
     *mh FRAC scc    // window: SMSC: Solar Heat Gain Coef, shades Closed
     *r *nest SBC xs_sbcI	// inside (zone side) surface boundary conditions
+                            //   ASHWAT windows: BCs at inside face of inside layer (glazing or shade; frame excluded, see xs_frmSbcI)
     *r *nest SBC xs_sbcO	// outside (ambient or adjacent zone) surface boundary conditions
+                            //   ASHWAT windows: BCs at outside face of outside layer (glazing, screen, or shade; frame excluded, see xs_frmSbcO)
+    *r *nest SBC xs_frmSbcI	// ASHWAT windows: frame inside (zone side) surface boundary conditions
+    *r *nest SBC xs_frmSbcO	// ASHWAT windows: frame outside (ambient) surface boundary conditions
 
     *i FENMODELCH xs_fenModel	// fenestration model: user input
     *i FRAC xs_SHGC				// rated SHGC of assembly
@@ -1363,16 +1369,21 @@ RECORD XSURF "xsurf sub" *SUBSTRUCT	// for PRI, SFI, XSRAT.
 
     *r TI iwshad 		// 0 if none or subscr in WSHADRAT of overhang/fin info for a shaded window
     *r TI xs_msi		// 0, or mass (MsR) subscript for CTMXWALL.
-    *array XSMXTLRB *h *e
-		FLOAT xs_tLrB	// layer boundary temps re probes
-						// populated at end of hour
-
-// solar gain distributions: [partly] based on SGDIST inputs
+    
+    // solar gain distributions: [partly] based on SGDIST inputs
     *r SI nsgdist	 		// Number of SG distributions
     // SGDIST sgdist[ HSMXSGDIST]:
-    *array HSMXSGDIST	// =8 (2-95), cndefns.h. explicit solar gain distribs
-       *r			// min variation here: no members set at input time
-       *nest SGDIST sgdist	// solar gain distribution (struct just above).  set: cncult3.cpp:cnuSgDist().
+     *r *array HSMXSGDIST *nest SGDIST sgdist	// =8 (2-95), cndefns.h. explicit solar gain distribs
+    			// *r -> min variation here: no members set at input time
+                // *nest SGDIST sgdist -> solar gain distribution (struct just above).  set: cncult3.cpp:cnuSgDist().
+
+    // runtime values
+    *s *e FLOAT xs_glzTrans     // ASHWAT windows: transmitted solar gain, Btuh/ft2 (w/o cavity absorp adjustment)
+    *s *e FLOAT xs_glzInward    // ASHWAT windows: inward flowing convective and LW radiant gain to zone, Btuh/ft2
+
+    *array XSMXTLRB *h *e FLOAT xs_tLrB	// layer boundary temps re probes
+						// populated at end of hour
+
 *END		// XSURF
 //=============================================================================
 RECORD PRI "perimeter" *RAT	// perimeter input RAT
@@ -1441,7 +1452,7 @@ RECORD SFI "surface" *RAT	// opaque surface / door / window input info RAT
  //window only
     *i LEN_GZ sf_width 		// width and height: used to compute shading,
     *i LEN_GZ sf_height		//  ... and to compute area b4 mutliplier.
-    *i FLOAT_GZ mult		// area multiplier (for multiple identical windows)
+    *i FLOAT_GZ sf_mult		// area multiplier (for multiple identical windows)
  //derived/internal
     *r TI xi		// subscript in runtime XSRAT, to facilitate access by probers 1-92
     *r TI sf_msi	// 0 or MSRAT MsR subscr which will be used if delayed model
@@ -1805,7 +1816,7 @@ RECORD COL "reportCol" *RAT	// holds info for columns in user-defined table repo
     TI nxColi		// for runtime: COL subscript of next column in this report, 0 if last one
 *END		// COL
 //=============================================================================
-RECORD DVRI "dvri" *hideall *RAT	// Date-dependent Virtual Report Info -- at runtime (DvriB)
+RECORD DVRI "dvri" *RAT *hideall	// Date-dependent Virtual Report Info -- at runtime (DvriB)
 	*prefix dv_
 	*ovrcopy
 	*declare "void dv_vpDHWMtrRow( struct RXPORTINFO* rxt, TI dhwMtri=-1);"
@@ -2453,7 +2464,8 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *r DBL zn_BGWallPA5		// sum (perim*a5)
 
 // ZNR loads runtime: hourly q's for  Tz = (a + q)/b.
-	*h *e DBL qSgTot			// hour total solar gain to some
+	*h *e FLOAT qSgTot			// hour total solar gain to zone, Btuh
+                                //  = zn_sgTotTarg.st_tot
     *h *e *nest SGTARG zn_sgTotTarg	// hourly part of s g total (Btuh) for zone: hourly mass insides.
 								// Added to in cnloads.cpp:loadsHour via pointers in SgR entries made monthly
 								// in cgsolar.cpp per info in XSURFs made in cncultn.cpp. Used: cnztu.cpp re results qSlr
@@ -2498,10 +2510,12 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *s *e *nest SGTARG zn_sgAirTarg   // Solar gain (Btuh) target (float) for zone air: all sun thru windows not SGDIST'd to a mass.
 								//  Added to in cnloads.cpp:loadsSubhr via pointers in SgR entries made monthly
 								//  in cgsolar.cpp per info in XSURFs made in cncultn.cpp. Used: cnloads.cpp re aqLdSh. */
-	*s *e DBL qSgTotSh
+	
     *s *e *nest SGTARG zn_sgTotShTarg	// subhourly part of s g total (Btuh) for zone: air + mass insides.
 								//  Added to in cnloads.cpp:loadsSubhr via pointers in SgR entries made monthly
 								//  in cgsolar.cpp per info in XSURFs made in cncultn.cpp. Used: cnztu.cpp re results qSlr */
+    *s *e FLOAT qSgTotSh        // Total solar gain to room, including transmitted and inward flowing fraction, Btuh
+                                //   = zn_sgTotShTarg.st_tot + inward flowing from ASHWAT glazing
     *h *hide DBL aMassSh  		// Subhourly mass portion of zn_aqLdHr: sum ha*T to subhourly masses exposed to zone. note 1.
     *s *hide DBL zn_uaInfil 	// Infiltration UA (uval * area, === heat cap flow), this hour, for aq-,bLdSh and zone w.  note 2.
 								// === heat capacity of entering air (Btuh/F).  Divide by top.airxO for cfm.
@@ -3680,7 +3694,6 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
                             //   includes rs_fEffH modification if any
 							//   0 = ASHP compressor is unavailable (due to lockout, )
 *s *e FLOAT rs_capHtFS      // current step full speed primary heating capacity, Btuh
-                            //   if known; used only for CHDHW
 *s *e FLOAT rs_capHt		// current step current speed net primary heating capacity, Btuh
 							//   includes fan heat and strip/furn defrost makeup heat
 							//   = fan heat only if compressor unavailable
@@ -3840,10 +3853,12 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *s *e FLOAT rs_PLR      // current step part load ratio = sensible load / full-speed sensible capacity
 *s *e FLOAT rs_runF		// primary (e.g. compressor) run fraction
 *s *e FLOAT rs_speedF	// primary (compressor) current speed fraction
-                        //    = current net cap / full speed net cap
-						//    fixed speed: 1; var spd: <= 1 per load
+                        //    for CHDWH = current net cap / full speed net cap
+                        //    for variable speed = n/N (between 1/N and 1.0), where n is the modulated speed of the coil
+						//    for fixed speed = 1
 *s *e FLOAT rs_speedFMin // primary (compressor) current minimum speed fraction
-                        //    fixed speed: 1; var spd: < 1 per min current min cap
+                        //    fixed speed: 1
+                        //    variable speed: 1/N (N = number of coil speeds)
 *s *e FLOAT rs_runFAux	// auxiliary run fraction
 *s *e DBL rs_outSen		// average primary (compressor, burner, coil, ) sensible heat delivery rate for last subhr, Btuh
 						//   (includes runF/speedF, does not include fan, defrost, or aux heat)
@@ -5531,6 +5546,58 @@ RECORD GAIN "gain" *RAT   	// (zone internal) Gain input and runtime
 								//   note includes _TOTAL and _UNKNOWN
 *END			// GAIN
 //=============================================================================
+RECORD ACCUMULATOR_IVL "accumulator interval sub" *SUBSTRUCT  // substruct for one accumulator for one interval
+*prefix acm_
+
+*declare "void acm_Copy( const ACCUMULATOR_IVL* src);"
+*declare "void acm_PopulateSubhr( float value);"
+*declare "void acm_Accum( const ACCUMULATOR_IVL* sIvl, bool firstFlg, bool lastFlg, int options=0);"
+
+// NOTE: visible prefix used, not *prefix
+//       WHY: the name "sum" is treated as reserved and rejected.
+//            Visible "acm" prefixes solve avoid that
+INT acmCount    // total # of subhrs included
+
+FLOAT acmMin    // min value seen in interval
+FLOAT acmMean   // mean value seen in interval
+FLOAT acmMax    // max value seen in interval
+DBL acmSum      // sum of values in interval
+
+SI acmMinDayOfYear      // day of year on which min occurs, 1-365
+SI acmMinDayOfYearST    // day of year (standard time) on which min occurs, 1-365
+                        //  can differ from acmMinDayOfYear iff Top.DT=Yes
+SI acmMinHour           // hour of day at which min occurs, 0-23
+SI acmMinHourST         // hour of day (standard time) at which min occurs, 0-23
+                        //  can differ from acmMinHour iff Top.DT=Yes
+SI acmMinSubhour        // subhour within hour at which min occurs, 0 - Top.tp_nSubSteps-1
+
+SI acmMaxDayOfYear      // day of year on which min occurs, 1-365
+SI acmMaxDayOfYearST    // day of year (standard time) on which max occurs, 0-23
+                        //  can differ from acmMaxDayOfYear iff Top.DT=Yes
+SI acmMaxHour           // hour of day at which min occurs, 0-23
+SI acmMaxHourST         // hour of day (standard time) at which max occurs, 0-23
+                        //  can differ from acmMaxHour iff Top.DT=Yes
+SI acmMaxSubhour        // subhour within hour at which min occurs, 0 - Top.tp_nSubSteps-1
+
+*END		// ACCUMULATOR_IVL
+//=============================================================================
+RECORD ACCUMULATOR "accumulator" *RAT 
+*prefix acm_
+
+    *declare "RC acm_CkF( int options);"
+
+    // NOTE: visible prefix used, not *prefix
+    //       WHY: the name "sum" is treated as reserved and rejected.
+    //            Visible "acm" prefixes solve avoid that
+    *s *e FLOAT acmValue;              // value being accumulated
+                                        // generally set via probe 
+
+    *y *p *nest ACCUMULATOR_IVL Y   	// run (aka year or annual)
+    *m *p *nest ACCUMULATOR_IVL M   	// current month
+    *d *p *nest ACCUMULATOR_IVL D   	// current day
+    *h *p *nest ACCUMULATOR_IVL H   	// current hour
+*END		// ACCUMULATOR
+//=============================================================================
 RECORD MTR_IVL "meter interval sub" *SUBSTRUCT  // substruct for one meter for one interval for entire building
  // use results
 
@@ -5685,8 +5752,8 @@ RECORD COIL "coil sub" *SUBSTRUCT	// COIL SUB RECORD
     *h OFFAVAILVC sched	// AVAIL when coil available, OFF when disabled, hourly, default AVAIL.
 
     			// sensible cap'y: see COOLCOIL.capsRat.
-    *s *e 			// *s *e for probes, cuz autoSize changes it. hourly for input purposes.
-       POWER_NZ captRat 	// total rated cap'y (Btuh), RQD except AHP, ?CHW, hrly vbl for furnaces, const for DX coil.
+    *s *e POWER_NZ captRat	// *s *e for probes, cuz autoSize changes it. hourly for input purposes.
+        	                // total rated cap'y (Btuh), RQD except AHP, ?CHW, hrly vbl for furnaces, const for DX coil.
     *f POWER captRat_As		// captRat determined by autoSizing, w less vbly for easier use in probes in main sim. 6-95.
     *f POWER captRat_AsNov	// raw captRat determined by autoSizing, before overSize added, for reports/probes. 7-95
     // cnausz.cpp code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
@@ -6622,8 +6689,7 @@ RECORD TU "terminal" *RAT		// TERMINAL
     //				   neither sp given but min flow given-->continuous output at that flow regardless of zone temp.
     *h TEMP_GZ tuTH    		// air heating set point (F). hourly. default: no tstat-controlled air heating.
     *h TEMP_GZ tuTC    		// air cooling set point (F). hourly. default: no tstat-controlled air cooling.
-    *s *e AFLOW_GEZ 
-    tuVfMn	// min flow (cfm actual air); if no setpoints given, this is "specified output".  hourly, dlf 0.
+    *s *e AFLOW_GEZ tuVfMn	// min flow (cfm actual air); if no setpoints given, this is "specified output".  hourly, dlf 0.
     *f AFLOW_GEZ tuVfMn_As	// .. as autoSized (for constant volume), less variable, for probing.
     *f AFLOW_GEZ tuVfMn_AsNov	// .. raw autoSized value before oversize added, for possible probes.
     //cnausz.cpp code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
@@ -6631,8 +6697,8 @@ RECORD TU "terminal" *RAT		// TERMINAL
 
     *i TI ai		// 0 or AH ss (subscript) for air handler serving tu (input as air handler name). RQD if sp or Mn given.
 
-    *s *e			            // *s *e cuz autoSize changes it... inputtable hourly. 7-20-95.
-       AFLOW_GEZ tuVfMxH	    // heating max flow (cfm actual air) b4 ah limits, hourly, RQD if TuTH given else disallowed
+    *s *e AFLOW_GEZ tuVfMxH	    // *s *e cuz autoSize changes it... inputtable hourly. 7-20-95.
+       	                        // heating max flow (cfm actual air) b4 ah limits, hourly, RQD if TuTH given else disallowed
     *f AFLOW_GEZ tuVfMxH_As	    // .. as determined by autoSizing, less variable, for probing.
     *f AFLOW_GEZ tuVfMxH_AsNov	// .. raw autoSizing result before oversize added, for report/probes.
     //cnausz.cpp code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
@@ -6872,6 +6938,7 @@ RECORD HEATPLANT "heatPlant" *RAT	// heating plant: contains BOILERs, serves HW 
     // autoSizing
     *s *e FLOAT qPk		// peak load re error autosizing overload message
     *s *e FLOAT qPkAs		// peak load on a converged autoSizing design day re error autosizing overload message
+    
  //prior values for runtime change-detection
     *s *e OFFONCH hpModePr
     *s *e POWER qPr

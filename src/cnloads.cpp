@@ -1278,33 +1278,43 @@ RC ZNR::zn_AirRequest(		// determine air requirement given rs_asSup
 		orWarn("Flipped tSup  RSYS='%s', tPln=%0.3f, tSup=%0.3f, tSP=%0.1f, tZn=%0.3f\n",
 			rs->Name(), rs->rs_asOut.as_tdb, tSup0, zn_tzsp, tz);
 	}
+	if (zn_hcMode != RSYS::rsmOFF && zn_tzsp > 0.f)
+		orWarn("Inconsistent hcMode  RSYS='%s', hcMode=%d, tSP=%0.1f, tZn=%0.3f\n",
+			rs->Name(), zn_hcMode, zn_tzsp, tz);
 #endif
 
-	double amfSup0 = zn_AmfHvacCR(zn_tzsp, tSup0);	// dry air mass flow rate required to hold
+	// if zone needs conditioning
+	// Note: RSYS::rs_ZoneAirRequest() has no effect for air flow = 0, OK to skip calls
+	if (zn_hcMode != RSYS::rsmOFF)
+	{
+		// dry air mass flow rate required to hold setpoint, lbm/hr
+		double amfSup0 = zn_AmfHvacCR(zn_tzsp, tSup0);
+
 #if 0 && defined(_DEBUG)
-	double qLoad = zn_QAirCR(zn_tzsp);
-	// load at system, Btuh
-	double qLoad0 = rs->rs_asOut.as_QSenDiff2(rs->rs_asIn, amfSup0);
-	if (fabs(qLoad - qLoad0) > 5.)
-		printf("\nzn_AirRequest mismatch");
+		double qLoad = zn_QAirCR(zn_tzsp);
+		// load at system, Btuh
+		double qLoad0 = rs->rs_asOut.as_QSenDiff2(rs->rs_asIn, amfSup0);
+		if (fabs(qLoad - qLoad0) > 5.)
+			printf("\nzn_AirRequest mismatch");
 #endif
 
-	zn_rsAmfSysReq[0] = rs->rs_ZoneAirRequest(amfSup0, 0);	// notify system of requirement
-	CHECKFP(zn_rsAmfSysReq[0]);		// check for NaN etc (debug only)
+		zn_rsAmfSysReq[0] = rs->rs_ZoneAirRequest(amfSup0, 0);	// notify system of requirement
+		CHECKFP(zn_rsAmfSysReq[0]);		// check for NaN etc (debug only)
 
-	if (zn_hcMode == RSYS::rsmHEAT && rs->rs_CanHaveAuxHeat() && rs->rs_speedF==1.f)
-	{	// HP heating full speed: repeat calc with full aux
-		double tSup1 = rs->rs_asSupAux.as_tdb;
-		double amfSup1 = zn_AmfHvacCR(zn_tzsp, tSup1);
-		zn_rsAmfSysReq[1] = rs->rs_ZoneAirRequest(amfSup1, 1);
+		if (zn_hcMode == RSYS::rsmHEAT && rs->rs_CanHaveAuxHeat() && rs->rs_speedF==1.f)
+		{	// HP heating full speed: repeat calc with full aux
+			double tSup1 = rs->rs_asSupAux.as_tdb;
+			double amfSup1 = zn_AmfHvacCR(zn_tzsp, tSup1);
+			zn_rsAmfSysReq[1] = rs->rs_ZoneAirRequest(amfSup1, 1);
 #if defined( _DEBUG)
-		double qHt0 = amfSup0 * (tSup0 - zn_tzsp);
-		double qHt1 = amfSup1 * (tSup1 - zn_tzsp);
-		// zn_AmfHvacCR can return DBL_MAX
-		if (qHt0 > 0. && qHt0 < 1.e10 && qHt1 > 0. && qHt1 < 1.e10
-			&& frDiff(qHt0, qHt1) > .001)
-			printf("\nqHt mismatch");
+			double qHt0 = amfSup0 * (tSup0 - zn_tzsp);
+			double qHt1 = amfSup1 * (tSup1 - zn_tzsp);
+			// zn_AmfHvacCR can return DBL_MAX
+			if (qHt0 > 0. && qHt0 < 1.e10 && qHt1 > 0. && qHt1 < 1.e10
+				&& frDiff(qHt0, qHt1) > .001)
+				printf("\nqHt mismatch");
 #endif
+		}
 	}
 	return rc;
 }		// ZNR::zn_AirRequest
@@ -3851,14 +3861,13 @@ void RSYS::rs_HeatingOutletAirState(
 	if (auszMode == rsmHEAT)
 	{	if (Top.tp_pass1A)
 		{	// autosize warmup: assume fixed temp rise at room (duct losses and fan details ignored)
-			rs_capHt = rs_asOut.as_CalcQSen2(rs_asRet.as_tdb + rs_tdDesH, rs_amf);
+			rs_capHtFS= rs_capHt = rs_asOut.as_CalcQSen2(rs_asRet.as_tdb + rs_tdDesH, rs_amf);
 			rs_effHt = 1.f;		// need nz value, else ASHP assumes compressor off
 		}
 		else if (rs_IsASHP())
 		{	// ASHP heat autosize (based on rs_capH)
 				rs_effHt = 1.f;
-				rs_capHt = rs_capH;
-				rs_capAuxH = rs_capH;		// same cap for aux during autosizing
+				rs_capHtFS = rs_capHt = rs_capAuxH = rs_capH;		// same cap for aux during autosizing
 				//   used below if needed
 
 		}
@@ -3887,6 +3896,9 @@ void RSYS::rs_HeatingOutletAirState(
 
 			rs_capHt = capHtGross * rs_fCondCap + rs_fanPwr;
 			rs_inpHt = inpHtGross * rs_fCondInp + rs_fanPwr;
+
+			if (rs_speedF == 1.f)
+				rs_capHtFS = rs_capHt;
 	
 		}
 		else if (rs_IsWSHP())
@@ -3894,19 +3906,20 @@ void RSYS::rs_HeatingOutletAirState(
 			const float airMassFlowF = 1.f;  // temporary assumption
 			/*rc |=*/ WSHPPerf.whp_HeatingFactors(rs_fCondCap, rs_fCondInp, rs_tdbOut, rs_tdbCoilIn, airMassFlowF);
 			float capHtGross = (rs_capH - rs_fanHRtdH) * rs_fCondCap;
-			rs_capHt = capHtGross + rs_fanPwr;		// net capacity
+			rs_capHtFS = rs_capHt = capHtGross + rs_fanPwr;		// net capacity
 			float inpX = (capHtGross / rs_COP47) * rs_fCondInp;  // gross input power
 			rs_effHt = capHtGross / inpX * rs_fEffH;	// adjusted gross efficiency
 		}
 		else if (rs_IsCHDHW())
 		{
 			rs_capHt = rs_CurCapHtCHDHW(rs_speedF);
+			// rs_capHtFS set in rs_CurCapHtCHDHW
 			rs_effHt = 1.f;
 		}
 		else
 		{	// not heat pump of any type
 			rs_effHt = rs_IsFanCoil() ? 1.f : rs_AFUE * rs_fEffH;
-			rs_capHt = rs_capH;		// includes fan heat
+			rs_capHtFS = rs_capHt = rs_capH;		// includes fan heat
 		}
 	}
 
@@ -4209,8 +4222,8 @@ x	rs_asOut = asSav;
 	rs_asOut.as_Set(50., .001);
 #endif
 
-	// speedF?
-	rs_capSenNetFS = rs_capSenCt / (rs_speedF > 0.f ? rs_speedF : 1.f) + rs_fanPwr;		// net full speed sensible capacity
+	if (rs_speedF == 1.f)
+		rs_capSenNetFS = rs_capSenCt + rs_fanPwr;	// net full speed sensible capacity
 
 #if defined( _DEBUG)
 	if (!Top.isWarmup)
@@ -5415,7 +5428,7 @@ void RSYS::rs_ClearSubhrResults(
 	rs_amf = 0.;
 	rs_fanPwr = 0.f;
 	rs_amfReq[0] = rs_amfReq[1] = 0.;
-	rs_znLoad[0] = rs_znLoad[1] = 0.;
+	rs_znLoad[0] = rs_znLoad[1] = 0.f;
 	rs_asRet.as_Init();
 	rs_asIn.as_Init();
 	rs_twbIn = 0.;
@@ -5428,10 +5441,7 @@ void RSYS::rs_ClearSubhrResults(
 		return;
 
 	// all modes
-#if defined( RSYSLOADF)
-	rs_loadF = 
-#endif
-		rs_PLR = rs_runF = rs_speedF = rs_runFAux = rs_PLF = rs_capSenNetFS = 0.f;
+	rs_PLR = rs_runF = rs_speedF = rs_runFAux = rs_PLF = rs_capSenNetFS = 0.f;
 	rs_outSen = rs_outLat = rs_outFan = rs_outAux = rs_outDefrost
 		= rs_outSenTot = rs_inPrimary = rs_inFan = rs_inAux = rs_inDefrost = 0.;
 
@@ -5735,7 +5745,10 @@ double RSYS::rs_ZoneAirRequest(		// air quantity needed by zone
 	int iAux /*=0*/)	// 0 = primary mode (compressor)
 						// 1 = aux mode (aux alone or main+aux (ASHP heating only)
 // each zone needing conditioning requests air
-// returns RSYS (not supply register) amf needed to provide zone requirement
+// Note: no effect if znSupReq = 0 (OK to skip call)
+// 
+// returns RSYS amf (not supply register amf) needed to provide zone requirement, lbm/hr
+
 {
 	// handle impossible requests
 	//   supplyDT = tz - tSup
@@ -6354,6 +6367,11 @@ RC RSYS::rs_FinalizeSh()
 			rs_inPrimary = fabs(rs_outSen + rs_outLat)/ max(.01f, rs_effCt * rs_PLF);
 		}
 
+		if (rs_capSenNetFS != 0.f)
+		{	
+			rs_PLR = rs_znLoad[0] / rs_capSenNetFS;		// PLR based on sensible load and FS sensible capacity
+		}
+
 		if (rs_pMtrElec)
 		{	rs_pMtrElec->H.clg += rs_inPrimary * Top.tp_subhrDur;	// compressor energy for step, Btu
 			rs_pMtrElec->H.fanC += rs_inFan * Top.tp_subhrDur;
@@ -6395,9 +6413,6 @@ RC RSYS::rs_FinalizeSh()
 					runFFan = rs_runF;
 					fFanPwrPrim = 1.f;
 				}
-
-				rs_capSenNetFS = rs_capHt - rs_capDfHt;	// net capacity
-														// includes fan heat; does not include defrost
 
 				double outTot = rs_runF * rs_capHt;
 
@@ -6471,7 +6486,6 @@ RC RSYS::rs_FinalizeSh()
 		}
 		else
 		{	// non-ASHP, non-CHDHW
-			rs_capSenNetFS = rs_capHt;				// net capacity, Btuh
 			double outTot = rs_runF * rs_capHt;		// total output (incl fan), Btuh
 			// rs_outLat = 0.;						// total latent output
 			rs_outFan = min( outTot, rs_runF * rs_fanPwr);	// fan output, Btuh
@@ -6486,7 +6500,11 @@ RC RSYS::rs_FinalizeSh()
 				rs_inPrimary = rs_outSen / rs_effHt;
 			}
 		}
-
+		if (rs_capHtFS != 0.f)
+		{
+			rs_capSenNetFS = rs_capHtFS;
+			rs_PLR = rs_znLoad[0] / rs_capHtFS;
+		}
 		if (rs_pMtrHeat)
 			rs_pMtrHeat->H.htg += rs_inPrimary * Top.tp_subhrDur;
 		rs_inFan = rs_outFan;	// fan input, Btuh (in = out, all fan heat into air)
@@ -6503,10 +6521,7 @@ RC RSYS::rs_FinalizeSh()
 	}
 	// else if (rs_Mode == rsmOFF)
 
-	if (rs_capSenNetFS != 0.f)
-	{	
-		rs_PLR = rs_znLoad[0] / rs_capSenNetFS;
-	}
+	
 
 	// parasitic consumption
 	if (rs_pMtrElec)
@@ -6712,7 +6727,7 @@ RC XSURF::xs_SubhrBC()		// subhour: surface boundary conditions
 	RC rc = RCOK;
 
 	// set surface coefficients
-	double areaEff = xs_IsASHWAT() ? xs_AreaGlazed() : xs_area;
+	double areaEff = xs_IsASHWAT() ? xs_areaGlz : xs_area;
 	xs_sbcI.sb_SetCoeffs( areaEff, uC);
 	xs_sbcO.sb_SetCoeffs( areaEff, uC);
 	if (xs_IsASHWAT())

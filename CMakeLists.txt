@@ -92,3 +92,16 @@ set_directory_properties(PROPERTIES VS_STARTUP_PROJECT CSE)
 enable_testing()
 
 add_subdirectory(test)
+
+# Documentation
+set(cse_documentation_build_options "DoNotBuild;BuildWithAll;BuildSeparately")
+set(CSE_BUILD_DOCUMENTATION "BuildSeparately" CACHE STRING "Choose when/if to build documentation (${cse_documentation_build_options}).")
+set_property(CACHE CSE_BUILD_DOCUMENTATION PROPERTY STRINGS ${cse_documentation_build_options})
+
+if(NOT CSE_BUILD_DOCUMENTATION IN_LIST cse_documentation_build_options)
+  message(FATAL_ERROR "CSE_BUILD_DOCUMENTATION must be one of ${cse_documentation_build_options}")
+endif()
+
+if(NOT CSE_BUILD_DOCUMENTATION STREQUAL "DoNotBuild")
+  add_subdirectory(doc)
+endif()

@@ -22,19 +22,6 @@
 						//   usually does nothing if defined( ASHWAT_USECPP)
 #undef ASHWAT_CPPTESTTHERMAL // enable DLL<->C++ comparison for cf_Thermal() only
 
-
-#undef ASHWAT_REV2		// enable revised ASHWAT interface code, 5-2015
-						//   revised scheme reuses cached results
-						//   NOT successful (long run times)
-#if defined( ASHWAT_REV2)
-#include <unordered_map>
-#endif
-
-#include <vector>
-#include <string>
-using namespace std;
-
-
 ///////////////////////////////////////////////////////////////////////////////
 // approx outside/inside combined coeff. under NFRC rating conditions, Btuh/ft2-F
 //   based on results from ASHWAT calcs for MSLE glazing
@@ -153,21 +140,14 @@ public:
 		aw_incSlr = _incSlr;
 		VCopy( aw_absSlr, CFSMAXNL+1, _absSlr);
 	}
+	void aw_Init()
+	{	memset( this, 0, sizeof( AWIN));
+	}
 	bool operator==( const AWIN& awI) const;
-	size_t aw_Hash() const;
-	void aw_Round();
 	WStr aw_CSVHeading( const char* tag=nullptr) const;
 	WStr aw_CSVRow() const;
 
 };		// class AWIN
-//----------------------------------------------------------------------------
-class AWINHASH		// access to hash function for map
-{	public:
-		size_t operator() (const AWIN& awI) const
-		{	return awI.aw_Hash();
-		}
-};	// class AWINHASH
-
 //=============================================================================
 class AWOUT
 {
@@ -213,8 +193,6 @@ public:
 	float fa_frmArea;			// frame area, ft2
 	float fa_frmUNFRC;			// frame U-factor with NFRC surface conductances, Btuh/ft2-F
 	float fa_frmUC;				// frame surface-to-surface conductance, Btuh/ft2-F
-	SBC fa_frmSbcI;				// frame inside (zone side) boundary conditions
-	SBC fa_frmSbcO;				// frame outside boundary conditions
 	CFSTYX fa_CFS;				// CFS for this fenestration: represents glazing and shades
 	char fa_refDesc[ CFSIDLEN+30];	// fa_CFS.ID + " (SHGC=%.3f  U=%.3f)"
 	float fa_mSolar;			// solar muliplier
@@ -234,17 +212,14 @@ public:
 	int fa_iterControl;					// iteration control, passed to ASHWAT_Thermal
 										//    abs value = max # of iterations
 										//    if <0, do NOT init layer temps (start with cur values)
+
+	double fa_absSlr[ CFSMAXNL+1];		// absorbed by layer, W/m2 (including layer nL = "room")
+	double fa_absSlrF[ CFSMAXNL+1];		// abs fraction by layer (test/debug aid only)
+	
 						// saved results from last ASHWAT call
 						//	re-used for multiple subhrs
-#if defined( ASHWAT_REV2)
-	std::unordered_map< AWIN, AWOUT, AWINHASH> fa_X;	// cache of prior results
-#else
-							// conditions at prior calc = last full ASHWAT calc (re change detection)
-	double fa_incSlrPC;		// incident solar, W/m2
-	float fa_txaiPC;		// indoor air temp, F
-	float fa_hxaiPC;		// indoor convective coeff, Btuh/ft2-F
-	float fa_txaoPC;		// outdoor air temp, F
-#endif
+	AWIN fa_awI;
+
 	AWOUT fa_awO;
 
 	int fa_nCall;			// # of calls to this ASHWAT (does not include skipped calls where
@@ -263,6 +238,7 @@ public:
 	RC fa_SetupBare( float dirtShadeF);
 	RC fa_InsertLayer( int iLIns, const CFSLAYER* pL, const CFSGAP* pG=NULL);
     SBC& fa_SBC( int si) { return fa_pXS->xs_SBC( si); }
+    SBC& fa_FrmSBC( int si) { return fa_pXS->xs_FrmSBC( si); }
 	int fa_NL() const { return fa_CFS.NL; }
 	void DbDump() const;
 	RC fa_DfSolar();
@@ -273,7 +249,6 @@ public:
 	RC fa_FrameEndSubhr();
 	RC fa_Subhr( float fActive, int bDoFrm);
 	RC fa_EndSubhr( float fActive);
-	RC fa_ThermalCache( const AWIN& awIn, AWOUT& awOut);
 	RC fa_Thermal( const AWIN& awIn, AWOUT& awOut);
 	RC fa_PerfMap();
 	float fa_DfRhoB() const { return fa_dfRhoB; }
@@ -358,7 +333,7 @@ public:
 	#endif // SUPPORT_XMODULE
 
 	RC xw_Setup();
-	static void MsgCallBackFunc( void* msgContext, AWMSGTY msgTy, const string& msg);
+	static void MsgCallBackFunc( void* msgContext, AWMSGTY msgTy, const std::string& msg);
 	bool xw_CheckFixCFSLayer( CFSLAYER& L, const char* what);
 	RC xw_FinalizeCFS( CFSTY& CFS);
 	RC xw_BuildGap( CFSGAP& G, const char* fgID, double tas, int gType=gtySEALED);

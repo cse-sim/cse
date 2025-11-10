@@ -8,8 +8,8 @@ CSE is a general purpose building simulation model developed primarily to perfor
 
 The CSE User Manual can be found on the [CSE Documentation Web Site](https://cse-sim.github.io/cse):
 
-- [HTML Format](https://cse-sim.github.io/cse/cse-user-manual.html) (single page)
-- [HTML Format](https://cse-sim.github.io/cse/cse-user-manual/index.html) (multi page)
+- [HTML Format](https://cse-sim.github.io/cse/single_page/) (single page)
+- [HTML Format](https://cse-sim.github.io/cse/introduction/) (multi page)
 
 ### Issues and Issue Reporting
 
