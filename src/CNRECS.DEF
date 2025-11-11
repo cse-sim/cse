@@ -796,8 +796,8 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
      *declare "int wf_IsPacked() const { return wFileFormat==BSGS || wFileFormat==BSGSdemo || wFileFormat==ET1 || wFileFormat==ET2; }"
 
  // Header info: from file hdr decode or computed from hourly
-    *r WFLOC loc		// char loc[]  Location (for ET, is loc 1 only: city etc).
-    *r WFLID lid		// char lid[]  Location ID
+    *r CULSTR loc		// Location (for ET, is loc 1 only: city etc).
+    *r CULSTR lid		// Location ID
     *r SI yr			// Year of weather data (00 - 99, -1 if N/A)
     *r SI jd1			// Julian day of first weather record (-1 if not known)
     *r SI jdl			// Julian day of last weather record (ditto)
@@ -811,7 +811,7 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
     *f float tMainsMinYr    // annual minimum cold water temp, F
     *r SI solartime		// TRUE if file is in solar time
  //additional header items for ET1 file
-    *r WFLOC2 loc2		// char[] location 2 (state or country, etc)
+    *r CULSTR loc2		// location 2 (state or country, etc)
     *r SI isLeap		// non-0 if weather file is for a leap year (Feb 29 counted in dates) -- possible future use
     *r SI firstDdm		// month 1-12 of first design day in file
     *r SI lastDdm		// month 1-12 of last design day in file
@@ -832,8 +832,8 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
     // *array 12 *r float atmois	// monthly aveage atmospheric moisture, for daylight calcs
 
 // TDV file header info
-    *f WFLOC wf_TDVFileTimeStamp	// timestamp string
-	*f ANAME wf_TDVFileTitle		// title string (identifies file CZ, fuel, vintage, )
+    *f CULSTR wf_TDVFileTimeStamp	// timestamp string
+	*f CULSTR wf_TDVFileTitle		// title string (identifies file CZ, fuel, vintage, )
 
  //internal
     *r *hide SI hdrBytes 	// # header bytes before first record (used in wfread for file positioning)
@@ -1939,10 +1939,9 @@ RECORD AUSZ "autoSizing sub" *SUBSTRUCT	// AUTOSIZING VARIABLES substructure for
     // *declare "int az_Active() const { return az_active && az_px; }" idea
 
    //---setup time members
-    *declare "static ANAME az_context;"     // context text for verbose screen msgs
-                                            //  (use ANAME has handy known-size char[])
-    *r BOO az_active		                        // TRUE iff autoSizing this member
-    *declare "char az_what[ sizeof(ANAME) + 24];"	// ID of this AUSZ (e.g. "AH[ah1] cc")
+    *declare "static char az_context[];"    // context text for verbose screen msgs
+    *r BOO az_active		                // TRUE iff autoSizing this member
+    *declare "char az_what[ 100];"	        // ID of this AUSZ (e.g. "AH[ah1] cc")
 
    //---runtime
     // set at initialization
@@ -4663,8 +4662,8 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *i WHTYPECH wh_type;			// heater type
   								//    C_WHTYPECH_STRGSML, _STRGLRG, _INSTSML, _INSTLRG,
 								//    _INSTUEF, _BUILTUP
-  *i ANAME wh_desc;				// probe-able description text
-  *declare "virtual const char* GetDescription( int /*options*/=0) { return wh_desc; }"
+  *i CULSTR wh_desc;			// probe-able description text
+  *declare "virtual const char* GetDescription( int /*options*/=0) { return wh_desc.CStr(); }"
   *r INT wh_fcn;				// function of this DHWHEATER per whfcnXXX enum
   *declare "enum { whfcnUNKNOWN=0, whfcnPRIMARY, whfcnLOOPHEATER, whfcnSUPPLIESCHDHW=0x10, whfcnSUPPLIESLOOP=0x20, whfcnSUPPLIESLOAD=0x40 };"
   *declare "int wh_SetFunction();"
@@ -7459,16 +7458,6 @@ o    *h FLOAT tfanv 	/* Cur hr fan vent stpt, F; Huge if fn vnt not poss */
 
 //=============================================================================
 #if 0	//ifdef OLDAT				// OLD 3-92
-o RECORD AHUX "ahu" *RAT	// Air handler: currently dummy source of infinite amount of air at a given temp.  10-11-91.
-o #ifndef BCPP
-o     *hide DBN bn	// dummy
-o     *z ANAME name	// for LIKEing etc
-o #endif
-o     *h TEMP ahuxTsu		// supply temperature (hourly variability)
-o *END			// AHUX
-#endif
-//=============================================================================
-#if 0	//ifdef OLDAT				// OLD 3-92
 o RECORD TUX "terminal" *RAT		// OLD TERMINAL 3-92
 o 	/* Terminal unit record, used for both input and runtime (may split later?).
 o 	   In CSE, a TUs represent all HVAC devices which xfer heat to/from a zone,
@@ -7482,13 +7471,7 @@ o        Local heating    Local heating (coil, baseboard)
 o        Air heating	Air heating (air from air handler)
 o        Air cooling      Air cooling (air from air handler) */
 o
-o #ifndef BCPP
-o     *hide DBN bn	// dummy
-o     *z ANAME name	// for LIKEing etc
-o     TI ownTi		// was zi		// ZNI/R rcd subscript of owner zone
-o #else
-o     			// ownTi (base class) is ZNI/R rcd subscript of owner zone
-o #endif
+o	        // ownTi (base class) is ZNI/R rcd subscript of owner zone
 o     TI tuxNxTu		// chain: 0 or ss of next TU in current zone chain
 o     TI tuxZhxx1		// chain head: ss of 1st ZHXX belonging to this TU
 o
@@ -7520,12 +7503,8 @@ o 	//    2.  zone natural vent (if present)
 o 	//    3.  (future others?)
 o 	// No input-only ZHX rat exists.
 o 		// mbrs set at "RUN" (out of cncult:topCkf); some can vary during simulation
-o #ifndef BCPP
-o     *r TI ownTi		// was owni	// ss of owner -- ZNR/ZNI ss (ty=ZHX_NATVENT) or TU ss (other tys)
-o #else
-o 			// name is ...  unused?
-o 			// ownTi is TU ss (other tys) or (future) ZNR/ZNI ss (ty=ZHX_NATVENT) (or use sep mbr???)
-o #endif
+o 		// name is ...  unused?
+o 		// ownTi is TU ss (other tys) or (future) ZNR/ZNI ss (ty=ZHX_NATVENT) (or use sep mbr???)
 o     *r TI nxZhxx		// chain: 0 or ss of next ZHX for this TU.  0 if ty=ZHX_NATVENT.
 o     *r SI tyZhxx		// ZHX type: consts in cndefns.h
 o     			//   ZHX_NATVENT  zone natural ventilation

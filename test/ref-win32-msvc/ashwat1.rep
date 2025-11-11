@@ -85,6 +85,333 @@ Yr   29767      0  24516      0      0      0      0      0      0      0      0
 
 
 
+
+ZONE DATA for zone Conditioned-zn             Model: CZM
+CFA: 2100.00  Vol: 18900.0 FloorZ: 0     CeilingHt: 9.00   EaveZ: 9.00   CAir: 4200 
+Infil AC: 0        ELA: 0        Stackc: 323.482  Windc: 80.870 
+UA:    13.134   UANom:  260.804
+Surface Door 1-Sim      Area: 40.0    Az: 0   T: 90  UNom: 0.351    UA: 14.04  InAbs: 0.50 ExAbs: 0.50   ExCnd: Ambient        
+
+Surface Ceiling (below aArea: 127.0   Az: 0   T: 0   UNom: 0.0339   UA: 4.31   InAbs: 0.20 ExAbs: 0.20   ExCnd: AdjZn Attic-atc
+Surface Ceiling (below aArea: 1687.7  Az: 0   T: 0   UNom: 0.0299   UA: 50.45  InAbs: 0.20 ExAbs: 0.20   ExCnd: AdjZn Attic-atc
+Surface Ceiling (below aArea: 6.8     Az: 0   T: 0   UNom: 0.133    UA: 0.91   InAbs: 0.20 ExAbs: 0.80   ExCnd: Ambient        
+Surface Ceiling (below aArea: 90.5    Az: 0   T: 0   UNom: 0.0734   UA: 6.65   InAbs: 0.20 ExAbs: 0.80   ExCnd: Ambient        
+Surface Ceiling (below aArea: 13.2    Az: 0   T: 0   UNom: 0.0479   UA: 0.63   InAbs: 0.20 ExAbs: 0.80   ExCnd: Ambient        
+Surface Ceiling (below aArea: 174.8   Az: 0   T: 0   UNom: 0.0302   UA: 5.28   InAbs: 0.20 ExAbs: 0.80   ExCnd: Ambient        
+Surface Front-Frm       Area: 74.2    Az: 0   T: 90  UNom: 0.113    UA: 8.36   InAbs: 0.60 ExAbs: 0.50   ExCnd: Ambient        
+Surface Left-Frm        Area: 84.2    Az: 90  T: 90  UNom: 0.113    UA: 9.49   InAbs: 0.60 ExAbs: 0.50   ExCnd: Ambient        
+Surface Back-Frm        Area: 84.2    Az: 180 T: 90  UNom: 0.113    UA: 9.49   InAbs: 0.60 ExAbs: 0.50   ExCnd: Ambient        
+Surface Right-Frm       Area: 84.2    Az: 270 T: 90  UNom: 0.113    UA: 9.49   InAbs: 0.60 ExAbs: 0.50   ExCnd: Ambient        
+Surface Front-Cav       Area: 222.8   Az: 0   T: 90  UNom: 0.0633   UA: 14.09  InAbs: 0.60 ExAbs: 0.50   ExCnd: Ambient        
+Surface Left-Cav        Area: 252.8   Az: 90  T: 90  UNom: 0.0633   UA: 15.99  InAbs: 0.60 ExAbs: 0.50   ExCnd: Ambient        
+Surface Back-Cav        Area: 252.8   Az: 180 T: 90  UNom: 0.0633   UA: 15.99  InAbs: 0.60 ExAbs: 0.50   ExCnd: Ambient        
+Surface Right-Cav       Area: 252.8   Az: 270 T: 90  UNom: 0.0633   UA: 15.99  InAbs: 0.60 ExAbs: 0.50   ExCnd: Ambient        
+Surface Slab On Grade 1-Area: 307.2   Az: 0   T: 180 UNom: 0.143    UA: 43.78  InAbs: 0.80 ExAbs: 0.50   ExCnd: Ground         
+Surface Slab On Grade 1-Area: 1372.8  Az: 0   T: 180 UNom: 0.0683   UA: 93.72  InAbs: 0.80 ExAbs: 0.50   ExCnd: Ground         
+Surface Slab On Grade 1-Area: 76.8    Az: 0   T: 180 UNom: 0.243    UA: 18.65  InAbs: 0.80 ExAbs: 0.50   ExCnd: Ground         
+Surface Slab On Grade 1-Area: 343.2   Az: 0   T: 180 UNom: 0.0771   UA: 26.44  InAbs: 0.80 ExAbs: 0.50   ExCnd: Ground         
+Surface Furniture-imass Area: 4200.0  Az: 0   T: 90  UNom: 0.256    UA: 1073.92InAbs: 0.60 ExAbs: 0.60   ExCnd: AdjZn Condition
+Surface WallFrm-imass   Area: 525.0   Az: 0   T: 90  UNom: 0.171    UA: 89.89  InAbs: 0.60 ExAbs: 0.60   ExCnd: AdjZn Condition
+Surface WallCav-imass   Area: 1575.0  Az: 0   T: 90  UNom: 0.441    UA: 694.12 InAbs: 0.60 ExAbs: 0.60   ExCnd: AdjZn Condition
+
+Window Win F1-NoScrn    Area: 52.50   Az: 0   T: 90  UNom: 0.320    UA: 16.8    SMSO: 1.0000 SMSC: 1.0000 ExCnd: Ambient       
+  ASHWAT SHGC: 0.250    ref: ELSLE_AIR (SHGC=0.277 U=0.289)      frmArea: 7.87      mSolar: 0.956  mCond: 1.107   
+Window Win F1-Scrn      Area: 52.50   Az: 0   T: 90  UNom: 0.320    UA: 16.8    SMSO: 1.0000 SMSC: 1.0000 ExCnd: Ambient       
+  ASHWAT SHGC: 0.250    ref: ELSLE_AIR (SHGC=0.277 U=0.289)      frmArea: 7.87      mSolar: 0.956  mCond: 1.107   
+Window Win L1-NoScrn    Area: 52.50   Az: 90  T: 90  UNom: 0.320    UA: 16.8    SMSO: 1.0000 SMSC: 1.0000 ExCnd: Ambient       
+  ASHWAT SHGC: 0.250    ref: ELSLE_AIR (SHGC=0.277 U=0.289)      frmArea: 7.87      mSolar: 0.956  mCond: 1.107   
+Window Win L1-Scrn      Area: 52.50   Az: 90  T: 90  UNom: 0.320    UA: 16.8    SMSO: 1.0000 SMSC: 1.0000 ExCnd: Ambient       
+  ASHWAT SHGC: 0.250    ref: ELSLE_AIR (SHGC=0.277 U=0.289)      frmArea: 7.87      mSolar: 0.956  mCond: 1.107   
+Window Win B1-NoScrn    Area: 52.50   Az: 180 T: 90  UNom: 0.320    UA: 16.8    SMSO: 1.0000 SMSC: 1.0000 ExCnd: Ambient       
+  ASHWAT SHGC: 0.250    ref: ELSLE_AIR (SHGC=0.277 U=0.289)      frmArea: 7.87      mSolar: 0.956  mCond: 1.107   
+Window Win B1-Scrn      Area: 52.50   Az: 180 T: 90  UNom: 0.320    UA: 16.8    SMSO: 1.0000 SMSC: 1.0000 ExCnd: Ambient       
+  ASHWAT SHGC: 0.250    ref: ELSLE_AIR (SHGC=0.277 U=0.289)      frmArea: 7.87      mSolar: 0.956  mCond: 1.107   
+Window Win R1-NoScrn    Area: 52.50   Az: 270 T: 90  UNom: 0.320    UA: 16.8    SMSO: 1.0000 SMSC: 1.0000 ExCnd: Ambient       
+  ASHWAT SHGC: 0.250    ref: ELSLE_AIR (SHGC=0.277 U=0.289)      frmArea: 7.87      mSolar: 0.956  mCond: 1.107   
+Window Win R1-Scrn      Area: 52.50   Az: 270 T: 90  UNom: 0.320    UA: 16.8    SMSO: 1.0000 SMSC: 1.0000 ExCnd: Ambient       
+  ASHWAT SHGC: 0.250    ref: ELSLE_AIR (SHGC=0.277 U=0.289)      frmArea: 7.87      mSolar: 0.956  mCond: 1.107   
+
+Mass Ceiling (below a   Area: 127.033   UNom: 0.03391     tc: 3.57   subhrly: 
+ Inside: Zone 'Conditioned-zn'   RSrfNom: 0.61                                
+  Layer  thk: 0.0417  vhc: 10.800  cond: 0.0917     R: 0.455  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.232   vhc: 0.300   cond: 0.0387     R: 5.983  
+  Layer  thk: 0.232   vhc: 0.300   cond: 0.0387     R: 5.983  
+  Layer  thk: 0.232   vhc: 0.300   cond: 0.0387     R: 5.983  
+  Layer  thk: 0.232   vhc: 0.300   cond: 0.0387     R: 5.983  
+ Outside: Zone 'Attic-atc'   RSrfNom: 0.92                                    
+Mass Ceiling (below a   Area: 1687.72   UNom: 0.02989     tc: 0.62   subhrly: 
+ Inside: Zone 'Conditioned-zn'   RSrfNom: 0.61                                
+  Layer  thk: 0.0417  vhc: 10.800  cond: 0.0917     R: 0.455  
+  Layer  thk: 0.244   vhc: 0.300   cond: 0.0387     R: 6.294  
+  Layer  thk: 0.244   vhc: 0.300   cond: 0.0387     R: 6.294  
+  Layer  thk: 0.244   vhc: 0.300   cond: 0.0387     R: 6.294  
+  Layer  thk: 0.244   vhc: 0.300   cond: 0.0387     R: 6.294  
+  Layer  thk: 0.244   vhc: 0.300   cond: 0.0387     R: 6.294  
+ Outside: Zone 'Attic-atc'   RSrfNom: 0.92                                    
+Mass Ceiling (below a   Area: 6.811     UNom: 0.1333      tc: 7.09   subhrly: 
+ Inside: Zone 'Conditioned-zn'   RSrfNom: 0.61                                
+  Layer  thk: 0.0417  vhc: 10.800  cond: 0.0917     R: 0.455  
+  Layer  thk: 0.0562  vhc: 13.650  cond: 0.0817     R: 0.688  
+  Layer  thk: 0.0562  vhc: 13.650  cond: 0.0817     R: 0.688  
+  Layer  thk: 0.0562  vhc: 13.650  cond: 0.0817     R: 0.688  
+  Layer  thk: 0.0562  vhc: 13.650  cond: 0.0817     R: 0.688  
+  Layer  thk: 0.0562  vhc: 13.650  cond: 0.0817     R: 0.688  
+  Layer  thk: 0.0562  vhc: 13.650  cond: 0.0817     R: 0.688  
+  Layer  thk: 0.0562  vhc: 13.650  cond: 0.0817     R: 0.688  
+  Layer  thk: 0.0562  vhc: 13.650  cond: 0.0817     R: 0.688  
+  Layer  thk: 0.0417  vhc: 18.450  cond: 0.0613     R: 0.680  
+  Layer  thk: 0.0833  vhc: 24.000  cond: 1.000      R: 0.0833 
+ Outside: Ambient   RSrfNom: 0.17                                             
+Mass Ceiling (below a   Area: 90.492    UNom: 0.07344     tc: 2.54   subhrly: 
+ Inside: Zone 'Conditioned-zn'   RSrfNom: 0.61                                
+  Layer  thk: 0.0417  vhc: 10.800  cond: 0.0917     R: 0.455  
+  Layer  thk: 0.225   vhc: 0.300   cond: 0.0387     R: 5.809  
+  Layer  thk: 0.225   vhc: 0.300   cond: 0.0387     R: 5.809  
+  Layer  thk: 0.0417  vhc: 18.450  cond: 0.0613     R: 0.680  
+  Layer  thk: 0.0833  vhc: 24.000  cond: 1.000      R: 0.0833 
+ Outside: Ambient   RSrfNom: 0.17                                             
+Mass Ceiling (below a   Area: 13.156    UNom: 0.04786     tc: 11.81  subhrly: 
+ Inside: Zone 'Conditioned-zn'   RSrfNom: 0.61                                
+  Layer  thk: 0.0417  vhc: 10.800  cond: 0.0917     R: 0.455  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.153   vhc: 0.300   cond: 0.0387     R: 3.942  
+  Layer  thk: 0.153   vhc: 0.300   cond: 0.0387     R: 3.942  
+  Layer  thk: 0.0608  vhc: 13.650  cond: 0.0817     R: 0.744  
+  Layer  thk: 0.0608  vhc: 13.650  cond: 0.0817     R: 0.744  
+  Layer  thk: 0.0608  vhc: 13.650  cond: 0.0817     R: 0.744  
+  Layer  thk: 0.0608  vhc: 13.650  cond: 0.0817     R: 0.744  
+  Layer  thk: 0.0608  vhc: 13.650  cond: 0.0817     R: 0.744  
+  Layer  thk: 0.0608  vhc: 13.650  cond: 0.0817     R: 0.744  
+  Layer  thk: 0.0608  vhc: 13.650  cond: 0.0817     R: 0.744  
+  Layer  thk: 0.0608  vhc: 13.650  cond: 0.0817     R: 0.744  
+  Layer  thk: 0.0608  vhc: 13.650  cond: 0.0817     R: 0.744  
+  Layer  thk: 0.0608  vhc: 13.650  cond: 0.0817     R: 0.744  
+  Layer  thk: 0.0417  vhc: 18.450  cond: 0.0613     R: 0.680  
+  Layer  thk: 0.0833  vhc: 24.000  cond: 1.000      R: 0.0833 
+ Outside: Ambient   RSrfNom: 0.17                                             
+Mass Ceiling (below a   Area: 174.788   UNom: 0.03019     tc: 2.71   subhrly: 
+ Inside: Zone 'Conditioned-zn'   RSrfNom: 0.61                                
+  Layer  thk: 0.0417  vhc: 10.800  cond: 0.0917     R: 0.455  
+  Layer  thk: 0.241   vhc: 0.300   cond: 0.0387     R: 6.224  
+  Layer  thk: 0.241   vhc: 0.300   cond: 0.0387     R: 6.224  
+  Layer  thk: 0.241   vhc: 0.300   cond: 0.0387     R: 6.224  
+  Layer  thk: 0.241   vhc: 0.300   cond: 0.0387     R: 6.224  
+  Layer  thk: 0.241   vhc: 0.300   cond: 0.0387     R: 6.224  
+  Layer  thk: 0.0417  vhc: 18.450  cond: 0.0613     R: 0.680  
+  Layer  thk: 0.0833  vhc: 24.000  cond: 1.000      R: 0.0833 
+ Outside: Ambient   RSrfNom: 0.17                                             
+Mass Front-Frm          Area: 74.250    UNom: 0.1127      tc: 2.98   subhrly: 
+ Inside: Zone 'Conditioned-zn'   RSrfNom: 0.68                                
+  Layer  thk: 0.0417  vhc: 10.800  cond: 0.0917     R: 0.455  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0833  vhc: 0.525   cond: 0.0208     R: 4.001  
+ Outside: Ambient   RSrfNom: 0.17                                             
+Mass Left-Frm           Area: 84.250    UNom: 0.1127      tc: 2.98   subhrly: 
+ Inside: Zone 'Conditioned-zn'   RSrfNom: 0.68                                
+  Layer  thk: 0.0417  vhc: 10.800  cond: 0.0917     R: 0.455  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0833  vhc: 0.525   cond: 0.0208     R: 4.001  
+ Outside: Ambient   RSrfNom: 0.17                                             
+Mass Back-Frm           Area: 84.250    UNom: 0.1127      tc: 2.98   subhrly: 
+ Inside: Zone 'Conditioned-zn'   RSrfNom: 0.68                                
+  Layer  thk: 0.0417  vhc: 10.800  cond: 0.0917     R: 0.455  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0833  vhc: 0.525   cond: 0.0208     R: 4.001  
+ Outside: Ambient   RSrfNom: 0.17                                             
+Mass Right-Frm          Area: 84.250    UNom: 0.1127      tc: 2.98   subhrly: 
+ Inside: Zone 'Conditioned-zn'   RSrfNom: 0.68                                
+  Layer  thk: 0.0417  vhc: 10.800  cond: 0.0917     R: 0.455  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0833  vhc: 0.525   cond: 0.0208     R: 4.001  
+ Outside: Ambient   RSrfNom: 0.17                                             
+Mass Front-Cav          Area: 222.750   UNom: 0.06327     tc: 0.39   subhrly: 
+ Inside: Zone 'Conditioned-zn'   RSrfNom: 0.68                                
+  Layer  thk: 0.0417  vhc: 10.800  cond: 0.0917     R: 0.455  
+  Layer  thk: 0.146   vhc: 0.300   cond: 0.0278     R: 5.250  
+  Layer  thk: 0.146   vhc: 0.300   cond: 0.0278     R: 5.250  
+  Layer  thk: 0.0833  vhc: 0.525   cond: 0.0208     R: 4.001  
+ Outside: Ambient   RSrfNom: 0.17                                             
+Mass Left-Cav           Area: 252.750   UNom: 0.06327     tc: 0.39   subhrly: 
+ Inside: Zone 'Conditioned-zn'   RSrfNom: 0.68                                
+  Layer  thk: 0.0417  vhc: 10.800  cond: 0.0917     R: 0.455  
+  Layer  thk: 0.146   vhc: 0.300   cond: 0.0278     R: 5.250  
+  Layer  thk: 0.146   vhc: 0.300   cond: 0.0278     R: 5.250  
+  Layer  thk: 0.0833  vhc: 0.525   cond: 0.0208     R: 4.001  
+ Outside: Ambient   RSrfNom: 0.17                                             
+Mass Back-Cav           Area: 252.750   UNom: 0.06327     tc: 0.39   subhrly: 
+ Inside: Zone 'Conditioned-zn'   RSrfNom: 0.68                                
+  Layer  thk: 0.0417  vhc: 10.800  cond: 0.0917     R: 0.455  
+  Layer  thk: 0.146   vhc: 0.300   cond: 0.0278     R: 5.250  
+  Layer  thk: 0.146   vhc: 0.300   cond: 0.0278     R: 5.250  
+  Layer  thk: 0.0833  vhc: 0.525   cond: 0.0208     R: 4.001  
+ Outside: Ambient   RSrfNom: 0.17                                             
+Mass Right-Cav          Area: 252.750   UNom: 0.06327     tc: 0.39   subhrly: 
+ Inside: Zone 'Conditioned-zn'   RSrfNom: 0.68                                
+  Layer  thk: 0.0417  vhc: 10.800  cond: 0.0917     R: 0.455  
+  Layer  thk: 0.146   vhc: 0.300   cond: 0.0278     R: 5.250  
+  Layer  thk: 0.146   vhc: 0.300   cond: 0.0278     R: 5.250  
+  Layer  thk: 0.0833  vhc: 0.525   cond: 0.0208     R: 4.001  
+ Outside: Ambient   RSrfNom: 0.17                                             
+Mass Slab On Grade 1-   Area: 307.200   UNom: 0.1425      tc: 41.34  subhrly: 
+ Inside: Zone 'Conditioned-zn'   RSrfNom: 0.92                                
+  Layer  thk: 0.0417  vhc: 4.182   cond: 0.0200     R: 2.083  
+  Layer  thk: 0.146   vhc: 28.800  cond: 1.000      R: 0.146  
+  Layer  thk: 0.146   vhc: 28.800  cond: 1.000      R: 0.146  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+ Outside: Ground   RSrfNom: 1.72                                              
+Mass Slab On Grade 1-   Area: 1372.80   UNom: 0.06827     tc: 41.34  subhrly: 
+ Inside: Zone 'Conditioned-zn'   RSrfNom: 0.92                                
+  Layer  thk: 0.0417  vhc: 4.182   cond: 0.0200     R: 2.083  
+  Layer  thk: 0.146   vhc: 28.800  cond: 1.000      R: 0.146  
+  Layer  thk: 0.146   vhc: 28.800  cond: 1.000      R: 0.146  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+ Outside: Ground   RSrfNom: 9.35                                              
+Mass Slab On Grade 1-   Area: 76.800    UNom: 0.2428      tc: 41.21  subhrly: 
+ Inside: Zone 'Conditioned-zn'   RSrfNom: 0.92                                
+  Layer  thk: 0.146   vhc: 28.800  cond: 1.000      R: 0.146  
+  Layer  thk: 0.146   vhc: 28.800  cond: 1.000      R: 0.146  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+ Outside: Ground   RSrfNom: 0.91                                              
+Mass Slab On Grade 1-   Area: 343.200   UNom: 0.07705     tc: 41.21  subhrly: 
+ Inside: Zone 'Conditioned-zn'   RSrfNom: 0.92                                
+  Layer  thk: 0.146   vhc: 28.800  cond: 1.000      R: 0.146  
+  Layer  thk: 0.146   vhc: 28.800  cond: 1.000      R: 0.146  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+  Layer  thk: 0.154   vhc: 23.000  cond: 1.000      R: 0.154  
+ Outside: Ground   RSrfNom: 9.77                                              
+Mass Furniture-imass    Area: 4200.00   UNom: 0.2557      tc: 1.90   subhrly: 
+ Inside: Zone 'Conditioned-zn'   RSrfNom: 0.68                                
+  Layer  thk: 0.0521  vhc: 13.650  cond: 0.0817     R: 0.638  
+  Layer  thk: 0.0521  vhc: 13.650  cond: 0.0817     R: 0.638  
+  Layer  thk: 0.0521  vhc: 13.650  cond: 0.0817     R: 0.638  
+  Layer  thk: 0.0521  vhc: 13.650  cond: 0.0817     R: 0.638  
+ Outside: Zone 'Conditioned-zn'   RSrfNom: 0.68                               
+Mass WallFrm-imass      Area: 525.000   UNom: 0.1712      tc: 3.25   subhrly: 
+ Inside: Zone 'Conditioned-zn'   RSrfNom: 0.68                                
+  Layer  thk: 0.0417  vhc: 10.800  cond: 0.0917     R: 0.455  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0583  vhc: 13.650  cond: 0.0817     R: 0.714  
+  Layer  thk: 0.0417  vhc: 10.800  cond: 0.0917     R: 0.455  
+ Outside: Zone 'Conditioned-zn'   RSrfNom: 0.68                               
+Mass WallCav-imass      Area: 1575.00   UNom: 0.4407      tc: 0.60   subhrly: 
+ Inside: Zone 'Conditioned-zn'   RSrfNom: 0.68                                
+  Layer  thk: 0.0417  vhc: 10.800  cond: 0.0917     R: 0.455  
+  Layer  thk: 0.0417  vhc: 10.800  cond: 0.0917     R: 0.455  
+ Outside: Zone 'Conditioned-zn'   RSrfNom: 0.68                               
+
+IzXfer Conditioned-Bypa Zn1: Conditioned-zn  Zn2: Attic-atc  UAconst: 31.500 NVctrl: None
+    Vlo: 0        Vhi:  0        Hz: 0        Cd: 0        NVc: 0        Cpr: 0      
+IzXfer Conditioned-WlLU Zn1: Conditioned-zn  Zn2: (ambient)  UAconst: 0      NVctrl: AirNetExt
+    Vlo: 0.0476   Vhi:  0.0476   Hz: 2.250    Cd: 1.000    NVc: 0        Cpr: 0.600  
+IzXfer Conditioned-WlLS Zn1: Conditioned-zn  Zn2: (ambient)  UAconst: 0      NVctrl: AirNetExt
+    Vlo: 0.0952   Vhi:  0.0952   Hz: 2.250    Cd: 1.000    NVc: 0        Cpr: -0.650 
+IzXfer Conditioned-WlLD Zn1: Conditioned-zn  Zn2: (ambient)  UAconst: 0      NVctrl: AirNetExt
+    Vlo: 0.0476   Vhi:  0.0476   Hz: 2.250    Cd: 1.000    NVc: 0        Cpr: -0.300 
+IzXfer Conditioned-WlHU Zn1: Conditioned-zn  Zn2: (ambient)  UAconst: 0      NVctrl: AirNetExt
+    Vlo: 0.0476   Vhi:  0.0476   Hz: 6.750    Cd: 1.000    NVc: 0        Cpr: 0.600  
+IzXfer Conditioned-WlHS Zn1: Conditioned-zn  Zn2: (ambient)  UAconst: 0      NVctrl: AirNetExt
+    Vlo: 0.0952   Vhi:  0.0952   Hz: 6.750    Cd: 1.000    NVc: 0        Cpr: -0.650 
+IzXfer Conditioned-WlHD Zn1: Conditioned-zn  Zn2: (ambient)  UAconst: 0      NVctrl: AirNetExt
+    Vlo: 0.0476   Vhi:  0.0476   Hz: 6.750    Cd: 1.000    NVc: 0        Cpr: -0.300 
+IzXfer Conditioned-WnLU Zn1: Conditioned-zn  Zn2: (ambient)  UAconst: 0      NVctrl: AirNetExt
+    Vlo: .000010  Vhi:  .000026  Hz: 2.670    Cd: 0.500    NVc: 0        Cpr: 0.600  
+IzXfer Conditioned-WnLS Zn1: Conditioned-zn  Zn2: (ambient)  UAconst: 0      NVctrl: AirNetExt
+    Vlo: .000010  Vhi:  .000052  Hz: 2.670    Cd: 0.500    NVc: 0        Cpr: -0.650 
+IzXfer Conditioned-WnLD Zn1: Conditioned-zn  Zn2: (ambient)  UAconst: 0      NVctrl: AirNetExt
+    Vlo: .000010  Vhi:  .000026  Hz: 2.670    Cd: 0.500    NVc: 0        Cpr: -0.300 
+IzXfer Conditioned-WnHU Zn1: Conditioned-zn  Zn2: (ambient)  UAconst: 0      NVctrl: AirNetExt
+    Vlo: .000010  Vhi:  .000026  Hz: 6.670    Cd: 0.500    NVc: 0        Cpr: 0.600  
+IzXfer Conditioned-WnHS Zn1: Conditioned-zn  Zn2: (ambient)  UAconst: 0      NVctrl: AirNetExt
+    Vlo: .000010  Vhi:  .000052  Hz: 6.670    Cd: 0.500    NVc: 0        Cpr: -0.650 
+IzXfer Conditioned-WnHD Zn1: Conditioned-zn  Zn2: (ambient)  UAconst: 0      NVctrl: AirNetExt
+    Vlo: .000010  Vhi:  .000026  Hz: 6.670    Cd: 0.500    NVc: 0        Cpr: -0.300 
+IzXfer Conditioned-xAtt Zn1: Conditioned-zn  Zn2: Attic-atc  UAconst: 0      NVctrl: AirNetIZ
+    Vlo: 0.540    Vhi:  0.540    Hz: 9.000    Cd: 1.000    NVc: 0        Cpr: 0      
+IzXfer Conditioned-IAQF Zn1: Conditioned-zn  Zn2: (ambient)  UAconst: 0      NVctrl: AirNetExtFan
+    Vlo: 0        Vhi:  0        Hz: 0        Cd: 0.800    NVc: 0        Cpr: 0      
+IzXfer Conditioned-WHF  Zn1: Conditioned-zn  Zn2: Attic-atc  UAconst: 0      NVctrl: AirNetIZFan
+    Vlo: 0        Vhi:  0        Hz: 0        Cd: 0.800    NVc: 0        Cpr: 0      
+IzXfer Conditioned-zn-S Zn1: Conditioned-zn  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
+    Vlo: 0        Vhi:  0        Hz: 0        Cd: 0        NVc: 0        Cpr: 0      
+IzXfer Conditioned-zn-S Zn1: Conditioned-zn  Zn2: --  UAconst: 0      NVctrl: AirNetSysAir
+    Vlo: 0        Vhi:  0        Hz: 0        Cd: 0        NVc: 0        Cpr: 0      
+
+
 Energy (kBtu + into the zone, except E = Energy Consumed) for Thu 03-Dec
 
  Hr Tout  WBo    Wo Tatt  Tin Trad   Win RHin WBin   Slr  Cond  Surf  ItgS  ItgL  AirL sInfVnt ACH Htgs  Htgl  Htgt  capF  inpF   PLR  FfanE   HtgE
@@ -434,7 +761,7 @@ Subhourly User-defined Report, Fri 10-Jul
 ! Log for Run 001:
 
 ################
-! CSE 0.926.0+transmitted-solar.c31255dc.20.dirty for Win32 console   Sun 31-Aug-25  10: am
+! CSE 0.927.0-rc2 for Win32 console   Thu 09-Oct-25   1:2 pm
 
 
 ================
@@ -4795,7 +5122,7 @@ ASHWAT Win R1-Scrn  nL=4  tao=51.26 tro=37.20 teo=45.67   tai=68.00 tri=67.55 te
    layer temps=   77.89  64.17  70.49  71.22
    SHGC=0.120  ucg=0.252  cr=0.093  cc=0.159  FP=0.065  FM=0.051  Cx=0.430
       COG tso=77.89 hco=0.659 hro=0.795 qro=0.00   tsi=71.22 hci=0.354 hri=0.854 qri=0.00   qSrf=5.66
-! CSE 0.926.0+transmitted-solar.c31255dc.20.dirty for Win32 console
+! CSE 0.927.0-rc2 for Win32 console
 
 
 
@@ -6173,7 +6500,7 @@ Input for Run 001:
         
         Report rpType=MTR rpMeter=MtrElec rpFreq=MONTH rpBtuSf=1000
         Report rpType=MTR rpMeter=MtrNatGas rpFreq=MONTH rpBtuSf=1000
-        // REPORT   rpType=ZDD     rpZone="Conditioned-zn"
+        REPORT   rpType=ZDD     rpZone="Conditioned-zn"
         
         
         //Coldest Day
@@ -6364,18 +6691,18 @@ Input for Run 001:
 
 
 
-! CSE 0.926.0+transmitted-solar.c31255dc.20.dirty for Win32 console run(s) done: Sun 31-Aug-25  10: am
+! CSE 0.927.0-rc2 for Win32 console run(s) done: Thu 09-Oct-25   1:2 pm
 
 ! Executable:   d:\cse\builds\cse.exe
-!               31-Aug-25  10: am   (VS 14.29    3377664 bytes)  (HPWH 1.26.0)
-! Command line: -x!  -t1 ashwat1
-! Input file:   D:\cse\test\ashwat1.cse
+!               09-Oct-25   1:1 pm   (VS 14.29    3378176 bytes)  (HPWH 1.26.0)
+! Command line: -x!  -t1 ASHWAT1
+! Input file:   D:\cse\test\ASHWAT1.cse
 ! Report file:  D:\CSE\TEST\ASHWAT1.REP
 
 ! Timing info --
 
 !                Input:  Time = 0.09     Calls = 2         T/C = 0.0465
-!           AutoSizing:  Time = 0.65     Calls = 1         T/C = 0.6520
-!           Simulation:  Time = 6.59     Calls = 1         T/C = 6.5870
+!           AutoSizing:  Time = 0.65     Calls = 1         T/C = 0.6510
+!           Simulation:  Time = 6.54     Calls = 1         T/C = 6.5430
 !              Reports:  Time = 0.01     Calls = 1         T/C = 0.0050
-!                Total:  Time = 7.34     Calls = 1         T/C = 7.3410
+!                Total:  Time = 7.30     Calls = 1         T/C = 7.2990

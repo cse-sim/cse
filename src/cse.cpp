@@ -108,13 +108,17 @@ const char ProgVersion[] = CSEVRSN_TEXT;	// program version text "x.xxx" (csevrs
 
 const char ProgVariant[] = 	// text showing platform TODO: Revise to use CSE_OS / CSE_COMPILER / CSE_ARCH
 	#if defined( WIN)
-		"for Win32";
+	   "for Win32";
 	#elif defined( DLL)
-		"Win32 DLL";
+	   "Win32 DLL";
 	#elif defined( CSE_DLL)
-		"DLL";
+	   "DLL";
 	#elif defined( CSE_CONSOLE)
+	   #if CSE_ARCH == 64
+		"for Win64 console";
+	   #else
 		"for Win32 console";
+	   #endif
 	#endif
 
 int TestOptions = 0;	// test option bits, set via -t command line argument

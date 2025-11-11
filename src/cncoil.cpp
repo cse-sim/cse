@@ -1948,13 +1948,12 @@ x	}
 #else //11-1-95: move wena init into autoSize loop below
 	DBL wena = 0;					    	// wena: artificial wen: increased if coil dry
 #endif
-	DBL te = 0, he;
-	FLOAT we = 0;
-#ifdef DEBUG
-	SI cs1=0, cs2=0;					/* removed redundant init when BCC32 4.5 warned, 12-94.
-							   But init appears non-redundant, restored 7-95. */
-#endif
-	for (SI j = 1;  j++;  )
+	DBL te = 0.;
+	DBL he = 0.;
+	FLOAT we = 0.f;
+	[[maybe_unused]] int cs1 = 0;
+	[[maybe_unused]] int cs2 = 0;
+	for (int j = 1;  j++;  )
 	{
 
 //--- coil effectiveness at actual entering air conditions

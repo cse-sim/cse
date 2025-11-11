@@ -1278,7 +1278,7 @@ RC ZNR::zn_AirRequest(		// determine air requirement given rs_asSup
 		orWarn("Flipped tSup  RSYS='%s', tPln=%0.3f, tSup=%0.3f, tSP=%0.1f, tZn=%0.3f\n",
 			rs->Name(), rs->rs_asOut.as_tdb, tSup0, zn_tzsp, tz);
 	}
-	if (zn_hcMode != RSYS::rsmOFF && zn_tzsp > 0.f)
+	if (zn_hcMode == RSYS::rsmOFF && zn_tzsp > 0.f)
 		orWarn("Inconsistent hcMode  RSYS='%s', hcMode=%d, tSP=%0.1f, tZn=%0.3f\n",
 			rs->Name(), zn_hcMode, zn_tzsp, tz);
 #endif
@@ -2660,9 +2660,8 @@ RC RSYS::rs_FazInit(		// init before autosize (once) and main sim
 	return rc;
 }		// RSYS::rs_FazInit
 //-----------------------------------------------------------------------------
-RC RSYS::rs_RddInit( int isAusz)	// init before each autosize design day and main sim
+RC RSYS::rs_RddInit( int /*isAusz*/)	// init before each autosize design day and main sim
 {
-	isAusz;
 	return RCOK;
 }		// RSYS::rs_RddInit
 //-----------------------------------------------------------------------------
@@ -3276,7 +3275,7 @@ RC RSYS::rs_SetupCapH(		// set heating members that do not vary during simulatio
 {
 	RC rc = RCOK;
 
-	bool bAutosizeFazInit = options & 1;
+	// bool bAutosizeFazInit = options & 1;	not used
 	bool bAssumeNotAutosizing = options & 2;
 
 	if (rs_IsPMHtg())
@@ -4554,7 +4553,7 @@ float RSYS::rs_PerfASHP2(		// ASHP performance
 							//   multiplies final COP result
 // returns gross (compressor-only) full-speed COP (as adjusted by COPAdjF)
 {
-	RC rc = RCOK;
+	[[maybe_unused]] RC rc = RCOK;
 	capDfHt = 0.f;
 	bool bDoDefrostAux = (ashpModel & 0x100) == 0
 		           && rs_defrostModel == C_RSYSDEFROSTMODELCH_REVCYCLEAUX;
@@ -6145,6 +6144,7 @@ double RSYS::rs_FxCapForSpeedF(		// call-back fcn for regula method
 	double& speedF)		// trial speedF (may be returned modified)
 // returns required rs_fxCap[ 0] (= rs_amf / amfReq), >1 = excess capacity
 {
+	[[maybe_unused]] RC rc = RCOK;
 #if defined( _DEBUG)
 	double speedFWas = speedF;
 	float rsSpeedFWas = rs_speedF;
@@ -6163,7 +6163,7 @@ double RSYS::rs_FxCapForSpeedF(		// call-back fcn for regula method
 	//   (when far from solution errors are common and not meaningful
 	int arOptions = abs(rs_fxCap[0] - 1.f) < .01f;
 
-	RC rc = rs_TotalAirRequestForSpeedF(float(speedF), arOptions);
+	rc |= rs_TotalAirRequestForSpeedF(float(speedF), arOptions);
 
 	// if rc != RCOK, rs_fxCap[0] is 0
 

@@ -384,7 +384,7 @@ static PBHEAD sgdh = { PBDATOFFL, sgdt, 0, 0, 0 };
 static PB_DATOFFL ashwatT[] = {
 //   r    c    memberOff               dt       units wid cvfmt label
 { L, C+1, 16,  off( FENAW, fa_SHGC),   DTF,     UNN,  8, FL+3, "ASHWAT SHGC: " },
-{ L, C,  C+6,  off( FENAW, fa_refDesc),DTANAME, UNN, 35, FS,   " ref: " },
+{ L, C,  C+6,  off( FENAW, fa_refDesc),DTCH,    UNN, 35, FS,   " ref: " },
 { L, C,  C+15, off( FENAW, fa_frmArea),DTF,     UNN,  8, FL+2, " frmArea: " },
 { L, C,  C+10, off( FENAW, fa_mSolar), DTF,     UNN,  8, FL+3, " mSolar: " },
 { L, C,  C+6,  off( FENAW, fa_mCond),  DTF,     UNN,  8, FL+3, " mCond: " },

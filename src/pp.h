@@ -23,7 +23,7 @@ bool ppFindFile( const char *fname, char *fullPath);	// search pp paths, return 
 bool ppFindFile( char* &fname);	// ditto, update fname to path found
 #endif
 bool ppFindFile(CULSTR& fname);	// ditto, update fname to path found
-RC FC ppOpen( const char* fname, char *defex);		// open file
+RC FC ppOpen( const char* fname, const char* defex);		// open file
 void FC ppClose();						// close file(s)
 USI FC ppGet( char *p, USI n);			// get preprocessed text
 

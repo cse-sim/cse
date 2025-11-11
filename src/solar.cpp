@@ -65,8 +65,11 @@
 						//  values --> use ASHRAE.  11-15-00
 
 // local functions
+#if defined( REFGLSDOE2)
 static void RefGlsDOE2( double eta, float& trans, float& abso);
+#else
 static void RefGlsASHRAE( double eta, float& trans, float& abso);
+#endif
 static double DCToAzm( double dirCos[ 3]);
 
 //-------------------------------------------------------------------------
@@ -1847,9 +1850,8 @@ void SLRSURF::Init(
 	float tilt,		// surf tilt (deg, 0=horiz up, 90=vert, 180=horiz down)
 	float grRef,	// ground reflectivity as seen by surface
 					//   (dimless, 0-1)
-	int options /*=0*/)	// options (future)
+	[[maybe_unused]] int options /*=0*/)	// options (future)
 {
-	options;
 	ss_key = key;
 	ss_azm = azm;
 	ss_tilt = tilt;

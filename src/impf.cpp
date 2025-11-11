@@ -429,7 +429,8 @@ LOCAL RC impFcnFile( 			// find or add IFFNM record
 // find else add Import file field names record for this IMPORTFILE name.
 
 	IFFNM *iffnm;
-	if (IffnmB.findRecByNmU( impfName, pIffnmi, (record **)&iffnm) != RCOK)	// find record / if not found (ancrec.cpp)
+	if (basAnc::FindRecByName( &IffnmB, impfName, basAnc::frnUNIQUE, (record **)&iffnm, pIffnmi) != RCOK)	// find record / if not found
+	
 	{
 		// returns RCBAD not found or RCBAD2 not unique, but latter is not expected.
 
@@ -450,7 +451,7 @@ LOCAL RC impFcnFile( 			// find or add IFFNM record
 // get frequency or return safe assumption
 
 	IMPF* iimpf;
-	if ( ImpfiB.findRecByNmU( iffnm->Name(), NULL, (record**)&iimpf )==RCOK	// look for IMPF record / if found
+	if ( basAnc::FindRecByName( &ImpfiB, iffnm->Name(), basAnc::frnUNIQUE, (record**)&iimpf )==RCOK	// look for IMPF record / if found
 			&& iimpf->sstat[IMPF_IMFREQ] & FsVAL )					// and frequency has been specified
 		*imFreq = iimpf->imFreq;						// return user-specified frequency
 	else
@@ -483,10 +484,11 @@ RC topImpf()		// check/process ImportFiles at end of input
 
 	IFFNM* iffnm;
 	IMPF* iimpf;
-	RLUP (IffnmB, iffnm)	// loop over IFFNM records (ancrec.h macro). One anc used for expr compile support and run.
+	RLUP (IffnmB, iffnm)	// loop over IFFNM records. One anc used for expr compile support and run.
 	{
 		// find ImportFile else error
-		if (ImpfiB.findRecByNmU( iffnm->Name(), &iffnm->impfi, (record**)&iimpf )!= RCOK)	// look for IMPF record, lib\ancrec.cpp
+		if (basAnc::FindRecByName(&ImpfiB, iffnm->Name(), basAnc::frnUNIQUE, (record**)&iimpf, &iffnm->impfi )!= RCOK)	// look for IMPF record
+
 		{
 			// return is RCBAD not found, RCBAD2 ambiguous, but latter not expected.
 			// note: don't use oer cuz it would show IFFNM object type name "ImpFileFldNames".
@@ -497,7 +499,7 @@ RC topImpf()		// check/process ImportFiles at end of input
 			// iffnm->impfi remains 0 to indicate no ImportFile for Import()(s) that created this IFFNM.
 		}
 
-		// associate importfile with iffnm. Other-way association, iffnm->impfi, was set by findRecByNmU call just above.
+		// associate importfile with iffnm. Other-way association, iffnm->impfi, was set by FindRecByName call just above.
 		iimpf->iffnmi = iffnm->ss;			// store IffnmB record subscript in ImpfiB record member
 		// is iffnmi ever used?
 	}
@@ -1106,7 +1108,7 @@ bool FC IMPF::readRec()	 // get next import file record in buffer and init to sc
 	do						// repeat if encounter end of buffer
 		bufI2 += (USI)strcspn( buf + bufI2, "\r\n\f");	// advance to record terminating character (else end buffer)
 	while ( (!buf[bufI2]				// if got to end buffer
-			 || buf[bufI2]=='\r' && !buf[bufI2+1])	// or to \r at end buffer (need \r\n together for correct line count)
+			 || (buf[bufI2]=='\r' && !buf[bufI2+1]))	// or to \r at end buffer (need \r\n together for correct line count)
 			&&  readBuf() );				// read buffer full / if read any chars
 	// (readBuf false if eof or buf full, incl record longer than buf)
 	if (bufI1 >= bufI2)				// if no chars read

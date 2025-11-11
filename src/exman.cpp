@@ -694,7 +694,7 @@ RC FC exPile(		// compile an expression from current input
 		CSE_E(uniLimCt(fdTy, gotTy, _ermTx, &v));	// check limits & apply units, with errMsg suitable for compile time. below.
 
 		if (gotTy == TYSI				// return the constant value in destination.  SI has 16 bit storage only
-		|| gotTy == TYCH && choiDt & DTBCHOICB)	// choice types with this bit on are 16 bits only
+		|| (gotTy == TYCH && choiDt & DTBCHOICB) )	// choice types with this bit on are 16 bits only
 		{
 			SI iV = static_cast<SI>(v);
 			*(SI*)pDest = iV;		// return lo 16 bits of value
@@ -816,24 +816,26 @@ LOCAL RC FC uniLim(
 	/* divide by units factor: scale to internal unit system if different */
 
 	if (units != UNNONE)				// for runtime speed
+	{
 		if (dt==DTFLOAT || ty==TYNC)			// only done for FLOATs and doubles and number/choices
 		{
 			if (ISNUM(*(void**)p))						// and not if (number/choice) value is a nan
-				*(float *)p = float( cvExtoIn( *(float *)p, units ));
+				*(float*)p = float(cvExtoIn(*(float*)p, units));
 		}
 		else if (dt==DTDBL)						// doubles
-			*(double *)p = cvExtoIn( *(double *)p, units); 	// cvpak.cpp
+			*(double*)p = cvExtoIn(*(double*)p, units); 	// cvpak.cpp
+	}
 
-	/* check string length for selected string types.  Historically, cvpak did this by data type (not limit type)
-							   in cvs2in's dtype switch, which isn't used if here */
-	if (dt==DTANAME)
-		if (strlen( *(char **)p) >= sizeof( ANAME))
-			return MH_V0035;		// "V0035: name must be 1 to 63 characters"
-	// return MH code for consisency with cvpak errors
+	// Possible here to check string length for selected string types.
+	// Historically, cvpak did this by data type (not limit type)
+    // in cvs2in's dtype switch, which isn't used if here
+	{
+		// no string length limits currently enforced (10-2025)
+	}
 
-	/* check that value is within limits (numerical types) */
+	// check that value is within limits (numerical types)
+	return cvLmCk( dt, sFdtab[fdTy].lmtype, p);
 
-	return cvLmCk( dt, sFdtab[fdTy].lmtype, p); 		// cvpak.cpp.
 	// on error, issues no message, returns mh of no-arg text explaining the limits exceeded.
 }		// uniLim
 
@@ -1118,17 +1120,10 @@ RC addChafIf (		// conditionally register change flag in basAnc record for expr.
 		ex->ext_whChafNal = nuNal;
 	}
 
-#if 1
 	// store info to allow locating rat member even if rat is moved to new location
 	//    (as can happen at reallocation)
-	WHERE* w = new (&ex->ext_whChaf[ex->ext_whChafN++]) WHERE(ancN, i, o);
-#else
-	WHERE* w = &ex->ext_whChaf[ex->ext_whChafN++];	// point next available change-flag-where for expression
-
-	w->rr_ancN = ancN;				// store info to allow locating rat member
-	w->i  = i;					// ... even if rat is moved to new location
-	w->o  = o;					// ... (as can happen at reallocation)
-#endif
+	// use placement new
+	/* WHERE* w = */ new (&ex->ext_whChaf[ex->ext_whChafN++]) WHERE(ancN, i, o);
 #endif
 	return RCOK;
 }		// addChafIf
@@ -1435,10 +1430,12 @@ RC FC exInfo(		 	// return info on expression #
 	if (pTy)
 		*pTy = ex->ext_ty;
 	if (pv)
+	{
 		if (ex->ext_ty==TYSI)
-			*(SI *)pv = (SI)(INT)ex->ext_v;
+			*(SI*)pv = (SI)(INT)ex->ext_v;
 		else
 			*pv = ex->ext_v;			// caller cueval.cpp cupIncRef's pointer if string, 7-92.
+	}
 	return RCOK;
 }			// exInfo
 

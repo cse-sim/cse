@@ -519,7 +519,6 @@ PERFORMANCEMAP* PMGRIDAXIS::pmx_GetPERFMAP() const
 //-----------------------------------------------------------------------------
 /*virtual*/ void PMGRIDAXIS::Copy( const record* pSrc, int options/*=0*/)
 {
-	options;
 	pmx_type.Release();
 	record::Copy( pSrc, options);
 	pmx_type.FixAfterCopy();
@@ -599,7 +598,6 @@ PERFORMANCEMAP* PMLOOKUPDATA::pmv_GetPERFMAP() const
 //-----------------------------------------------------------------------------
 /*virtual*/ void PMLOOKUPDATA::Copy( const record* pSrc, int options/*=0*/)
 {
-	options;
 	pmv_type.Release();
 	record::Copy( pSrc, options);
 	pmv_type.FixAfterCopy();

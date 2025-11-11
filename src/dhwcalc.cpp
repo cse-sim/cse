@@ -702,7 +702,6 @@ DHWSYS::~DHWSYS()
 //-------------------------------------------------------------------------------
 /*virtual*/ void DHWSYS::Copy( const record* pSrc, int options/*=0*/)
 {
-	options;
 	ws_dayUseName.Release();
 	record::Copy( pSrc, options);
 	ws_dayUseName.FixAfterCopy();
@@ -1307,7 +1306,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 
 		if (IsSet( DHWSYS_DAYUSENAME))
 		{	// beg of day: locate DHWDAYUSE, set ws_dayUsei
-			if (WduR.findRecByNm1( ws_dayUseName, &ws_dayUsei, NULL))
+			if (basAnc::FindRecByName( &WduR, ws_dayUseName, basAnc::frn1STMATCH, nullptr, &ws_dayUsei) !=  RCOK)
 				return orMsg( ERRRT+SHOFNLN, "DHWDAYUSE '%s' not found.", ws_dayUseName.CStr());
 		}
 
@@ -1753,7 +1752,7 @@ RC DHWSYS::ws_DoHourDWHR()		// current hour DHWHEATREC modeling (all DHWHEATRECs
 	// ws_qDWHRWH = 0.f;		// heat recovered to water heater inlet, Btu
 	// ws_whUseNoHR = 0.;		// check value: hour total hot water use w/o HR, gal
 								//  init'd by caller
-	int multiDraw = 0;
+	[[maybe_unused]] int multiDraw = 0;
 	// int nTk = Top.tp_NHrTicks();
 	for (int iTk=ws_iTk0DWHR; iTk < ws_iTkNDWHR; iTk++)
 	{	DHWTICK& tk = ws_ticks[ iTk];		// DHWSYS tick info
@@ -4015,6 +4014,11 @@ DHWHEATER::~DHWHEATER()		// d'tor
 	wh_HPWH.hw_pNodePowerExtra_W.vector::~vector<double>();
 	record::Copy( pSrc, options);
 	// base class calls FixUp() and (if _DEBUG) Validate()
+
+	// dup copied CULSTRs
+	wh_desc.FixAfterCopy();
+
+	// dup copied heap table
 	new(&wh_HPWH.hw_pNodePowerExtra_W) std::vector<double>(((const DHWHEATER*)pSrc)->wh_HPWH.hw_pNodePowerExtra_W);
 }		// DHWHEATER::Copy
 //---------------------------------------------------------------------------
@@ -4296,7 +4300,7 @@ void DHWHEATER::wh_SetDesc()		// build probable description
 		hpTy = strtprintf( " %s",getChoiTx( DHWHEATER_ASHPTY, 1));
 
 	const char* t = strtprintf( "%s %s%s", whSrcTx, whTyTx, hpTy);
-	strncpy0( wh_desc, t, sizeof( wh_desc));
+	wh_desc.Set(t);
 }		// DHWHEATER::wh_SetDesc
 //-----------------------------------------------------------------------------
 int DHWHEATER::wh_ReportBalErrorsIf() const
@@ -4722,7 +4726,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 		if (!wh_HPWH.hw_pHPWH->canUseSoCControls())
 		{
 			rc |= oer("'%s' does not support StateOfCharge controls",
-				   wh_desc);
+				   GetDescription());
 		}
 		else
 		{

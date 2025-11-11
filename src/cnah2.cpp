@@ -86,8 +86,8 @@ const int UULIM = 250;		// 200-->250 to match default ahTsMx, after PSYCHROMAXT 
 // AH::iter4Fs (next function) is called by ahCompute, which is in cnah1.cpp.
 //-----------------------------------------------------------------------------------------------------------------------------
 //--- constants, also hard-coded in cncult2.cpp for Top.absTol; also in cnah1.cpp:
-const float RELoverABS = .01f;			// relative to absolute tolerance ratio: +-1 corrsponds to +- 1%.
-//const float ABSoverREL = 1.f/RELoverABS;	no uses 5-95	// reciprocal thereof
+static constexpr float RELoverABS = .01f;			// relative to absolute tolerance ratio: +-1 corrsponds to +- 1%.
+// static constexpr float ABSoverREL = 1.f/RELoverABS;	no uses 5-95	// reciprocal thereof
 //-----------------------------------------------------------------------------------------------------------------------------
 //---- ahCompute callees (iter4Fs - antRatTs - etc) local variables
 LOCAL DBL tsmLLim, tsmULim;	// antRatTs narrows these to next temp up and down from ts where zone mode changes
@@ -3049,6 +3049,7 @@ void AH::antRatTs()			// anticipated return air conditions for current (changed)
 					break;	// .. aCv stored in tu->aCv below.
 				case uMxC:
 					aCv = tu->cMxC;
+				default:
 					break;	// COORDINATE changes here with any changes in cnztu.cpp:ztuMdSets.
 				}
 				cz = tu->znC(aCv);					// .. zone flow for vav flow, after duct leak

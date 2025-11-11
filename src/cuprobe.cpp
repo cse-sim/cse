@@ -306,13 +306,13 @@ RC PROBEOBJECT::po_DoProbe()
 
 	pF1 = pFi;						// fir entry for which preceding tokens (m chars) match
 	while (_strnicmp( mNameSought, pFi->fi_GetMName() + m, l)  	// while token does not match (continuation of) member name
-			||  isalnumW(pFi->fi_GetMName()[m])  			// .. or matching word/number in table
-			&&  isalnumW(pFi->fi_GetMName()[m+l]) )  		//    .. continues w/o delimiter (ie only initial substring given)
+			||  (isalnumW(pFi->fi_GetMName()[m])  			// .. or matching word/number in table
+			     &&  isalnumW(pFi->fi_GetMName()[m+l])) )  	//    .. continues w/o delimiter (ie only initial substring given)
 	{
 		pFi++;
 		Fn++;   				// try next fir table entry, incr field number
 		if ( !pFi->fi_fdTy					// if end fir table, not found
-			||  m && _strnicmp( pF1->fi_GetMName(), pFi->fi_GetMName(), m) )	/* if preceding m chars of this entry don't match
+			||  (m && _strnicmp( pF1->fi_GetMName(), pFi->fi_GetMName(), m)) )	/* if preceding m chars of this entry don't match
 	     							   (all entries with same beginning are together) */
 		{
 			pB = nullptr;
@@ -359,16 +359,18 @@ RC PROBEOBJECT::po_FindMember()	// parse and look up probe member name in po_inB
 		// if not found, issue error message.  syntax ok if here.
 
 		if (!po_inB && !po_runB) 					// if found in neither input nor run records basAnc
+		{
 			if (!m)							// if first token of name
-				return perNx( MH_U0011, po_what, cuToktx); 	// "U0011: %s member '%s' not found"
+				return perNx(MH_U0011, po_what, cuToktx); 	// "U0011: %s member '%s' not found"
 			else
 			{	// fancier error message for partial match
-				const char* foundPart = strncpy0( NULL, f1->fi_GetMName(), m+1);		// truncate to Tmpstr
-				return perNx( MH_U0012,
+				const char* foundPart = strncpy0(NULL, f1->fi_GetMName(), m+1);		// truncate to Tmpstr
+				return perNx(MH_U0012,
 					//"U0012: %s member '%s%s' not found: \n"
 					//"    matched \"%s\" but could not match \"%s\"."
-					po_what,  foundPart, cuToktx,  foundPart, cuToktx );
+					po_what, foundPart, cuToktx, foundPart, cuToktx);
 			}
+		}
 
 		// match found for current token.  Done if end fir table member text; error if tables continue differently.
 
@@ -477,9 +479,10 @@ RC PROBEOBJECT::po_TryImInProbe()
 		TI defO = ratDefO(b);		/* get 0 or input record subscript in b->ownB of context in which current
 						   expr is being evaluated.  Returns 0 if not "owned record" basAnc, if its .ownB
 						   is 0, or cur expr not embedded in stmt group for such a record. cul.cpp. */
-		RC trc = defO
-			? b->findRecByNmDefO(name, defO, &e, NULL)	// seek record (ancrec.cpp) by name & defO, ret ptr if found.
-			: b->findRecByNmU(name, NULL, &e);    	// seek unique record (ancpak.cpp) by name, ret ptr if found.
+		int ownerTIOpt = defO
+			? defO | basAnc::frnACCEPTNONOWNER		// seek by owner, match non-owned iff owned not found
+			: basAnc::frnUNIQUE;					// search all / match iff unique
+		RC trc = basAnc::FindRecByName(b, name, ownerTIOpt, &e);
 		/*if (!evfOk)					as below; add if found ambiguity error occurs here
 									when caller fallthru to runtime probe could work */
 		if (trc==RCBAD2)							// if ambiguity (not resolved by defO)
@@ -597,7 +600,7 @@ LOCAL RC FC lopNty4dt( 	// for DT- data type, get TY- type and PSOP to load it f
 	USI ty = 0, sz = 0;
 	PSOP lop = 0;
 
-	char* errorSub = NULL;			// say no error
+	const char* errorSub = nullptr;			// say no error
 	switch (dt)				// for dt, get load pseudo-op (lop) or error message insert text (errorSub)
 	{
 	case DTSI:			// 2-byte types that are or can be treated as integers
@@ -659,17 +662,8 @@ LOCAL RC FC lopNty4dt( 	// for DT- data type, get TY- type and PSOP to load it f
 		sz = 4;
 		break;
 
-	case DTANAME:
-	case DTWFLOC:			// char arrays used in WFILE, 1-94
-	case DTWFLID:			// ..
-	case DTWFLOC2:			// 10-94
-		lop = PSRATLODA;  		// record load char array (eg ANAME): makes dm copy, leaves ptr in stack
-		ty = TYSTR;
-		sz = 4;
-		break;
-
 	case DTCULSTR:
-		lop = PSRATLODS;  		// record load string: loads char * from record, duplicates.
+		lop = PSRATLODS;  		// record load string: loads pointer to CULSTR chars and leaves in stack
 		ty = TYSTR;
 		sz = 4;
 		break;
@@ -783,9 +777,9 @@ void FC showProbeNames(int showAll)
 			if (_stricmp( b->what, b2->what))
 				continue;							// name different, skip it
 			if (b2->ba_flags & RFINP ? inB : runB)				// same; ok if 1st input basAnc or 1st run basAnc with name
-				printf( msg( NULL, MH_U0025,		//"\nInternal error: Ambiguous class name '%s':\n"
-				b->what,  							//"   there are TWO %s rats with that .what. Change one of them.\n"
-				b->ba_flags & RFINP ? "input" : "run" ) );	// msg() gets disk text (and formats) -- printf does not.
+				printf( "%s", msg( NULL, MH_U0025,				//"\nInternal error: Ambiguous class name '%s':\n"
+							b->what,  							//"   there are TWO %s rats with that .what. Change one of them.\n"
+							b->ba_flags & RFINP ? "input" : "run" ) );	// msg() gets disk text (and formats) -- printf does not.
 			else
 			{
 				b2->ba_flags |= RFLOCAL;	// say this one displayed too

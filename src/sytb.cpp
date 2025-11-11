@@ -51,7 +51,7 @@ LOCAL SI FC rSyCmp( const STAE *p, const STAE *q);
 
 
 //===========================================================================
-RC FC syLu( SYTBH *st, char *id, BOO casi, SI *pTokty/*=NULL*/, void **pStb/*=NULL*/)
+RC FC syLu( SYTBH *st, char *id, BOO casi, int *pTokty/*=NULL*/, void **pStb/*=NULL*/)
 
 // symbol table look up
 

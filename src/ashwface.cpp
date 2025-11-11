@@ -175,16 +175,18 @@ bool CFSTYX::cfx_CalcRatings(
 //-----------------------------------------------------------------------------
 CFSTYX::CFSTYX(			// build a CFS
 	const char* id,			// unique ID (max len = CFSIDLEN)
-	float _UcogNFRC,		// externally calculated NFRC cog U-factor, Btuh/ft2-F
-	float _SHGCcogNFRC,		// externally calculated NFRC cog SHGC
+	double _UcogNFRC,		// externally calculated NFRC cog U-factor, Btuh/ft2-F
+	double _SHGCcogNFRC,	// externally calculated NFRC cog SHGC
 	...)					// add'l gap / layer info
+// NOTE: double not float for _UcogNFRC and _SHGCcogNFRC for consistency
+//    with other numeric args (which will be promoted to double)
 // call = id, U, SHGC, layerID, gasID, gapT (inches), layerID, ...
 //   layer order = outside -> inside
 {
 	Clear();
 	FCSET( ID, id);
-	UcogNFRC = _UcogNFRC;
-	SHGCcogNFRC = _SHGCcogNFRC;
+	UcogNFRC = float(_UcogNFRC);
+	SHGCcogNFRC = float(_SHGCcogNFRC);
 	va_list ap;
 	va_start( ap, _SHGCcogNFRC);
 	RC rc = RCBAD;

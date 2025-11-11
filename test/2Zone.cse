@@ -291,6 +291,8 @@ AIRHANDLER "Infil"   //Constant Volume no energy, heating or cooling to model in
     
  IZXFER izZn1=Z1 izZn2=Z2 izHConst=5. izNVType=TWOWAY izALo=2 izAHi=2 izHD=5
 
+ GAIN IX gnPower=1000
+
 //----- ZONE SECTION -----
 
  ZONE Z1
@@ -305,10 +307,14 @@ AIRHANDLER "Infil"   //Constant Volume no energy, heating or cooling to model in
         gnEndUse=Lit
         gnPower=INTGAIN*.4
 
-	  GAIN IX1
+    GAIN TestContext gnPower = @GAIN["IX"].gnPower
+
+	GAIN IX1
         gnMeter=GAINMETER
         gnEndUse=DHW
         gnPower=$DayOfYear
+
+    GAIN IX gnPower=1   // potentially ambiguous name
   
     SURFACE Roof
         sfType=Ceiling
@@ -435,7 +441,10 @@ AIRHANDLER "Infil"   //Constant Volume no energy, heating or cooling to model in
         gnMeter=GAINMETER
         gnEndUse=Htg
         gnPower=$DayOfYear*.9
-  
+
+    // GAIN IX3 gnPower = @GAIN[ "IX"].gnPower  ambiguous
+
+   
     SURFACE Roof
         sfType=Ceiling
         sfModel=SURFTYPE
@@ -582,6 +591,8 @@ TERMINAL  "infil"  //Constant vol, no heat or cool to model infil
         tuVfMn =.0001 + ACH * (4576.8 / 60) //Air Changes per hour times Zone vol/60
 
  //--------- REPORTS ------------
+
+// DELETE Reportfile "Primary" error condition test
   
  REPORT rpType=AH     rpAH="MainAH"          rpFreq=Month
 
@@ -609,11 +620,11 @@ TERMINAL  "infil"  //Constant vol, no heat or cool to model infil
         reportcol colVal=@Top.qcPeakH          ColHead="Pk Hr"
         reportcol colval=@meter[CoolMETER].y.tot* 0.000000292997   ColHead="Yr mWh"
 
- REPORT  rpType=ZEB rpZone=Z1 rpDayBeg=Jan 4 rpDayEnd=Jan 4 rpFreq=Hour
- REPORT  rpType=AH  rpAH="MainAH"   rpDayBeg=Jan 4 rpDayEnd=Jan 4 rpFreq=HOUR
- REPORT  rpType=ZEB rpZone=Z1 rpDayBeg=Jul 26 rpDayEnd=Jul 26 rpFreq=Hour
- REPORT  rpType=AH  rpAH="MainAH"  rpDayBeg=Jul 26 rpDayEnd=Jul 26 rpFreq=HOUR
- REPORT  rpType=ZEB rpZone=Z1 rpDayBeg=Oct 16 rpDayEnd= Oct 16 rpFreq=Hour
+ REPORT  rpType=ZEB rpZone=Z1 rpDayBeg=Jan 4 rpDayEnd=Jan 4 rpFreq=Hour  rpBtuSf=1000
+ REPORT  rpType=AH  rpAH="MainAH"   rpDayBeg=Jan 4 rpDayEnd=Jan 4 rpFreq=HOUR rpBtuSf=1000
+ REPORT  rpType=ZEB rpZone=Z1 rpDayBeg=Jul 26 rpDayEnd=Jul 26 rpFreq=Hour rpBtuSf=1000
+ REPORT  rpType=AH  rpAH="MainAH"  rpDayBeg=Jul 26 rpDayEnd=Jul 26 rpFreq=HOUR rpBtuSf=1000
+ REPORT  rpType=ZEB rpZone=Z1 rpDayBeg=Oct 16 rpDayEnd= Oct 16 rpFreq=Hour rpBtuSf=1000
  REPORT  rpType=AH  rpAH="MainAH"  rpDayBeg= Oct 16 rpDayEnd= Oct 16 rpFreq=HOUR
 // REPORT  rpType=AH  rpAH="Infil"   rpDayBeg=Jan 4 rpDayEnd=Jan 4 rpFreq=HOUR
 // REPORT  rpType=AH  rpAH="Infil"  rpDayBeg=Jul 26 rpDayEnd=Jul 26 rpFreq=HOUR

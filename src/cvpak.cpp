@@ -409,8 +409,7 @@ x		}
 		data = (*(CULSTR*)data).CStr();
 		goto strjust;	// data is pointer to string
 
-	case DTCH:				// for char array or string ptr already dereferenced, rob 11-91
-	case DTANAME:			// char[ ] RAT name
+	case DTCH:				// for char array or string ptr already dereferenced
 strjust:
 		Cvnchars = snprintf( str, allocLen, sf[ lj], wid, mfw, data);
 		break;
@@ -683,11 +682,10 @@ p						dinch );		// floating inches
 			if (fmtv & FMTRTZ)		// trim trailing zeros option
 			{
 				// rob 10-88 to support FTMRTZ with FMTSQ
-				Cvnchars =
-				
-					( str,			// trim .0's from decimal inches
-				'"',			// slide final " leftward
-				lj ? 1 : wid );	/* if lj or FMTSQ (wid=1), do fully (lj padded below).
+				Cvnchars = 
+					cvttz( str,			// trim .0's from decimal inches
+						'"',			// slide final " leftward
+						lj ? 1 : wid );	/* if lj or FMTSQ (wid=1), do fully (lj padded below).
                 				   If rj, don't shorten < wid: wd need to pad at
                 				   front, defer doing that code til need found. */
 			}

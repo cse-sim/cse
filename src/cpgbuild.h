@@ -306,7 +306,7 @@ struct PB_DATOFFL			/* code assumes same as PB_DATOFF + label at end */
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
 
-void CDEC pgbuildr( char **ppp, RC *prc, SI rows, SI cols, SI rOffs, char *title, ...);
+void CDEC pgbuildr( char **ppp, RC *prc, int rows, int cols, int rOffs, const char* title, ...);
 
                     // CAUTION: any FLOATs in variable arg list are passed as doubles
 
