@@ -1,0 +1,15 @@
+project_name = "cse"
+# project_short_description = ""
+project_type = "python"
+# start_year = 2025
+# use_app = false
+# version_major = 0
+# version_minor = 1
+# version_patch = 0
+# year = 2025
+# [[deps]]
+# name = "" # <- name of the dependency; vendor/<name>
+# git_url = "" # <- add the url used to checkout this repository
+# git_checkout = "" # <- add the branch, sha, or tag to check out
+# add_to_cmake = true # <- if true, add to CMakeLists.txt files
+# link_library_spec = "" # <- how library should appear in target_link_library(.); if blank, use project name

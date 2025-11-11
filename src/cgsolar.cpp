@@ -280,12 +280,6 @@ A Solar Gain Table entry (SGRAT record) contains:
 	a pointer to a control variable to multiply gain, or NULL
 	1 single diffuse and 24 hourly beam RADIATION MULTIPLIERS.
 
-The possible targets (2-95) for gain are:
-		ZNR.qSgAir	zone air
-		ZNR.qSgTot	zone total (redundant check/report value)
-		ZNR.qSgTotSh	ditto, subhourly portion
-		MASSBC[].sg	mass inside [0], mass outside [1].
-
 Control variables: each target has an SGRAT record with NULL .control.
 In addition, if there is a controlled portion of its gain, it contains
 ANOTHER SGRAT entry with the appropropriate control pointer and radiation
@@ -520,7 +514,7 @@ void XSRAT::xr_SGAccumAbsTrans()	// accumulate zone surface absorptance and tran
 		// sum area weighted tau for room
 		ZNR* zp = ZrB.GetAt( ownTi);	// zone containing "inside" of this window
 		for (int oc=0; oc<socCOUNT; oc++)
-			zp->rmTrans[ oc] += tauAbsB[ oc] * x.xs_fMult * x.xs_area / zp->zn_surfA;
+			zp->rmTrans[ oc] += tauAbsB[ oc] * x.xs_areaGlz / zp->zn_surfA;
 	}
 }		// XSRAT::xr_SGAccumAbsTrans
 //----------------------------------------------------------------------
@@ -849,10 +843,9 @@ SgThruWin::SgThruWin(			// c'tor
 	double tBm1[ socCOUNT])	// unit area beam+diffuse transmitted per unit exterior beam, dimless
 		: tw_xr( xr)
 {
-	double Ag = tw_xr->x.xs_AreaGlazed();
 	for (int oc=0; oc<socCOUNT; oc++)
-	{	tw_tDf[ oc] = Ag*tDf1[ oc];		// scale by area
-		tw_tBm[ oc] = Ag*tBm1[ oc];
+	{	tw_tDf[ oc] = tw_xr->x.xs_areaGlz*tDf1[ oc];		// scale by area
+		tw_tBm[ oc] = tw_xr->x.xs_areaGlz*tBm1[ oc];
 	}
 }		// SgThruWin::SgThruWin
 //----------------------------------------------------------------------
