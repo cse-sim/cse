@@ -124,20 +124,20 @@ FIELD * directives are
 
 //===========================================================================================================
 RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-only user input stuff,
-				   as user language tools (cul.cpp/cncultx.cpp) stuff RATs only.  1 static entry. */
-	*prefix tp_
+                   as user language tools (cul.cpp/cncultx.cpp) stuff RATs only.  1 static entry. */
+    *prefix tp_
     *exdes	// *declare "~TOPRAT();"		// frees strings.
-	*ovrcopy
-	*declare "void freeDM();"
-	*declare "const char* When( IVLCH ivl) const;"
-	*declare "bool tp_IsLastStep() const { return isLastDay && isEndDay && isEndHour; }"	// true iff last step of run
-	*declare "bool tp_IsLastHour() const { return isLastDay && isEndDay; }"
+    *ovrcopy
+    *declare "void freeDM();"
+    *declare "const char* When( IVLCH ivl) const;"
+    *declare "bool tp_IsLastStep() const { return isLastDay && isEndDay && isEndHour; }"	// true iff last step of run
+    *declare "bool tp_IsLastHour() const { return isLastDay && isEndDay; }"
     *declare "RC FC brFileCk();"   			// checks inputs re binary results files.
     *declare "RC tp_CheckOutputFilePath( const char* filePath, const char** pMsg=NULL);"
     *declare "void tp_SetOptions();"
-	*declare "RC tp_SetDerived();"
+    *declare "RC tp_SetDerived();"
     *declare "RC tp_SetCheckTimeSteps();"
-	*declare "RC tp_FazInit();"
+    *declare "RC tp_FazInit();"
     *declare "RC tp_AirNetInit();"
     *declare "void tp_AirNetDestroy();"
     *declare "void tp_ClearAuszFlags();"
