@@ -278,19 +278,25 @@ p		break;
 		data = tddMonAbbrev( *(SI *)data);
 		goto strjust;
 
+#if defined( DTIDATE)
 	case DTIDATE:
 		data = tddis( *(IDATE *)data);
 		goto strjust;
+#endif
 
+#if defined( DTITIME)
 	case DTITIME:
 		data = tdtis( (ITIME *)data, NULL);
 		goto strjust;
+#endif
 
+#if defined( DTIDATETIME)
 	case DTIDATETIME:
 		data = tddtis( (IDATETIME *)data, NULL);
 		goto strjust;
+#endif
 
-#ifdef DTLDATETIME
+#if defined( DTLDATETIME)
 	case DTLDATETIME:
 		data = tdldts( *((LDATETIME *)data), NULL);
 		goto strjust;

@@ -656,11 +656,13 @@ LOCAL RC FC lopNty4dt( 	// for DT- data type, get TY- type and PSOP to load it f
 		sz = 4;
 		break;
 
+#if defined (DTLDATETIME)
 	case DTLDATETIME:			// show dateTime as number (?)
 		lop = PSRATLODL;  		// record load long: converts it float, potentially loosing some precision.
 		ty = TYFL;
 		sz = 4;
 		break;
+#endif
 
 	case DTCULSTR:
 		lop = PSRATLODS;  		// record load string: loads pointer to CULSTR chars and leaves in stack
@@ -695,25 +697,10 @@ w          break;
 	case DTLI:
 	case DTULI:
 
-	// unprobe-able: pointers to basic types (or add a way fetch?)
-	case DTSGTARGP:
-
 	// unprobe-able types: structures (to probe, make *substructs so they appear as their individual members)
-	case DTIDATETIME:
-	case DTIDATE:
-	case DTITIME:
 #ifdef DTVALNDT		// tentatively made *substruct
 	case DTVALNDT:
 #endif
-
-	//unprobe-able types: pointers to unprobe-able types
-#ifdef DTVOIDP
-	case DTVOIDP:
-#endif
-	case DTMASSLAYERP:
-	case DTMASSMODELP:
-	case DTYACAMP:
-	case DTXFILEP:
 		errorSub = "un-probe-able";
 		break;
 

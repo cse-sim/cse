@@ -3383,11 +3383,11 @@ void XSURF::DbDump() const
 }	// XSURF::DbDump
 //=============================================================================
 void SBC::sb_Init(
-	XSURF* xs,		// parent XSURF
-	int si)			// which side of xs? 0=inside, 1=outside
-{	sb_pXS = xs;
-	sb_si = si;
-	sb_zi = xs->xs_GetZi( si);
+	XSURF* xsParent,	// parent XSURF
+	int side)				// which side of xs? 0=inside, 1=outside
+{	sb_pXS = xsParent;
+	sb_si = side;
+	sb_zi = xsParent->xs_GetZi( side);
 	sb_txa = 70.f;		// initialize to plausible value
 	sb_txr = 70.f;
 }		// SBC::sb_Init
