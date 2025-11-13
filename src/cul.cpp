@@ -17,7 +17,7 @@
     redo dref table using field # not offset?
     redo exman.cpp:extab WHERE using field # not offset?
     FDNONE in srd.h or cnglob.h?
-    field constants or way to access fdTy eg for ANAME for ganame()?
+    field constants or way to access fdTy for ganame()?
 */
 
 /* hanging 12-25-90
@@ -50,9 +50,7 @@
 /*------------------------------- INCLUDES --------------------------------*/
 
 #include "srd.h"		// SFIR; sFdtab; GetDttab
-#define NEEDLIKECTOR	// say this .cpp file needs anc<T> like-another constructor: prevents generation for classes where not used.
 #include "ancrec.h"	// record: base class for rccn.h classes; anc<T> template definition.
-#undef NEEDLIKECTOR
 #include "rccn.h"		// SFI_  [VALNDT_]
 #include "msghans.h"	// MH_S0201 MH_S0202
 
@@ -383,7 +381,7 @@ SI FC cul( 	// public entry to compile user language commands from open input fi
 	  		//   4: clear input data, free input basAncs and DM alloc'd here:
 	  		//      call for max DM for last run, or re finding unfree'd DM. Uses no other args. Returns 1.
 	const char* fName,	// file name (case 1)
-	char* defex,	// default extension (must include leading period)
+	const char* defex,	// default extension (must include leading period)
 
 	CULT *cult,  	// top-level table, used if cs==1
 	record *e,   	// ptr to basAnc record (entry) to rcv top level data
@@ -438,11 +436,13 @@ x	trace = 1;
 			err( PWRN, MH_S0204);     // "cul(): NULL RAT entry arg (e)"
 			return 1;
 		}
-		if (e->b->validate("cul.cpp:cul",WRN))  return 1;
+		if (basAnc::ba_ValidateSafe( e->b, "cul.cpp:cul", WRN) != RCOK)
+			return 1;
 
 		// autosize flag pointer and flag
 		pAuszF = _pAuszF;		// store argument pointer or NULL given by caller
-		if (pAuszF)  *pAuszF = FALSE;	// say no AUTOSIZE commands yet seen
+		if (pAuszF)
+			*pAuszF = FALSE;	// say no AUTOSIZE commands yet seen
 
 		// init top-level context stack frame
 		memset( xSp, 0, sizeof(XSTK) );	// zero it: inits many members
@@ -1226,26 +1226,30 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 			// "owned" basAnc record names need only be unique for same owner:
 			if ( !defTy			// type names must be globally unique
 			  && xSp > xStk )		// insurance: if command is nested
-			{
-				if (b->findRecByNmO( name,   			// find basAnc record by name/owner, ancrec.cpp
-				xSp->i,  			//  owner subscript. always here??
-				NULL, NULL)==RCOK )  		//   if found
+			{	// find basAnc record by name/owner
+				//   old comment: xSp->i: owner subscript, always here?
+				if (basAnc::FindRecByName(b, name, xSp->i) == RCOK)
+				{	// record found: duplicate name
 					// if owner ti can be set != xSp->i, then check again at END.<<<<
 					perlc( 			// errMsg, show input line and ^. cuparse.cpp.
 						scWrapIf( 							// strtcat w conditional \n
-							strtprintf( MH_S0227, c->id, name.CStr() ),	// "duplicate %s name '%s' in "
-							xSp->b->rec(xSp->i).objIdTx( 1 ),	// owner class & obj name, etc
+							strtprintf(MH_S0227, c->id, name.CStr()),	// "duplicate %s name '%s' in "
+							xSp->b->rec(xSp->i).objIdTx(1),	// owner class & obj name, etc
 							"\n    "), getCpl()); 						// \n between if wd be longer
+				}
 				// and continue here (?) (perlc prevents RUN)
 			}
-			else 						// not ownable or not in ownable context
-				if ( (defTy  ?  b->tyB->findRecByNm1( name, NULL, NULL)  	// search basAnc's types basAnc if defining a type
-				:  b  ?  b->findRecByNm1( name, NULL, NULL)  	// else the basAnc itself
-				:  RCBAD )==RCOK )				// NULL b ??: unsure while converting code, sometime if possible
-					// if any record with same name found found
-					perlc( MH_S0228, c->id,  defTy ? " type" : "",  name.CStr());	// "duplicate %s%s name '%s'"
+			else
+			{	// not ownable or not in ownable context
+				// defining a type (defTy): search b->tyB (basAnc's types basAnc)
+				//    (Future: if necessary to avoid defTy ambiguity, also search b)
+				// else basAnc itself
+				if (basAnc::FindRecByName(defTy ? b->tyB : b, name) == RCOK)
+				{	// if any record with same name found found
+					perlc(MH_S0228, c->id, defTy ? " type" : "", name.CStr());	// "duplicate %s%s name '%s'"
+				}
+			}
 			// and continue here (?) (perlc prevents RUN)
-			// if necessary to avoid (future) ambiguity during defTy, also search regular table (b).
 		}
 
 // add record to specified basAnc
@@ -1282,7 +1286,7 @@ LOCAL RC FC culRATE(	// do RATE cult entry
 		if (typeName.IsSet())
 		{
 			record *typeE;
-			if (b->tyB->findRecByNm1( typeName, NULL, /*VV*/ &typeE) != RCOK)
+			if (basAnc::FindRecByName(b->tyB, typeName, basAnc::frn1STMATCH, &typeE) != RCOK)
 				perlc( MH_S0229, c->id, typeName.CStr());  		// "%s type '%s' not found"
 			// and continue here with raw record (perlc prevents RUN)
 			else					// found
@@ -1531,7 +1535,7 @@ x							dmfree( DMPP( *p));      		// free any prior string value: free ram, NUL
 						else if (c->ty==TYFL || c->ty==TYNC)	// floats: units.
 #else
 						else if ( c->ty==TYFL			// float: sep cult mbr; units.
-						||  c->ty==TYNC && !c->DFPI ) 	// number/choice is init as a number from .dff if .dfpi is 0.
+						||  (c->ty==TYNC && !c->DFPI) ) 	// number/choice is init as a number from .dff if .dfpi is 0.
 #endif
 						{
 							if (!ISNUM(c->DFF))				// keep nonNumeric value out of coprocessor!
@@ -1834,7 +1838,7 @@ LOCAL RC FC culRESET() 	// "unset" a member -- re-default it
 		else if (c->ty==TYFL || c->ty==TYNC)		// floats: units.
 #else
 		else if ( c->ty==TYFL				// float: sep cult mbr; units.
-		||  c->ty==TYNC && !c->DFPI ) 		// number/choice is defaulted as a number from .dff if .dfpi is 0.
+		||  (c->ty==TYNC && !c->DFPI) ) 		// number/choice is defaulted as a number from .dff if .dfpi is 0.
 #endif
 		{
 			if (!ISNUM(c->DFF))				// keep nonNumeric value out of coprocessor!
@@ -1953,7 +1957,7 @@ LOCAL RC FC culKDAT()	// do cul constant-data case per xSp
 	else if (c->ty==TYFL || c->ty==TYNC)			// floats: units.
 #else
 	else if ( c->ty==TYFL					// float: sep cult mbr; units.
-	||  c->ty==TYNC && !c->DFPI ) 			// number/choice: use .dff if .dfpi is 0.
+	||  (c->ty==TYNC && !c->DFPI) ) 			// number/choice: use .dff if .dfpi is 0.
 #endif
 	{
 		if (!ISNUM(c->DFF))					// keep nonNumeric value out of coprocessor!
@@ -2677,11 +2681,9 @@ LOCAL RC ganame(
 //          RC_SUM, RC_ALL, RC_ALLBUT, [RC_ELECTRIC]: returned if special word gotten and enabling flags on.
 //          other:  error, message issued, perNx done.
 {
-	// link to a fir in srfd.cpp to get field type of an ANAME, partly to
-	// excercise new fields limit code 2-92 -- later just check length here?
-
 	RC rc = xpr( TYID,				// TYID: string, implied quotes on unreserved undeclared words
-		sfirSFI[ SFI_NAME].fi_fdTy,	// get field type for an ANAME field so exman.cpp will check string length
+		sfirSFI[ SFI_NAME].fi_fdTy,	// get field type for a name field so exman.cpp to support checks
+									//    (no length check as of 10-2025)
     								// (we have no defines for fld types: not invariant: data\fields.def
 									// is rearrangable & product dependent) 2-91. Declared in rccn.h.
 		0, 0,						// 0 evfOk, useCl: require constant value
@@ -2787,7 +2789,7 @@ LOCAL RC xpr(   	// our local expression compiler interface / checker
 	                                                          or accepted and ungotten:  verb, verb-like word, eof
 	   here reject those that are passed that we do not like. */
 
-	if ( tokTy==CUTCOM && !(f & ARRAY)						// comma ok if 'array' flag, 3-92
+	if ( (tokTy==CUTCOM && !(f & ARRAY))						// comma ok if 'array' flag, 3-92
 	 ||  tokTy==CUTRPR  ||  tokTy==CUTRB  ||  tokTy==CUTDEFA )
 		perNx( MH_S0249 );				// issue msg, scan to eof, verb, or after ';'.
 	// "expected ';' (or class name, member name, or verb)"
@@ -3456,7 +3458,8 @@ LOCAL RC ratPutTy( record *e, CULT *c)
 
 #ifdef DEBUG
 // check argument
-	if (b->validate("cul:ratPutTy",WRN))  return RCBAD;
+	if (basAnc::ba_ValidateSafe( b, "cul:ratPutTy", WRN) != RCOK)
+		return RCBAD;
 #endif
 
 // require record to be LAST in basAnc -- else have no way to delete  ( <<<< believe no longer true 1-92, fix if need found)
@@ -3626,7 +3629,7 @@ LOCAL void FC adjOwTi(
 	BP b;
 	for (CULT *cc = c-1; nxOwRat( ownB, c, &cc, &b, 0); )	// loop over basAncs owned by ownB
 	{
-		for (SI i = 1;  i <= b->n;  i++)		// loop records in basAnc b
+		for (TI i = 1;  i <= b->n;  i++)		// loop records in basAnc b
 		{
 			record *e = &b->rec(i);	// point to record i (ancpak.cpp)
 			if (e->ownTi < minI)		// if owner out of range of interest
@@ -3641,14 +3644,12 @@ LOCAL RC FC ratTyR( BP b)		// if basAnc does not have secondary basAnc for types
 // returns RCOK/RCFATAL
 {
 #ifdef DEBUG
-	if (b->validate("ratTyR",WRN))	// check argument
+	if (basAnc::ba_ValidateSafe( b, "ratTyR", WRN) != RCOK)	// check argument
 		return RCFATAL;
 #endif
 
 	if (b->tyB==0)			// if this anc does not already have secondary anc for types, make one
 	{
-		RC rc;
-
 		// generate constructor arguments: flags, what, ownB
 
 		int flags = RFTYS | RFNOEX;  				// say is "types" anchor, disable expression expansion
@@ -3659,14 +3660,15 @@ LOCAL RC FC ratTyR( BP b)		// if basAnc does not have secondary basAnc for types
 		BP _ownB = 0;
 		if (b->ownB)			// if basAnc is owned, then tyB's owner will be owners tyB
 		{
+			RC rc;
 			CSE_E( ratTyR(b->ownB) )    	// CALL SELF now to be sure owner already has tyB: if added later, ptr wd not get here
 			_ownB = b->ownB->tyB;
 		}
 
-		// make anc<T> of main anc's <T> (ie same derived class): use special constructor (of an arbitrary T)
-		// that COPIES given anc INCLUDING VIRTUAL FCNS.  Copies rt, eSz, sOff, etc; drops records, tyB.
+		// make anc<T> of main anc's <T> (ie same derived class): Copies rt, eSz, sOff, etc; drops records, tyB.
 		// CAUTION: must not register w/o adding unregister to d'tor.
-		b->tyB = (BP)new anc<ZNR>( b, flags, _what, _ownB, 1 );	// construct copy w/ no records; do not register.  ancrec.h.
+		b->tyB = b->CloneForType( _what, flags, _ownB);	// construct copy w/ no records; do not register
+
 		if (!b->tyB)
 		{
 			//  (known inconsistency: out of memory messages from
@@ -4046,16 +4048,19 @@ LOCAL RC ratLuDefO(	// look up basAnc record by name, resolving ambiguities usin
 		what = b->what;
 	if (defO==0)						// if no default owner given
 	{
-		rc = b->findRecByNm1( name, NULL, /*VV*/ &e);		// find first record with given name, ancrec.cpp
+		rc = basAnc::FindRecByName(b, name, basAnc::frn1STMATCH, &e);	// find first record with given name
 		if (rc)
 			ms = strtprintf( MH_S0278, what, name);	// format ms "%s '%s' not found" to Tmpstr.  Also used below.
 	}
 	else
 	{
-		rc = b->findRecByNmDefO( name, defO, /*VV*/ &e, /*VV*/ &e2);	// find record by name & dfl owner, ancrec.cpp
-		if (rc)								// (RCBAD not found, RCBAD2 ambiguous 1-92)
+		// if (defO) err(PABT, "Hit");
+
+		rc = basAnc::FindRecByName( b, name, defO | basAnc::frnACCEPTNONOWNER, &e, nullptr, &e2);
+		// rc: RCOK: found, RCBAD=not found, RCBAD2=ambiguous
+		if (rc)
 		{
-			if (e)							// if bad and entrie(s) returned, is ambiguous match
+			if (e && e2)					// if bad and entrie(s) returned, is ambiguous match
 				ms = strtprintf( MH_S0279,				// "ambiguous name: \n"
 					what, name, e->whatIn(),			// "    %s '%s' exists in %s\n"
 					e2->whatIn() );				// "    and also in %s" */
@@ -4109,22 +4114,24 @@ LOCAL void FC ratCultO( void)
 										//     eg DHWHEATER and DHWLOOPHEATER from DHWSYS
 	{
 		//if (b->isOwnable())       if an ownable-record basAnc: all are, 7-92.
-		if (xSp > xStk )  			// if nested (not top: no owner)
+		if (xSp > xStk)  			// if nested (not top: no owner)
+		{
 			if ((xSp-1)->c->f & NOTOWNED)  			// if embedding table entry flagged as "not indicating ownership" 11-91
 				xSp->cult->IFLAGS &= ~BEEN_HERE;	// clear nxRat's flag so this cult will be returned again when
-             										//  accessed by another entry -- may indicate its owner 12-10-91
+			//  accessed by another entry -- may indicate its owner 12-10-91
 			else
 			{
 				BP ownB = (xSp-1)->b;			// owner here is embedding basAnc
 				if (b->ownB != 0   				// if owner already set
-				 && b->ownB != ownB )  			// to another owner
-					per( MH_S0202,			// error message, cuparse.cpp
+				 && b->ownB != ownB)  			// to another owner
+					per(MH_S0202,			// error message, cuparse.cpp
 					//"cul.cpp:ratCultO: internal error: bad tables: \n"
 					//"    '%s' rat at %p is 'owned' by '%s' rat at %p and also '%s' rat at %p",
-					b->what, b, b->ownB->what, b->ownB, ownB->what, ownB );
+					b->what, b, b->ownB->what, b->ownB, ownB->what, ownB);
 				else
 					b->ownB = ownB;		// set owner
 			}
+		}
 	}
 }		// ratCultO
 
@@ -4693,23 +4700,26 @@ const char* basAnc::culMbrIdTx(	// return record field id from cult table
 	}
 
 	const char* tx = NULL;
-	for (CULT *c = NULL;  xnxC(c);  )	// loop CULT entries, using xStk[0], making addl xStk entries
+	for (CULT* c = NULL; xnxC(c); )	// loop CULT entries, using xStk[0], making addl xStk entries
+	{
 		if (
 #if 1	// another try, 4-9-2013
 			(xSp->b->rt==rt			// match rt not b so run basAncs, types basAncs work
-			 || xSp->b == this)		// also match b re ambiguous fn (e.g. among surface, door, window)
+			|| xSp->b == this)		// also match b re ambiguous fn (e.g. among surface, door, window)
 #elif 0	// experiment re ambiguous fn (e.g. among surface, door, window), 3-9-2012
 x			xSp->b == b					// seems to work for types basAncs?
 #else
 x			xSp->b->rt==b->rt			// (match rt not b so run basAncs, types basAncs work)
 #endif
-		 &&  c->cs==DAT
-		 &&  c->fn==fn)			// if data entry for desired field of basAnc of desired type
+			&& c->cs==DAT && c->fn==fn)			// if data entry for desired field of basAnc of desired type
+		{
 			if (!tx)  						// if first match
 				tx = c->id;					// remember it
-			else if (_stricmp( tx, c->id))  		// additional match: ignore if same name
-				return strtprintf( MH_S0276, tx, c->id);
-	// "[%s or %s: table ambiguity: recode this error message to not use cul.cpp:culMbrId]"
+		}
+		else if (_stricmp(tx, c->id))  		// additional match: ignore if same name
+			return strtprintf(MH_S0276, tx, c->id);
+			// "[%s or %s: table ambiguity: recode this error message to not use cul.cpp:culMbrId]"
+	}
 
 	if (tx)						// if name found
 		return tx;				// return it. Is unique if here.

@@ -1082,8 +1082,8 @@ RC WDSLRHR::whs_GenSubhrRad1TRNSYS(		// subhr interpolation, TRNSYS algorithm
 #endif
 
 // debug aid: track case being handled for msgs
-	const char* tag[scCOUNT] = { "   ", "   "};
 #if defined( _DEBUG)
+const char* tag[scCOUNT] = { "   ", "   "};
 #define TAG( s) tag[ iC] = s
 #else
 // do nothing in release
@@ -1725,6 +1725,10 @@ WFILE::~WFILE()
 
 	record::Copy( pSrc, options);	// verifies class (rt) same, copies whole derived class record. ancrec.cpp.
 
+	loc.FixAfterCopy();
+	wf_TDVFileTitle.FixAfterCopy();
+	wf_TDVFileTimeStamp.FixAfterCopy();
+
 	yac = new YACAM();		// overwrite yac pointer, if any
 	yacTDV = new YACAM();
 
@@ -1737,8 +1741,9 @@ void WFILE::wf_Init()	// WFILE initialization function to call before each run
 // DO NOT memset to 0 here: would destroy record base class header members.
 {
 	wFileFormat = UNK;
-    VZero( loc, sizeof( loc));
-    VZero( lid, sizeof( lid));
+	loc.Release();
+	lid.Release();
+	loc2.Release();
     yr = -1;
     jd1 = -1;
     jdl = -1;
@@ -1748,7 +1753,6 @@ void WFILE::wf_Init()	// WFILE initialization function to call before each run
 	elev = 0.f;
 	taDbAvgYr = -999.f;
     solartime = FALSE;
-	VZero( loc2, sizeof( loc2));
     isLeap = 0;
     firstDdm = 0;
     lastDdm	 = 0;
@@ -1771,6 +1775,8 @@ void WFILE::wf_Init()	// WFILE initialization function to call before each run
 	{	yac->close();				// insurance
 		yac->init();				// say no file open
 	}
+
+	wf_TDVInitHdrInfo();
 	if (yacTDV)
 	{	yacTDV->close();
 		yacTDV->init();
@@ -1890,7 +1896,7 @@ struct WFHTAB
 	USI hdrOffset;	// offset to data item in header
 	UCH hdrLen;		// length of data item in header
 	USI wfileOffset;	// offset to data item in WFILE struct
-	UCH wfileLen;	// length of item in WFILE struct -- added 10-94 to facilitate multiple header formats
+	UCH wfileLen;	// length of item in WFILE struct
 };
 #define WFO(m)   offsetof(WFILE,m)		// WFILE member offset macro for use for WFHTAB.wfileOffeeset
 #define WFS(m)   (sizeof( ((WFILE *)0L)->m ))	// WFILE member size macro for use for WFHTAB.wfileLen
@@ -1970,8 +1976,8 @@ static WFHTAB wfhTab_BSGS[] =
 //               ---header---  ---WFILE----
 //  dataType [#] offset & len  offset & len
 {
-{ DTCH,   1,    53, 30,    WFOS(loc),	},	// location
-{ DTCH,   1,    83, 11,    WFOS(lid),   },	// location id
+{ DTCULSTR, 1,  53, 30,    WFOS(loc),	},	// location
+{ DTCULSTR, 1,  83, 11,    WFOS(lid),   },	// location id
 { DTSI,   1,    94,  2,    WFOS(yr),    },	// year, 2 digits
 { DTFLOAT,1,    96,  6,    WFOS(lat),   },	// latitude
 { DTFLOAT,1,   102,  7,    WFOS(lon),   },	// longitude
@@ -2010,9 +2016,9 @@ static WFHTAB wfhTab_ET1[] =
 //                -----header------   ---WFILE----
 //  dataType [#]   offset & length    offset & len
 {
-{ DTCH,   1,  E1OS(location1),     WFOS(loc),		   },	// location 1
-{ DTCH,   1,  E1OS(location2),     WFOS(loc2),         },	// location 2
-{ DTCH,   1,  E1OS(locationID),    WFOS(lid),          },	// location id
+{ DTCULSTR, 1,E1OS(location1),    WFOS(loc),		   },	// location 1
+{ DTCULSTR, 1,E1OS(location2),    WFOS(loc2),         },	// location 2
+{ DTCULSTR, 1,E1OS(locationID),    WFOS(lid),          },	// location id
 { DTSI,   1,  E1OS(wthrYear),      WFOS(yr),           },	// year, 4 digits
 { DTFLOAT,1,  E1OS(latitude),      WFOS(lat),          },	// latitude
 { DTFLOAT,1,  E1OS(longitude),     WFOS(lon),          },	// longitude
@@ -2106,9 +2112,9 @@ LOCAL RC FC decodeFld( 		// decode one by-column-number field to internal -- pot
 		char* pEnd = pBeg + srcLen;     			// ptr to 1st char after source data
 		while (pEnd > pBeg && (!pEnd[-1] || isspaceW(pEnd[-1]))) 	// deblank end
 			pEnd--;
-		char cSave = *pEnd; 				// save char after data
+		char cSave = *pEnd; 			// save char after data
 		*pEnd = '\0';					//   and replace it with terminull -- given fields are not terminated.
-		while (isspaceW(*pBeg))	  			// deblank start
+		while (isspaceW(*pBeg))	  		// deblank start
 			pBeg++;
 
 		if (dt==DTCH)					// if a character field
@@ -2116,40 +2122,50 @@ LOCAL RC FC decodeFld( 		// decode one by-column-number field to internal -- pot
 			strncpy( (char *)dest, pBeg, destLen-1);	// copy to dest with \0 at end
 			((char *)dest)[destLen-1] = '\0';		// ..
 		}
+		else if (dt == DTCULSTR)
+		{
+			CULSTR* pS = static_cast<CULSTR*>(dest);
+			pS->Set(pBeg);
+
+		}
 		else	// DTSI or DTFLOAT -- numeric
 		{
 			// initial syntax check
-			char *pNext = pBeg;				// pointer to input text. Note already deblanked above
-			if (strchr( "+-", *pNext))   pNext++;		// if sign present, pass it
+			const char *pNext = pBeg;				// pointer to input text. Note already deblanked above
+			if (strchr( "+-", *pNext))
+				pNext++;		           // if sign present, pass it
 			if (!isdigitW(*pNext))				// if no digit, it is not a valid number
 				rc |= err( erOp, 					// conditionally issue message. prefixes "Error:\n  ".
 					MH_R1102,			// "Missing or invalid number at offset %d in %s %s"
-					(int)srcOff, what, which );
+					srcOff, what, which );
 			else								// has digit, finish decoding
 			{
 				if (dt==DTSI)				// 16-bit integer
 				{
 					int tI = atoi(pBeg);			// get value. C library function.
 					*(SI *)dest = (SI)tI;			// convert if necess (if 32-bit int), store
-					while (isdigitW(*pNext))  pNext++;   	// pass digits for final syntax check below
+					while (isdigitW(*pNext))
+						pNext++;   	// pass digits for final syntax check below
 				}
 				else if (dt==DTFLOAT)			// 32-bit floating point value
 				{
-					double tD = strtod( pBeg, &pNext);	// decode to double, return next char ptr. C library function.
+					char* str_end = nullptr;
+					double tD = strtod( pBeg, &str_end);	// decode to double, return next char ptr. C library function.
 					*(float *)dest = (float)tD;		// convert to float and store.
+					pNext = str_end;				// pt after chars converted (strtod return char* str_end)
 				}
 				else
 				{
-					rc |= err( PWRN, 						// bad table. unconditional error.
-					MH_R1103, what );				// "Bad decoding table for %s in wfpak.cpp"
-					pNext = "";							// suppress error message just below
+					rc |= err( PWRN, MH_R1103, what );	// bad table. unconditional error.
+														// "Bad decoding table for %s in wfpak.cpp"
+					pNext = "";				// suppress error message just below
 				}
 			}
-			if (*pNext)						// if number did not use all of input
+			if (*pNext)		// if number did not use all of input
 				rc |= err( erOp,
 				MH_R1104,			// "Unrecognized characters after number at offset %d in %s %s"
 				"Unrecognized characters after number at offset %d in %s %s",
-				(int)srcOff, what, which );
+				  srcOff, what, which );
 		}
 		*pEnd = cSave;			// restore char after data
 		srcOff += srcLen;
@@ -2366,12 +2382,10 @@ RC WFILE::wf_CSWOpen(	// open California CSW weather file
 		rc = err( erOp,	"file '%s' is not a valid CSW weather file", wfName);
 
 	WStr city, state, country;	// temporaries
-	int nHL = 0;		// # of header lines read
 	if (!rc)
 	{	char ln[ WFMAXLNLEN];		// big enuf
-		RC rc1;
-		int bSeenHourlyData = FALSE;		// set 1 when "Hourly Data" encountered
-		for (nHL=0; ; nHL++)
+		bool bSeenHourlyData{ false };		// set true when "Hourly Data" encountered
+		while (true)
 		{	// read header line-by-line
 			int len = yac->line( ln, sizeof( ln), IGN);
 			if (len < 0)
@@ -2390,7 +2404,7 @@ RC WFILE::wf_CSWOpen(	// open California CSW weather file
 			if (IsBlank( key))
 				continue;		// blank line: skip
 			if (strMatch( key, "Hourly Data"))		// beg of next section
-			{	bSeenHourlyData = TRUE;				// set to decode one more line
+			{	bSeenHourlyData = true;				// set to decode one more line
 				continue;
 			}
 			if (bSeenHourlyData)
@@ -2402,6 +2416,7 @@ RC WFILE::wf_CSWOpen(	// open California CSW weather file
 			}
 
 			// decode heading values by name
+			[[maybe_unused]] RC rc1{ RCOK };
 			if (strMatch( key, "City"))
 				city = val;
 			else if (strMatch( key, "State"))
@@ -2430,9 +2445,10 @@ RC WFILE::wf_CSWOpen(	// open California CSW weather file
 	if (!rc)
 	{	wFileFormat = CSW;		// accept that the format is CSW
 		// transfer location info (could be refined/improved)
-		strncpy0( loc, city.c_str(), sizeof( loc));
-		strncpy0( loc2, state.c_str(), sizeof( loc2));
-		strCatIf( loc2, sizeof( loc2), ", ", country.c_str());
+		loc = city.c_str();
+		char sTemp[200];
+		strncpy0( sTemp,  state.c_str(), sizeof( sTemp));
+		loc2 = strCatIf( sTemp, sizeof( sTemp), ", ", country.c_str());
 	}
 	else
 	{	yac->close( erOp);		// close file if open, nop if not open
@@ -2510,8 +2526,9 @@ RC WFILE::wf_TDVOpen(	// open California Time of Day Valuation (TDV) file
 #define _C( s) s,sizeof( s)		// helper re getLineCSV calls
 //----------------------------------------------------------------------------
 void WFILE::wf_TDVInitHdrInfo()
-{	memset(  wf_TDVFileTimeStamp, 0, sizeof( wf_TDVFileTimeStamp));
-	memset(  wf_TDVFileTitle, 0, sizeof( wf_TDVFileTitle));
+{
+	wf_TDVFileTimeStamp.Release();
+	wf_TDVFileTitle.Release();
 }	// WFILE::wf_TDVInitHdrInfo
 //----------------------------------------------------------------------------
 RC WFILE::wf_TDVReadHdr( int erOp)		// read / decode TDV file header
@@ -2535,10 +2552,10 @@ RC WFILE::wf_TDVReadHdr( int erOp)		// read / decode TDV file header
 	rc |= yacTDV->checkExpected( T1, "TDV Data (TDV/Btu)");
 	if (!rc)
 		// time stamp
-		rc = yacTDV->getLineCSV( erOp, 0, "C", _C( wf_TDVFileTimeStamp), NULL);
+		rc = yacTDV->getLineCSV( erOp, 0, "S", &wf_TDVFileTimeStamp, NULL);
 	if (!rc)
 	{	// title
-		rc = yacTDV->getLineCSV( erOp, 0, "CC", _C( wf_TDVFileTitle), _C( T2), NULL);
+		rc = yacTDV->getLineCSV( erOp, 0, "SC", &wf_TDVFileTitle, _C( T2), NULL);
 		rc |= yacTDV->checkExpected( T2, "Hour");
 	}
 	if (!rc)
@@ -2674,9 +2691,9 @@ RC WFILE::wf_EPWOpen(	// open EnergyPlus weather file
 	RC rc = RCOK;
 
 	// location (1st line)
-	char lineTag[ 200], xCity[ 100], xState[ 100], xCountry[ 100], xSource[ 100], xWMO[ 100];
-	rc = yac->getLineCSV( erOp, isLeap, "CCCCCCFFFF",
-				_C( lineTag), _C( xCity), _C( xState), _C( xCountry),
+	char lineTag[ 200], xState[ 100], xCountry[ 100], xSource[ 100], xWMO[ 100];
+	rc = yac->getLineCSV( erOp, isLeap, "CSCCCCFFFF",
+				_C( lineTag), &loc, _C( xState), _C( xCountry),
 				_C( xSource), _C( xWMO),
 				&lat, &lon, &tz, &elev, NULL);
 	elev = LSItoIP( elev);		// m -> ft
@@ -2693,9 +2710,10 @@ RC WFILE::wf_EPWOpen(	// open EnergyPlus weather file
 	if (!rc)
 	{	wFileFormat = EPW;		// accept that the format is CSW
 		// transfer location info (could be refined/improved)
-		strncpy0( loc, xCity, sizeof( loc));
-		strncpy0( loc2, xState, sizeof( loc2));
-		strCatIf( loc2, sizeof( loc2), ", ", xCountry);
+		// loc, xCity, sizeof( loc));
+		char sTemp[200];
+		strncpy0( sTemp, xState, sizeof( sTemp));
+		loc2.Set(strCatIf(sTemp, sizeof(sTemp), ", ", xCountry));
 	}
 	else
 	{	yac->close( erOp);		// close file if open, nop if not open

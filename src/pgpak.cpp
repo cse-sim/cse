@@ -10,74 +10,42 @@ with arbitrary cursor moves and overwrites, then displayed/printed after fully p
    *  PAGES are stored in dynamic memory (heap) (dmpak.cpp).
    *  Caller keeps pointer (type char *, PAGE struct is private). */
 
-/* pgpak is in multiple files for flexible linking:
-	lib\pgpak.cpp  	  screen/printer common base portion
-	[pgpak2.cpp	  not in CSE version: screen-only functions ]
-	[pgpak3.cpp	  not in CSE version: additional scrn-only fcn: pgscroll() ]
-	[pgpak4.cpp	  not in CSE version: used only in support programs ]
-	app\cpgprput.cpp  printer only: pgprput() */
-
 
 /*------------------------------- INCLUDES --------------------------------*/
 #include "cnglob.h"
 
 #include "pgpak.h"	// public pgpak defs and decls,
 
-/*-------------------------------- DEFINES --------------------------------*/
-
-// #define PP ((PAGE *)pp)  see pgpak.h
-// struct PAGE ... see pgpak.h
-
-/*--- re \-codes that may be imbedded in text ---
-      NOTE: mcdef:gnc() discards \ characters (to allow hiding characters
-            from the preprocessor).  Any \-codes embedded in mcdef input
-	    text need to be \\ (eg \\n, \\Z) 6-10-89 */
+//--- re \-codes that may be imbedded in text ---
 #define HANS ""	// 11-91 no \ codes other than \n for newline
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL RC     FC pgralloce( char * *, SI, SI);
-LOCAL void   FC pgsetup( char *, SI, SI);
-LOCAL RC     FC pgcleare( char **, int erOp);
-LOCAL void   FC pgerase( char **, SI);
-LOCAL SI     FC pgGenrRc( SI, SI);
-LOCAL USI       pgcByto( const char **ps, USI *pnMax, const char* cods, SI bsF);  // no FC: has check_stack
-LOCAL USI    FC pgcStrWid( const char *s, USI nMax, SI bsF);
-
-#if 0	// no calls in CSE, 11-91. use pgalloce.
-x //========================================================================
-x char * FC pgalloc( rows, cols)
-x
-x // Initialize a page for output, abort on error
-x
-x SI rows;    // Number of rows in page (max value 255)
-x SI cols;    // Number of columns in page (max value 255)
-x
-x // Returns pointer to area allocated for page
-x{
-x char *pp;
-x
-x     pgalloce( rows, cols, &pp, ABT);
-x     return pp;
-x}		// pgalloc
-#endif
+LOCAL RC     FC pgralloce( char** ppp, int, int);
+LOCAL void   FC pgsetup( char* pp, int rows, int cols);
+LOCAL RC     FC pgcleare( char** pp, int erOp);
+LOCAL void   FC pgerase( char** pp, int rowbeg);
+LOCAL int    FC pgGenrRc( int rowOrCol, int rowOrColNext);
+LOCAL USI       pgcByto( const char **ps, USI *pnMax, const char* cods, bool bsF);
+LOCAL USI    FC pgcStrWid( const char *s, USI nMax, bool bsF);
 
 //========================================================================
 RC FC pgalloce( 		// Initialize a page for output with error handling, for pgalloc
 
-	SI rows,		// Number of rows in page (max value 255)
-	SI cols,		// # of columns (max 254) (note PP->cols is 1 larger 11-91)
-	char **ppp, 	// POINTER TO where to return pointer
+	int rows,		// Number of rows in page (max value 255)
+	int cols,		// # of columns (max 254) (note PP->cols is 1 larger 11-91)
+	char** ppp, 	// POINTER TO where to return pointer
 	int erOp )		// error action: ABT, WRN, etc
 
 // returns RCOK or RCBAD;  pointer is returned via argument ONLY if ok.
 {
-	char *pp;
 
 	/* Initial allocation includes space for line lengths, enhancement pointer values, and page buffer.
 	   [Space for enhancement flag values is not allocated until needed.]  See pgwe() */
 
+	char* pp{ nullptr };
 	if (dmal( DMPP( pp), PGSIZE( rows, cols), erOp | DMZERO) != RCOK)	// dmpak.cpp
 		return RCBAD;							// if memory full (and not ABT), return error to caller
+
 	// appropriate uses of PP->cols changed to cols-1, or <= changed to <, when this added: many if's below.
 	pgsetup( pp, rows, cols+1);		// store rows, cols, init offset to segments, etc
 	// cols+1: extra byte per row for \0 at row output, eg in pgprput.cpp, rob 11-91.
@@ -96,8 +64,8 @@ RC FC pgalloce( 		// Initialize a page for output with error handling, for pgall
 //========================================================================
 LOCAL RC FC pgralloce( 		// Reallocate a page with additional or fewer rows, with error handling
 
-	char **ppp,		// Pointer to pointer to page.  Pointer is updated.
-	SI rowsnew,		// New number of rows in page (max value 255)
+	char** ppp,		// Pointer to pointer to page.  Pointer is updated.
+	int rowsnew,	// New number of rows in page (max value 255)
 	int erOp )		// error action: ABT, WRN, etc
 
 // Does not eliminate enhancement flag lines which are no longer referenced.  See note at beginning of file.
@@ -105,21 +73,18 @@ LOCAL RC FC pgralloce( 		// Reallocate a page with additional or fewer rows, wit
 /* returns RCOK if ok, or non-0 on error such as memory full (and not ABT).
    On error, original block not gone -- *ppp must still be free'd. */
 {
-	SI i;
-	SI rowsold, cols, delta;
-	char *p, *pp;
-	RC rc;
+	RC rc{ RCOK };
 
 // Tables for sizes and offsets of each segment of page.  Segments are: line length, line beg, and text.
 #define PGRTABLESIZE 3
-	SI szold[PGRTABLESIZE],  sznew[PGRTABLESIZE];
-	SI offold[PGRTABLESIZE], offnew[PGRTABLESIZE];
+	int szold[PGRTABLESIZE],  sznew[PGRTABLESIZE];
+	int offold[PGRTABLESIZE], offnew[PGRTABLESIZE];
 
 // Working values
-	pp = *ppp;
-	rowsold = PP->rows;
-	cols = PP->cols;
-	delta = rowsnew - rowsold;
+	char* pp = *ppp;
+	int rowsold = PP->rows;
+	int cols = PP->cols;
+	int delta = rowsnew - rowsold;
 
 	/* Set up tables of offsets to and sizes of various segments of pb.
 	   These tables allow convenient up- or down-shift of data as required.
@@ -130,7 +95,7 @@ LOCAL RC FC pgralloce( 		// Reallocate a page with additional or fewer rows, wit
 	sznew[0] = sznew[1] = rowsnew;
 	sznew[2] = rowsnew*cols;
 	offold[0] = offnew[0] = 0;
-	for (i = 1; i < PGRTABLESIZE; i++)
+	for (int i = 1; i < PGRTABLESIZE; i++)
 	{
 		offold[i] = offold[i-1] + szold[i-1];
 		offnew[i] = offnew[i-1] + sznew[i-1];
@@ -141,32 +106,32 @@ LOCAL RC FC pgralloce( 		// Reallocate a page with additional or fewer rows, wit
 
 	if (delta < 0)
 	{
-		for (i = 1; i < PGRTABLESIZE; i++)		// shift lower
+		for (int i = 1; i < PGRTABLESIZE; i++)		// shift lower
 		{
-			p = (char *)PP->pb;
+			char* p = (char *)PP->pb;
 			memmove( p+offnew[i], p+offold[i], sznew[i]);
 		}
 	}
-	rc = dmral( DMPP( pp), PGSIZE( rowsnew, cols), erOp);
+	rc |= dmral( DMPP( pp), PGSIZE( rowsnew, cols), erOp);
 	if (rc)
 		return rc;			// memory full: nz fcn value, *ppp unchanged.
 	*ppp = pp;				// return good new location to caller
 	pgsetup( pp, rowsnew, cols);	// store rows, cols, set offsets to segs of buf, etc.
 	if (delta > 0)
 	{
-		p = (char *)PP->pb;
-		for (i = PGRTABLESIZE; --i > 0;  )		// shift hier
+		char* p = (char *)PP->pb;
+		for (int i = PGRTABLESIZE; --i > 0;  )		// shift hier
 			memmove( p+offnew[i], p+offold[i], sznew[i]);
 		pgerase( ppp, rowsold+1);			// blank and init rows, local, below
 	}
-	return RCOK;
+	return rc;
 }		// pgralloce
 //=========================================================================
 LOCAL void FC pgsetup( 		// Set up various values in page structure
 
-	char *pp,		// Pointer to already-allocated page
-	SI rows,		// Number of rows in page (max value 255)
-	SI cols )		// Number of columns in page (max value 254)
+	char* pp,		// Pointer to already-allocated page
+	int rows,		// Number of rows in page (max value 255)
+	int cols )		// Number of columns in page (max value 254)
 
 // [does not alter PP->nenhance: preserved for pgralloc.]
 {
@@ -195,7 +160,7 @@ LOCAL RC FC pgcleare(
 
 // Clear a whole page (set to all blanks)
 
-	char **ppp,		// POINTER TO Pointer to page to clear: [may be updated -- page could move.]
+	char** ppp,		// POINTER TO Pointer to page to clear: [may be updated -- page could move.]
 	[[maybe_unused]] int erOp )		// error action for memory full
 
 // Fcn value RCOK if ok, other value if error and not ABT
@@ -211,24 +176,21 @@ LOCAL RC FC pgcleare(
 }			// pgcleare
 /*lint +e715 */
 //=========================================================================
-void FC pgDelrows( char **ppp, SI row1, SI nrows)		// Delete rows from middle of page
+void FC pgDelrows( char **ppp, int row1, int nrows)		// Delete rows from middle of page
 
 // Moves any lower rows up, erases bottom.  Adjusts PGCUR row if in/below deleted area.
 
 // for deleting printed part & keeping col heads of pgbuildr or crl table.
 {
-	char *pp;
-	SI rows, r, rowcount;
-
-	pp = *ppp;					// fetch page pointer
-	rows = PP->rows;
+	char* pp = *ppp;					// fetch page pointer
+	int rows = PP->rows;
 	if (row1 > rows)
 		return;					// insurance
 	nrows = min( nrows, rows-row1+1);		// insurance
 
 // move up rows below rows being deleted in all segments of PAGE (pgpaki.h)
-	r = row1 + nrows;
-	rowcount = PP->rows - r + 1;			// # rows being moved
+	int r = row1 + nrows;
+	int rowcount = PP->rows - r + 1;			// # rows being moved
 	if (rowcount > 0)
 	{
 		memmove( LINELEN(row1), LINELEN(r), rowcount);
@@ -251,18 +213,15 @@ void FC pgDelrows( char **ppp, SI row1, SI nrows)		// Delete rows from middle of
 LOCAL void FC pgerase( 		// Erase all or lower part of a page
 
 	char **ppp,  	// Pointer to pointer to page (dbl ptr so could realloc)
-	SI rowbeg )		// First row to erase; 1 for whole page.  Erases to end.
+	int rowbeg )	// First row to erase; 1 for whole page.  Erases to end.
 
 /* Resets rows rowbeg to end of page to [unenhanced] ' '.
    Page is not reallocated (i.e. it remains same size, same place).
    [Does not eliminate enhancement flag lines associated with erased lines
     (ok but may waste space; note at beginning of file).] */
 {
-	char *pp;
-	SI rowcount;
-
-	pp = *ppp;
-	rowcount = PP->rows - rowbeg + 1;
+	char* pp = *ppp;
+	int rowcount = PP->rows - rowbeg + 1;
 	if (rowcount > 0)					// insurance
 	{
 		memset( LINELEN(rowbeg), '\0',  rowcount);
@@ -308,7 +267,6 @@ RC FC pgwe( 			// Write to a page in memory, inner routine
 
 // returns RCOK or error code e.g. for out of memory
 {
-	char *pp;
 	SI clwSave, rlwSave;
 	SI nbyNl;	// number of bytes to newline code \n, or end string
 	SI wid;		// columns (bytes less codes) of text to \n or end
@@ -317,11 +275,10 @@ RC FC pgwe( 			// Write to a page in memory, inner routine
 	SI nbyW;	// # bytes to write: portion of nbyHan not out of page
 	SI r1, c1, c9, over;
 	USI pos;
-	RC rc;
 	static USI k9999 = 9999;
 
-	pp = *ppp;			// fetch page pointer (used by PP macro)
-	rc = RCOK;					// no error
+	char* pp = *ppp;			// fetch page pointer (used by PP macro)
+	RC rc{ RCOK };				// no error
 	rlwSave = PP->rlw;
 	clwSave = PP->clw;	// for PGOPSTAY at return
 
@@ -367,8 +324,8 @@ RC FC pgwe( 			// Write to a page in memory, inner routine
 		col = pgGenrRc( col, PP->clw+1); 		//...
 
 		// # bytes and display columns to \n
-		nbyNl = pgcByto( &s, &k9999, "n", FALSE);	// # bytes to \n or end strng
-		wid =  pgcStrWid( s, 9999, TRUE);	 	// subtract \codes, stop at \n
+		nbyNl = pgcByto( &s, &k9999, "n", false);	// # bytes to \n or end strng
+		wid =  pgcStrWid( s, 9999, true);	 	// subtract \codes, stop at \n
 
 		// adjustment xe to column (or row) for RJ or centering
 		switch (pos)
@@ -409,7 +366,7 @@ RC FC pgwe( 			// Write to a page in memory, inner routine
 				// determine run length, leave loop if 0, set end col
 				if (!nbyNl)			// if no input text left, leave this level of loop
 					break;
-				nbyHan = pgcByto( &s, (USI*)&nbyNl, HANS, TRUE);	/* # bytes [to enh change code or] to \\:
+				nbyHan = pgcByto( &s, (USI*)&nbyNl, HANS, true);	/* # bytes [to enh change code or] to \\:
 			     					   breaks at \\ just to display only one \. */
 				// columns is same as bytes: no codes in this substring.
 				PP->clw += nbyHan;		// ending column (last written)
@@ -474,34 +431,37 @@ er:			// errors come here to exit, rc set
 	// another return above (NULL s)
 }				// pgwe
 //=========================================================================
-LOCAL SI FC pgGenrRc( 		// Resolve generic row/column values
+LOCAL int FC pgGenrRc( 		// Resolve generic row/column values
 
-	SI rc,		// Input row or column value
-	SI rcnext ) 	// Next row or column position to be written
+	int rowOrCol,		// Input row or column value
+	int rowOrColNext ) 	// Next row or column position to be written
 
 // Returns actual row or column position implied by generic value
 {
-	if (rc > PGCURMIN)
-		rc = rcnext+rc-PGCUR;
-	return rc;
+	if (rowOrCol > PGCURMIN)
+		rowOrCol = rowOrColNext+rowOrCol-PGCUR;
+	return rowOrCol;
 }		// pgGenrRc
 //=========================================================================
 void FC pgwrep( 			// Repeat write to a page in memory: used to draw lines, etc.
 
-	char **ppp, 	// Pointer to pointer to page -- may move
+	char** ppp, 	// Pointer to pointer to page -- may move
 	USI fmt,		// Format.  See pgwe() above, and pgpak.h.
-	SI row, 		// row position for first char of string
-	SI col, 		/* col position for first char of string.  Upper left corner is 1,1.
-    			   Any portion of string which is outside page area is ignored
-    			   except the page can grow at the bottom if PGGROW is included in fmt */
-	const char *s,	// string write: will be repeated as required to achieve length len.
-	SI len ) 		// Length of string to be written (max 132, not checked).
+	int row, 		// row position for first char of string
+	int col, 		// col position for first char of string.  Upper left corner is 1,1.
+    			    // Any portion of string which is outside page area is ignored
+    			    // except the page can grow at the bottom if PGGROW is included in fmt
+	const char* s,	// string write: will be repeated as required to achieve length len.
+	int len ) 		// Length of string to be written
 {
-	char stemp[134];
+	char stemp[1000];
+
+	len = min(len, int( sizeof(stemp))-2);
 
 	*stemp = '\0';			// null string in long buffer
-	pgw( ppp, fmt, row, col,
-	strpad( stemp,s,len) );	// appends s's to stemp to length len
+	strpad(stemp, s, len);
+
+	pgw(ppp, fmt, row, col, stemp);
 
 }		// pgwrep
 #if 0	// no calls 11-91
@@ -625,7 +585,7 @@ RC FC pgfille( 			// Copy text to a page in memory, handling word wrapping, with
 		{
 			while (1)		// loop over runs [with same enhancements]
 			{
-				nbyHan = pgcByto( &s, (USI*)&wl, HANS, TRUE);	/* # bytes to [enh \ code or] end word
+				nbyHan = pgcByto( &s, (USI*)&wl, HANS, true);	/* # bytes to [enh \ code or] end word
 	     							   (or \\: breaks up to display only 1 \) */
 				if (!nbyHan)				// if no bytes, done word
 					break;
@@ -659,7 +619,7 @@ RC FC pgfille( 			// Copy text to a page in memory, handling word wrapping, with
 }			// pgfille
 
 //=========================================================================
-LOCAL USI pgcByto( const char **ps, USI *pnMax, const char *cods, SI bsF)
+LOCAL USI pgcByto( const char **ps, USI *pnMax, const char *cods, bool bsF)
 
 // bytes to next \ code in given list, plus \\ special treatment if bsF
 
@@ -700,7 +660,7 @@ LOCAL USI pgcByto( const char **ps, USI *pnMax, const char *cods, SI bsF)
 		if (!c)				// if null after \ .
 			break;			// return nMax
 		if (strchr( cods, c)		// if c in chars given by caller
-		|| bsF && c=='\\')		// or \\ (non-leading if here)
+		 || (bsF && c=='\\') )		// or \\ (non-leading if here)
 			return n;			// return bytes before the \ .
 		++s;				// else point after \c
 	}					// and loop to look for next \ .
@@ -708,7 +668,7 @@ LOCAL USI pgcByto( const char **ps, USI *pnMax, const char *cods, SI bsF)
 	// two other returns above
 }		// pgcByto
 //=========================================================================
-LOCAL USI FC pgcStrWid( const char *s, USI nMax, SI bsF)
+LOCAL USI FC pgcStrWid( const char *s, USI nMax, bool bsF)
 
 // string width: strlen less enhancement \ codes, stopping at nMax or at \n
 

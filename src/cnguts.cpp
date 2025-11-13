@@ -2154,8 +2154,6 @@ void LOCAL accumulatorsAccum(
 	{
 		ACCUMULATOR_IVL* pDst = &pACM->Y + (ivl - C_IVLCH_Y);	// point destination
 												// ASSUMES ACCUMULATOR interval members ordered like DTIVLCH choices
-		ACCUMULATOR_IVL* pSrc = pDst + 1;		// source: next shorter interval
-
 		if (ivl == C_IVLCH_H)
 		{	// construct temporary subhour ACCUMULATOR_IVL
 			ACCUMULATOR_IVL tempSubhr;
@@ -2178,9 +2176,8 @@ void LOCAL accumulatorsAccum(
 }	// accumulatorsAccum
 //-----------------------------------------------------------------------------
 RC ACCUMULATOR::acm_CkF(
-	int options)
+	[[maybe_unused]] int options)
 {
-	options;
 	return RCOK;
 
 }	// ACCUMULATOR::acm_CkF

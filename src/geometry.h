@@ -78,7 +78,7 @@ public:
 	CPV3D& operator =(const CPV3D& p)
 	{	x = p.x; y = p.y; z = p.z; return *this; }
 	CPV3D& operator =(double v)
-	{	x = y = z = v; }
+	{	x = y = z = v; return *this; }
 
 	operator double*() { return &x; }
 	operator const double*() const { return &x; }

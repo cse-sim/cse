@@ -59,10 +59,6 @@ WHAT if we modify the smart terminal to shut off flow if supply temp is on wrong
   ****** UNTIL details thought thru, don't bother to try to implement smart terminals. *******   */
 
 //-----------------------------------------------------------------------------------------------------------------------------
-//--- constants, also hard-coded in cncult2.cpp for Top.absTol; also in cnah.cpp:
-const float RELoverABS = .01f;			// relative to absolute tolerance ratio: +-1 corrsponds to +- 1%.
-const float ABSoverREL = 1.f/RELoverABS;	// reciprocal thereof
-//---------------------------------------------------------------------------------------------------------------------------
 RC FC hvacIterSubhr()
 
 // Iterative (estimate-refine) part of hvac subhour computations for all zones/terminals/airHandlers
@@ -366,6 +362,7 @@ RC TU::tu_Setup()			// check and set up terminal record: call for each terminal 
 
 	cmAr = cmNONE;  							// say no air heat/cool / init to 0 for bit setting
 	if ((sstat[TU_TUTH] | sstat[TU_TUTC] | sstat[TU_TUVFMN]) & FsSET)	// has air heat and/or cool if min flow or either sp given
+	{
 		if ((sstat[TU_TUTH] | sstat[TU_TUTC]) & FsSET)		// if either setpoint given, is tstat controlled, set bits
 		{
 			cmAr = cmNONE;						// insurance
@@ -373,7 +370,10 @@ RC TU::tu_Setup()			// check and set up terminal record: call for each terminal 
 			if (sstat[TU_TUTC] & FsSET)  cmAr = TCCM(cmAr | cmStC);  	// .. cooling bit.  both form cmStBOTH.
 		}
 		else
+		{
 			cmAr = cmSo;   					// no setpoints means constant output
+		}
+	}
 	//else cmAr = cmNONE;   					// else no air heat/cool: value 0, preset above
 
 
@@ -527,25 +527,38 @@ RC TU::tu_Setup()			// check and set up terminal record: call for each terminal 
 		SI vbl = FALSE;					// TRUE if any variable exprs given: don't default
 		float def = 0.f;					// use only > 0 values
 		if (sstat[TU_TUVFMN] & FsSET)     			// if minimum flow given
+		{
 			if (sstat[TU_TUVFMN] & FsAS)			// if being autoSized 7-95, its not constant nor variable
 				ausz++;						// set flag
 			else if (sstat[TU_TUVFMN] & FsVAL)			// else if set now (thus constant)
 				def = tuVfMn;					// use it as default (if > 0)
-			else  vbl++;					// not set, not autoSized --> must be variable, can't default
+			else
+				vbl++;					// not set, not autoSized --> must be variable, can't default
+		}
 		if (cmAr & cmStH)					// heat max only pertinent with tstat ctrl'd heat
+		{
 			if (sstat[TU_TUVFMXH] & FsSET)   			// if heat max flow given
+			{
 				if (sstat[TU_TUVFMXH] & FsAS)			// if being autoSized 7-95, its not constant nor variable
 					ausz++;					// set flag
 				else if (sstat[TU_TUVFMXH] & FsVAL)		// if set now (thus constant)
 					setToMax(def, tuVfMxH);  			// use it as default if larger
-				else  vbl++;					// not set --> must be variable, can't default
+				else
+					vbl++;					// not set --> must be variable, can't default
+			}
+		}
 		if (cmAr & cmStC)					// cool max only pertinent with tstat ctrl'd cool
+		{
 			if (sstat[TU_TUVFMXC] & FsSET)   			// if cool max flow given
+			{
 				if (sstat[TU_TUVFMXC] & FsAS)			// if being autoSized 7-95, its not constant nor variable
 					ausz++;					// set flag
 				else if (sstat[TU_TUVFMXC] & FsVAL)		// if set now (thus constant)
 					setToMax(def, tuVfMxC);  			// use it as default if larger
-				else  vbl++;					// not set --> must be variable, can't default
+				else
+					vbl++;					// not set --> must be variable, can't default
+			}
+		}
 		/* if any exprs given, don't use the constants or autoSizes -- require input.
 		   if only constants or autoSizes given, use max for main sim.
 		   if both constants & autoSizes given, don't store the constants b4 ausz phase: leave 0 for dynamic default.
@@ -555,9 +568,9 @@ RC TU::tu_Setup()			// check and set up terminal record: call for each terminal 
 					|| ausz))					//     or an autosized value (will be applied to dflt b4 main sim)
 		{
 			// then tuVfDs need not be input
-						setToMax(tfanVfDs, def);				// use default for terminal fan default (max: insurance)
-						// complete tfanVfDs code like tuVfDs when tfan implemented. 7-95.
-						if (!(sstat[TU_TUVFDS] & FsSET))      		// if design flow not given
+			setToMax(tfanVfDs, def);				// use default for terminal fan default (max: insurance)
+			// complete tfanVfDs code like tuVfDs when tfan implemented. 7-95.
+			if (!(sstat[TU_TUVFDS] & FsSET))      		// if design flow not given
 				if (ausz)					// when constant default and also autosize default,
 
 					if (Top.tp_autoSizing)	// don't apply constant default at start autoSizing:
@@ -566,7 +579,7 @@ RC TU::tu_Setup()			// check and set up terminal record: call for each terminal 
 						// use 'floor' to take max cuz tu_auszFinal() may put max
 						// autoSized tuVfMxH,C back into INPUT RECORD tuVfDs as partial main sim default. 6-95.
 		}
-			else   						// no tuVfDs default found or variable exprs also found
+		else   						// no tuVfDs default found or variable exprs also found
 			rc |= require(TU_TUVFDS);				// design flow must be input when no clear default. explain?
 
 
@@ -917,7 +930,7 @@ RC TU::tu_p2EndTest()		// autoSize pass 2 end test
 		DBL was = tuhc.captRat;			// for debugging message, 6-97
 		setToMin( tuhc.captRat, hcAs.xPkAs * hcAs.plrPkAs / auszLoTol2); 	// adjust coil size to bring plr to 1 - half tolerance
 		// ... (expect tuhc plr linearly related to capacity).
-		if ( Top.verbose > 2 && !Top.tp_auszNotDone // at verbose = 3 show the first not done thing, rob 6-97
+		if ( (Top.verbose > 2 && !Top.tp_auszNotDone) // at verbose = 3 show the first not done thing, rob 6-97
 				||  Top.verbose > 3)				// at verbose = 4 show all not dones, rob 6-97
 			screen( 0, "      TU[%s] p2EndTest  hc  plr%6.3g  capt%8g -->%8g", Name(), hcAs.plrPkAs, was, tuhc.captRat );
 	}
@@ -936,7 +949,7 @@ RC TU::tu_p2EndTest()		// autoSize pass 2 end test
 			vcAs.az_NotDone();  			// plr too small. say must repeat pass 2.
 			DBL was = tuVfMxH;				// for debugging message
 			tuVfMxH= tuVfMxC= hcXPk * hcPlr / auszLoTol2;	// adj max flows to bring plr to 1 - tol/2 (linearity expected)
-			if ( Top.verbose > 2 && !Top.tp_auszNotDone // at verbose = 3 show the first not done thing, rob 6-97
+			if ( (Top.verbose > 2 && !Top.tp_auszNotDone) // at verbose = 3 show the first not done thing, rob 6-97
 					||  Top.verbose > 3)				// at verbose = 4 show all not dones
 				screen( 0, "      TU[%s] p2EndTest vh+c plr%6.3g  vfMx%8g -->%8g", Name(), vhAs.plrPkAs, was, tuVfMxH );
 		}
@@ -951,7 +964,7 @@ RC TU::tu_p2EndTest()		// autoSize pass 2 end test
 			vhAs.az_NotDone();  			// plr too small. say must repeat pass 2.
 			DBL was = tuVfMxH;				// for debugging message
 			tuVfMxH = vhAs.xPkAs * vhAs.plrPkAs / auszLoTol2;	// adj max flow to bring plr to 1 - half of tol (expect linear).
-			if ( Top.verbose > 2 && !Top.tp_auszNotDone // at verbose = 3 show the first not done thing, rob 6-97
+			if ( (Top.verbose > 2 && !Top.tp_auszNotDone) // at verbose = 3 show the first not done thing, rob 6-97
 					||  Top.verbose > 3)				// at verbose = 4 show all not dones
 				screen( 0, "      TU[%s] p2EndTest  vh  plr%6.3g  vfMx%8g -->%8g", Name(), vhAs.plrPkAs, was, tuVfMxH );
 		}
@@ -963,7 +976,7 @@ RC TU::tu_p2EndTest()		// autoSize pass 2 end test
 			vcAs.az_NotDone();  			// plr too small. say must repeat pass 2.
 			DBL was = tuVfMxC;				// for debugging message
 			tuVfMxC = vcAs.xPkAs * vcAs.plrPkAs / auszLoTol2;	// adj max flow to bring plr to 1 - half of tol (expect linear).
-			if ( Top.verbose > 2 && !Top.tp_auszNotDone // at verbose = 3 show the first not done thing, rob 6-97
+			if ( (Top.verbose > 2 && !Top.tp_auszNotDone) // at verbose = 3 show the first not done thing, rob 6-97
 					||  Top.verbose > 3)				// at verbose = 4 show all not dones
 				screen( 0, "      TU[%s] p2EndTest  vc  plr%6.3g  vfMx%8g -->%8g", Name(), vcAs.plrPkAs, was, tuVfMxC );
 		}
@@ -1205,7 +1218,7 @@ BOO TU::resizeIf( 			// conditionally resize terminal to use given flow
 
 // do it
 
-	if ( !decrOnly && as.az_resizeIf( vf, FALSE)	// cond'ly increase tuVfMxH or C to vf. cnausz.cpp.
+	if ( (!decrOnly && as.az_resizeIf( vf, FALSE))	// cond'ly increase tuVfMxH or C to vf. cnausz.cpp.
 			||  as.az_unsizeIf( max( vf, bVfMx)) )	// else cond'ly decrease but not below start subhr value.
 	{
 		// if changed by either function
@@ -1576,8 +1589,8 @@ RC TU::tu_EndSubhr() 	// terminal stuff done at end subhr: record load; checks a
 		   in the float mode just above or below the setpoint mode when at setpoint (moot b4 TUSIZE/LOAD rpts added 7-95)
 		   (but ignore set output (uSo) here -- a different capability) */
 		if ( useAr & (uStH|uMxH)						// if terminal is air-heating at setpoint or max flow
-				||  useAr & uMn  &&  cmAr==cmStH				// or is at min flow and only has heating capability
-				||  useAr & uMn  &&  cmAr==cmStBOTH  &&  ah->ah_tSup >= zp->tz )	// or is at min flow and supply temp >= zone temp
+				|| (useAr & uMn  &&  cmAr==cmStH)				// or is at min flow and only has heating capability
+				|| (useAr & uMn  &&  cmAr==cmStBOTH && ah->ah_tSup >= zp->tz) )	// or is at min flow and supply temp >= zone temp
 		{
 			// air heat. cv and cz set in ztuMode and ztuMdSets. resizeIf done. For terminal, capacity===max cfm load.
 			if (ah->airxTs)				// believe might be 0 if ah scheduled off
@@ -1599,8 +1612,8 @@ RC TU::tu_EndSubhr() 	// terminal stuff done at end subhr: record load; checks a
 		}
 		// no else: for tSup==tz for tu that can both heat & cool, tentatively count flow re both heat and cool 7-9
 		if ( useAr & (uStC|uMxC)						// if terminal is air-cooling at setpoint or max flow
-				||  useAr & uMn  &&  cmAr==cmStC				// or is at min flow and only has cooling capability
-				||  useAr & uMn  &&  cmAr==cmStBOTH  &&  ah->ah_tSup <= zp->tz )	// or is at min flow and suply temp <= zone temp
+				||  (useAr & uMn  &&  cmAr==cmStC)				// or is at min flow and only has cooling capability
+				||  (useAr & uMn  &&  cmAr==cmStBOTH  &&  ah->ah_tSup <= zp->tz) )	// or is at min flow and suply temp <= zone temp
 		{
 			// air cool. cv and cz set in ztuMode and ztuMdSets. resizeIf done. For terminal, capacity===max cfm load.
 			if (ah->airxTs)				// believe might be 0 if ah scheduled off
@@ -1681,7 +1694,7 @@ RC TU::tuEstimate() 			// terminal "estimate" function to call at start of subho
 		{
 			// turning on 0-flow air handler wastes time (just turns off again) & might find other problems. precaution 10-96.
 			if ( ah->sfan.vfDs > 0		// if fan flow non-0 (0 is illegal input but might come from autoSize)
-					||  Top.tp_sizing && ah->fanAs.az_active )	// or if fan is being autoSized (thus initially 0)
+					||  (Top.tp_sizing && ah->fanAs.az_active) )	// or if fan is being autoSized (thus initially 0)
 			{	// estimate whether zone wants heat or cold, using prior tz and current setpoints
 
 				/* Responds to sp changes.
@@ -1693,11 +1706,11 @@ RC TU::tuEstimate() 			// terminal "estimate" function to call at start of subho
 
 				DBL tz = ZrB.p[ownTi].tz;
 				if ((sstat[TU_TUTH] & FsSET)        &&  tz < tuTH - ABOUT0)	// if zone temp clearly below heat setpoint
-				{	if (max( tuVfMn, tuVfMxH) > 0 || Top.tp_sizing && vhAs.az_active)	// if tu has heating flow or autosizing it 10-96
+				{	if (max( tuVfMn, tuVfMxH) > 0 || (Top.tp_sizing && vhAs.az_active) )	// if tu has heating flow or autosizing it 10-96
 						wantMd = ahHEATING;						// say control zone wants ah to heat
 				}
 				else if ((sstat[TU_TUTC] & FsSET)   &&  tz > tuTC + ABOUT0)	// if zone temp clearly above cool setpoint
-				{	if (max( tuVfMn, tuVfMxC) > 0 || Top.tp_sizing && vcAs.az_active)	// if tu has cooling flow or autosizing it 10-96
+				{	if (max( tuVfMn, tuVfMxC) > 0 || (Top.tp_sizing && vcAs.az_active))	// if tu has cooling flow or autosizing it 10-96
 						wantMd = ahCOOLING;						// say zone wants ah to cool
 				}
 				else if ( (!(sstat[TU_TUTH] & FsSET) || tz > tuTH + ABOUT0) 	// (ABOUT0: .001, cnglob.h)
@@ -1941,7 +1954,7 @@ reDo:				// come here to redo after reEstimating ah from ArStH and ArStC cases
 			// TESTED 7-->3 no difference in cks11.bat tests.
 			BOO canReEst = 			// can change ah mode or supply temp (re ZN/ZN2/WZ/CZ) if ...
 				ah->timesReEst < MAXREEST		//  re-estimate count not used up (0'd in AH::begSubhr)
-				&&  ( Top.tp_sizing && ah->fanAs.az_active	//  and ah supply fan is now being autoSized or has ...
+				&&  ( (Top.tp_sizing && ah->fanAs.az_active)	//  and ah supply fan is now being autoSized or has ...
 					  || ah->sfan.vfDs > 0 );		/*      non-0 capacity. (ausz could make 0 vfDs; turning on 0-flow ah
 								could cause ah-tu nonconvergence. Precaution 10-96.) */
 
@@ -2032,7 +2045,7 @@ reDo:				// come here to redo after reEstimating ah from ArStH and ArStC cases
 				if (ah->ahMode==ahOFF)
 				{
 					if ( ft > sp  				// if heat not needed (if a/b > sepoint)
-							||  ft >= sp && mdSeq[md+1]==MDS_FLOAT )	// if exact ==, go only to float mode: ==sp ArStC would loop.
+							||  (ft >= sp && mdSeq[md+1]==MDS_FLOAT) )	// if exact ==, go only to float mode: ==sp ArStC would loop.
 						md++;					// go up a zone mode: float at/above sp, or ArStC.
 					else if (isCtu && canReEst)			// if zhx's tu controls ah & can reEst now
 					{
@@ -2165,14 +2178,14 @@ reDo:				// come here to redo after reEstimating ah from ArStH and ArStC cases
 
 								/* if next mode is setpoint cool, just use normal cool not bkwds heat: yields same temp if sp same.
 								   TESTED saves iterations, T136a, 5-6-95. */
-								||  mdSeq[md+1] != MDS_FLOAT		// if there's a float mode, next sp different, stay here
-								&&  ZhxB.p[mdSeq[md+1]].zhxTy==ArStC	// if there's anything but sp cooling, i dunno, so say here
+								||  (mdSeq[md+1] != MDS_FLOAT		// if there's a float mode, next sp different, stay here
+								    &&  ZhxB.p[mdSeq[md+1]].zhxTy==ArStC)	// if there's anything but sp cooling, i dunno, so say here
 
 								/* let zone drop from setpoint mode out of backwards heating when heat coil no longer needed --
 								   else may stick at hi flow in sp mode due to fan heat. TESTED really needed, T155d 5-95.
 								   DOES hold, once here, when coil only countering leak/loss, when ZN cd be off: believe realistic. */
-								||  ah->coilUsed != cuHEAT 	// if ah didn't use heat coil (not valid after reEst)
-								&&  TZMNFO > sp - tFuzz 	/* if zone temp not too cold without heat coil:
+								||  (ah->coilUsed != cuHEAT 	// if ah didn't use heat coil (not valid after reEst)
+								     &&  TZMNFO > sp - tFuzz) 	/* if zone temp not too cold without heat coil:
                             				   to let zone get INTO bkwd heat after reEst even tho coilUsed unset
                             				   (else md++'s and may run coil in float mode). */
 
@@ -2262,7 +2275,7 @@ hf1:
 				if (ah->ahMode==ahOFF)
 				{
 					if ( ft < sp  				// if coolth not needed (if a/b < sepoint)
-							||  ft <= sp && mdSeq[md+1]==MDS_FLOAT )	// if exact ==, go only to float mode: ==sp ArStH would loop.
+							||  (ft <= sp && mdSeq[md+1]==MDS_FLOAT) )	// if exact ==, go only to float mode: ==sp ArStH would loop.
 						md--;					// go down a zone mode: float at/below sp, or ArStH.
 					else if (isCtu && canReEst)			// if zhx's tu controls ah & can reEst now
 					{
@@ -2395,14 +2408,14 @@ hf1:
 
 								/* if next mode is setpoint heat, just use normal heat not bkwds cool: yields same temp if sp same.
 								   TESTED saves iterations, T136a, 5-6-95. */
-								||  mdSeq[md-1] != MDS_FLOAT		// if there's a float mode, next sp different, stay here
-								&&  ZhxB.p[mdSeq[md-1]].zhxTy==ArStH	// if there's anything but sp cooling, i dunno, so say here
+								||  (mdSeq[md-1] != MDS_FLOAT		// if there's a float mode, next sp different, stay here
+								     &&  ZhxB.p[mdSeq[md-1]].zhxTy==ArStH)	// if there's anything but sp cooling, i dunno, so say here
 
 								/* let zone drop from setpoint mode out of backwards cooling when no cool coil longer needed --
 								   else may stick at hi flow in sp mode due to leak/loss. TESTED really needed, T155d 5-95.
 								   DOES hold, when coil only countering fanHeat/leak/loss, when ZN2 cd be off: believe realistic. */
-								||  ah->coilUsed != cuCOOL	// if ah didn't use cool coil (not valid after reEst)
-								&&  TZMNFO < sp + tFuzz 	/* if zone temp not too warm without cool coil:
+								||  (ah->coilUsed != cuCOOL	// if ah didn't use cool coil (not valid after reEst)
+									&&  TZMNFO < sp + tFuzz) 	/* if zone temp not too warm without cool coil:
                             				   to let zone get INTO bkwd cool after reEst even tho coilUsed unset
                             				   (else md--'s and may run coil in float mode). */
 
@@ -2493,6 +2506,9 @@ ahReEst:		// come here to re-estimate ah supply temperature in current mode
 				   cuz don't understand that it is urgent re results, and cuz might loop if eg fan heat makes discontinuity.
 				   Turnoff happens: AH::setTsSp1 (some 0-flow cases), TU::tuEstimate (next subhour),
 				   and now in ZNR::ztuAbs at most once per subhour. 4-95. */
+
+			default:
+				break;
 
 			} // end switch zhxTy
 
@@ -2765,11 +2781,11 @@ RC ZNR::ztuAbs( 			// compute stuff for zn's terminals in given zone mode
 					&&  md < mda			// if ah should be max heating in this zone mode
 					&&  !(ah->ahMode & ahHEATBIT)			// but ah heat coil isn't on (ah may be off, fan only, or cool)
 					&&  CHN(ah->ahSch) != C_AHSCHVC_OFF		// ah sched ON (or future WARMUP)
-					&&  tu->ctrlsAi && tu->ctrlsAi==x->ai	// if zhx's tu controls zhx's air handler 5-2-95
+					&&  (tu->ctrlsAi && tu->ctrlsAi==x->ai)	// if zhx's tu controls zhx's air handler 5-2-95
 					&&  ah->isZNorZN2   					// if ah supply temp is under ZN or ZN2 control this hour
 					// don't turn on ah if no flow possible: just turns itself off again --> ah-tu nonconvergence, 10-96.
-					&&  (max( tu->tuVfMn, tu->tuVfMxH) > 0 || Top.tp_sizing && tu->vhAs.az_active)	// tuVfMxH==0 is allowed input.
-					&&  (ah->sfan.vfDs > 0 || Top.tp_sizing && ah->fanAs.az_active) )		// vfDs==0 could result from autoSizing.
+					&&  (max( tu->tuVfMn, tu->tuVfMxH) > 0 || (Top.tp_sizing && tu->vhAs.az_active))	// tuVfMxH==0 is allowed input.
+					&&  (ah->sfan.vfDs > 0 || (Top.tp_sizing && ah->fanAs.az_active)) )		// vfDs==0 could result from autoSizing.
 			{
 				TU *ctu = TuB.p + ah->ahCtu;			// point ZN/ZN2 control terminal for this air handler
 				ctu->wantMd = ahHEATING;			// have terminal tell ah that it wants heat
@@ -2800,11 +2816,11 @@ RC ZNR::ztuAbs( 			// compute stuff for zn's terminals in given zone mode
 					&&  md > mda			// if ah should be max cooling in this zone mode
 					&&  !(ah->ahMode & ahCOOLBIT)			// but ah cool coil isn't on (ah may be off, fan only, or cool)
 					&&  CHN(ah->ahSch) != C_AHSCHVC_OFF		// ah sched ON (or future WARMUP)
-					&&  tu->ctrlsAi && tu->ctrlsAi==x->ai		// if zhx's tu controls zhx's air handler 5-2-95
+					&&  (tu->ctrlsAi && tu->ctrlsAi==x->ai)		// if zhx's tu controls zhx's air handler 5-2-95
 					&&  ah->isZNorZN2   				// if ah supply temp is under ZN or ZN2 control this hour
 					// don't turn on ah if no flow possible: just turns itself off again --> ah-tu nonconvergence, 10-96.
-					&&  (max( tu->tuVfMn, tu->tuVfMxC) > 0 || Top.tp_sizing && tu->vcAs.az_active)	// tuVfMxC==0 is allowed input.
-					&&  (ah->sfan.vfDs > 0 || Top.tp_sizing && ah->fanAs.az_active) )		// vfDs==0 could result from autoSizing.
+					&&  (max( tu->tuVfMn, tu->tuVfMxC) > 0 || (Top.tp_sizing && tu->vcAs.az_active))	// tuVfMxC==0 is allowed input.
+					&&  (ah->sfan.vfDs > 0 || (Top.tp_sizing && ah->fanAs.az_active)) )		// vfDs==0 could result from autoSizing.
 			{
 				TU *ctu = TuB.p + ah->ahCtu;		// point ZN/ZN2 control terminal for this air handler
 				ctu->wantMd = ahCOOLING;			// have terminal tell ah that it wants coolth
@@ -2857,6 +2873,8 @@ haveFlow: ;					// other air handler cases join here with flow cz set
 			aSum += cz * tSup;				// accumulate supply t * flow, for aqHvO
 			wc1 += cz * (ah->ah_wSupLs + ah->ah_wSup)/2.;		// accumulate average supply hum rat * flow, for wcO1
 			wc += cz * ah->ah_wSup;					// accumulate latest supply hum rat * flow
+			break;
+		default:
 			break;
 		}
 	}
@@ -3094,6 +3112,8 @@ tzOhum: ;		// common exit for air cases. cz contains tu->cz.
 				}
 			break;
 #undef TOLF
+		default:
+			break;
 		}
 	}
 }				// ZNR::ztuMdSets

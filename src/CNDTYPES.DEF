@@ -11,8 +11,8 @@
 	        ??? UPDATE FOR CSE some done.
 		dtypes.h   #included in cnglob.h
 		dttab.cpp  data types table C source code
-		rcdef.exe  some values derived from here (incl DTANAME, DTTI
-			   1-91) are compiled into rcdef: if changed,
+		rcdef.exe  some values derived from here (incl DTTI, )
+			   are compiled into rcdef: if changed,
 			   run rcdef to produce dtypes.h, recompile
 			   & link same, run AGAIN for other files.
 
@@ -89,8 +89,6 @@ CULSTR   --     "struct CULSTR"		// string accessed via 4 byte handle
 
 DOW      --		"short"  			// day of week, sun=0 in tdpak (1 less than DOWCH)
 MONTH    --		"short"  			// month, jan=1 in tdpak
-
-ANAME   -- 		"char[64]"			// name string for use in RATs:
 DOY      --     "short"    		
 SHOY     --     "unsigned"			// subhour of year: (jday*24 + ihr)*4 + subhr
 									//  using jDay 1..365, ihr 0..23, subhr 0..3. 
@@ -138,14 +136,12 @@ AHMODE    --  "enum { ahOFF=0,ahFAN=1,ahHEATBIT=2,ahHEATING=3,ahCOOLBIT=4,ahCOOL
 //			 tldSP:  tpTs is at setpoint, must determine power
 //			 tldMAX: full power, tpTs >= setpoint
 TOWLOADCASE  --  "enum { tldMIN, tldSP, tldMAX }"
-
-// arrays used in WFILE record, 1-94
-WFLOC   --     "char[32]"			// weather file location string (+ \0 + fill byte)
-WFLID   --     "char[18]"			// weather file location id string ( + \0 + fill byte)
+// pointer to XFILE structure (xiopak.h), added 1-94 for use in WFILE.
+XFILEP  --     "XFILE *"
+//
 
 WFileFormat -- "enum WFileFormat { UNK=-1,BSGS=1,BSGSdemo,ET1,ET2,CSW,T24DLL,EPW }" 
 									// open wthr file type (comments: wfpak.h)
-WFLOC2  --      "char[22]"			// "location 2" field in ET1 weather files
 YACAMP  --	   "class YACAM *"	    
 WDYEARP  --	   "class WDYEAR *"	    
 

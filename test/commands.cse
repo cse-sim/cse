@@ -149,6 +149,8 @@ DEFTYPE SURFACE WALL
 
 DEFTYPE SURFACE "IntWall" USETYPE WALL  sfExCnd=ADJZN sfAdjZn = "Z2"
 
+DEFTYPE SURFACE WALL2 USETYPE WALL
+
 ZONE Z1
 	znModel = CZM
 
@@ -172,7 +174,7 @@ ZONE Z1
     
 	SURFACE WallN1 USETYPE WALL sfAzm = 0 sfExH = 1.3
 	SURFACE WallS1 USETYPE WALL sfAzm = 180 sfCon = CFrm2x4 sfExHcLChar = 18
-	SURFACE WallW1 USETYPE WALL sfAzm = 270 sfCon = lw_floor
+	SURFACE WallW1 USETYPE WALL2 sfAzm = 270 sfCon = lw_floor
 	SURFACE WallIZ USETYPE IntWall sfAzm = 270 sfTilt=85 sfCon = CFrm2x4
 		
 	SURFACE Clg1

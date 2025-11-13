@@ -1370,7 +1370,7 @@ Reportcol colVal=@Meter[MtrNatGas].Y.htg/CSEBtuSF colHead="HtgE" colDec=0 colWid
 
 Report rpType=MTR rpMeter=MtrElec rpFreq=MONTH rpBtuSf=1000
 Report rpType=MTR rpMeter=MtrNatGas rpFreq=MONTH rpBtuSf=1000
-// REPORT   rpType=ZDD     rpZone="Conditioned-zn"
+REPORT   rpType=ZDD     rpZone="Conditioned-zn"
 
 
 //Coldest Day

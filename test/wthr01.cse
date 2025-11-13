@@ -1,6 +1,7 @@
 // weather test
 
 wfName = "CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
+tdvFName = "Testdata.tdv"
 nSubSteps = 4
 DT = No
 bldgAzm = 0
@@ -198,6 +199,8 @@ REPORT rpType = UDT  rpFreq = YEAR rpCPL=-1
   REPORTCOL colHead="TOP TZ" colVal=@top.timeZone colDec=2 colWid=6
   REPORTCOL colHead="WF elev" colVal=@weatherFile.elev colDec=1 colWid=8
   REPORTCOL colHead="TOP elev" colVal=@top.elevation  colDec=1 colWid=8
+  REPORTCOL colHead="TDVDesc" colVal=@weatherfile.tdvFileTitle colWid=20
+  REPORTCOL colHead="TDVTimeStamp" colVal=@weatherfile.TDVFileTimeStamp colWid=30
 
 
 #define CSEBtuSF 1000

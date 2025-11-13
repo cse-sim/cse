@@ -380,8 +380,8 @@ void ASHPConsistentCaps(   // make air source heat pump heating/cooling capaciti
 // Data + class CHDHW
 ///////////////////////////////////////////////////////////////////////////////
 CHDHW::CHDHW( record* pParent)
-	: hvt_capHtgNetMin( 0.f), hvt_capHtgNetMaxFT( 0.f), hvt_tRiseMax( 0.f),
-	  hvt_pParent( pParent)
+	: hvt_pParent( pParent),
+	  hvt_capHtgNetMin( 0.f), hvt_capHtgNetMaxFT( 0.f), hvt_tRiseMax( 0.f)
 {}
 //-----------------------------------------------------------------------------
 CHDHW::~CHDHW()
