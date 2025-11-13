@@ -114,7 +114,6 @@ HC_AREA       FLOAT        LMGEZ     UNHEATCAP_AREA
 //HC_AREA_GZ  FLOAT        LMGZ      UNHEATCAP_AREA
 HC_VOL        FLOAT        LMGZ      UNHEATCAP_VOL
 HOURS         FLOAT        LMGEZ     UNHOURS	// time interval in hours, rob 6-92
-SGTARGP       SGTARGP      LMNONE    UNNONE	// pointer to an SGTARG
 TCCM          TCCM         LMNONE    UNNONE	// term capab ctrl method: enum { cmNONE, cmSo, ...
 ZHXTY         ZHXTY        LMNONE    UNNONE	// zone hvac xfer type enum 3-92
 TCUSE         TCUSE        LMNONE    UNNONE	// terminal capability use this subhour enum
@@ -123,13 +122,8 @@ TOWLOADCASE   TOWLOADCASE  LMNONE    UNNONE	// TOWERPLANT load case enum 9-92
 COILUSED      COILUSED     LMNONE    UNNONE	// AH coil used 12-92
 
 WFileFormat   WFileFormat  LMNONE    UNNONE	// open weather file type (see wfpak.h)
-YACAMP        YACAMP       LMNONE    UNNONE
-WDYEARP       WDYEARP      LMNONE    UNNONE
 
 RIGTARG       RIGTARG      LMNONE    UNNONE	// radiant internal gain target (accumulator)
-RIGDISTP      RIGDISTP     LMNONE    UNNONE	// ptr to array of above, for ZNR::rIgDist
-DUCTSEGP	  DUCTSEGP	   LMNONE    UNNONE
-PIPESEGP	  PIPESEGP	   LMNONE    UNNONE
 
 // choice (choicb) types
 NOYESCH       NOYESCH      LMNONE    UNNONE

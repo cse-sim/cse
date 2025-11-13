@@ -839,10 +839,10 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
     *r *hide SI hdrBytes 	// # header bytes before first record (used in wfread for file positioning)
     *r *hide SI hourBytes	// # bytes per hour
     *r *hide INT csvCols	// # of columns in comma separated formats (e.g. CSW)
-    *r *hide YACAMP yac		// pointer to "Yet Another Char Access Method" subobject for buffering & decoding weather file
-	*r *hide YACAMP yacTDV	// ditto TDV file
     *r INT wf_TDVFileJHr;	// last hour (row) in file that has read (1 based)
-    *r *hide WDYEARP wf_pWDY	// pointer to entire year weather data pre-read from file
+    *declare "class YACAM* yac;"		// pointer to YACAM for buffering & decoding weather file
+	*declare "class YACAM* yacTDV;"	    // pointer to YACAM for buffering & decoding TDV file
+    *declare "class WDYEAR* wf_pWDY;"	// pointer to entire year weather data pre-read from file
 *END			// WFILE
 //========================================================================================================
 RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
@@ -1622,7 +1622,7 @@ RECORD SGRAT "solarGain" *RAT *hideall		// HIDE 1-92 due to doubts about whether
 	*declare "void sg_ToTarg( float bmRad, float dfRad);"
 	*declare "void sg_DbDump() const;"
     *mh *e SI sg_addIt	// 0 to store gain to init targ, nz to add to target (additional entry for same targ)
-    SGTARGP sg_pTarg	// where to add gain -- zone or surface
+    *declare "struct SGTARG* sg_pTarg;"	// where to add gain -- zone or surface
     BOO sg_isSubhrly	// non-0 for subhourly target, 0 for hourly
   #ifdef SOLAVNEND		// undef in cndefns.h (via cnglob.h) 1-18-94: only if computing & using end-ivl as well as ivl avg solar values
   o  BOO sg_isEndIvl	// non-0 to use end-interval value (zones) not interval average value (masses)
@@ -2404,7 +2404,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     //   massO          MSRAT        .outside.qIg   to mass outside in this zone
     *r USI rIgDistNAl		// 0 or number of allocated entries in...
     *r USI rIgDistN			// 0 or number of used entries in...
-    *r RIGDISTP rIgDist   	// NULL or ptr to heap array of distrubution info for rad int gain originating in zone.
+    *declare "RIGDIST* rIgDist;"  	// NULL or ptr to heap array of distrubution info for rad int gain originating in zone.
 
 // ZNR solar gain targeting and radiation exchange variables set at setup time for use at runtime
 //   added re cavity absorptance, 1995
@@ -3211,7 +3211,7 @@ RECORD DBC "DBC" *SUBSTRUCT *BASECLASS SBCBASE	// duct boundary condition
 *declare "void sb_SetRunConstants( ZNR* zpx);"
 *declare "void sb_SetCoeffs( ZNR* zpx);"
 
-*i DUCTSEGP sb_pDS			// pointer to parent DUCTSEG
+*declare "DUCTSEG* sb_pDS;"			// pointer to parent DUCTSEG
 
 *END // DBC
 //-----------------------------------------------------------------------------
@@ -5033,7 +5033,7 @@ RECORD PBC "PBC" *SUBSTRUCT *BASECLASS SBCBASE	// pipe boundary condition
 *declare "void sb_SetCoeffs( ZNR* zpx);"
 #endif
 
-*i PIPESEGP sb_pPS			// pointer to parent PIPESEG
+*declare "PIPESEG* sb_pPS;"			// pointer to parent PIPESEG
 
 *END // PBC
 //=============================================================================

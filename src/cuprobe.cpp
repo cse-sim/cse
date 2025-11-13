@@ -697,16 +697,10 @@ w          break;
 	case DTLI:
 	case DTULI:
 
-	// unprobe-able: pointers to basic types (or add a way fetch?)
-	case DTSGTARGP:
-
 	// unprobe-able types: structures (to probe, make *substructs so they appear as their individual members)
 #ifdef DTVALNDT		// tentatively made *substruct
 	case DTVALNDT:
 #endif
-
-	//unprobe-able types: pointers to unprobe-able types
-	case DTYACAMP:
 		errorSub = "un-probe-able";
 		break;
 
