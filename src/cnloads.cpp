@@ -2375,13 +2375,13 @@ RC RSYS::rs_CkFAuxHeat()	// check aux heat
 	rs_effAuxH = 1.f;		// insurance
 	if (!rs_CanHaveAuxHeat())
 	{	rc |= disallowN("when rsType is not ASHP, ASHPPM, ASHPHydronic, or ASHPPkgRoom",
-			RSYS_TYPEAUXH, RSYS_CAPAUXH, RSYS_FXCAPAUXHTARG, RSYS_AFUEAUXH,
+			RSYS_TYPEAUXH, RSYS_CAPAUXH, RSYS_CAPAUXHFACTOR, RSYS_FXCAPAUXHTARG, RSYS_AFUEAUXH,
 		    RSYS_CTRLAUXH, 0);
 		rs_AFUEAuxH = 0.f;		// clear possibly confusing default
 	}
 	else if (rs_typeAuxH == C_AUXHEATTY_NONE)
 	{	rc |= disallowN("when rsTypeAuxH = None",
-			RSYS_CTRLAUXH, RSYS_CAPAUXH, RSYS_FXCAPAUXHTARG, RSYS_AFUEAUXH, 0);
+			RSYS_CTRLAUXH, RSYS_CAPAUXH, RSYS_CAPAUXHFACTOR, RSYS_FXCAPAUXHTARG, RSYS_AFUEAUXH, 0);
 		rs_capAuxH = 0.f;
 	}
 	else if (!IsAusz(RSYS_CAPAUXH) && rs_capAuxH == 0.f)
@@ -2431,7 +2431,7 @@ RC RSYS::rs_CheckCapAuxH()		// check for sufficient aux heat capacity
 // issues msg if rs_capAuxH is too small to be useful
 {
 	RC rc = RCOK;
-	if (rs_capAuxH > 0.f && rs_ctrlAuxH != C_AUXHEATCTRL_CYCLE)
+	if (rs_capAuxHAvail ?? > 0.f && rs_ctrlAuxH != C_AUXHEATCTRL_CYCLE)
 	{	// 1. user has provided aux capacity
 		// 2. aux and primary will not run simultaneously
 		float capMax = std::max({ rs_cap47, rs_cap35, rs_cap17, rs_cap05 });
@@ -3318,8 +3318,6 @@ RC RSYS::rs_SetupCapH(		// set heating members that do not vary during simulatio
 		else
 		{	// non-HP, non-CHDHW
 			nomCap = rs_capH;
-			if (!rs_CanHaveAuxHeat())
-				rs_capAuxH = 0.f;	// insurance
 		}
 		rs_amfH = rs_AMFForHtgCap(nomCap);	// nominal full speed dry-air mass flow rate, lb/hr
 		avfH = AMFtoAVF( rs_amfH);
@@ -3668,6 +3666,10 @@ RC RSYS::rs_BegSubhr()
 		rs_OAVTdbInlet = Top.tDbOSh;
 	// else set via input expression
 
+	rs_capAuxHAvail = rs_capAuxH;
+	if (!rs_isAuszH)
+		rs_capAuxHAvail *= rs_capAuxHFactor;
+
 	return rc;
 }		// RSYS::rs_BegSubhr
 //----------------------------------------------------------------------------
@@ -3926,7 +3928,7 @@ void RSYS::rs_HeatingOutletAirState(
 	rs_asOut.as_AddQSen2( rs_capHt, rs_amf);
 
 	// auxiliary heat supply air state
-	//  rs_capAuxH is known
+	//  rs_capAuxHAvail is known
 	if (rs_CanHaveAuxHeat() && rs_speedF == 1.f)
 	{
 		// double tdbWas = rs_asOutAux.as_tdb;
@@ -3944,7 +3946,7 @@ void RSYS::rs_HeatingOutletAirState(
 			fanHeatAux = rs_fanHeatH;
 		}
 
-		rs_asOutAux.as_AddQSen2(rs_capAuxH + fanHeatAux, rs_amf);
+		rs_asOutAux.as_AddQSen2(rs_capAuxHAvail + fanHeatAux, rs_amf);
 		rs_asSupAux = rs_asOutAux;
 		rs_SupplyDSEAndDucts(rs_asSupAux);
 	}
@@ -4605,6 +4607,8 @@ float RSYS::rs_PerfASHP2(		// ASHP performance
 		}
 	}
 
+	// limit to available aux heat capacity
+	//   NOT rs_capAuxHAvail
 	if (capDfHt > rs_capAuxH)
 		capDfHt = rs_capAuxH;
 
@@ -5823,18 +5827,18 @@ RC RSYS::rs_AllocateZoneAir()	// finalize zone air flows
 	// else rs_fxCap = 0
 	double fSize = min( rs_fxCap[ 0], 1.);		// limit to available
 
-	// bAux: aux possible and needed
-	//   note: rs_capAuxH>0 possible for ASHP *only* (but can be =0 for ASHP)
-	bool bAux = rs_mode == rsmHEAT && rs_capAuxH > 0.f
+	// bAux: true iff aux possible and needed
+	//   note: rs_capAuxHAvail>0 possible for ASHP *only* (but can be =0 for ASHP)
+	bool bAux = rs_mode == rsmHEAT && rs_capAuxHAvail > 0.f
 		     && (rs_effHt == 0.f || (fSize > 0. && fSize < 1.));
 
 	if (bAux && rs_ctrlAuxH != C_AUXHEATCTRL_CYCLE)
 	{	// check that aux will be helpful
-		//   _CYCLE: any rs_capAuxH > 0 helps (> 0.f check is above)
+		//   _CYCLE: any rs_capAuxHAvail > 0 helps (> 0.f check is above)
 		//   _LO, _ALT: aux supply temp must be greater than primary
 		if (rs_asSupAux.as_tdb <= rs_asSup.as_tdb)
 		{	orWarn("Aux heat supply temperature (%0.1f F) <= primary supply temperature (%0.1f F)."
-			   "\n    Aux heat is not helpful.  rscapAuxH should be increased.",
+			   "\n    Aux heat is not helpful.  rsCapAuxH should be increased.",
 				rs_asSupAux.as_tdb, rs_asSup.as_tdb);
 			// bAux = false;  no: real controls would run aux even if not helpful
 		}
@@ -5974,8 +5978,8 @@ RC RSYS::rs_AllocateZoneAir()	// finalize zone air flows
 			if (rs_runFAux > 1.f)
 				printf("\nrs_runFAux > 1");
 #endif
-			float fFan = rs_capAuxH / (rs_capAuxH + rs_fanHeatH);
-			qAux = rs_runFAux * rs_capAuxH * fFan;
+			float fFan = rs_capAuxHAvail / (rs_capAuxHAvail + rs_fanHeatH);
+			qAux = rs_runFAux * rs_capAuxHAvail * fFan;
 		}
 		else
 		{	// aux cycles: determine added heat rqd in addition to prim
@@ -5989,7 +5993,7 @@ RC RSYS::rs_AllocateZoneAir()	// finalize zone air flows
 #endif
 				qAux = 0.;
 			}
-			rs_runFAux = qAux / rs_capAuxH;
+			rs_runFAux = qAux / rs_capAuxHAvail;
 		}
 #if defined( _DEBUG)
 		if (ifBracket( 0.f, rs_runFAux, 1.f))
@@ -6390,7 +6394,7 @@ RC RSYS::rs_FinalizeSh()
 				// rs_COPHtAdj = 0.f;
 				runFFan = rs_runFAux;
 				rs_outFan = rs_runFAux * rs_fanHeatH;
-				rs_outAux = rs_runFAux * rs_capAuxH;
+				rs_outAux = rs_runFAux * rs_capAuxHAvail;
 				rs_runF = rs_PLF = 0.f;
 				rs_capHt = rs_capHtFS = rs_capDfHt = 0.f;	// clear values for reports
 				// aux may be on, handled below
@@ -6416,7 +6420,7 @@ RC RSYS::rs_FinalizeSh()
 
 				double outTot = rs_runF * rs_capHt;
 
-				rs_outAux = rs_runFAux * rs_capAuxH;
+				rs_outAux = rs_runFAux * rs_capAuxHAvail;
 
 				rs_outFan = min(outTot+rs_outAux, runFFan * rs_fanPwr);	// fan output, Btuh
 				// insurance: limit to total output
@@ -6452,6 +6456,7 @@ RC RSYS::rs_FinalizeSh()
 				rs_inPrimary = rs_outSen / rs_COPHtAdj;
 
 			}
+
 			rs_inAux = rs_outAux / (rs_effAuxH * rs_fEffAuxHBackup);
 			rs_inDefrost = rs_outDefrost / (rs_effAuxH * rs_fEffAuxHDefrost);
 

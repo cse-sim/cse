@@ -3660,10 +3660,12 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 							//   *always* 0 if !rs_IsHP()
 *f *e FLOAT rs_capAuxHInp	// rs_capAuxH as input (may be AUTOSIZE)
 							// allows use of estimated rs_capAuxH during ASHP autosize
+*f *s FLOAT_GEZ rs_capAuxHFactor   // auxiliary heating capacity factor, default 1
+                                //  allows runtime modification of available aux capacity
+*f *s *e FLOAT_GEZ rs_capAuxHAvail  // current step available auxiliary heating capacity
+                                //   = rs_capAuxH * rs_capAuxHFactor
 *f FLOAT_GZ rs_AFUEAuxH		// auxiliary furnace heating AFUE (assumed constant), default 0.9
 *f FLOAT_GZ rs_effAuxH		// aux heat efficiency (= rs_AFUEAuxH or 1)
-*r *e INT rs_underSizedAuxCount // # of subhours having aux heat capacity < compressor capacity
-                                //   iff rs_ctrlAuxH != C_AUXHEATCTRL_CYCLE and rs_capAuxH > 0
 *h FLOAT rs_ASHPLockOutT	// air source heat pump compressor lockout temp, F
 							//   compressor capacity assumed 0 if outdoor tdb < tLockOut
 							//   default is -999 (no lockout)

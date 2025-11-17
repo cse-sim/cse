@@ -600,7 +600,7 @@ ALTERNATE, Alternates between compressor and auxiliary", True)
 
 Type: float
 
-For rsType=ASHP, auxiliary heating capacity. If AUTOSIZEd, rsCapAuxH is set to the peak heating load evaluated at the heating design temperature (Top.heatDsTDbO).
+For heat pump types, auxiliary heating capacity. If AUTOSIZEd, rsCapAuxH is set to rsFxCapAuxH $\times$ (peak design-day load). Peak design day load is evaluated at the heating design temperature (Top.heatDsTDbO).
 
 {{
   member_table({
@@ -612,11 +612,27 @@ For rsType=ASHP, auxiliary heating capacity. If AUTOSIZEd, rsCapAuxH is set to t
   })
 }}
 
+### rsCapAuxHFactor
+
+Type: float
+
+Auxiliary heating capacity factor, applied subhourly.  For each subhour, available auxiliary heating capacity is rsCapAuxH $\times$ rsCapAuxHFactor.  This allows expression-based modification of auxiliary capacity, e.g. disabling auxiliary if zone temperature is within 2 F of setpoint.
+
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*x* ≥ 0", 
+    "default": "1",
+    "required": "No",
+    "variability": "subhourly" 
+  })
+}}
+
 ### rsAFUEAuxH
 
 Type: float
 
-For rsType=ASHP, auxiliary heat annualized fuel utilization efficiency.
+For heat pump types, auxiliary heat annualized fuel utilization efficiency.
 
 {{
   member_table({
