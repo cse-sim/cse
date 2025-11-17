@@ -618,6 +618,8 @@ Type: float
 
 Auxiliary heating capacity factor, applied subhourly.  For each subhour, available auxiliary heating capacity is rsCapAuxH $\times$ rsCapAuxHFactor.  This allows expression-based modification of auxiliary capacity, e.g. disabling auxiliary if zone temperature is within 2 F of setpoint.
 
+rsCapAuxHFactor modifies only auxiliary heating capacity used when there is insufficient compressor capacity available to satisfy the heating load.  That is, it does not have any effect on backup heating capacity available during defrost operation.
+
 {{
   member_table({
     "units": "",

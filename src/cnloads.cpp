@@ -2426,21 +2426,21 @@ RC RSYS::rs_CkFRatio(
 }		// RSYS::rs_CkFRatio
 //-----------------------------------------------------------------------------
 #if 0
-// incomplete idea, 11-21
-RC RSYS::rs_CheckCapAuxH()		// check for sufficient aux heat capacity
-// issues msg if rs_capAuxH is too small to be useful
-{
-	RC rc = RCOK;
-	if (rs_capAuxHAvail ?? > 0.f && rs_ctrlAuxH != C_AUXHEATCTRL_CYCLE)
-	{	// 1. user has provided aux capacity
-		// 2. aux and primary will not run simultaneously
-		float capMax = std::max({ rs_cap47, rs_cap35, rs_cap17, rs_cap05 });
-
-		if (rs_capAuxH <= capMax)
-			rc |= oWarn("Insufficient auxiliary capacity");
-	}
-	return rc;
-}		// RSYS::rs_CheckCapAuxH
+0 // incomplete idea, 11-21
+0 RC RSYS::rs_CheckCapAuxH()		// check for sufficient aux heat capacity
+0 // issues msg if rs_capAuxH is too small to be useful
+0 {
+0 	RC rc = RCOK;
+0 	if (rs_capAuxHAvail ? ? > 0.f && rs_ctrlAuxH != C_AUXHEATCTRL_CYCLE)
+0 	{	// 1. user has provided aux capacity
+0 		// 2. aux and primary will not run simultaneously
+0 		float capMax = std::max({ rs_cap47, rs_cap35, rs_cap17, rs_cap05 });
+0
+0		if (rs_capAuxH <= capMax)
+0			rc |= oWarn("Insufficient auxiliary capacity");
+0	}
+0	return rc;
+0 }		// RSYS::rs_CheckCapAuxH
 #endif
 //-----------------------------------------------------------------------------
 RC RSYS::rs_GetAndCheckPERFORMANCEMAP(
