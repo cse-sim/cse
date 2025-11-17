@@ -301,7 +301,7 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 
 /*============================= LOCAL ROUTINES ===========================*/
-LOCAL void   Do_Dtypes( FILE* file_dtypesh);
+LOCAL void   Do_Dtypes(const char* fnameDtypesDef, FILE* file_dtypesh);
 LOCAL void   wdtypes( FILE *f);
 LOCAL void   wChoices( FILE* f);
 LOCAL void   wDttab( void);
@@ -330,6 +330,8 @@ LOCAL void   wSrfd3( FILE *f);
 LOCAL void   sumry( void);
 LOCAL FILE * rcfopen( const char *s, char **argv, int argi);
 LOCAL void   rcderr( const char *s, ...);
+static void msgWrite(const char* msg, ...);
+static void msgWriteV(const char* msg, va_list ap = nullptr);
 LOCAL int update( const char* old, const char* nu);
 LOCAL void   newsec( const char *);
 LOCAL const char* enquote( const char *s);
@@ -378,8 +380,9 @@ const int GTERR = 3;		// conversion error or *END in pos other than first.  Erro
 
 struct INFILE
 {
-	FILE* Fpm;			// current input stream, read by GetToks().  Note several files are opened
-	//  during command line checking; Fpm is set to each in sequence as they are used.
+	FILE* Fpm;			// current input stream, read by GetToks()
+
+	const char* inf_what;	// Description of this file/stream e.g. for msgs
 
 	int gtokRet;		// return value from most recent GetToks() / PeepToks()
 
@@ -408,8 +411,10 @@ public:
 	}
 
 
-	INFILE() : Fpm(nullptr), gtokRet(GTERR) { ClearVals();  }
-	int Close() { fclose(Fpm); return 0;  }
+	INFILE() : Fpm(nullptr), inf_what( nullptr), gtokRet(GTERR) { ClearVals();  }
+	~INFILE() { Close(); }
+	int Close() { if (Fpm) fclose(Fpm); Fpm = nullptr;  return 0; }
+	bool Open(const char* fName, const char* what);
 	void ClearVals();
 	int SetInputFile( FILE* fInput);
 	long GetFilePos();
@@ -517,11 +522,11 @@ int CDEC main( int argc, char * argv[] )
 	// Check number of arguments
 	if (argc <= REQUIRED_ARGS || argc > REQUIRED_ARGS+2)
 	{
-		printf("\nExactly %d or %d args are required\n",
+		msgWrite("\nExactly %d or %d args are required\n",
 			   REQUIRED_ARGS, REQUIRED_ARGS+1 );
-		exit(2);	// do nothing if args not all present
+		byebye(2);	// do nothing if args not all present
 					//	(Note reserving errorlevel 1 for possible
-					//	future alternate good exit, 12-89)
+					//	future alternate good exit)
 	}
 
 	try
@@ -531,8 +536,10 @@ int CDEC main( int argc, char * argv[] )
 	for (int i = 0; i <= REQUIRED_ARGS; i++)
 		argNotNUL[i] = _stricmp( argv[i], "NUL") != 0;
 
+	const char* fNameDtypes = argv[1];
+
 	/* Get and check input file names from command line */
-	FILE* file_dtypes  = rcfopen( "data types", argv, 1);
+	// FILE* file_dtypes  = rcfopen( "data types", argv, 1);
 	FILE* file_units   = rcfopen( "units",      argv, 2);
 	FILE* file_limits  = rcfopen( "limits",     argv, 3);
 	FILE* file_fields  = rcfopen( "fields",     argv, 4);
@@ -623,16 +630,14 @@ int CDEC main( int argc, char * argv[] )
 
 	/* ************* Data types ************** */
 
-	InFile.SetInputFile(file_dtypes);                  // Set input file for InFile.GetToks().  fopen() is in command line checking at beg of main
 	FILE* fdtyph = NULL;
 	if (HFILESOUT)                      // not if not outputting .h files
 	{
 		xfjoinpath(incdir, "dtypes.hx", fdtyphname);
 		fdtyph = fopen( fdtyphname,"w"); // open in main becuase left open til end for record structure typedefs
 	}
-	Do_Dtypes( fdtyph);                            // local fcn, after main. sets many globals.
-	InFile.Close();
-
+	Do_Dtypes(fNameDtypes, fdtyph);
+	
 	/* ************ Unit definitions ************* */
 
 	InFile.SetInputFile(file_units);        // Set input file for token-reader InFile.GetToks().  fopen()'d in cmd line checking at beg of main.
@@ -748,17 +753,18 @@ static SWTABLE declSize[] =
 }	// determine_size
 //======================================================================
 LOCAL void Do_Dtypes(                      // do data types
-	FILE* file_dtypesh)         // where to write dtypes.h[x]
+	const char* fNameDtypesDef,
+	FILE* file_dtypesh)     // where to write dtypes.h[x]
+							//  nullptr if not writing, else assumed open
 {
 	
-
-	// global Fpm assumed preset to file_dtypes
-	// global file fdtyph assumed open if HFILESOUT
-
 	newsec("DATA TYPES");
 
+	INFILE fInDT;
+	if (!fInDT.Open(fNameDtypesDef, "Data type definitions"))
+		return;
 
-// Init memory table that holds our sequential array subscripts for the sparse data types, for retreival later in rcdef.
+	// Init memory table that holds our sequential array subscripts for the sparse data types, for retreival later in rcdef.
 
 	/* input format example:
 
@@ -783,7 +789,7 @@ LOCAL void Do_Dtypes(                      // do data types
 	const int STK1 = 1;
 	dttabsz = 1;    // next free word in Dttab
 					//  (reserve 0 for automatically generated DTNONE)
-	while (InFile.GetToks("ss")==GTOK)       // 2 tokens:  typeName, Extern,   or:  *choicb/n, typeName.
+	while (fInDT.GetToks("ss")==GTOK)       // 2 tokens:  typeName, Extern,   or:  *choicb/n, typeName.
 									// Sets gtokRet to ret val, used after loop.
 	{
 		if (ndtypes >= MAXDT)                            // prevent overflow of internal arrays
@@ -800,32 +806,32 @@ LOCAL void Do_Dtypes(                      // do data types
 		const char* cp = nullptr;
 		int choicb = 0;			// not (yet) a choice data type
 		int choicn = 0; 
-		if (*InFile.SVal(STK0) == '*')                             // is it "*choicb"?
+		if (*fInDT.SVal(STK0) == '*')                             // is it "*choicb"?
 		{
-			if (_stricmp( InFile.SVal(STK0) + 1, "choicb")==0)
+			if (_stricmp( fInDT.SVal(STK0) + 1, "choicb")==0)
 				choicb = 1;
-			else if (_stricmp( InFile.SVal(STK0) + 1, "choicn")==0)
+			else if (_stricmp( fInDT.SVal(STK0) + 1, "choicn")==0)
 				choicn = 1;
 			else
 			{
-				rcderr( "unrecognized data type *-word '%s':\n    expect '*choicb' or '*choicn'", InFile.SVal(STK0) );
+				rcderr( "unrecognized data type *-word '%s':\n    expect '*choicb' or '*choicn'", fInDT.SVal(STK0) );
 				continue;                                  // recovery imperfect
 			}
-			InFile.SetSVal( STK0, InFile.SVal( STK1));              // move next token (name) back
+			fInDT.SetSVal( STK0, fInDT.SVal( STK1));              // move next token (name) back
 		}
 		else                             // no *-word, not a choice type
-			cp = (InFile.SVal(STK1)[1] == '-')                  // if "--" given for external name
+			cp = (fInDT.SVal(STK1)[1] == '-')                  // if "--" given for external name
 				 ? (char *)NULL                          // tell wdtypes to make no ext decl
-				 : InFile.StashSVal(STK1);                     // save extern type name in next Stbuf slot, set cp to it.  Used below.
-		if (dtlut.lu_Find( InFile.SVal(STK0)) != LUFAIL)       // check for duplicate
+				 : fInDT.StashSVal(STK1);                     // save extern type name in next Stbuf slot, set cp to it.  Used below.
+		if (dtlut.lu_Find( fInDT.SVal(STK0)) != LUFAIL)       // check for duplicate
 		{
-			rcderr("Duplicate data type '%s' omitted.", InFile.SVal(STK1));
+			rcderr("Duplicate data type '%s' omitted.", fInDT.SVal(STK1));
 			continue;
 		}
 
 		// common processing of choice, var, non-var data types
 
-		int val = dtlut.lu_Add( InFile.StashSVal( STK0));		// same typeName in nxt Stbuf space, enter ptr to saved name in tbl.
+		int val = dtlut.lu_Add( fInDT.StashSVal( STK0));		// same typeName in nxt Stbuf space, enter ptr to saved name in tbl.
 														// Sets dtnames[]. Subscript val is also used for other dt arrays
 		// dtMap.emplace(STK0, 0);
 
@@ -848,25 +854,25 @@ LOCAL void Do_Dtypes(                      // do data types
 			dtsize[val] = choicn ? sizeof(float) : sizeof(SI);
 			dttype[val] = dttabsz                                // type: Dttab index, plus
 				  | (choicn ? DTBCHOICN : DTBCHOICB);    //  appropriate choice bit
-			if (InFile.GetToks("s"))                                      // gobble the {
+			if (fInDT.GetToks("s"))                                      // gobble the {
 				rcderr("choice data type { error.");
 
 			// loop over choices list
 
 			int nchoices = 0;
-			while (!InFile.GetToks("p"))                          // peek at next char / while ok
+			while (!fInDT.GetToks("p"))                          // peek at next char / while ok
 			{
-				if (InFile.SVal(0)[0] =='}')                     // if next char }, not next handle #
+				if (fInDT.SVal(0)[0] =='}')                     // if next char }, not next handle #
 				{
-					InFile.GetToks("s");
+					fInDT.GetToks("s");
 					break;                    // gobble final } and stop
 				}
-				if (InFile.GetToks("sq"))                          // read name, text
+				if (fInDT.GetToks("sq"))                          // read name, text
 					rcderr( "Choicb problem.");
 
-				if (getChoiTxTyX( InFile.SVal(0)) != 0)
-					rcderr( "Disallowed prefix on choicb/n name '%s' --\n    choib.h will be bad.", InFile.SVal(0) );
-				dtcdecl[ val][ nchoices]= InFile.StashSVal(0);                 // save choicb/n name
+				if (getChoiTxTyX( fInDT.SVal(0)) != 0)
+					rcderr( "Disallowed prefix on choicb/n name '%s' --\n    choib.h will be bad.", fInDT.SVal(0) );
+				dtcdecl[ val][ nchoices]= fInDT.StashSVal(0);                 // save choicb/n name
 
 				// choice TEXT may specify aliases ("MAIN|ALIAS1|ALIAS2")
 				// Items may begin with prefix
@@ -876,14 +882,14 @@ LOCAL void Do_Dtypes(                      // do data types
 				//    else "normal"
 				// NOTE: only MAIN yields #define C_XXX_xxx
 
-				const char* chStr = InFile.StashSVal(1);         // choicb/n text
+				const char* chStr = fInDT.StashSVal(1);         // choicb/n text
 
 				// choicb/n index: indeces 1,2,3 used.
 				int chan = nchoices + 1;                      // 1, 2, 3, ... here for error msg; regenerated in wChoices().
 
-				int tyX = getChoiTxTyX( InFile.SVal( 1));
+				int tyX = getChoiTxTyX( fInDT.SVal( 1));
 				if (tyX >= chtyALIAS)
-						rcderr( "choicb/n '%s' -- main choice cannot be alias", InFile.SVal(0));
+						rcderr( "choicb/n '%s' -- main choice cannot be alias", fInDT.SVal(0));
 
 				if (nchoices >= MAXDTC)
 					rcderr( "Discarding choices in excess of %d.", MAXDTC);
@@ -901,7 +907,7 @@ LOCAL void Do_Dtypes(                      // do data types
 					*pli = ULI(chStr);	// choicb / n text snake offset to Dttab :
 					nchoices++;                   // count choices for this data type
 				}
-			} // while (!InFile.GetToks("p"))  choices loop
+			} // while (!fInDT.GetToks("p"))  choices loop
 
 			// set Dttab[masked dt] for choice type
 			Dttab[dttabsz++] = SetHiLo16Bits( nchoices,                // Hi16 is # choices
@@ -913,11 +919,11 @@ LOCAL void Do_Dtypes(                      // do data types
 
 			// get rest of non-choice data type input and process
 
-			if (InFile.GetToks("q"))								// get decl
+			if (fInDT.GetToks("q"))								// get decl
 				rcderr("Bad datatype definition");
 
 			dtxnm[val] = cp;                             // NULL or external type text, saved above.
-			dtdecl[val] = InFile.StashSVal(0);                  // save decl text, set array
+			dtdecl[val] = fInDT.StashSVal(0);                  // save decl text, set array
 			dtsize[val] = determine_size(dtdecl[val]);	 // size to array
 			*(Dttab + dttabsz) = dtsize[val];            // size to Dttab
 			dttype[val] = dttabsz++;                     // type: Dttab index
@@ -929,7 +935,7 @@ LOCAL void Do_Dtypes(                      // do data types
 		ndtypes++;                                       // count data types
 	}  // data types token while loop
 
-	if (InFile.gtokRet != GTEND)                               // if 1st token not *END (InFile.GetToks at loop top)
+	if (fInDT.gtokRet != GTEND)         // if 1st token not *END (fInDT.GetToks at loop top)
 		rcderr("Data types definitions do not end properly");
 
 // Write data type definitions to dtypes.hx, dttab.cpp
@@ -3205,6 +3211,21 @@ LOCAL FILE* rcfopen(           // Open an existing input file from the command l
 	}
 	return f;
 }               // rcfopen
+//======================================================================
+bool INFILE::Open(
+	const char* fName,
+	const char* what)
+{
+	inf_what = stash(what);
+	Fpm = fopen(fName, "r");
+	if (Fpm == nullptr)
+	{
+		msgWrite("Can't open %s '%s'", what, fName);
+		Errcount++;
+		return false;
+	}
+	return true;
+}
 //----------------------------------------------------------------------
 void INFILE::ClearVals()
 {
@@ -3473,6 +3494,24 @@ ueof:
 	return (gtokRet = GTEOF);
 }                       // gtoks
 //======================================================================
+#if 1
+LOCAL void rcderr(const char* s, ...)                // Print an error message with optional arguments and count error
+
+// s is Error message, with optional %'s as for printf; any necessary arguments follow.
+{
+	va_list ap;
+	va_start(ap, s);                   // point at args, if any
+
+	msgWrite(s, ap);
+	msgWrite( "Error occurred near : %s\n", Stbp);
+	Errcount++;
+
+	/* #define ABORTONERROR */
+#ifdef ABORTONERROR
+	exit(2);                            // (exit(1) reserved for poss alt good exit, 12-89)
+#endif
+}               // rcderr
+#else
 LOCAL void rcderr( const char *s, ...)                // Print an error message with optional arguments and count error
 
 // s is Error message, with optional %'s as for printf; any necessary arguments follow.
@@ -3503,6 +3542,33 @@ LOCAL void rcderr( const char *s, ...)                // Print an error message 
 	exit(2);                            // (exit(1) reserved for poss alt good exit, 12-89)
 #endif
 }               // rcderr
+#endif
+//----------------------------------------------------------------------
+static void msgWrite(		// write msg to stdOut and rcdef.err
+	const char* msg,		// text to write (may include printf-style formatting
+	...)
+{
+	va_list ap;
+	va_start(ap, msg);
+	msgWriteV(msg, ap);
+}
+//-----------------------------------------------------------------------------
+static void msgWriteV(		// write msg to stdOut and rcdef.err
+	const char* msg,		// text to write (may include printf-style formatting
+	va_list ap /*= nullptr*/)	// optional arg list
+{
+	static FILE* errFile = nullptr;
+	if (!errFile)
+		errFile = fopen("rcdef.err", "w");
+
+	const char* ss = ap ? strtvprintf(msg, ap) : msg;
+	for (int i = 0; i < 2; i++)
+	{
+		FILE* stream = i ? errFile : stdout;
+		if (stream)
+			fprintf(stream, "\n    %s\n", ss);
+	}
+}	// msgWriteV
 //======================================================================
 LOCAL void newsec(const char *s)              // Output heading (s) for new section of run
 {

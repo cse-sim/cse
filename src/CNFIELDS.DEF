@@ -90,7 +90,7 @@ HUMRAT_GZ     FLOAT        LMFGZ     UNNONE	// humidity ratio. unitless; field a
 ENERGY        FLOAT        LMNONE    UNENERGY	// Btu
 POWER         FLOAT        LMNONE    UNPOWER	// Btuh
 POWER_NZ      FLOAT        LMNZ      UNPOWER	//      Many "POWER" fields actually
-POWER_GZ      FLOAT        LMGZ      UNPOWER	// 	should be "ENERGY".0756
+POWER_GZ      FLOAT        LMGZ      UNPOWER	// 	should be "ENERGY"
 POWER_GEZ     FLOAT        LMGEZ     UNPOWER	// 	otta review them, 6-92.
 //POWER_LEZ   FLOAT        LMLEZ     UNPOWER	// unused 9-92
 KW_GZ         FLOAT        LMGZ      UNELPWR2   // power entered in kW, internally in Btuh
