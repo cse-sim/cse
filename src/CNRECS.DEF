@@ -91,7 +91,6 @@ FIELD * directives are
    *array <n>	array of whatever field spec follows
    *noname	before *nest: omit structure name from SFIR table names (for probe).  C code still uses .struct.mbr.
    *nest <rec>	nest another record type in this one, as a C structure within record structure
-   *struct	embed a structure, unused for years
    *declare "text"	put text into record definition; use eg for C++ member function declarations.
    *s *h *mh *d *m	field variability (when changed by program): subhour, hour, monthly-hourly, daily, monthly
    *r 			runly (start of run) variability, incl things set by input check/setup (topCkf)
