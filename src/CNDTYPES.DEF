@@ -61,7 +61,6 @@ Name     Name	Decl
 -------  -----	------------------------- */
 // char and variants: always 8 bits
 CH       --    "char"
-UCH      --		"unsigned char"	
 
 // SI and variants: always 16 bits
 SI       --		"int16_t"			

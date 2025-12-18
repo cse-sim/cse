@@ -104,6 +104,8 @@ typedef std::map< int, std::string> WMapIntStr;
 typedef std::string WStr;
 #endif
 
+// shorthand and "portable" data types
+typedef unsigned char UCH;
 #if defined( NODTYPES)
 // fixed subset of dtypes.h
 // avoid circular use of dtypes.h in e.g. rcdef
@@ -118,7 +120,6 @@ typedef uint64_t ULI;
 typedef int32_t LI;
 typedef uint32_t ULI;
 #endif
-typedef unsigned char UCH;
 typedef short DOY;
 typedef unsigned SHOY;
 

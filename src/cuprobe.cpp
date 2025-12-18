@@ -688,9 +688,6 @@ w          lop = PSRATLOD1U;  		// record load 1 unsigned byte: fetchs UCH, conv
 w          ty = TYSI;         		// produces ul "integer" type
 w			sz = 2;
 w          break;
-#else
-	// DTUCH un-probe-able: no field with this DT 12-91, so not used in records, so don't support.
-	case DTUCH:
 #endif
 
 	// DTLI / DTULI un-probable.  32 or 64 bit.  No fields with this DT 10-23.  Could add load / convert to int?

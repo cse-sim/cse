@@ -311,10 +311,10 @@ LOCAL void   wUntab( void);
 LOCAL void   Do_Limits( const char* fnameLimitsDef, FILE* file_limitsh);
 LOCAL void   wLimits( FILE* f);
 LOCAL void   Do_Fields( const char* fnameFieldsDef);
-LOCAL RC     Do_Recs( const char* fnameRecordsDef, FILE* fil_dtypesh);
+LOCAL bool   Do_Recs( const char* fnameRecordsDef, FILE* fil_dtypesh);
 LOCAL void   base_fds( void);
 LOCAL void   base_class_fds( const char* baseClass, int& bRctype);
-LOCAL void   GetRecordFields( struct INFILE& fInRc);
+LOCAL void   GetRecordFields( class INFILE& fInRc);
 LOCAL void   nest( FILE *rcf, const char* recTyNm, int arSz, struct RCD *rcdpin, int evf, int ff, bool noname);
 LOCAL void   wRcTy( FILE* f);
 LOCAL void   wRcTd( FILE *f);
@@ -325,10 +325,12 @@ LOCAL void   wSrfd3( FILE *f);
 0 unused
 0 LOCAL void   wSrfd4( FILE *f);
 #endif
-LOCAL void   summary();
 LOCAL int update( const char* old, const char* nu);
-LOCAL void   newsec( const char *);
+LOCAL void newsec( const char *);
 LOCAL const char* enquote( const char *s);
+
+static void write_summary(class OUTFILE& outFile);
+static void write_summary1(FILE* stream, bool bListUnusedFields=false);
 
 // error handling
 static bool rcderr(const char* s, ...);
@@ -362,28 +364,63 @@ LOCAL char* stash(const char* s)
 
 /*------------ General variables ------------*/
 
-const char* incdir=NULL;      // include file output path (from cmd line)
+const char* incDir=NULL;      // include file output path (from cmd line)
 const char* cFilesDir=NULL;   // cpp output file path (from cmd line)
 bool Debug = false;		// iff true, token stream is displayed during execution.  Set by D on command line.
 int Errcount = 0;		// Number of errors so far
 
-const int MAXQSTRL = 512;   // Max length for quoted string ("q" token).  assumed >= MAXNAMEL for array allocations.
-const int MAXTOKS = 6;		// Maximum no. of tokens per action (size of arrays; max length format arg to INFILE::GetToks). 10->6 10-92.
 
+
+///////////////////////////////////////////////////////////////////////////////
+// class BASEFILE: RAII file I/O base class
+class BASEFILE
+{
+protected:
+	FILE* f_file = nullptr;			// stream
+	const char* f_path = nullptr;	// path to current file
+	const char* f_what = nullptr;	// description of this file/stream e.g. for msgs
+public:
+	BASEFILE() {}
+	~BASEFILE() { Close(); }
+	FILE* GetFile() { return f_file; }
+	bool Open(int erOp, const char* fpath, const char* what, const char* openMode)
+	{
+		bool bRet = f_file == nullptr;
+		if (bRet)
+		{
+			f_what = stash(what);
+			f_path = stash(fpath);
+			f_file = fopen(fpath, openMode);
+			bRet = f_file != nullptr;
+		}
+		if (!bRet)
+			msgWrite(erOp, "Can't open %s '%s'", what, fpath);
+		return bRet;
+	}
+	bool Close()
+	{
+		if (!f_file)
+			return false;
+		fclose(f_file);
+		f_file = nullptr;
+		f_path = nullptr;
+		return true;
+	}
+};		// class BASEFILE
+//=============================================================================
+// class INFILE: RAII input file reader / parser
 // INFILE::GetToks return values (fcn value and in fi_ret)
 const int GTOK = 0;         // things seem ok
 const int GTEOF = 1;		// unexpected EOF
 const int GTEND = 2;        // first token was *END
 const int GTERR = 3;		// conversion error or *END in pos other than first.  Error message issued.
-
-
-struct INFILE
+const int MAXQSTRL = 512;   // Max length for quoted string ("q" token).  assumed >= MAXNAMEL for array allocations.
+const int MAXTOKS = 6;		// Maximum no. of tokens per action (size of arrays; max length format arg to INFILE::GetToks).
+//-----------------------------------------------------------------------------
+class INFILE : public BASEFILE
 {
-	FILE* fi_file;			// current input stream, read by GetToks()
-
-	const char* fi_what;	// Description of this file/stream e.g. for msgs
-
-	int fi_ret;				// return value from most recent GetToks() / PeepToks()
+public:
+	int fi_ret=GTERR;				// return value from most recent GetToks() / PeepToks()
 
 	// decoded tokens
 private:
@@ -405,23 +442,53 @@ public:
 	{
 		return strcpy(sVal[iTok], s);
 	}
-	char* StashSVal( int iTok) const
-	{	return stash( SVal( iTok));
+	char* StashSVal(int iTok) const
+	{
+		return stash(SVal(iTok));
 	}
 
 
-	INFILE() : fi_file(nullptr), fi_what( nullptr), fi_ret(GTERR) { ClearVals();  }
-	INFILE( const char* fName, const char* what);
+	INFILE() { ClearVals(); }
+	INFILE(const char* fpath, const char* what)
+	{
+		Open(ABT, fpath, what);
+	}
 	~INFILE() { Close(); }
-	int Close() { if (fi_file) fclose(fi_file); fi_file = nullptr;  return 0; }
-	bool Open(int erOp, const char* fName, const char* what);
+	bool Open(int erOp, const char* fpath, const char* what)
+	{
+		return BASEFILE::Open(erOp, fpath, what, "r");
+	}
 	void ClearVals();
-	int SetInputFile( FILE* fInput);
 	long GetFilePos();
-	int SetFilePos( long filePos);
+	int SetFilePos(long filePos);
 	int GetToks(const char* tokf);
-	int PeekToks( const char* tokf);
-};	// struct INFILE
+	int PeekToks(const char* tokf);
+};	// class INFILE
+// ============================================================================
+// class OUTFILE: RAII output file
+class OUTFILE : public BASEFILE
+{	
+public:
+	OUTFILE() {}
+	OUTFILE(const char* fpath, const char* what)
+	{
+		Open(ABT, fpath, what);
+	}
+	~OUTFILE() {}
+	bool Open(int erOp, const char* fpath, const char* what)
+	{
+		return BASEFILE::Open(erOp, fpath, what, "w+");
+	}
+
+	int fo_fprintf(const char* fmt, ...)
+	{
+		va_list ap;	va_start(ap, fmt);
+		return vfprintf(f_file, fmt, ap);
+	}
+};	// class OUTFILE
+//=============================================================================
+
+
 
 /*------- re Command Line --------*/
 
@@ -432,7 +499,6 @@ bool argNotNUL[ REQUIRED_ARGS+1]; /* non-0 if argv[i] not NULL;
 #define HELPCONV  argNotNUL[8]          // if checking or converting help references
 #define HELPDUMMY argNotNUL[9]          // if outputting dummies for undef help
 #define CFILESOUT  argNotNUL[10]        // if writing table .cpp source files
-
 
 
 /*------------- Data type global variables -------------*/
@@ -497,7 +563,19 @@ int nfdtypes = 0;                                                        // Curr
 // MORE VARIABLES incl most record variables are below, just above record()
 
 //======================================================================
-
+// local helper fcns
+static bool VerifyDir( int erOp, const char* dirPath, const char* what)
+{	int xfRet = xfExist( dirPath);
+	if (xfRet == 3)
+		return true;	
+	const char* msg =
+		xfRet == 0 ? "path not found"
+		: xfRet == 1 || xfRet == 2 ? "not a directory"
+		: "unknown error";
+	msgWrite(erOp, "\n%s '%s': %s.", what, dirPath, msg);
+	return false;
+}	// VerifyDir
+//===========================================================================
 
 //////////////////////////////////////////////////////////////////////////////
 // RCDEF MAIN ROUTINE
@@ -505,21 +583,28 @@ int nfdtypes = 0;                                                        // Curr
 
 int CDEC main( int argc, char * argv[] )
 {
-	char fdtyphname[80];        /* data types file name */
 	int exitCode = 0;
-
-	// hello();
-
-	// Startup announcement
-	printf("\nR C D E F ");
 
 	// entire main() is within try/catch.  ABT errors throw.
 	try
 	{
+	// Startup announcement
+	printf("\nR C D E F\n");
 
-	/* ************* Command Line, Arguments, Open Files *************** */
+#if defined( SUCCESSFILE)
+	// Success file: remove here, create at exit iff success
+	//   re build dependencies
+	constexpr char* fNameSuccess = "rcdef_success.txt";
+	if (xfExist(fNameSuccess) != 0)
+	{	if (std::remove(fNameSuccess))
+			msgWrite(ABT, "\nCannot delete '%s'\n", fNameSuccess);
+	}
+#endif
 
-	// Check number of arguments
+	// Summary file: open/empty here
+	OUTFILE ofSummary("rcdef.sum", "run summary");
+
+	// command line: check number of arguments
 	if (argc <= REQUIRED_ARGS || argc > REQUIRED_ARGS+2)
 	{
 		msgWrite(ABT, "\nExactly %d or %d args are required\n",
@@ -527,7 +612,6 @@ int CDEC main( int argc, char * argv[] )
 				// do nothing if args not all present
 				//	(Note reserving errorlevel 1 for possible future alternate good exit)
 	}
-
 
 	// Test all args for NUL: inits macro "flags" HFILESOUT, HELPCONV, etc
 	for (int i = 0; i <= REQUIRED_ARGS; i++)
@@ -540,40 +624,18 @@ int CDEC main( int argc, char * argv[] )
 	const char* fNameRecords = argv[5];
 
 	
-	/* check include directory argument if specified */
+	// check include directory argument if specified
 	if (HFILESOUT)              /* if argv[6] not NUL */
 	{
-		incdir = argv[6];
-		if (xfExist(incdir) != 3)
-		{
-			if (xfExist(incdir) == 0) {
-				msgWrite( ERR, "\n'%s': Include file output directory path not found.\n", incdir);
-			}
-			else if (xfExist(incdir) == 1 || xfExist(incdir) == 2) {
-				msgWrite( ERR, "\n'%s': Include file output directory path exists, but is not a directory.\n", incdir);
-			}
-			else {
-				msgWrite( ERR, "\n'%s': Unknown error in finding Include file output directory path.\n", incdir);
-			}
-		}
+		incDir = argv[6];
+		VerifyDir(ERR, incDir, "Include file output directory");
 	}
 
 	// check cpp file directory argument if specified
 	if (CFILESOUT)              /* if argv[10] not NUL */
 	{
 		cFilesDir = argv[10];
-		if (xfExist(cFilesDir) != 3)
-		{
-			if (xfExist(cFilesDir) == 0) {
-				msgWrite( ERR, "\n'%s': C++ file output directory path not found.\n", cFilesDir);
-			}
-			else if (xfExist(cFilesDir) == 1 || xfExist(cFilesDir) == 2) {
-				msgWrite( ERR, "\n'%s': C++ file output directory path exists, but is not a directory.\n", cFilesDir);
-			}
-			else {
-				msgWrite( ERR, "\n'%s': Unknown error in finding C++ file output directory path.\n", cFilesDir);
-			}
-		}
+		VerifyDir(ERR, cFilesDir, "C++ file output directory");
 	}
 
 	/* Option flags */
@@ -594,7 +656,7 @@ int CDEC main( int argc, char * argv[] )
 			}
 	}
 
-	/* consistency checks */
+	// consistency checks
 
 	if (RCDBOUT || HELPCONV || HELPDUMMY)
 	{
@@ -608,68 +670,87 @@ int CDEC main( int argc, char * argv[] )
 		msgWrite(WRN, "\nWarning: no output specified (args 6, 7, 9, and 10 all NUL).\n"
 			   "Proceeding, performing partial checks of input files.\n");
 
-	/* Done command line -- check errors; exit if there are any */
+	// Done command line -- exit if there are errors
 	if (Errcount > 0)
-	{
-		msgWrite(ABT, "Aborting due to command line error(s)\n");
-					// do nothing if any args missing.
-					// (Reserving errorlevel 1 for possible future alternate good exit)
+	{	// abort if any args wrong or missing
+		// (does not return)
+		msgWrite(ABT, "\nAborting due to command line error(s)\n");
 	}
 
 	// Data types
+	char fdtyphname[CSE_MAX_PATH] = { 0 };        // data types file name
 	FILE* fdtyph = NULL;
-	if (HFILESOUT)                      // not if not outputting .h files
+	if (HFILESOUT)                      // if outputting .h files
 	{
-		xfjoinpath(incdir, "dtypes.hx", fdtyphname);
+		xfjoinpath(incDir, "dtypes.hx", fdtyphname);
 		fdtyph = fopen( fdtyphname,"w"); // open in main becuase left open til end for record structure typedefs
+		if (!fdtyph)
+			msgWrite(ABT, "Cannot open working file dtypes.hx\n");
 	}
 	Do_Dtypes(fNameDtypes, fdtyph);
 	
 	// Unit definitions
-		Do_Units( fNameUnits, fdtyph);
+	Do_Units( fNameUnits, fdtyph);
 
 	// Limits
-		Do_Limits( fNameLimits, fdtyph);            // local fcn, sets globals, calls wlimits() ... write to dtypes.h
+	Do_Limits( fNameLimits, fdtyph);            // sets globals, calls wlimits() ... write to dtypes.h
 
 	// Field descriptors
-		Do_Fields( fNameFields);                   // local fcn, below. sets globals.
+	Do_Fields( fNameFields);                   // sets globals.
 								// Fdtab remains for access while doing records.
 
 	// Records
-		if (Do_Recs( fNameRecords, fdtyph) )   // local fcn, below, uses/sets globals, writes rcxxx.h files, adds record typedefs to dtypes.h.
-		goto leave;             // error exit
+	bool recsOK = Do_Recs(fNameRecords, fdtyph);   // local fcn, below, uses/sets globals, writes rcxxx.h files, adds record typedefs to dtypes.h.
 
 // Now close dtypes.h file, see if changed.
 	if (HFILESOUT)              // if outputting .h files
 	{
 		fclose( fdtyph);         // opened above b4 Do_Dtypes() called
-		msgWrite(WRN, "\n");
-		char dtypesHPath[CSE_MAX_PATH];
-		xfjoinpath(incdir, "dtypes.h", dtypesHPath);
-		update( dtypesHPath, fdtyphname);        // compare, replace file if different.
+		if (recsOK)
+		{
+			char dtypesHPath[CSE_MAX_PATH];
+			xfjoinpath(incDir, "dtypes.h", dtypesHPath);
+			update(dtypesHPath, fdtyphname);        // compare, replace file if different.
+		}
 	}
 
 // All done / summary
-leave:
+	write_summary( ofSummary);	// local fcn below. uses many globals.
+
 #if CSE_COMPILER == CSE_COMPILER_MSVC
 	if (!_CrtCheckMemory())
 		msgWrite(ERR, "Memory corruption!  Output validity dubious.");
 #endif
-// display and file summary
-	summary();                    // local fcn below. uses many globals.
+
+#if defined( SUCCESSFILE)
+	if (Errcount == 0)
+	{
+		FILE* fSuccess = fopen(fNameSuccess, "w");
+		if (!fSuccess)
+			msgWrite(ABT, "Cannot open '%s'\n", fNameSuccess);
+			// does not return
+		else
+		{
+			fprintf(fSuccess, "Rcdef success.");
+			fclose(fSuccess);
+		}
+	}
+#endif
 
 // return to operating system
 	exitCode = Errcount + (Errcount!=0); // exit with errorlevel 0 if ok, 2 or more if errors
 										// (exit(1) being reserved for poss future alternate good exit
 	}
-	catch (int _exitCode)
+	catch (int _exitCode)		// catch fatal throws
 	{
 		exitCode = _exitCode;
 	}
-	msgWrite(WRN, "\nRcdef %s", Errcount > 0
-		? "did *NOT* complete correctly. ************."
-		: "success.");
+
+	printf( "\nRcdef %s.\n", Errcount > 0
+		? "did *NOT* complete correctly"
+		: "success");
 	return exitCode;
+
 }           // main
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -736,8 +817,7 @@ LOCAL void Do_Dtypes(                      // do data types
 	
 	newsec("DATA TYPES");
 
-	INFILE fInDT;
-	fInDT.Open(ABT, fNameDtypesDef, "Data type definitions");
+	INFILE fInDT( fNameDtypesDef, "data type definitions");		// open source def file (ABT on failure)
 
 	// Init memory table that holds our sequential array subscripts for the sparse data types, for retreival later in rcdef.
 
@@ -923,13 +1003,12 @@ LOCAL void Do_Dtypes(                      // do data types
 	}
 	if (CFILESOUT)                      // if outputting .cpp files
 	{
-		printf("\n    ");
 		wDttab();                        // write Dttab source code to compile and link into programs
 	}
 
 // Done with master definitions of data types
 
-	printf("   %d data types. ", ndtypes);
+	printf("\n %d data types", ndtypes);
 
 }  // Do_Dtypes
 //======================================================================
@@ -1239,10 +1318,7 @@ LOCAL void Do_Units(       // do units types, for rcdef main()
 {
 	newsec("UNITS");
 
-	INFILE fInUn;
-	fInUn.Open(ABT, fNameUnitsDef, "unit definitions");
-
-	/* get target machine from def file */
+	INFILE fInUn( fNameUnitsDef, "unit definitions");	// open source def file (ABT on failure)
 
 	if (fInUn.GetToks("sd") != GTOK)    // read "UNSYS" and decimal # unit systems
 		rcderr("TARGET trouble.");
@@ -1316,13 +1392,13 @@ LOCAL void Do_Units(       // do units types, for rcdef main()
 		wUnits( file_unitsh);   // write units info header file uses Nunsys, unsysnm[], nuntypes, unnames[], .
 	if (CFILESOUT)      // not if not outputting .cpp files
 		wUntab();       // write units info source file to compile and link into programs, 1-91
-	printf(" %d units.", nuntypes);
+	printf("\n %d units", nuntypes);
 }	// Do_Units
 //======================================================================
 LOCAL void wUnits(              // write units info to units.h if different
 	FILE* f)            // where to write
 
-// uses Nunsys, unsysnm[], nuntypes, unnames[], incdir.
+// uses Nunsys, unsysnm[], nuntypes, unnames[], incDir.
 {
 	/* head of file comments */
 	fprintf( f,
@@ -1419,8 +1495,7 @@ LOCAL void Do_Limits( const char* fnameLimitsDef, FILE* file_limitsh)  // do lim
 {
 	newsec("LIMITS");
 
-	INFILE fInLm;
-	fInLm.Open(ABT, fnameLimitsDef, "limit definitions");
+	INFILE fInLm( fnameLimitsDef, "limit definitions");	// open source def file (ABT on failure)
 
 	/* read limits info from def file */
 
@@ -1447,16 +1522,16 @@ LOCAL void Do_Limits( const char* fnameLimitsDef, FILE* file_limitsh)  // do lim
 	/* Write limit definitions to .h file */
 
 	if (HFILESOUT)              // not if not outputting .H files this run
-		wLimits( file_limitsh);         // write .h, uses nlmtypes, lmnames[], lmtype[], incdir.
+		wLimits( file_limitsh);         // write .h, uses nlmtypes, lmnames[], lmtype[], incDir.
 
-	printf(" %d limits. ", nlmtypes);
+	printf(" %d limits", nlmtypes);
 
 // Note: there is no limits table, thus no limits table C++ source file.
 }  // Do_Limits
 //======================================================================
 LOCAL void wLimits( FILE* f)            // write to .h file
 
-// uses nlmtypes,lmnames[],lmtype[],incdir.
+// uses nlmtypes,lmnames[],lmtype[],incDir.
 {
 	fprintf( f,
 			 "\n\n// Limit definitions\n"
@@ -1472,8 +1547,7 @@ LOCAL void Do_Fields( const char* fnameFieldsDef)     // do fields
 {
 	newsec("FIELD DESCRIPTORS");
 
-	INFILE fInFd;
-	fInFd.Open(ABT, fnameFieldsDef, "field definitions");
+	INFILE fInFd( fnameFieldsDef, "field definitions");	// open source def file (ABT on failure)
 
 // Fdtab[] is all 0 on entry
 
@@ -1523,7 +1597,7 @@ LOCAL void Do_Fields( const char* fnameFieldsDef)     // do fields
 	if (fInFd.fi_ret != GTEND)                               // if fInFd.GetToks didn't read *END
 		rcderr("Fields definitions do not end properly");
 
-	printf(" %d field descriptors. ", nfdtypes);
+	printf(" %d field descriptors", nfdtypes);
 } // Do_Fields
 //-----------------------------------------------------------------------------
 
@@ -1760,11 +1834,12 @@ MBRNM& MBRNM::mn_Copy(
 }	// MBRNM::mn_Copy
 #endif
 //======================================================================
-LOCAL RC Do_Recs(                  // do records
+LOCAL bool Do_Recs(                  // do records
 	const char* fnameRecordsDef,
 	FILE* file_dtypeh)                  // open file dtypes.hx
 
-// returns RCOK ok; RCBAD for some error exit cases
+// returns true iff completes (although Errcount errors may have happened)
+//   else false
 {
 
 	// predefined/reserved record type number
@@ -1804,8 +1879,7 @@ LOCAL RC Do_Recs(                  // do records
 
 	newsec("RECORDS");
 
-	INFILE fInRc;
-	fInRc.Open(ABT, fnameRecordsDef, "record definitions");
+	INFILE fInRc(fnameRecordsDef, "record definitions");  // open source def file (ABT on failure)
 
 	frc = NULL;                         // no rcxxxx.h output file open yet (FILE)
 	rchFileNm = NULL;                   // .. (name)
@@ -1857,8 +1931,8 @@ LOCAL RC Do_Recs(                  // do records
 			rchFileNm = fInRc.StashSVal(0);                   // store name for rec type definition and for have-file check below
 			char rchFileNmX[CSE_MAX_FILENAME];				// rchFileNm variable with a x at the end
 			snprintf(rchFileNmX, CSE_MAX_FILENAME, "%sx", rchFileNm);	// Add x
-			xfjoinpath(incdir, rchFileNmX, dbuff);
-			printf( "\n %s ...   ", dbuff);
+			xfjoinpath(incDir, rchFileNmX, dbuff);
+			printf(" %s", dbuff);
 			if (CFILESOUT)                              // if outputting tables to compile & link
 				wSrfd2( fSrfd);                         // write "#include <rcxxx.h>" for new rchFileNm
 			if (HFILESOUT)                              // if argv[6] not NUL
@@ -1866,8 +1940,7 @@ LOCAL RC Do_Recs(                  // do records
 				frc = fopen( dbuff, "w");
 				if (frc == NULL)
 				{
-					rcderr( "Error opening *FILE '%s'", dbuff );
-					return RCBAD;
+					return rcderr( "Error opening file '%s'", dbuff );
 				}
 				fprintf( frc, "/* %s -- generated by RCDEF */\n", rchFileNm);
 			}
@@ -2249,14 +2322,14 @@ x		{    printf( "\nRecord trap!");}
 // create file containing record type definitions (written to dtypes.h 4-5-10)
 
 	if (HFILESOUT)              // if out'ing .H files
-		wRcTy( file_dtypeh);                    // conditionally write file.  Uses nrcnms, rcnms[], rctypes[], recIncFile[], incdir.
+		wRcTy( file_dtypeh);                    // conditionally write file.  Uses nrcnms, rcnms[], rctypes[], recIncFile[], incDir.
 
-	printf("  %d records. ", nrcnms);
+	printf("\n %d records", nrcnms);
 
 	/* Write record typedefs to dtypes.h file.  caller main closes. */
 	if (HFILESOUT)                      // if outputting .h files
 		wRcTd( file_dtypeh);    // write record structure typedefs. uses globals nrcnms, rctypes[], rcnms[], recIncFile[]
-	return RCOK;                        // 2+ RCBAD returns above
+	return true;                        // add'l false returns above
 }                       // Do_Recs
 
 //======================================================================
@@ -2952,64 +3025,48 @@ LOCAL void wSrfd3( FILE *f)
 #endif
 
 //======================================================================
-LOCAL void summary()              // write rcdef summary to screen and file
+static void write_summary(              // write rcdef summary to screen and file
+	OUTFILE& ofSummary)
 {
 	newsec("SUMMARY");
-	for (int i = 0; i < 2; i++)             // once to file, once to screen
-	{
-		FILE *stream;
-		if (i)
-			stream = stdout;
-		else
-			stream = fopen("rcdef.sum","w");
-		fprintf( stream, "   %d errors\n", Errcount);
-		fprintf( stream, " Stbuf use: %zd of %zd\n",          Stbp-Stbuf, STBUFSIZE);
-		fprintf( stream, " dtypes: %d of %d (%zd bytes)  ",   ndtypes,  MAXDT, dttabsz*sizeof(Dttab[ 0]) );
-		fprintf( stream, " units: %d of %d \n",               nuntypes, MAXUN );
-		fprintf( stream, " limits: %d of max %d          ",   nlmtypes, MAXLM );
-		fprintf( stream, " fields: %d of %d\n",               nfdtypes, MAXFIELDS );
-		fprintf( stream, " records: %d of %d             ",   nrcnms,   MAXRCS );
-		fprintf( stream, " most flds in a record = %d of %d\n",   MaxNfields, MAXFDREC );
+
+	write_summary1(stdout, false);
+
+	write_summary1(ofSummary.GetFile(), true);
+
+	if (Errcount)
+		ofSummary.fo_fprintf( "Rcdef did *NOT* complete correctly.\n");
 		
-		if (i==0)	// if writing to rcdef.sum
-		{	if (Errcount)
-				fprintf(stream, "Rcdef did *NOT* complete correctly ************.\n");
-			// list unused fields
-			int n = 0;
-			for (int j = 0; j < fdlut.lu_GetCount(); j++)        // loop over lupak table
-				if (!fdlut.lu_GetStat( j))                    // if defined (lu_Add'ed) but not used (not lufound)
-				{
-					if (!n++)                                   // 1st time
-						fprintf( stream, "\n\nUnused fields ->");
-					fprintf( stream, "\n   %s", fdlut.lu_GetName( j));
-				}
-		}
+}  // write_summary
+//-----------------------------------------------------------------------------
+static void write_summary1( FILE* stream, bool bListUnusedFields /*=false*/)
+{	
+	fprintf( stream, " %d errors\n", Errcount);
+	fprintf( stream, " Stbuf use: %zd of %zd\n", Stbp-Stbuf, STBUFSIZE);
+	fprintf( stream, " dtypes: %d of %d (%zd bytes)\n", ndtypes, MAXDT, dttabsz*sizeof(Dttab[0]));
+	fprintf( stream, " units: %d of %d\n", nuntypes, MAXUN);
+	fprintf( stream, " limits: %d of max %d\n", nlmtypes, MAXLM);
+	fprintf( stream, " fields: %d of %d\n", nfdtypes, MAXFIELDS);
+	fprintf( stream, " records: %d of %d\n", nrcnms, MAXRCS);
+	fprintf( stream, " most flds in a record: %d of %d\n", MaxNfields, MAXFDREC);
+
+	if (bListUnusedFields)
+	{
+		// list unused fields
+		int n = 0;
+		for (int j = 0; j < fdlut.lu_GetCount(); j++)        // loop over lupak table
+			if (!fdlut.lu_GetStat(j))                    // if defined (lu_Add'ed) but not used (not lufound)
+			{
+				if (!n++)                                   // 1st time
+					fprintf( stream, "\n\nUnused fields ->");
+				fprintf( stream, "\n   %s", fdlut.lu_GetName(j));
+			}
 	}
-}  // summary
+}  // write_summary1
+
 //======================================================================
 
-// struct INFILE: input file reader / parser
-INFILE::INFILE(
-	const char* fName,
-	const char* what)
-{
-	Open(ABT, fName, what);
-}  // INFILE::INFILE
-//----------------------------------------------------------------------
-bool INFILE::Open(
-	int erOp,
-	const char* fName,
-	const char* what)
-{
-	fi_what = stash(what);
-	fi_file = fopen(fName, "r");
-	if (fi_file == nullptr)
-	{
-		msgWrite(erOp, "Can't open %s '%s'", what, fName);
-		return false;
-	}
-	return true;
-}	// INFILE::Open
+// class INFILE: input file reader / parser
 //----------------------------------------------------------------------
 void INFILE::ClearVals()
 {
@@ -3021,26 +3078,18 @@ void INFILE::ClearVals()
 	}
 }	// INFILE::ClearVals()
 //----------------------------------------------------------------------
-int INFILE::SetInputFile(FILE* inputFile)
-{
-	fi_file = inputFile;
-
-	return 0;
-
-}	// INFILE::SetInputFile
-//----------------------------------------------------------------------
 long INFILE::GetFilePos()
 // returns file position
 //         -1L if error
 {
-	return ftell(fi_file);
+	return ftell(f_file);
 
 }	// INFILE::SaveFilePos()
 //----------------------------------------------------------------------
 int INFILE::SetFilePos( long filePos)
 // returns 0 iff success
 {
-	int ret = fseek(fi_file, filePos, SEEK_SET);
+	int ret = fseek(f_file, filePos, SEEK_SET);
 
 	return ret;
 
@@ -3099,7 +3148,7 @@ int INFILE::GetToks(               // Retrieve tokens from input stream accordin
 			int c = 0;
 			while (1)
 			{
-				c = fgetc(fi_file);                // next input char
+				c = fgetc(f_file);                // next input char
 				if (c == EOF)                  // watch for unexpected eof
 				{
 					goto ueof;
@@ -3107,20 +3156,20 @@ int INFILE::GetToks(               // Retrieve tokens from input stream accordin
 #if defined( SKIPCOMMENTS)
 				if (c=='/')                       // look for start comment
 				{
-					int nextc = fgetc(fi_file);
+					int nextc = fgetc(f_file);
 					if (nextc != '*')                       // if no * after /, unget and
-						ungetc( nextc, fi_file);                // fall thru to garbage msg
+						ungetc( nextc, f_file);                // fall thru to garbage msg
 					else
 					{
 						do                                   // pass the comment
 						{
-							while ((c=fgetc(fi_file)) != '*')     // ignore til *
+							while ((c=fgetc(f_file)) != '*')     // ignore til *
 								if (c == EOF)
 								{
 									goto ueof;
 								}
 						}
-						while (fgetc(fi_file) != '/');           // ignore til / follows an *
+						while (fgetc(f_file) != '/');           // ignore til / follows an *
 						continue;                            // resume " scan loop
 					}
 				}
@@ -3140,7 +3189,7 @@ int INFILE::GetToks(               // Retrieve tokens from input stream accordin
 
 				token[0] = (char)c;                      // nonblank on which deblank ended
 				token[1] = 0;
-				ungetc( c, fi_file);                         // put the char back in input stream
+				ungetc( c, f_file);                         // put the char back in input stream
 			}
 			else if (f=='q')
 			{
@@ -3149,7 +3198,7 @@ int INFILE::GetToks(               // Retrieve tokens from input stream accordin
 				int i;
 				for (i = 0; i >= 0; i++)                 // scan to close quote
 				{
-					if ((token[i] = (char)fgetc(fi_file))=='"') // get char / if ""
+					if ((token[i] = (char)fgetc(f_file))=='"') // get char / if ""
 					{
 						if (i <= 0  ||  token[i-1] != '\\') // if no \ b4 it
 							break;                        // end token
@@ -3178,7 +3227,7 @@ int INFILE::GetToks(               // Retrieve tokens from input stream accordin
 			int oldcommentflag = 0;
 			do
 			{
-				int nchar = fscanf(fi_file,"%s",token);
+				int nchar = fscanf(f_file,"%s",token);
 				if (nchar < 0)
 				{
 					goto ueof;
@@ -3203,7 +3252,7 @@ int INFILE::GetToks(               // Retrieve tokens from input stream accordin
 			while (oldcommentflag || commentflag);
 #else
 	// get token for all other formats
-			int nchar = fscanf(fi_file,"%s",token);
+			int nchar = fscanf(f_file,"%s",token);
 			if (nchar < 0)
 			{
 				goto ueof;
@@ -3277,6 +3326,11 @@ ueof:
 	rcderr("Unexpected EOF: missing '*END'?");
 	return (fi_ret = GTEOF);
 }  // INFILE::GetToks
+
+//=============================================================================
+// class OUTFILE: RAII output file
+//----------------------------------------------------------------------
+
 //======================================================================
 LOCAL bool rcderr(const char* s, ...)                // Print an error message with optional arguments and count error
 
@@ -3294,7 +3348,7 @@ LOCAL bool rcderr(const char* s, ...)                // Print an error message w
 
 } // rcderr
 //----------------------------------------------------------------------
-static void msgWrite(		// write msg to stdOut and rcdef.err
+static void msgWrite(		// write msg to stdOut and maybe rcdef.err
 	int erOp,
 	const char* msg,		// text to write (may include printf-style formatting
 	...)
@@ -3304,7 +3358,7 @@ static void msgWrite(		// write msg to stdOut and rcdef.err
 	msgWriteV(erOp, msg, ap);
 }		// msgWrite
 //-----------------------------------------------------------------------------
-static void msgWriteV(		// write msg to stdOut and rcdef.err
+static void msgWriteV(		// write msg to stdOut and maybe rcdef.err
 	int erOp,
 	const char* msg,		// text to write (may include printf-style formatting
 	va_list ap /*= nullptr*/)	// optional arg list
@@ -3312,28 +3366,30 @@ static void msgWriteV(		// write msg to stdOut and rcdef.err
 	if (erOp == IGN)
 		return;
 
-	static FILE* errFile = nullptr;
-	if (!errFile)
-		errFile = fopen("rcdef.err", "w");
-
+	// format message
 	const char* ss = ap ? strtvprintf(msg, ap) : msg;
 
-	for (int i = 0; i < 2; i++)
-	{
-		FILE* stream = i ? errFile : stdout;
-		if (stream)
-		{
-			fprintf(stream, "\n    %s\n", ss);
-			if (erOp == ABT)
-				fprintf(stream, "\nAbort!\n");
-		}
-	}
+	auto fprintf1 = [erOp, ss](FILE* stream) -> void
+	{	fprintf(stream, "\n    %s\n", ss);
+		if (erOp == ABT)
+			fprintf(stream, "\nAbort!\n");
+	};
+
+	fprintf1(stdout);
+#if 0
+x static FILE* errFile = nullptr;
+x re-enable to activate error file
+x	if (!errFile)
+x		errFile = fopen("rcdef.err", "w");
+x	fprintf1( errFile)
+#endif
+
 	switch (erOp)
 	{
 	case ABT:
 		++Errcount;
-		byebye(2);
-		break;
+		byebye(2);		// does not return
+		break;			// but supply break to avoid compiler warning
 	case ERR:
 		++Errcount;
 		break;
@@ -3343,9 +3399,9 @@ static void msgWriteV(		// write msg to stdOut and rcdef.err
 	}
 }	// msgWriteV
 //======================================================================
-LOCAL void newsec(const char *s)              // Output heading (s) for new section of run
+LOCAL void newsec(const char *s)    // Output heading (s) for new section of run
 {
-	printf("\n%-16s  ", s);             // no trailing \n
+	printf("\n%s\n", s);
 }  // newsec
 //====================================================================
 LOCAL int update(              // replace old version of file with new if different, else just delete new.
@@ -3367,7 +3423,7 @@ LOCAL int update(              // replace old version of file with new if differ
 	}
 	else
 	{
-		printf(" %s unchanged. ", old);
+		printf(" %s unchanged", old);
 		ret = std::remove(nu);
 	}
 
