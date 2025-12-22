@@ -192,14 +192,6 @@ rcdef.exe sets this bit for internal reasons, and leaves it set. */
 
 #define REQUIRED_ARGS 10        // # required command line args not including command itself.
 
-
-/* #define BASECLASS	define to include code for for C++ *baseclass, 6-92; should be undefined if not C++.
-						   coded out as #defined, 4-19-10
-						   Initial use is for derived *substruct classes; is in use & works well 9-92.
-						   Unresolved re derived *RAT's:
-							1. Allocation of front members at proper offsets not verified.
-							2. Space waste by duplicate sstat[] not prevented.  Does it make errors? */
-
 const int MAXRCS=130;		// Record names.  120 -> 130, 3-24
 							// Also max rec handle (prob unnec??).
 const int MAXFIELDS=200;	// Field type names.  Max 255 for UCH in srd.h,cul.cpp,exman 6-95.
@@ -580,10 +572,13 @@ static bool VerifyDir( int erOp, const char* dirPath, const char* what)
 //////////////////////////////////////////////////////////////////////////////
 // RCDEF MAIN ROUTINE
 //////////////////////////////////////////////////////////////////////////////
-
+#define SUCCESSFILE
 int CDEC main( int argc, char * argv[] )
 {
 	int exitCode = 0;
+
+	// Summary file
+	OUTFILE ofSummary;
 
 	// entire main() is within try/catch.  ABT errors throw.
 	try
@@ -600,10 +595,8 @@ int CDEC main( int argc, char * argv[] )
 			msgWrite(ABT, "\nCannot delete '%s'\n", fNameSuccess);
 	}
 #endif
-
-	// Summary file: open/empty here
-	OUTFILE ofSummary("rcdef.sum", "run summary");
-
+	ofSummary.Open(ABT, "rcdef.sum", "run summary");
+	
 	// command line: check number of arguments
 	if (argc <= REQUIRED_ARGS || argc > REQUIRED_ARGS+2)
 	{
@@ -746,9 +739,17 @@ int CDEC main( int argc, char * argv[] )
 		exitCode = _exitCode;
 	}
 
-	printf( "\nRcdef %s.\n", Errcount > 0
-		? "did *NOT* complete correctly"
-		: "success");
+	auto successMsg = [](FILE* stream) -> void
+	{	if (stream)
+			fprintf(stream, "\nRcdef %s.\n",
+				Errcount > 0
+					? "did *NOT* complete correctly"
+					: "success");
+	};
+
+	successMsg(ofSummary.GetFile());
+	successMsg(stdout);
+
 	return exitCode;
 
 }           // main
@@ -3034,9 +3035,8 @@ static void write_summary(              // write rcdef summary to screen and fil
 
 	write_summary1(ofSummary.GetFile(), true);
 
-	if (Errcount)
-		ofSummary.fo_fprintf( "Rcdef did *NOT* complete correctly.\n");
-		
+	// success (or not) message written at end of main
+
 }  // write_summary
 //-----------------------------------------------------------------------------
 static void write_summary1( FILE* stream, bool bListUnusedFields /*=false*/)
@@ -3058,9 +3058,10 @@ static void write_summary1( FILE* stream, bool bListUnusedFields /*=false*/)
 			if (!fdlut.lu_GetStat(j))                    // if defined (lu_Add'ed) but not used (not lufound)
 			{
 				if (!n++)                                   // 1st time
-					fprintf( stream, "\n\nUnused fields ->");
+					fprintf( stream, "\nUnused fields ->");
 				fprintf( stream, "\n   %s", fdlut.lu_GetName(j));
 			}
+		fprintf(stream, "\n");
 	}
 }  // write_summary1
 
