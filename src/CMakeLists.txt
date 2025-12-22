@@ -41,17 +41,26 @@ foreach(defFile ${defs})
   c_preprocess(${defFile})
 endforeach()
 
+
 # Run RCDEF
-#  runs unnecessarily in some cases but quick
-add_custom_target( generate_rcdef_outputs
- DEPENDS RCDEF "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i" "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i" "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"
- COMMAND RCDEF "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i"
-    "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i"
-    "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"    . NUL NUL NUL  .
-  BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/dtypes.h" "${CMAKE_CURRENT_BINARY_DIR}/rccn.h"
-    "${CMAKE_CURRENT_BINARY_DIR}/srfd.cpp" "${CMAKE_CURRENT_BINARY_DIR}/dttab.cpp" "${CMAKE_CURRENT_BINARY_DIR}/untab.cpp"
+add_custom_command(
+  OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/rcdef_success.txt"
+  BYPRODUCTS
+    "${CMAKE_CURRENT_BINARY_DIR}/dtypes.h"
+    "${CMAKE_CURRENT_BINARY_DIR}/rccn.h"
+    "${CMAKE_CURRENT_BINARY_DIR}/dttab.cpp"
+    "${CMAKE_CURRENT_BINARY_DIR}/srfd.cpp"
+    "${CMAKE_CURRENT_BINARY_DIR}/untab.cpp"
+  COMMAND RCDEF "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i" "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i" "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"    . NUL NUL NUL  .
+  DEPENDS RCDEF "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i" "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i" "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 )
+
+# Needed to establish dependency for other targets that depend on generated RCDEF outputs
+add_custom_target(generate_rcdef_outputs
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/rcdef_success.txt
+)
+
 
 # Set CSE Version
 add_custom_target(version_header
@@ -273,7 +282,7 @@ if(KIVA_GROUND_PLOT)
   target_link_libraries(CSE PUBLIC groundplot)
 endif()
 
-add_dependencies(CSE version_header)
+add_dependencies(CSE version_header generate_rcdef_outputs)
 
 if (${CSE_COMPILER_NAME} STREQUAL "msvc" AND ${CSE_BUILD_ARCHITECTURE} STREQUAL "32")
   set(executable_name "CSE")
