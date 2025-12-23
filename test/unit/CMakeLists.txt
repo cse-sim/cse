@@ -9,12 +9,6 @@ set(source
       ${CSE_BINARY_DIR}/src/dttab.cpp
    )
 
-set_source_files_properties(
-        "${CSE_BINARY_DIR}/src/untab.cpp"
-        "${CSE_BINARY_DIR}/src/dttab.cpp"
-        PROPERTIES GENERATED TRUE
-)
-
 list(APPEND source ${cse_common_source})
 add_executable(cse_tests ${source})
 add_dependencies(cse_tests generate_rcdef_outputs)
