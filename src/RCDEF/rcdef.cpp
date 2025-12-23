@@ -396,6 +396,7 @@ public:
 		fclose(f_file);
 		f_file = nullptr;
 		f_path = nullptr;
+		f_what = nullptr;
 		return true;
 	}
 };		// class BASEFILE
@@ -572,7 +573,6 @@ static bool VerifyDir( int erOp, const char* dirPath, const char* what)
 //////////////////////////////////////////////////////////////////////////////
 // RCDEF MAIN ROUTINE
 //////////////////////////////////////////////////////////////////////////////
-#define SUCCESSFILE
 int CDEC main( int argc, char * argv[] )
 {
 	int exitCode = 0;
@@ -586,7 +586,6 @@ int CDEC main( int argc, char * argv[] )
 	// Startup announcement
 	printf("\nR C D E F\n");
 
-#if defined( SUCCESSFILE)
 	// Success file: remove here, create at exit iff success
 	//   re build dependencies
 	constexpr char* fNameSuccess = "rcdef_success.txt";
@@ -594,7 +593,7 @@ int CDEC main( int argc, char * argv[] )
 	{	if (std::remove(fNameSuccess))
 			msgWrite(ABT, "\nCannot delete '%s'\n", fNameSuccess);
 	}
-#endif
+
 	ofSummary.Open(ABT, "rcdef.sum", "run summary");
 	
 	// command line: check number of arguments
@@ -715,20 +714,11 @@ int CDEC main( int argc, char * argv[] )
 		msgWrite(ERR, "Memory corruption!  Output validity dubious.");
 #endif
 
-#if defined( SUCCESSFILE)
 	if (Errcount == 0)
 	{
-		FILE* fSuccess = fopen(fNameSuccess, "w");
-		if (!fSuccess)
-			msgWrite(ABT, "Cannot open '%s'\n", fNameSuccess);
-			// does not return
-		else
-		{
-			fprintf(fSuccess, "Rcdef success.");
-			fclose(fSuccess);
-		}
+		OUTFILE ofSuccess(fNameSuccess, "success file");	// aborts on fail
+		ofSuccess.fo_fprintf("Rcdef success.");
 	}
-#endif
 
 // return to operating system
 	exitCode = Errcount + (Errcount!=0); // exit with errorlevel 0 if ok, 2 or more if errors
