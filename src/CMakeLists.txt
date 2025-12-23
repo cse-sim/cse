@@ -45,7 +45,7 @@ endforeach()
 # Run RCDEF
 add_custom_command(
   OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/rcdef_success.txt"
-  BYPRODUCTS
+  BYPRODUCTS  # RCDEF will not update these files if there are no detected changes, therefore they are not OUTPUTs
     "${CMAKE_CURRENT_BINARY_DIR}/dtypes.h"
     "${CMAKE_CURRENT_BINARY_DIR}/rccn.h"
     "${CMAKE_CURRENT_BINARY_DIR}/dttab.cpp"
