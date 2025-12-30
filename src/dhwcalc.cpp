@@ -2416,7 +2416,8 @@ void DHWSYS::ws_AccumCHDHWFlowSh(
 	float vol,	// volume during current subhour, gal
 	float tR)	// return temperature, F
 // coupling of heating load to DHWSYS is subhour lagged
-// RSYS determines water volume needed for heating given available
+// Note a DHWSYS can serve multiple RSYSs.
+// each RSYS determines water volume needed for heating given available
 //   water temp.  That vol is accumulated here and added to draws
 //   for next subhour.
 {
