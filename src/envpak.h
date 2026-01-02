@@ -16,7 +16,7 @@
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
 WStr enExePath();			// path to current .exe
 WStr enExeInfo( WStr exePath, int& codeSize);	// timestamp (from header) of .exe
-void FC ensystd( IDATETIME*);	// Return system date and time
+void FC ensystd( struct IDATETIME*);	// Return system date and time
 LDATETIME FC ensysldt();	// Return system date/time as LDATETIME
 void FC enkiinit(SI);		// Initialize keyboard interrupt handler
 void FC enkimode(SI);		// Set keyboard interrupt mode

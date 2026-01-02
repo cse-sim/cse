@@ -192,13 +192,6 @@ rcdef.exe sets this bit for internal reasons, and leaves it set. */
 
 #define REQUIRED_ARGS 10        // # required command line args not including command itself.
 
-/* #define BASECLASS	define to include code for for C++ *baseclass, 6-92; should be undefined if not C++.
-						   coded out as #defined, 4-19-10
-						   Initial use is for derived *substruct classes; is in use & works well 9-92.
-						   Unresolved re derived *RAT's:
-							1. Allocation of front members at proper offsets not verified.
-							2. Space waste by duplicate sstat[] not prevented.  Does it make errors? */
-
 const int MAXRCS=130;		// Record names.  120 -> 130, 3-24
 							// Also max rec handle (prob unnec??).
 const int MAXFIELDS=200;	// Field type names.  Max 255 for UCH in srd.h,cul.cpp,exman 6-95.
@@ -215,21 +208,8 @@ const int MAXDTH=700;		// max+1 data type handle. 800-->200 1-92 ->400 3-92. ->4
 const int MAXDTC=111;		// maximum number of choices for choice data type.
 //#define MAXARRAY  20		// largest number of record array structure members * NOT checked, but should be.
 const int MAXNAMEL = 40;	// Max length of name, etc ("s" token)
-const int MAXQSTRL = 512;   // Max length for quoted string ("q" token).  assumed >= MAXNAMEL for array allocations.
-		// 80->200 3-90 for huge struct data types eg MASSBC. ->128 5-95 when out of memory.
-const int MAXTOKS = 6;		// Maximum no. of tokens per action (size of arrays; max length format arg to gtoks). 10->6 10-92.
 const int AVFDS = 70;		// Max average # fields / record, for Rcdtab alloc.  Reduce if MAXRCS*RCDSIZE(AVFDS) approaches 64K.
 							// 25->40 3-92 after overflow with only 39 of 50 records. 40->50 10-92. ->40 5-95. ->50 7-95. */
-
-// gtoks return values (fcn value and in gtokRet)
-const int GTOK = 0;         // things seem ok
-const int GTEOF = 1;		// unexpected EOF
-const int GTEND = 2;        // first token was *END
-const int GTERR = 3;		// conversion error or *END in pos other than first.  Error message has been issued.
-int gtokRet = 0;                         // last gtoks call fcn return value
-char Sval[MAXTOKS][MAXQSTRL];   // String values of tokens read (s, d, f formats), and deQuoted value of q tokens.
-int Dval[MAXTOKS];               // Decimal Integer values of tokens (d)
-float Fval[MAXTOKS];            // Float values of tokens (f)
 
 // Predefined record types
 #define RTNONE 0000     // may be put in dtypes.h from here
@@ -312,17 +292,196 @@ public:
 };	// class LUTAB
 ///////////////////////////////////////////////////////////////////////////////
 
+/*============================= LOCAL ROUTINES ===========================*/
+LOCAL void   Do_Dtypes(const char* fnameDtypesDef, FILE* file_dtypesh);
+LOCAL void   wdtypes( FILE *f);
+LOCAL void   wChoices( FILE* f);
+LOCAL void   wDttab( void);
+LOCAL void   Do_Units( const char* fnameUnitsDef, FILE* file_unitsh);
+LOCAL void   wUnits( FILE* f);
+LOCAL void   wUntab( void);
+LOCAL void   Do_Limits( const char* fnameLimitsDef, FILE* file_limitsh);
+LOCAL void   wLimits( FILE* f);
+LOCAL void   Do_Fields( const char* fnameFieldsDef);
+LOCAL bool   Do_Recs( const char* fnameRecordsDef, FILE* fil_dtypesh);
+LOCAL void   base_fds( void);
+LOCAL void   base_class_fds( const char* baseClass, int& bRctype);
+LOCAL void   GetRecordFields( class INFILE& fInRc);
+LOCAL void   nest( FILE *rcf, const char* recTyNm, int arSz, struct RCD *rcdpin, int evf, int ff, bool noname);
+LOCAL void   wRcTy( FILE* f);
+LOCAL void   wRcTd( FILE *f);
+LOCAL void   wSrfd1( FILE *f);
+LOCAL void   wSrfd2( FILE *f);
+LOCAL void   wSrfd3( FILE *f);
+#if 0
+0 unused
+0 LOCAL void   wSrfd4( FILE *f);
+#endif
+LOCAL int update( const char* old, const char* nu);
+LOCAL void newsec( const char *);
+LOCAL const char* enquote( const char *s);
+
+static void write_summary(class OUTFILE& outFile);
+static void write_summary1(FILE* stream, bool bListUnusedFields=false);
+
+// error handling
+static bool rcderr(const char* s, ...);
+static void msgWrite(int erOp, const char* msg, ...);
+static void msgWriteV(int erOp, const char* msg, va_list ap = nullptr);
+
+
+// Common string buffer
+//   Used to preserve many strings.
+//   Faster than malloc when dealloc not needed. See stash()
+const size_t STBUFSIZE = 200000;
+char Stbuf[STBUFSIZE] = { 0 };	// the buffer
+char* Stbp = Stbuf;			// points to beg of last stored string
+//======================================================================
+LOCAL char* stash(const char* s)
+
+// copy given string to next space in our string buffer, return location
+// return value is not const -- stashed values can be modified in place
+
+{
+	char* newStbp = Stbp + strlen(Stbp) + 1;     // point past last string to next Stbuf byte
+	if ((newStbp - Stbuf) > STBUFSIZE - 500)
+	{
+		rcderr("Stbuf not large enough -- increase STBUFSIZE.");
+		byebye(2);
+	}
+	Stbp = newStbp;
+	return strcpy(Stbp, s);    // copy string there, ret ptr
+}                       // stash
+//--------------------------------------------------------------------
+
 /*------------ General variables ------------*/
 
-const char* ProgVrsnId = "RCDEF";	// program version identifying string used in errorlog file header info, erpak2.cpp.
-									// Defined in config.cpp in "real" products.
-FILE * Fpm;             /* current input stream, read by gtoks.  Note several files are opened
-								   during command line checking; Fpm is set to each in sequence as they are used. */
-FILE *Fout;             /* current output .hx file stream -- used locally several places. */
-char* incdir=NULL;      // include file output path (from cmd line)
-char* cFilesDir=NULL;   // cpp output file path (from cmd line)
-bool Debug = false;		// iff true, token stream is displayed (from gtoks() during execution.  Set by D on command line.
+const char* incDir=NULL;      // include file output path (from cmd line)
+const char* cFilesDir=NULL;   // cpp output file path (from cmd line)
+bool Debug = false;		// iff true, token stream is displayed during execution.  Set by D on command line.
 int Errcount = 0;		// Number of errors so far
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+// class BASEFILE: RAII file I/O base class
+class BASEFILE
+{
+protected:
+	FILE* f_file = nullptr;			// stream
+	const char* f_path = nullptr;	// path to current file
+	const char* f_what = nullptr;	// description of this file/stream e.g. for msgs
+public:
+	BASEFILE() {}
+	~BASEFILE() { Close(); }
+	FILE* GetFile() { return f_file; }
+	bool Open(int erOp, const char* fpath, const char* what, const char* openMode)
+	{
+		bool bRet = f_file == nullptr;
+		if (bRet)
+		{
+			f_what = stash(what);
+			f_path = stash(fpath);
+			f_file = fopen(fpath, openMode);
+			bRet = f_file != nullptr;
+		}
+		if (!bRet)
+			msgWrite(erOp, "Can't open %s '%s'", what, fpath);
+		return bRet;
+	}
+	bool Close()
+	{
+		if (!f_file)
+			return false;
+		fclose(f_file);
+		f_file = nullptr;
+		f_path = nullptr;
+		f_what = nullptr;
+		return true;
+	}
+};		// class BASEFILE
+//=============================================================================
+// class INFILE: RAII input file reader / parser
+// INFILE::GetToks return values (fcn value and in fi_ret)
+const int GTOK = 0;         // things seem ok
+const int GTEOF = 1;		// unexpected EOF
+const int GTEND = 2;        // first token was *END
+const int GTERR = 3;		// conversion error or *END in pos other than first.  Error message issued.
+const int MAXQSTRL = 512;   // Max length for quoted string ("q" token).  assumed >= MAXNAMEL for array allocations.
+const int MAXTOKS = 6;		// Maximum no. of tokens per action (size of arrays; max length format arg to INFILE::GetToks).
+//-----------------------------------------------------------------------------
+class INFILE : public BASEFILE
+{
+public:
+	int fi_ret=GTERR;				// return value from most recent GetToks() / PeepToks()
+
+	// decoded tokens
+private:
+	char sVal[MAXTOKS][MAXQSTRL];   // String values of tokens read (s, d, f formats), and deQuoted value of q tokens.
+	int iVal[MAXTOKS];				// integer values
+	float fVal[MAXTOKS];			// float values
+
+public:
+	const char* SVal(int iTok) const {
+		return sVal[iTok];
+	}
+	int IVal(int iTok) const {
+		return iVal[iTok];
+	}
+	double FVal(int iTok) const {
+		return fVal[iTok];
+	}
+	const char* SetSVal(int iTok, const char* s)
+	{
+		return strcpy(sVal[iTok], s);
+	}
+	char* StashSVal(int iTok) const
+	{
+		return stash(SVal(iTok));
+	}
+
+
+	INFILE() { ClearVals(); }
+	INFILE(const char* fpath, const char* what)
+	{
+		Open(ABT, fpath, what);
+	}
+	~INFILE() { Close(); }
+	bool Open(int erOp, const char* fpath, const char* what)
+	{
+		return BASEFILE::Open(erOp, fpath, what, "r");
+	}
+	void ClearVals();
+	long GetFilePos();
+	int SetFilePos(long filePos);
+	int GetToks(const char* tokf);
+	int PeekToks(const char* tokf);
+};	// class INFILE
+// ============================================================================
+// class OUTFILE: RAII output file
+class OUTFILE : public BASEFILE
+{	
+public:
+	OUTFILE() {}
+	OUTFILE(const char* fpath, const char* what)
+	{
+		Open(ABT, fpath, what);
+	}
+	~OUTFILE() {}
+	bool Open(int erOp, const char* fpath, const char* what)
+	{
+		return BASEFILE::Open(erOp, fpath, what, "w+");
+	}
+
+	int fo_fprintf(const char* fmt, ...)
+	{
+		va_list ap;	va_start(ap, fmt);
+		return vfprintf(f_file, fmt, ap);
+	}
+};	// class OUTFILE
+//=============================================================================
+
+
 
 /*------- re Command Line --------*/
 
@@ -333,7 +492,6 @@ bool argNotNUL[ REQUIRED_ARGS+1]; /* non-0 if argv[i] not NULL;
 #define HELPCONV  argNotNUL[8]          // if checking or converting help references
 #define HELPDUMMY argNotNUL[9]          // if outputting dummies for undef help
 #define CFILESOUT  argNotNUL[10]        // if writing table .cpp source files
-
 
 
 /*------------- Data type global variables -------------*/
@@ -397,154 +555,79 @@ int nfdtypes = 0;                                                        // Curr
 
 // MORE VARIABLES incl most record variables are below, just above record()
 
-/*============================= LOCAL ROUTINES ============================*/
-LOCAL void   dtypes( FILE* file_dtypesh);
-LOCAL void   wdtypes( FILE *f);
-LOCAL void   wChoices( FILE* f);
-LOCAL void   wDttab( void);
-LOCAL void   units( FILE* file_unitsh);
-LOCAL void   wUnits( FILE* f);
-LOCAL void   wUntab( void);
-LOCAL void   limits( FILE* file_limitsh);
-LOCAL void   wLimits( FILE* f);
-LOCAL void   fields( void);
-LOCAL RC     recs( char *argv[], FILE* fil_dtypesh);
-LOCAL void   base_fds( void);
-LOCAL void   base_class_fds( const char* baseClass, int& bRctype);
-LOCAL void   rec_fds( void);
-struct RCDstr;
-LOCAL void   wrStr( FILE *rdf, char *name, int arSz, struct RCD *rcdpin, int evf, int ff);
-LOCAL void   nest( FILE *rcf, char *recTyNm, int arSz, struct RCD *rcdpin, int evf, int ff, bool noname);
-LOCAL void   wRcTy( FILE* f);
-LOCAL void   wRcTd( FILE *f);
-LOCAL void   wSrfd1( FILE *f);
-LOCAL void   wSrfd2( FILE *f);
-LOCAL void   wSrfd3( FILE *f);
-#if 0
-0 unused
-0 LOCAL void   wSrfd4( FILE *f);
-#endif
-LOCAL void   sumry( void);
-LOCAL FILE * rcfopen( const char *s, char **argv, int argi);
-LOCAL int    gtoks( const char * );
-LOCAL void   rcderr( const char *s, ...);
-LOCAL int update( const char* old, const char* nu);
-LOCAL void   newsec( const char *);
-LOCAL const char* enquote( const char *s);
-
-// Common string buffer
-//   Used to preserve many strings.
-//   Faster than malloc when dealloc not needed. See stash and stashSval functions.
-const size_t STBUFSIZE = 100000;
-char Stbuf[STBUFSIZE] = { 0 };	// the buffer
-char* Stbp = Stbuf;			// points to beg of last stored string
 //======================================================================
-LOCAL char* stash(const char* s)
-
-// copy given string to next space in our string buffer, return location
-// return value is not const -- stashed values can be modified in place
-
-{
-	char* newStbp = Stbp + strlen(Stbp) + 1;     // point past last string to next Stbuf byte
-	if ((newStbp - Stbuf) > STBUFSIZE - 500)
-	{
-		rcderr("Stbuf not large enough -- increase STBUFSIZE.");
-		byebye(2);
-	}
-	Stbp = newStbp;
-	return strcpy(Stbp, s);    // copy string there, ret ptr
-}                       // stash
-//--------------------------------------------------------------------
-inline char* stashSval( int i)
-
-// copy token in Sval[i] to next space in our string buffer, return location
-// return value is not const -- stashed values can be modified in place
-{
-	return stash(Sval[i]);
-}                       // stashSval
-//======================================================================
-
+// local helper fcns
+static bool VerifyDir( int erOp, const char* dirPath, const char* what)
+{	int xfRet = xfExist( dirPath);
+	if (xfRet == 3)
+		return true;	
+	const char* msg =
+		xfRet == 0 ? "path not found"
+		: xfRet == 1 || xfRet == 2 ? "not a directory"
+		: "unknown error";
+	msgWrite(erOp, "\n%s '%s': %s.", what, dirPath, msg);
+	return false;
+}	// VerifyDir
+//===========================================================================
 
 //////////////////////////////////////////////////////////////////////////////
 // RCDEF MAIN ROUTINE
 //////////////////////////////////////////////////////////////////////////////
-
 int CDEC main( int argc, char * argv[] )
 {
-	char fdtyphname[80];        /* data types file name */
 	int exitCode = 0;
 
-	// hello();
+	// Summary file
+	OUTFILE ofSummary;
 
-	// Startup announcement
-	printf("\nR C D E F ");
-
-	/* ************* Command Line, Arguments, Open Files *************** */
-
-	// Check number of arguments
-	if (argc <= REQUIRED_ARGS || argc > REQUIRED_ARGS+2)
-	{
-		printf("\nExactly %d or %d args are required\n",
-			   REQUIRED_ARGS, REQUIRED_ARGS+1 );
-		exit(2);	// do nothing if args not all present
-					//	(Note reserving errorlevel 1 for possible
-					//	future alternate good exit, 12-89)
-	}
-
+	// entire main() is within try/catch.  ABT errors throw.
 	try
 	{
+	// Startup announcement
+	printf("\nR C D E F\n");
+
+	// Success file: remove here, create at exit iff success
+	//   re build dependencies
+	constexpr char* fNameSuccess = "rcdef_success.txt";
+	if (xfExist(fNameSuccess) != 0)
+	{	if (std::remove(fNameSuccess))
+			msgWrite(ABT, "\nCannot delete '%s'\n", fNameSuccess);
+	}
+
+	ofSummary.Open(ABT, "rcdef.sum", "run summary");
+	
+	// command line: check number of arguments
+	if (argc <= REQUIRED_ARGS || argc > REQUIRED_ARGS+2)
+	{
+		msgWrite(ABT, "\nExactly %d or %d args are required\n",
+			   REQUIRED_ARGS, REQUIRED_ARGS+1 );
+				// do nothing if args not all present
+				//	(Note reserving errorlevel 1 for possible future alternate good exit)
+	}
 
 	// Test all args for NUL: inits macro "flags" HFILESOUT, HELPCONV, etc
 	for (int i = 0; i <= REQUIRED_ARGS; i++)
 		argNotNUL[i] = _stricmp( argv[i], "NUL") != 0;
 
-	/* Get and check input file names from command line */
-	FILE* file_dtypes  = rcfopen( "data types", argv, 1);
-	FILE* file_units   = rcfopen( "units",      argv, 2);
-	FILE* file_limits  = rcfopen( "limits",     argv, 3);
-	FILE* file_fields  = rcfopen( "fields",     argv, 4);
-	FILE* file_records = rcfopen( "records",    argv, 5);
+	const char* fNameDtypes = argv[1];
+	const char* fNameUnits = argv[2];
+	const char* fNameLimits = argv[3];
+	const char* fNameFields = argv[4];
+	const char* fNameRecords = argv[5];
 
-	/* check include directory argument if specified */
+	
+	// check include directory argument if specified
 	if (HFILESOUT)              /* if argv[6] not NUL */
 	{
-		incdir = argv[6];
-		if (xfExist(incdir) != 3)
-		{
-			if (xfExist(incdir) == 0) {
-				printf("\n'%s': Include file output directory path not found.\n", incdir);
-				Errcount++;
-			}
-			else if (xfExist(incdir) == 1 || xfExist(incdir) == 2) {
-				printf("\n'%s': Include file output directory path exists, but is not a directory.\n", incdir);
-				Errcount++;
-			}
-			else {
-				printf("\n'%s': Unknown error in finding Include file output directory path.\n", incdir);
-				Errcount++;
-			}
-		}
+		incDir = argv[6];
+		VerifyDir(ERR, incDir, "Include file output directory");
 	}
 
-	/* check cpp file directory argument if specified */
+	// check cpp file directory argument if specified
 	if (CFILESOUT)              /* if argv[10] not NUL */
 	{
 		cFilesDir = argv[10];
-		if (xfExist(cFilesDir) != 3)
-		{
-			if (xfExist(cFilesDir) == 0) {
-				printf("\n'%s': C++ file output directory path not found.\n", cFilesDir);
-				Errcount++;
-			}
-			else if (xfExist(cFilesDir) == 1 || xfExist(cFilesDir) == 2) {
-				printf("\n'%s': C++ file output directory path exists, but is not a directory.\n", cFilesDir);
-				Errcount++;
-			}
-			else {
-				printf("\n'%s': Unknown error in finding C++ file output directory path.\n", cFilesDir);
-				Errcount++;
-			}
-		}
+		VerifyDir(ERR, cFilesDir, "C++ file output directory");
 	}
 
 	/* Option flags */
@@ -561,100 +644,104 @@ int CDEC main( int argc, char * argv[] )
 				break;
 
 			default:
-				printf("\n\nUnknown option %c\n",*s);
-				Errcount++;
+				msgWrite(ERR, "Unknown option %c\n",*s);
 			}
 	}
 
-	/* consistency checks */
+	// consistency checks
 
 	if (RCDBOUT || HELPCONV || HELPDUMMY)
 	{
-		printf("\nWarning: Arg 7 (recdef db), Arg 8 (help idx), and Arg 9\n"
+		msgWrite(WRN, "\nWarning: Arg 7 (recdef db), Arg 8 (help idx), and Arg 9\n"
 			   "(help dummies file) should all be NUL.\n"
 			   "Non-NULs have been ignored.\n");
 		RCDBOUT = HELPCONV = HELPDUMMY = 0;      // insurance, shd not be refd
 		// nb no Errcount++: program is to continue.
 	}
 	if (!HFILESOUT && !RCDBOUT &&!HELPDUMMY && !CFILESOUT)
-		printf("\nWarning: no output specified (args 6, 7, 9, and 10 all NUL).\n"
+		msgWrite(WRN, "\nWarning: no output specified (args 6, 7, 9, and 10 all NUL).\n"
 			   "Proceeding, performing partial checks of input files.\n");
 
-	/* Done command line -- check errors; exit if there are any */
+	// Done command line -- exit if there are errors
 	if (Errcount > 0)
-	{
-		printf( "\nAborting due to command line error(s)\n");
-		exit( 2);	// do nothing if any args missing.
-					// (Reserving errorlevel 1 for possible future alternate good exit, 12-89)
+	{	// abort if any args wrong or missing
+		// (does not return)
+		msgWrite(ABT, "\nAborting due to command line error(s)\n");
 	}
 
-	/* ************* Data types ************** */
-
-	Fpm = file_dtypes;                  // Set input file for gtoks().  fopen() is in command line checking at beg of main
+	// Data types
+	char fdtyphname[CSE_MAX_PATH] = { 0 };        // data types file name
 	FILE* fdtyph = NULL;
-	if (HFILESOUT)                      // not if not outputting .h files
+	if (HFILESOUT)                      // if outputting .h files
 	{
-		xfjoinpath(incdir, "dtypes.hx", fdtyphname);
+		xfjoinpath(incDir, "dtypes.hx", fdtyphname);
 		fdtyph = fopen( fdtyphname,"w"); // open in main becuase left open til end for record structure typedefs
+		if (!fdtyph)
+			msgWrite(ABT, "Cannot open working file dtypes.hx\n");
 	}
-	dtypes( fdtyph);                            // local fcn, after main. sets many globals.
+	Do_Dtypes(fNameDtypes, fdtyph);
+	
+	// Unit definitions
+	Do_Units( fNameUnits, fdtyph);
 
-	/* ************ Unit definitions ************* */
+	// Limits
+	Do_Limits( fNameLimits, fdtyph);            // sets globals, calls wlimits() ... write to dtypes.h
 
-	Fpm = file_units;           // Set input file for token-reader gtoks().  fopen()'d in cmd line checking at beg of main.
-	units( fdtyph);                     // local fcn, sets globals, calls wUnits().
-	fclose(Fpm);                // done with units def file
-
-	/* ************ Get limit definitions ************* */
-
-	Fpm = file_limits;          // Input file for token-reader gtoks().  fopen'd in cmd line checking at beg of main.
-	limits( fdtyph);            // local fcn, sets globals, calls wlimits() ... write to dtypes.h
-	fclose(Fpm);                // done with dtlims.def input
-
-	/* ********* FIELD DESCRIPTORS ********** */
-
-	Fpm = file_fields;          // Input file for token-reader gtoks().  fopen'd in cmd line checking at beg of main.
-	fields();                   // local fcn, below. sets globals.
+	// Field descriptors
+	Do_Fields( fNameFields);                   // sets globals.
 								// Fdtab remains for access while doing records.
-	fclose(Fpm);                // done with fields.def input file
 
-	/* ******************* RECORDS *********************/
-
-	Fpm = file_records;         // Set input file for token-reader gtoks().  fopen'd in cmd line checking at beg of main.
-	if (recs( argv, fdtyph) )   // local fcn, below, uses/sets globals, writes rcxxx.h files, adds record typedefs to dtypes.h.
-		goto leave;             // error exit
-	fclose( Fpm);               // done with records definitions input file
+	// Records
+	bool recsOK = Do_Recs(fNameRecords, fdtyph);   // local fcn, below, uses/sets globals, writes rcxxx.h files, adds record typedefs to dtypes.h.
 
 // Now close dtypes.h file, see if changed.
 	if (HFILESOUT)              // if outputting .h files
 	{
-		fclose( fdtyph);         // opened above b4 dtypes() called
-		printf("\n");
-		char dtypesHPath[CSE_MAX_PATH];
-		xfjoinpath(incdir, "dtypes.h", dtypesHPath);
-		update( dtypesHPath, fdtyphname);        // compare, replace file if different.
+		fclose( fdtyph);         // opened above b4 Do_Dtypes() called
+		if (recsOK)
+		{
+			char dtypesHPath[CSE_MAX_PATH];
+			xfjoinpath(incDir, "dtypes.h", dtypesHPath);
+			update(dtypesHPath, fdtyphname);        // compare, replace file if different.
+		}
 	}
 
-	/* ************* SUMMARY ******************* */
+// All done / summary
+	write_summary( ofSummary);	// local fcn below. uses many globals.
 
-// All done
-leave:
 #if CSE_COMPILER == CSE_COMPILER_MSVC
 	if (!_CrtCheckMemory())
-		rcderr("Memory corruption!  Output validity dubious.");
+		msgWrite(ERR, "Memory corruption!  Output validity dubious.");
 #endif
-// display and file summary
-	sumry();                    // local fcn below. uses many globals.
+
+	if (Errcount == 0)
+	{
+		OUTFILE ofSuccess(fNameSuccess, "success file");	// aborts on fail
+		ofSuccess.fo_fprintf("Rcdef success.");
+	}
 
 // return to operating system
-	byebye( Errcount + (Errcount!=0) ); // exit with errorlevel 0 if ok, 2 or more if errors
-										// (exit(1) being reserved for poss future alternate good exit, 12-89
+	exitCode = Errcount + (Errcount!=0); // exit with errorlevel 0 if ok, 2 or more if errors
+										// (exit(1) being reserved for poss future alternate good exit
 	}
-	catch (int _exitCode)
+	catch (int _exitCode)		// catch fatal throws
 	{
 		exitCode = _exitCode;
 	}
+
+	auto successMsg = [](FILE* stream) -> void
+	{	if (stream)
+			fprintf(stream, "\nRcdef %s.\n",
+				Errcount > 0
+					? "did *NOT* complete correctly"
+					: "success");
+	};
+
+	successMsg(ofSummary.GetFile());
+	successMsg(stdout);
+
 	return exitCode;
+
 }           // main
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -713,18 +800,17 @@ static SWTABLE declSize[] =
 
 }	// determine_size
 //======================================================================
-LOCAL void dtypes(                      // do data types
-	FILE* file_dtypesh)         // where to write dtypes.h[x]
+LOCAL void Do_Dtypes(                      // do data types
+	const char* fNameDtypesDef,
+	FILE* file_dtypesh)     // where to write dtypes.h[x]
+							//  nullptr if not writing, else assumed open
 {
 	
-
-	// global Fpm assumed preset to file_dtypes
-	// global file fdtyph assumed open if HFILESOUT
-
 	newsec("DATA TYPES");
 
+	INFILE fInDT( fNameDtypesDef, "data type definitions");		// open source def file (ABT on failure)
 
-// Init memory table that holds our sequential array subscripts for the sparse data types, for retreival later in rcdef.
+	// Init memory table that holds our sequential array subscripts for the sparse data types, for retreival later in rcdef.
 
 	/* input format example:
 
@@ -749,8 +835,8 @@ LOCAL void dtypes(                      // do data types
 	const int STK1 = 1;
 	dttabsz = 1;    // next free word in Dttab
 					//  (reserve 0 for automatically generated DTNONE)
-	while (gtoks("ss")==GTOK)       // 2 tokens:  typeName, Extern,   or:  *choicb/n, typeName.
-									// Sets gtokRet to ret val, used after loop.
+	while (fInDT.GetToks("ss")==GTOK)       // 2 tokens:  typeName, Extern,   or:  *choicb/n, typeName.
+									// Sets fi_ret to ret val, used after loop.
 	{
 		if (ndtypes >= MAXDT)                            // prevent overflow of internal arrays
 		{
@@ -766,32 +852,32 @@ LOCAL void dtypes(                      // do data types
 		const char* cp = nullptr;
 		int choicb = 0;			// not (yet) a choice data type
 		int choicn = 0; 
-		if (*Sval[STK0] == '*')                             // is it "*choicb"?
+		if (*fInDT.SVal(STK0) == '*')                             // is it "*choicb"?
 		{
-			if (_stricmp( Sval[STK0] + 1, "choicb")==0)
+			if (_stricmp( fInDT.SVal(STK0) + 1, "choicb")==0)
 				choicb = 1;
-			else if (_stricmp( Sval[STK0] + 1, "choicn")==0)
+			else if (_stricmp( fInDT.SVal(STK0) + 1, "choicn")==0)
 				choicn = 1;
 			else
 			{
-				rcderr( "unrecognized data type *-word '%s':\n    expect '*choicb' or '*choicn'", Sval[STK0] );
+				rcderr( "unrecognized data type *-word '%s':\n    expect '*choicb' or '*choicn'", fInDT.SVal(STK0) );
 				continue;                                  // recovery imperfect
 			}
-			strcpy( Sval[STK0], Sval[STK1]);                    // move next token (name) back
+			fInDT.SetSVal( STK0, fInDT.SVal( STK1));              // move next token (name) back
 		}
 		else                             // no *-word, not a choice type
-			cp = (Sval[STK1][1] == '-')                  // if "--" given for external name
+			cp = (fInDT.SVal(STK1)[1] == '-')                  // if "--" given for external name
 				 ? (char *)NULL                          // tell wdtypes to make no ext decl
-				 : stashSval( STK1);                     // save extern type name in next Stbuf slot, set cp to it.  Used below.
-		if (dtlut.lu_Find( Sval[ STK0]) != LUFAIL)       // check for duplicate
+				 : fInDT.StashSVal(STK1);                     // save extern type name in next Stbuf slot, set cp to it.  Used below.
+		if (dtlut.lu_Find( fInDT.SVal(STK0)) != LUFAIL)       // check for duplicate
 		{
-			rcderr("Duplicate data type '%s' omitted.", Sval[STK1]);
+			rcderr("Duplicate data type '%s' omitted.", fInDT.SVal(STK1));
 			continue;
 		}
 
 		// common processing of choice, var, non-var data types
 
-		int val = dtlut.lu_Add( stashSval( STK0) );		// same typeName in nxt Stbuf space, enter ptr to saved name in tbl.
+		int val = dtlut.lu_Add( fInDT.StashSVal( STK0));		// same typeName in nxt Stbuf space, enter ptr to saved name in tbl.
 														// Sets dtnames[]. Subscript val is also used for other dt arrays
 		// dtMap.emplace(STK0, 0);
 
@@ -814,25 +900,25 @@ LOCAL void dtypes(                      // do data types
 			dtsize[val] = choicn ? sizeof(float) : sizeof(SI);
 			dttype[val] = dttabsz                                // type: Dttab index, plus
 				  | (choicn ? DTBCHOICN : DTBCHOICB);    //  appropriate choice bit
-			if (gtoks("s"))                                      // gobble the {
+			if (fInDT.GetToks("s"))                                      // gobble the {
 				rcderr("choice data type { error.");
 
 			// loop over choices list
 
 			int nchoices = 0;
-			while (!gtoks("p"))                          // peek at next char / while ok
+			while (!fInDT.GetToks("p"))                          // peek at next char / while ok
 			{
-				if (Sval[0][0] =='}')                     // if next char }, not next handle #
+				if (fInDT.SVal(0)[0] =='}')                     // if next char }, not next handle #
 				{
-					gtoks("s");
+					fInDT.GetToks("s");
 					break;                    // gobble final } and stop
 				}
-				if (gtoks("sq"))                          // read name, text
+				if (fInDT.GetToks("sq"))                          // read name, text
 					rcderr( "Choicb problem.");
 
-				if (getChoiTxTyX( Sval[ 0]) != 0)
-					rcderr( "Disallowed prefix on choicb/n name '%s' --\n    choib.h will be bad.", Sval[0] );
-				dtcdecl[ val][ nchoices]= stash(Sval[ 0]);                 // save choicb/n name
+				if (getChoiTxTyX( fInDT.SVal(0)) != 0)
+					rcderr( "Disallowed prefix on choicb/n name '%s' --\n    choib.h will be bad.", fInDT.SVal(0) );
+				dtcdecl[ val][ nchoices]= fInDT.StashSVal(0);                 // save choicb/n name
 
 				// choice TEXT may specify aliases ("MAIN|ALIAS1|ALIAS2")
 				// Items may begin with prefix
@@ -842,14 +928,14 @@ LOCAL void dtypes(                      // do data types
 				//    else "normal"
 				// NOTE: only MAIN yields #define C_XXX_xxx
 
-				const char* chStr = stashSval( 1);         // choicb/n text
+				const char* chStr = fInDT.StashSVal(1);         // choicb/n text
 
 				// choicb/n index: indeces 1,2,3 used.
 				int chan = nchoices + 1;                      // 1, 2, 3, ... here for error msg; regenerated in wChoices().
 
-				int tyX = getChoiTxTyX( Sval[ 1]);
+				int tyX = getChoiTxTyX( fInDT.SVal( 1));
 				if (tyX >= chtyALIAS)
-						rcderr( "choicb/n '%s' -- main choice cannot be alias", Sval[ 0]);
+						rcderr( "choicb/n '%s' -- main choice cannot be alias", fInDT.SVal(0));
 
 				if (nchoices >= MAXDTC)
 					rcderr( "Discarding choices in excess of %d.", MAXDTC);
@@ -867,7 +953,7 @@ LOCAL void dtypes(                      // do data types
 					*pli = ULI(chStr);	// choicb / n text snake offset to Dttab :
 					nchoices++;                   // count choices for this data type
 				}
-			} // while (!gtoks("p"))  choices loop
+			} // while (!fInDT.GetToks("p"))  choices loop
 
 			// set Dttab[masked dt] for choice type
 			Dttab[dttabsz++] = SetHiLo16Bits( nchoices,                // Hi16 is # choices
@@ -879,11 +965,11 @@ LOCAL void dtypes(                      // do data types
 
 			// get rest of non-choice data type input and process
 
-			if (gtoks("q"))								// get decl
+			if (fInDT.GetToks("q"))								// get decl
 				rcderr("Bad datatype definition");
 
 			dtxnm[val] = cp;                             // NULL or external type text, saved above.
-			dtdecl[val] = stashSval(0);                  // save decl text, set array
+			dtdecl[val] = fInDT.StashSVal(0);                  // save decl text, set array
 			dtsize[val] = determine_size(dtdecl[val]);	 // size to array
 			*(Dttab + dttabsz) = dtsize[val];            // size to Dttab
 			dttype[val] = dttabsz++;                     // type: Dttab index
@@ -895,7 +981,7 @@ LOCAL void dtypes(                      // do data types
 		ndtypes++;                                       // count data types
 	}  // data types token while loop
 
-	if (gtokRet != GTEND)                               // if 1st token not *END (gtoks at loop top)
+	if (fInDT.fi_ret != GTEND)         // if 1st token not *END (fInDT.GetToks at loop top)
 		rcderr("Data types definitions do not end properly");
 
 // Write data type definitions to dtypes.hx, dttab.cpp
@@ -908,16 +994,14 @@ LOCAL void dtypes(                      // do data types
 	}
 	if (CFILESOUT)                      // if outputting .cpp files
 	{
-		printf("\n    ");
 		wDttab();                        // write Dttab source code to compile and link into programs
 	}
 
 // Done with master definitions of data types
 
-	fclose(Fpm);
-	printf("   %d data types. ", ndtypes);
+	printf("\n %d data types", ndtypes);
 
-}               // dtypes
+}  // Do_Dtypes
 //======================================================================
 LOCAL void wdtypes( FILE *f)
 
@@ -1167,7 +1251,7 @@ LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 		}
 		if (dtm < w)                                     // insurance: dtypes() prevents this
 		{
-			printf( "Internal error: data type out of order\n");
+			msgWrite(ERR, "Internal error: data type out of order\n");
 			continue;
 		}
 
@@ -1219,17 +1303,17 @@ LOCAL void wDttab()     // write C++ source data types table dttab.cpp
 
 }               // wDttab()
 //======================================================================
-LOCAL void units(       // do units types, for rcdef main()
+LOCAL void Do_Units(       // do units types, for rcdef main()
+	const char* fNameUnitsDef,
 	FILE* file_unitsh)                  // where to write .h info
 {
-
 	newsec("UNITS");
 
-	/* get target machine from def file */
+	INFILE fInUn( fNameUnitsDef, "unit definitions");	// open source def file (ABT on failure)
 
-	if (gtoks("sd") != GTOK)    // read "UNSYS" and decimal # unit systems
+	if (fInUn.GetToks("sd") != GTOK)    // read "UNSYS" and decimal # unit systems
 		rcderr("TARGET trouble.");
-	Nunsys = Dval[1];
+	Nunsys = fInUn.IVal(1);
 	if (Nunsys != 2)	// Not clear rcdef can handle Nunsys != 2, although input format implies that it can.
 						// This error added to force checking if issue arises.
 		rcderr( "Nunsys != 2 -- check RCDEF code and results !!");
@@ -1240,8 +1324,8 @@ LOCAL void units(       // do units types, for rcdef main()
 
 	for (int i = 0; i < Nunsys; i++)
 	{
-		gtoks("s");                      /* read unit system name */
-		unsysnm[i] = stash(_strupr(Sval[0]) );
+		fInUn.GetToks("s");                      /* read unit system name */
+		unsysnm[i] = _strupr( fInUn.StashSVal(0));
 	}
 
 	/* unit types info format + examples.  2 lines/entry, for 2 unit systems.
@@ -1257,20 +1341,20 @@ LOCAL void units(       // do units types, for rcdef main()
 
 	/* read unit types info */
 
-	while (gtoks("s")==GTOK)            // read Unit Type Name text
+	while (fInUn.GetToks("s")==GTOK)            // read Unit Type Name text
 	{
 		if (nuntypes >= MAXUN)          /* prevent overwriting table */
 		{
 			rcderr("Too many units.");
 			continue;                    /* does not recover right */
 		}
-		if (unlut.lu_Find( Sval[0] ) != LUFAIL) // check if type in table
+		if (unlut.lu_Find( fInUn.SVal(0) ) != LUFAIL) // check if type in table
 			rcderr("Duplicate unit type.");
 		else
 		{
 			/* process unit typeName */
 
-			int val = unlut.lu_Add( stashSval(0) ); /* save typeName text in Stbuf,
+			int val = unlut.lu_Add( fInUn.StashSVal(0) ); /* save typeName text in Stbuf,
 										   enter ptr in table, set unnames[val].
 										   Subscript val is used as type #. */
 			if (val == LUFAIL)
@@ -1283,15 +1367,15 @@ LOCAL void units(       // do units types, for rcdef main()
 
 			for (int i = 0; i < Nunsys; i++)
 			{
-				gtoks("qf");                                    // read print name, factor
-				unSymTx[val][i] = stashSval( 0);
-				unFacTx[val][i] = stashSval( 1);              // save factor TEXT for untab.cpp
+				fInUn.GetToks("qf");                                    // read print name, factor
+				unSymTx[val][i] = fInUn.StashSVal( 0);
+				unFacTx[val][i] = fInUn.StashSVal( 1);              // save factor TEXT for untab.cpp
 																// to avoid multiple conversion errors, 1-91 */
 			}
 			nuntypes++; /* count unit types read, for later output */
 		}
 	}
-	if (gtokRet != GTEND)               // if last gtok() (at top of loop) did not read *END
+	if (fInUn.fi_ret != GTEND)               // if last gtok() (at top of loop) did not read *END
 		rcderr( "Units definitions do not end properly");
 
 	/* make units.h and untab.cpp */
@@ -1299,13 +1383,13 @@ LOCAL void units(       // do units types, for rcdef main()
 		wUnits( file_unitsh);   // write units info header file uses Nunsys, unsysnm[], nuntypes, unnames[], .
 	if (CFILESOUT)      // not if not outputting .cpp files
 		wUntab();       // write units info source file to compile and link into programs, 1-91
-	printf(" %d units.", nuntypes);
-}                                       /* units */
+	printf("\n %d units", nuntypes);
+}	// Do_Units
 //======================================================================
 LOCAL void wUnits(              // write units info to units.h if different
 	FILE* f)            // where to write
 
-// uses Nunsys, unsysnm[], nuntypes, unnames[], incdir.
+// uses Nunsys, unsysnm[], nuntypes, unnames[], incDir.
 {
 	/* head of file comments */
 	fprintf( f,
@@ -1398,21 +1482,23 @@ LOCAL void wUntab()                     // write untab.cpp
 	update( temp, buf);                 // compare, replace if different
 }                       // wUntab
 //======================================================================
-LOCAL void limits( FILE* file_limitsh)  // do limit types
+LOCAL void Do_Limits( const char* fnameLimitsDef, FILE* file_limitsh)  // do limit types
 {
 	newsec("LIMITS");
+
+	INFILE fInLm( fnameLimitsDef, "limit definitions");	// open source def file (ABT on failure)
 
 	/* read limits info from def file */
 
 	nlmtypes = 0;
-	while (gtoks("s")==GTOK)                    // read typeName.  Sets gtokRet same as return value.
+	while (fInLm.GetToks("s")==GTOK)                    // read typeName.  Sets fInLm.fi_ret same as return value.
 	{
-		if (lmlut.lu_Find( Sval[0]) != LUFAIL)
+		if (lmlut.lu_Find( fInLm.SVal(0)) != LUFAIL)
 			rcderr("Duplicate limit type.");
 		else
 		{
 			// enter in table.  Sets lmnames[val].
-			int val = lmlut.lu_Add( stashSval( 0) );
+			int val = lmlut.lu_Add( fInLm.StashSVal( 0));
 			if (val==LUFAIL)
 				rcderr("Too many limit types.");
 			else if (val < MAXLM)
@@ -1421,22 +1507,22 @@ LOCAL void limits( FILE* file_limitsh)  // do limit types
 		nlmtypes++;
 	}
 
-	if (gtokRet != GTEND)                       // unless *END gtok'd last
+	if (fInLm.fi_ret != GTEND)                       // unless *END gtok'd last
 		rcderr("Limits definitions do not end properly");
 
 	/* Write limit definitions to .h file */
 
 	if (HFILESOUT)              // not if not outputting .H files this run
-		wLimits( file_limitsh);         // write .h, uses nlmtypes, lmnames[], lmtype[], incdir.
+		wLimits( file_limitsh);         // write .h, uses nlmtypes, lmnames[], lmtype[], incDir.
 
-	printf(" %d limits. ", nlmtypes);
+	printf(" %d limits", nlmtypes);
 
 // Note: there is no limits table, thus no limits table C++ source file.
-}                                       // limits
+}  // Do_Limits
 //======================================================================
 LOCAL void wLimits( FILE* f)            // write to .h file
 
-// uses nlmtypes,lmnames[],lmtype[],incdir.
+// uses nlmtypes,lmnames[],lmtype[],incDir.
 {
 	fprintf( f,
 			 "\n\n// Limit definitions\n"
@@ -1448,20 +1534,22 @@ LOCAL void wLimits( FILE* f)            // write to .h file
 	fprintf( f, "\n// end of limits\n");
 }               // wLimits
 //======================================================================
-LOCAL void fields()     // do fields
+LOCAL void Do_Fields( const char* fnameFieldsDef)     // do fields
 {
 	newsec("FIELD DESCRIPTORS");
+
+	INFILE fInFd( fnameFieldsDef, "field definitions");	// open source def file (ABT on failure)
 
 // Fdtab[] is all 0 on entry
 
 // make dummy 0th table entry to reserve field type 0 for "FDNONE", 2-1-91
 	static char noneStr[]= { "none" };
-	int val = fdlut.lu_Add( noneStr );
+	fdlut.lu_Add( noneStr );
 	nfdtypes++;
 
 	/* loop to read field info from .def file */
 
-	while (gtoks("ssss") == GTOK)               // (sets gtokRet same as ret val)
+	while (fInFd.GetToks("ssss") == GTOK)               // (sets fInFd.fi_ret same as ret val)
 		/* read TypeName Datatype Limits Units
 				[0]      [1]      [2]    [3] */
 	{
@@ -1470,45 +1558,39 @@ LOCAL void fields()     // do fields
 			rcderr("Too many fields.");
 			continue;
 		}
-		if (strlen(Sval[0]) >= MAXNAMEL)
+		if (strlen(fInFd.SVal(0)) >= MAXNAMEL)
 			rcderr("Field name too long.");
-		if (fdlut.lu_Find( Sval[0]) != LUFAIL)
+		if (fdlut.lu_Find( fInFd.SVal(0)) != LUFAIL)
 		{
 			rcderr("Duplicate field name attempted.");
 			continue;
 		}
-		val = fdlut.lu_Add( stashSval(0) );		// typeName to Stbuf, ptr to lookup table.  Sets rcfdnms[val].
-												// Subscript val is used on parallel arrays and as field type.
-		if (val==LUFAIL)
+		int ftIdx = fdlut.lu_Add( fInFd.StashSVal(0));		// typeName to Stbuf, ptr to lookup table.  Sets rcfdnms[val].
+
+		bool bAllGood = true;
+		if (ftIdx==LUFAIL)
+			bAllGood = rcderr("Too many field names.");
+		if (dtlut.lu_Find( fInFd.SVal(1)) == LUFAIL)
+			bAllGood = rcderr("Cannot find data type %s", fInFd.SVal(1));
+		if (lmlut.lu_Find( fInFd.SVal(2)) == LUFAIL)
+			bAllGood = rcderr("Cannot find limit type %s", fInFd.SVal(2));
+		if (unlut.lu_Find( fInFd.SVal(3)) == LUFAIL)
+			bAllGood = rcderr("Cannot find unit type %s", fInFd.SVal(3));
+
+		if (bAllGood)
 		{
-			rcderr("Too many field names.");
-			continue;
+			Fdtab[ftIdx].dtype = dttype[dtlut.lu_Find(fInFd.SVal(1))];
+			Fdtab[ftIdx].lmtype = lmtype[lmlut.lu_Find(fInFd.SVal(2))];
+			Fdtab[ftIdx].untype = unlut.lu_Find(fInFd.SVal(3));
+			nfdtypes++;
 		}
-		if (dtlut.lu_Find( Sval[1]) == LUFAIL)
-		{
-			printf("\nWarning: cannot find data type %s",(char *)Sval[1]);
-			rcderr("");
-		}
-		if (lmlut.lu_Find( Sval[2]) == LUFAIL)
-		{
-			printf("\nWarning: cannot find limit type %s",(char *)Sval[2]);
-			rcderr("");
-		}
-		if (unlut.lu_Find( Sval[3]) == LUFAIL)
-		{
-			printf("\nWarning: cannot find unit type %s", (char*)Sval[3]);
-			rcderr("");
-		}
-		Fdtab[ val].dtype = dttype[ dtlut.lu_Find( Sval[1]) ];
-		Fdtab[ val].lmtype = lmtype[ lmlut.lu_Find( Sval[2]) ];
-		Fdtab[ val].untype = unlut.lu_Find( Sval[3]);
-		nfdtypes++;
 	}
-	if (gtokRet != GTEND)                               // if gtoks didn't read *END
+	if (fInFd.fi_ret != GTEND)                               // if fInFd.GetToks didn't read *END
 		rcderr("Fields definitions do not end properly");
 
-	printf(" %d field descriptors. ", nfdtypes);
-}                                                       // fields
+	printf(" %d field descriptors", nfdtypes);
+} // Do_Fields
+//-----------------------------------------------------------------------------
 
 
 /*------------- Record Descriptor variables (and schedules) --------------*/
@@ -1564,25 +1646,24 @@ const size_t RCDTABSZ = RCDTABBYTES / sizeof(RCD*);
 static RCD* Rcdtab[ RCDTABSZ];	// array in which descriptors of all record types are built.
 								//   Contains ptrs[] by rctype, then RCD's (descriptors). Ptrs are alloc'd RCD*,
 								//   so program can make absolute, but contain offset from start block only.
-								//   Set/used in recs()
+								//   Set/used in Do_Recs()
 
 static const char* rcnms[MAXRCS];		// rec names (typeNames) (part of rclut).  set: recs. used: rec_fds wRcTd wRcTy.
 LUTAB rclut(rcnms, MAXRCS);
 static int rctypes[ MAXRCS];           // rec types, w bits, by rec sequence number (current one in 'rctype')
 const char* recIncFile[ MAXRCS];	// Include file name for each record type
 int nrcnms = 0;					// # record names (max rcseq).  (Note value ret by luadd actually used for rcseq,
-								//   to be sure subscrs of various arrays match.)  Set: recs(). used: wRcTy wRcTd sumry
+								//   to be sure subscrs of various arrays match.)  Set: Do_Recs().
 // current record
 RCD* rcdesc;			// loc of current/next record descriptor in Rcdtab. set: recs. used: rec_flds. */
 int nextRcType = 1;		// re automatic generation of record type (new 7-10)
 //   rctype 0 reserved for RTNONE
 int rctype = -1;	// type of rcdesc being built, autoRcType + bits (= rcseq + bits)
 int rcseq = -1;		// Sequence # of record under construction -- used as subscr of arrays; max is nrcnms.
-					// set: recs. used: rec_flds, wrStr. */
-int Fdoff =0;       // Field offset: moves fwd as fields defined.  set/used: recs, rec_flds, wrStr.
+int Fdoff =0;       // Field offset: moves fwd as fields defined
 //  in C++/anchors version, excludes base class, only used for odd/even length checks.
-int Nfields =0;			// # of fields in current record. set/used: recs, rec_flds, wrStr.
-int MaxNfields=0;        // largest # of fields in a record (reported for poss use re sizing arrays in program). recs to sumry.
+int Nfields =0;			// # of fields in current record.
+int MaxNfields=0;        // largest # of fields in a record (reported for poss use re sizing arrays in program).
 const char* rcNam=NULL;		// curr rec name -- copy of rcnms[rcseq]. Used in error messages, etc.
 
 enum { RD_BASECLASS=32700, RD_EXCON, RD_EXDES, RD_OVRCOPY, RD_PREFIX, RD_UNKNOWN };
@@ -1600,7 +1681,7 @@ static SWTABLE rdirtab[] =      /* table of record level * directives:
 	{ NULL,        RD_UNKNOWN     }		// 32767 returned if not in table
 };                      // rdirtab[]
 
-enum { FD_DECLARE = 32720, FD_NONAME, FD_NEST, FD_STRUCT, FD_ARRAY, FD_UNKNOWN };
+enum { FD_DECLARE = 32720, FD_NONAME, FD_NEST, FD_ARRAY, FD_UNKNOWN };
 static SWTABLE fdirtab[] =      /* table of field level * directives.  Content word is:
 										0x8000 + SFIR.ff bit, or
 										SFIR.evf bit, or
@@ -1633,7 +1714,6 @@ static SWTABLE fdirtab[] =      /* table of field level * directives.  Content w
 	{ "declare",  FD_DECLARE  },		// *declare "whatever"   spit text thru into record class definition immediately
 	{ "noname",   FD_NONAME  },			// with *nest, omit aggregate name from SFIR.mnames (but not from C declaration)
 	{ "nest",     FD_NEST },			// nest <name>: imbed structure of another rec type
-	{ "struct",   FD_STRUCT  },			// struct name n { ...
 	{ "array",    FD_ARRAY  },			// array n
 	{ NULL,       FD_UNKNOWN }			// no match
 };                      // fdirtab[]
@@ -1642,13 +1722,13 @@ static SWTABLE fdirtab[] =      /* table of field level * directives.  Content w
 const char* rchFileNm = NULL;	// Name of current record output include file, for recIncFile[] and for use in file text.
 								// Notes: name with x is also in dbuff[] for closing/renaming.
 								// FILE is "frc" in main(), set only if HFILESOUT.
-// addl record vbls used by recs() and new callees rec_swl, rec_fds,
+// addl record vbls used by Do_Recs() and new callees rec_swl, rec_fds,
 FILE * frc = NULL;      // current rcxxx output file if HFILESOUT
 int nstrel;                      // subscr of struct members (elts) for fld
 int strelFnr[MAXFDREC];          // field numbers for structure elts, this rec.  struct elts include those of base class.
 char* strelNm[MAXFDREC];        // mbr names of struct elts in rec, subscr nstrel (not Nfields), for field #defines and err msgs.
 char* strelNmNoPfx[MAXFDREC];	// ditto w/o prefix
-// above 3 are saved in RCDstr members of same name at record completion re BASECLASS.
+// above 3 are saved in RCD members of same name at record completion re BASECLASS.
 #if defined( MBRNAMESX)
 MBRNM mbrNames[ MAXFDREC];		// mbr names of struct elts in rec, subscr nstrel (not Nfields), for field #defines and err msgs.
 #endif
@@ -1685,7 +1765,7 @@ LOCAL WStr ElNmFix(
 static char* fixName( char* p)		// fix name *in place*
 {
 	// trim off trailing ';' (common typo) 4-12
-	int len = static_cast<int>(strlen(p));
+	int len = strlenInt(p);
 	for (int i=len-1; i > 0; i--)
 	{	if (p[ i] == ';')
 			p[ i] = ' ';
@@ -1745,16 +1825,17 @@ MBRNM& MBRNM::mn_Copy(
 }	// MBRNM::mn_Copy
 #endif
 //======================================================================
-LOCAL RC recs(                  // do records
-	[[maybe_unused]] char *argv[],
+LOCAL bool Do_Recs(                  // do records
+	const char* fnameRecordsDef,
 	FILE* file_dtypeh)                  // open file dtypes.hx
 
-// returns RCOK ok; RCBAD for some error exit cases
+// returns true iff completes (although Errcount errors may have happened)
+//   else false
 {
 
 	// predefined/reserved record type number
 
-	nrcnms = 0;         // init number of record names (total/max rcseq to output to dtypes.h; and for sumry)
+	nrcnms = 0;         // init number of record names (total/max rcseq to output to dtypes.h and summary)
 	static char noneStr[] = { "NONE" };
 	if (rclut.lu_Add( noneStr) != RTNONE)     // RTNONE must be 0th entry (historical)
 		rcderr("Warning: RTNONE not 0");
@@ -1775,30 +1856,22 @@ LOCAL RC recs(                  // do records
 		xfjoinpath(cFilesDir, "srfd.cx", fsrfdName);	// also used below
 		fSrfd = fopen( fsrfdName, "wt");
 		if (fSrfd==NULL)
-			printf( "\n\nCannot open srfd output file '%s'\n", fsrfdName );
+			msgWrite(ABT, "Cannot open srfd output file '%s'\n", fsrfdName );
 		else                             // opened ok
 			wSrfd1( fSrfd);              // write part b4 per-record portion, below
 	}
 
 	// initialize data base block for record descriptors
-#if 1
 	const char* rcdend = (char*)Rcdtab + sizeof( Rcdtab);		// end of allocated Rcdtab space
 	rcdesc =                                    // init pointer for RCD creation
 		(RCD*)((char*)Rcdtab + MAXRCS);  // into Rcdtab, after space for pointers
-#else
-	size_t uliTem =               // size for Rcdtab
-		MAXRCS*sizeof(RCD**)      // pointers to max # records
-		+ MAXRCS*RCDSIZE(AVFDS)        // + max # records with average fields each
-		+ RCDSIZE(MAXFDREC);           // + one record with max # fields
-	// dmal( DMPP( Rcdtab), uliTem, DMZERO|ABT);      // alloc record descriptor table in heap
-	char* rcdend = (char *)Rcdtab + uliTem;		// end of allocated Rcdtab space
-	rcdesc =                                    // init pointer for RCD creation
-		(RCD*)((char **)Rcdtab + MAXRCS);  // into Rcdtab, after space for pointers
-#endif
 
 	/*--- set up to do records ---*/
 
 	newsec("RECORDS");
+
+	INFILE fInRc(fnameRecordsDef, "record definitions");  // open source def file (ABT on failure)
+
 	frc = NULL;                         // no rcxxxx.h output file open yet (FILE)
 	rchFileNm = NULL;                   // .. (name)
 	char dbuff[80] = { 0 };					// filename .hx
@@ -1807,8 +1880,8 @@ LOCAL RC recs(                  // do records
 
 	/* top of records loop.  Process a between-records *word or a RECORD. */
 
-	gtoks("s");                         // read token, set Sval and gtokRet
-	while (gtokRet == GTOK)               // until *END or (unexpected) eof or error.  Sval[0] shd be "*file" or "RECORD".
+	fInRc.GetToks("s");                         // read token, set SVal and fInRc.fi_ret
+	while (fInRc.fi_ret == GTOK)               // until *END or (unexpected) eof or error.  SVal(0) shd be "*file" or "RECORD".
 	{
 		bool excon = false;           // true iff record has explicit external constructor ..
 		bool exdes = false;           // .. destructor ..  (declare only in class defn output here; omit default code)
@@ -1821,9 +1894,9 @@ LOCAL RC recs(                  // do records
 		{
 			rcderr("Too many record types.");    // fallthru gobbles *END / eof w msg for each token.
 		nexTokRec:;                            // come here after *word or error */
-			if (gtoks("s"))                      // get token to replace that used
+			if (fInRc.GetToks("s"))                      // get token to replace that used
 				rcderr("Error in records.def.");
-			continue;                            // repeat record loop. gtokRet set.
+			continue;                            // repeat record loop. fInRc.fi_ret set.
 		}
 		if ((char*)rcdesc + RCDSIZE(MAXFDREC) >= rcdend)       // room for max rec recDescriptor?
 		{
@@ -1833,7 +1906,7 @@ LOCAL RC recs(                  // do records
 
 		/* process *file <name> statement before next record if present */
 
-		if (_stricmp(Sval[0], "*file") == 0)              // if *file
+		if (_stricmp(fInRc.SVal(0), "*file") == 0)              // if *file
 		{	
 			if (frc)                            // if a file open (HFILESOUT and not start)
 			{
@@ -1844,13 +1917,13 @@ LOCAL RC recs(                  // do records
 				temp[strlen(dbuff)-1] = '\0';             // Remove the last 'x' for file name
 				update( temp, dbuff);
 			}
-			if (gtoks("s"))                             // read file name
+			if (fInRc.GetToks("s"))                             // read file name
 				rcderr("Bad name after *file.");
-			rchFileNm = stashSval(0);                   // store name for rec type definition and for have-file check below
+			rchFileNm = fInRc.StashSVal(0);                   // store name for rec type definition and for have-file check below
 			char rchFileNmX[CSE_MAX_FILENAME];				// rchFileNm variable with a x at the end
 			snprintf(rchFileNmX, CSE_MAX_FILENAME, "%sx", rchFileNm);	// Add x
-			xfjoinpath(incdir, rchFileNmX, dbuff);
-			printf( "\n %s ...   ", dbuff);
+			xfjoinpath(incDir, rchFileNmX, dbuff);
+			printf(" %s", dbuff);
 			if (CFILESOUT)                              // if outputting tables to compile & link
 				wSrfd2( fSrfd);                         // write "#include <rcxxx.h>" for new rchFileNm
 			if (HFILESOUT)                              // if argv[6] not NUL
@@ -1858,8 +1931,7 @@ LOCAL RC recs(                  // do records
 				frc = fopen( dbuff, "w");
 				if (frc == NULL)
 				{
-					rcderr( "Error opening *FILE '%s'", dbuff );
-					return RCBAD;
+					return rcderr( "Error opening file '%s'", dbuff );
 				}
 				fprintf( frc, "/* %s -- generated by RCDEF */\n", rchFileNm);
 			}
@@ -1868,9 +1940,8 @@ LOCAL RC recs(                  // do records
 
 		/* else input should be "RECORD" */
 
-		if (_stricmp(Sval[0],"RECORD") != 0)
-		{
-			rcderr( "Passing '%s': ignoring to 'RECORD' or '*file'.", Sval[0] );
+		if (_stricmp(fInRc.SVal(0),"RECORD") != 0)
+		{	rcderr( "Passing '%s': ignoring to 'RECORD' or '*file'.", fInRc.SVal(0) );
 			goto nexTokRec;              // get token and reiterate rec / *word loop
 		}
 
@@ -1895,17 +1966,17 @@ LOCAL RC recs(                  // do records
 		rcPrefix[rcseq] = "";	// no prefix by default
 
 		// record typeName
-		if (gtoks("s"))                         // get next token: typeName (set gtokRet)
+		if (fInRc.GetToks("s"))                         // get next token: typeName (set fInRc.fi_ret)
 		{
 			rcderr( "Record name trouble.");
 			goto nexTokRec;                        // get token and reiterate record loop
 		}
-		if (strlen(Sval[0]) >= MAXNAMEL)
+		if (strlen(fInRc.SVal(0)) >= MAXNAMEL)
 		{
 			rcderr( "Record name too long.");
 			goto nexTokRec;                        // get token and reiterate record loop
 		}
-		if (rclut.lu_Find(Sval[0]) != LUFAIL)
+		if (rclut.lu_Find(fInRc.SVal(0)) != LUFAIL)
 		{
 			rcderr("Duplicate record name attempted.");
 			goto nexTokRec;                        // get token and reiterate record loop
@@ -1913,7 +1984,7 @@ LOCAL RC recs(                  // do records
 
 		/* put record name in table used for dupl check just above, get
 		   sequence # (our array subscript).  Stores name in rcnms[rcseq]. */
-		if (LUFAIL == rclut.lu_Add( stashSval(0) ))		// save typeName, put in table, get subscript for parallel tbls.
+		if (LUFAIL == rclut.lu_Add( fInRc.StashSVal(0) ))		// save typeName, put in table, get subscript for parallel tbls.
 		{
 			rcderr("Too many record types.");
 			goto nexTokRec;                                // get token and reiterate record loop
@@ -1938,37 +2009,37 @@ x		{    printf( "\nRecord trap!");}
 		recIncFile[ rcseq] = rchFileNm;         // store rc file name for output later in comment in typdef in rctpes.h
 
 		// record description/title text (".what" name, used in probes and error messages)
-		if (gtoks("q") != GTOK)
+		if (fInRc.GetToks("q") != GTOK)
 		{
 			rcderr("Record description text problem.");
 			rcdesc->rWhat = "?";
 		}
 		else    // description ok
 		{
-			rcdesc->rWhat = stashSval(0);
+			rcdesc->rWhat = fInRc.StashSVal(0);
 		}
 
 		/* process record level * directives */
 
-		while (gtoks("s")==GTOK         // while next token (sets gtokRet) is ok
-				&& *Sval[0]=='*')        // ... and starts with '*'
+		while (fInRc.GetToks("s")==GTOK         // while next token (sets fInRc.fi_ret) is ok
+				&& *fInRc.SVal(0)=='*')        // ... and starts with '*'
 		{
-			int val = looksw( Sval[0]+1, rdirtab);    // look up word after * in table, rets special value
+			int val = looksw( fInRc.SVal(0)+1, rdirtab);    // look up word after * in table, rets special value
 
 			if (val==RD_UNKNOWN)                        // if not found
 				break;								// leave token for fld loop.
 			else switch ( val)                      // special value from rdirtab
 			{
 				default:                   // in table but not in switch
-					rcderr("Bug re record level * directive: '%s'.", Sval[0]);
+					rcderr("Bug re record level * directive: '%s'.", fInRc.SVal(0));
 					break;                         // nb fallthru gets token
 
 				case RD_BASECLASS:        // *baseclass <name>: C++ base class for this record type
 					if (baseGiven)
 						rcderr("record type '%s': only one *BASECLASS per record", rcNam);
-					if (gtoks("s"))
+					if (fInRc.GetToks("s"))
 						rcderr("Class name missing after '*BASECLASS' after '%s'", rcNam);
-					baseClass = stash(Sval[0]);
+					baseClass = fInRc.StashSVal(0);
 					baseGiven = true;
 					break;
 				case RD_EXCON:
@@ -1981,10 +2052,10 @@ x		{    printf( "\nRecord trap!");}
 					ovrcopy = true;	// class has overridden Copy()
 					break;
 				case RD_PREFIX:		// *prefix xx -- specify member name prefix
-					if (gtoks( "s"))
+					if (fInRc.GetToks( "s"))
 						rcderr( "Error getting text after '*prefix'");
 					else
-						rcPrefix[rcseq] = Sval[ 0];
+						rcPrefix[rcseq] = fInRc.SVal(0);
 					break;
 				case RTBSUB:               // "*substruct": non-record only for *nest-ing and/or structure use in C code
 				case RTBRAT:       // "*rat": a Record Array Table rec type (all (but *sub's) now are, 1991)
@@ -2082,7 +2153,7 @@ x		{    printf( "\nRecord trap!");}
 
 		// get fields for this record.  Have next token.
 
-		rec_fds();              // local fcn, below.  uses: many globals above main()
+		GetRecordFields( fInRc);              // local fcn, below.  uses: many globals above main()
 		// on return, do NOT have token
 
 		// store record size
@@ -2102,7 +2173,7 @@ x		{    printf( "\nRecord trap!");}
 			fprintf( frc, "};		// %s\n\n", rcNam);
 		}
 
-		if (gtokRet != GTEND)                           // if last token gtok'd not *END
+		if (fInRc.fi_ret != GTEND)                           // if last token gtok'd not *END
 			rcderr("Record definition error.");
 		else                                            // record def input ended correctly
 		{
@@ -2114,7 +2185,7 @@ x		{    printf( "\nRecord trap!");}
 
 			rctypes[rcseq] = rctype;            // now also save type + bits for dupl checking, wRcTd, *nest, .
 
-			gtoks("s");                         // get next token, set gtokRet for loop top
+			fInRc.GetToks("s");                         // get next token, set fInRc.fi_ret for loop top
 
 			// do stuff for this record in small record & field descriptor file
 			// CAUTION: do before rcdesc incremented.
@@ -2201,11 +2272,7 @@ x		{    printf( "\nRecord trap!");}
 				(RCD*)((char *)rcdesc - (char *)Rcdtab);
 			/* pointers are at front of block containing all descriptors (RCD's).  Cast the offset in block
 			   into a pointer type: use of pointer type leaves room so program can make absolute. */
-#if 1
 			rcdesc = (RCD*)((char*)rcdesc + RCDSIZE(Nfields));	// where next RCD will go, or end Rcdtab if last one
-#else
-			IncP( DMPP( rcdesc), RCDSIZE(Nfields));     // where next RCD will go, or end Rcdtab if last one
-#endif
 
 			nrcnms++;                                   // count record names.  Note RTNONE was added to this above.
 
@@ -2214,7 +2281,7 @@ x		{    printf( "\nRecord trap!");}
 		}
 	}   // Record loop (top ~500 lines up)
 
-	if (gtokRet != GTEND)                               // if last token gtok'd not *END
+	if (fInRc.fi_ret != GTEND)                               // if last token gtok'd not *END
 		rcderr("Record definitions do not end properly");
 
 // Close final record include file.
@@ -2246,15 +2313,15 @@ x		{    printf( "\nRecord trap!");}
 // create file containing record type definitions (written to dtypes.h 4-5-10)
 
 	if (HFILESOUT)              // if out'ing .H files
-		wRcTy( file_dtypeh);                    // conditionally write file.  Uses nrcnms, rcnms[], rctypes[], recIncFile[], incdir.
+		wRcTy( file_dtypeh);                    // conditionally write file.  Uses nrcnms, rcnms[], rctypes[], recIncFile[], incDir.
 
-	printf("  %d records. ", nrcnms);
+	printf("\n %d records", nrcnms);
 
 	/* Write record typedefs to dtypes.h file.  caller main closes. */
 	if (HFILESOUT)                      // if outputting .h files
 		wRcTd( file_dtypeh);    // write record structure typedefs. uses globals nrcnms, rctypes[], rcnms[], recIncFile[]
-	return RCOK;                        // 2+ RCBAD returns above
-}                       // recs
+	return true;                        // add'l false returns above
+}                       // Do_Recs
 
 //======================================================================
 LOCAL void base_fds()
@@ -2388,7 +2455,7 @@ LOCAL void base_class_fds( const char *baseClass, int &bRctype )
 	// another return above
 }               // base_class_fds
 //======================================================================
-LOCAL void rec_fds()
+LOCAL void GetRecordFields( INFILE& fInRc)
 
 // get user input fields for current record description
 
@@ -2400,8 +2467,8 @@ LOCAL void rec_fds()
 
 	// fields loop begins here
 	for ( ;                     // first time, have token from above
-			gtokRet==GTOK;        // Leave loop if error or *END
-			gtoks("s") )          // After 1st time, get token, set gtokRet
+			fInRc.fi_ret==GTOK;        // Leave loop if error or *END
+			fInRc.GetToks("s") )          // After 1st time, get token, set fInRc.fi_ret
 		// non-*END token is *directive, else field type.
 	{
 		// init for new field.  NB repeated in *directive cases that complete field: struct, nest. */
@@ -2417,10 +2484,10 @@ LOCAL void rec_fds()
 
 		// Process field level "*" directives
 
-		while (*Sval[0] == '*')                 // if *word
+		while (*fInRc.SVal(0) == '*')                 // if *word
 		{
 			int wasDeclare = 0;		// set nz iff handling *declare
-			int val = looksw( Sval[0]+1, fdirtab);  // look up word after '*'
+			int val = looksw( fInRc.SVal(0)+1, fdirtab);  // look up word after '*'
 			switch (val)                        // returns bit or spec value
 			{
 			default:                    // most cases: bit is in table
@@ -2431,50 +2498,31 @@ LOCAL void rec_fds()
 				break;
 
 			case FD_UNKNOWN:                 // not in *words table
-				rcderr("Unknown or misplaced * directive: '%s'.", Sval[0]);
+				rcderr("Unknown or misplaced * directive: '%s'.", fInRc.SVal(0));
 				break;                          // nb fallthru gets token
 
 			case FD_ARRAY:                 // array n.  array size follows
-				if (gtoks("d"))                 // get array size
+				if (fInRc.GetToks("d"))                 // get array size
 					rcderr("Array size error");
-				array = Dval[0];                // array flag / # elements
+				array = fInRc.IVal(0);                // array flag / # elements
 				break;
-
-			case FD_STRUCT:                 // struct  memName  arraySize { ...
-				/* unused (1988, 89, 90), not known if still works.  Any preceding * directives ignored.
-				   Fully processed by this case & wrStr(), called here. */
-				if (gtoks("sds"))                               //  memNam  arSz  {  (3rd token ignored)
-					rcderr("Struct name error");
-#if !defined( MBRNAMESX)
-				strelSave( Sval[ 0], Nfields);
-#else
-				mbrNames[ nstrel].mn_Set( Sval[ 0], Nfields);
-#endif
-				wrStr( frc, Sval[0], Dval[1], rcdesc, evf, ff);
-				/* read structure, conditionally write to output file, fill field info in record descriptor,
-				   calls self for nested structures. Uses/updates globals Nfields, Fdoff, gtokRet,
-				   NEEDS UPDATING to set fldNm[] -- 3-91 -- and fldFullNm[], 2-92. */
-				++nstrel;                                       // next structure member
-				// Note: a single field #define will be output by recs() for the entire structure (only one strel).
-				// struct fields now completely processed.
-				goto nextFld;           // continue outer loop to get token and start new field
 
 			case FD_NEST:                 // nest <recTyName> <memName>
 				// Any preceding * directives but *array and evf/ff ignored. Fully processed by this case & nest(), called here.
-				if (gtoks("ss"))                                // rec type, member name
+				if (fInRc.GetToks("ss"))                                // rec type, member name
 					rcderr("*nest error");
 #if !defined( MBRNAMESX)
-				strelSave( Sval[ 1], Nfields);
+				strelSave( fInRc.SVal(1), Nfields);
 #else
-				mbrNames[ nstrel].mn_Set( Sval[ 1], Nfields);
+				mbrNames[ nstrel].mn_Set( fInRc.SVal(1), Nfields);
 #endif
 
-				nest( frc, Sval[0], array, rcdesc, evf, ff, noname );
+				nest( frc, fInRc.SVal(0), array, rcdesc, evf, ff, noname );
 				/* access prev'ly defined record type to be nested, copy its rec descriptor
 				   info to ours, merge fld addrs, conditionally write mbr decl to out file,
 				   Uses/updates globals Nfields, Fdoff, mbrNames, fldNm, rcFldNms, */
 				++nstrel;                               // next structure element
-				/* Note: a single field #define will be output by recs() for the entire nested record (only one strel).
+				/* Note: a single field #define will be output by Do_Recs() for the entire nested record (only one strel).
 				   Calling code may access fields within nested record by ADDING field #'s of nested record to it. */
 				// nested record now completely processed.
 				goto nextFld;           // continue outer loop to get token and start new field
@@ -2486,59 +2534,57 @@ LOCAL void rec_fds()
 			case FD_DECLARE:                 // *declare "text": spit text thru immediately into record class definition.
 				// intended uses include declarations of record-specific C++ member functions. 3-4-92.
 				wasDeclare++;
-				if (gtoks("q"))
+				if (fInRc.GetToks("q"))
 					rcderr("Error getting \"text\" after '*declare'");
 				else
-					fprintf( frc, "    %s\n", Sval[0]);                 // format the text with indent and newline
+					fprintf( frc, "    %s\n", fInRc.SVal(0));                 // format the text with indent and newline
 				break;
 
 			}           // switch (val)
 
-			// get next token: next * directive else processed after *word loop
-			// BUG: get error here if *declare is last thing in record, 10-94.
-			int gtRet = gtoks("s");
-			if (gtRet != GTOK)
-			{	const char* msg = wasDeclare
-					? "Error getting token after *declare (note *declare CANNOT be last in RECORD)"
-					: "Error getting token after field * directive";
-				rcderr(msg);
+			
+			if (wasDeclare)
+			{	if (fInRc.PeekToks("s") == GTEND)
+					goto nextFld;
 			}
-
-		}   // while (*Sval[0] == '*') "*" directive
+			if (fInRc.GetToks("s") != GTOK)
+				rcderr("Error getting token after field * directive");
+		}   // while (*fInRc.SVal(0) == '*') "*" directive
 		// on fallthru have a token
 
 		/* tokens after * directives are field type and field member name */
 
 		char fdTyNam[100];			// current field type (assumed big enuf)
-		strncpy0(fdTyNam, Sval[0], sizeof( fdTyNam));	// save type name
+		strncpy0(fdTyNam, fInRc.SVal(0), sizeof( fdTyNam));	// save type name
 
-		if (gtoks("s"))                         // next token is member name
+		if (fInRc.GetToks("s"))                         // next token is member name
 			rcderr("Error getting field member name");
-		if (*Sval[0] == '*')
+		if (*fInRc.SVal(0) == '*')
 			rcderr("Expected field member name, found * directive");
 #if !defined( MBRNAMESX)
-		strelSave( Sval[ 0], Nfields);
+		strelSave( fInRc.SVal(0), Nfields);
 #else
-		mbrNames[ nstrel].mn_Set( Sval[ 0], Nfields);
+		mbrNames[ nstrel].mn_Set( fInRc.SVal(0), Nfields);
 #endif
 
 		// now next token NOT gotten
 
-		/* save full name with *array subscripts for sfir table, 3-91 */
+		// save full name with *array subscripts for sfir table, 3-91
 		// also done in nest().
 		if (CFILESOUT)                          // else not needed, leave NULL
 		{
 			if (array)
 			{
-				fixName(Sval[0]);		// drop trailing ';' if any
+				char fxName[200];
+				fixName(strcpy( fxName, fInRc.SVal(0)));		// drop trailing ';' if any
 				for (int i = 0; i < array; i++)		// for each element of array
 				{
-					const char* tx = strtprintf("%s[%d]", Sval[0], i);	// generate text "name[i]"
+					const char* tx = strtprintf("%s[%d]", fxName, i);	// generate text "name[i]"
 					fldNm2Save(tx, Nfields + i);
 				}
 			}
 			else                                                  // non-array
-				fldNm2Save(Sval[0], Nfields);
+				fldNm2Save(fInRc.SVal(0), Nfields);
 		}
 
 		/* get type (table index) for field's typeName */
@@ -2565,7 +2611,7 @@ LOCAL void rec_fds()
 			}
 			while (++j < array);
 
-			/* write member declaration to rcxxxx.h file.  This code also in wrStr() and nest(). */
+			/* write member declaration to rcxxxx.h file.  This code also in nest(). */
 
 			if (HFILESOUT)                                  // if writing the h files
 			{
@@ -2599,149 +2645,9 @@ LOCAL void rec_fds()
 nextFld: ;                      /* *directives that complete processing field come here from inner loop
 								   to get token and start new field if not *END.  *struct, *nest. */
 	}    // end of field loop
-}                                       // rec_fds
+} // GetRecordFields
 //====================================================================
-LOCAL void wrStr(               // Do *struct field
 
-	// Reads struct defn from records.def input file, writes decl to rcxxxx.h output file, puts fields info in rec descriptor.
-	// Does not generate field # define. (recs() generates a single define for the entire structure).
-
-	FILE *rcf,          // File to which to write declarations, or NULL for none
-	char *name,         // member name of structure -- written after }
-	int arSz,           // array size of structure, for [%d] at end (any member within structure can also be array)
-	RCD *rcdpin,        // record descriptor being filled: field info added here
-	int evf,            // field variation 1-92
-	int ff )            // field flags (attributes) 1-92
-
-// alters globals: Nfields, Fdoff,
-// unused since '87 or b4; read/commented 1990; treat w suspicion.
-// NEEDS UPDATING to set fldNm[] -- 3-91
-{
-
-	int fdoffbeg = Fdoff;
-	int fieldbeg = Nfields;
-
-	/* begin structure declaration: indent, write "struct {" */
-	static int level = 0;
-	level++;
-	if (rcf)                                    // not if not HFILESOUT
-	{
-		for (int i = 0; i < level; i++)
-			fprintf( rcf, "    ");               // indent
-		fprintf( rcf, "struct {\n");
-	}
-
-	/* *directives / members loop */
-
-	while (!gtoks("s"))                         // next token / while not *END/error
-	{
-		int array = 0;
-		if (*Sval[0] == '}')
-			break;                                       // stop on } (or *END?)
-		if (*Sval[0] == '*')
-		{
-			if (!_stricmp( Sval[0]+1, "array"))                    // *array name n
-			{
-				if (gtoks("sd"))
-					rcderr("Array name error");
-				array = Dval[1];
-			}
-			else if (!_stricmp( Sval[0]+1, "struct"))              // nested *struct
-			{
-				if (gtoks("sds"))
-					rcderr("Struct name error");
-				if (rcf)
-					wrStr( rcf, Sval[0], Dval[1], rcdpin, evf, ff); // call self
-			}
-			else
-				rcderr("Unknown directive");
-		}
-		else                                     // no *
-			array = 0;                           // not array
-
-		/* member. unmodernized syntax:
-					either	 name           data type AND member name
-					or	 |typeName memberName */
-		bool generic = false;
-		if (*Sval[0] == '|')
-		{
-			strcpy( Sval[0], Sval[0]+1);
-			generic = true;              // separate member name follows
-		}
-
-		/* look up field type */
-		int fdTy = fdlut.lu_Find( Sval[0]);        // get subscript in Fdtab
-		if (fdTy==LUFAIL)
-		{
-			rcderr( "Unknown field name %s in RECORD %s.",
-					Sval[0], rclut.lu_GetName( rcseq) );
-			break;
-		}
-		int dtIdx = dtnmi[DTBMASK&(Fdtab+fdTy)->dtype];    // get subscript into our data type tables
-
-		// get member name
-		char lcsnm[MAXNAMEL];            // Field name, lower case
-		if (generic)
-		{
-			if (gtoks("s"))                       // separate token
-				rcderr("Generic field error");
-			_strlwr( strcpy( lcsnm, Sval[0]) );
-		}
-		else                                     // copy/lower same token
-			_strlwr( strcpy( lcsnm, rcfdnms[fdTy]) );
-
-		// output member declaration
-		if (rcf)                                 // if outputting h files
-		{
-			for (int j = 0; j < level; j++)           // indent
-				fprintf( rcf, "    ");
-			fprintf( rcf,"    %s %s", dtnames[ dtIdx], lcsnm);
-			if (array)
-				fprintf( rcf, "[%d]", array);
-			fprintf( rcf, ";\n");
-		}
-
-		/* make field info entry in record descriptor */
-		for (int i = 0; i < (array ? array : 1); i++)        // member array size times
-		{
-			rcdpin->rcdfdd[Nfields].rcfdnm = fdTy;       // Fdtab subscript
-			// note b4 12-91 .rdfa (predecessor of .evf/.ff) was set ZERO here.
-			rcdpin->rcdfdd[Nfields].evf = evf;           // fld variation per caller
-			rcdpin->rcdfdd[Nfields].ff = ff;             // fld flags (attributes) per caller
-			Fdoff += abs(dtsize[dtIdx]);               // advance record offset
-			Nfields++;                                   // count fields in record
-		}
-	} // end of members loop
-
-	/* Structure complete.  If array of the structure being put in record,
-	   repeat all the fields info for a total of 'arSz' repetitions. */
-
-	int nflds = Nfields - fieldbeg;                 // # fields in structure
-	int fldsize = Fdoff - fdoffbeg;                 // # bytes
-	// odd length check desirable here
-	for (int i = 1; i < arSz; i++)                  // start at 1: done once above
-	{
-		for (int j = 0; j < nflds; j++)              // loop fields within struct
-		{
-			int field = fieldbeg + i*nflds + j;       // output rcdfdd subscript
-			int source = fieldbeg + j;                // input rcdfdd subscript
-			// 1-92: bits for addl array elts were still being set 0, not per caller as 1st elt (above), assumed not intended.
-			rcdpin->rcdfdd[field].evf = evf;                              // fld variation per caller
-			rcdpin->rcdfdd[field].ff = ff;                                // fld flags (attributes) per caller
-			rcdpin->rcdfdd[field].rcfdnm = rcdpin->rcdfdd[source].rcfdnm;
-			Nfields++;
-		}
-		Fdoff += fldsize;                // for each array element, add total size of fields in struct to field offset
-	}
-
-	/* terminate declaration in the rcxxx.h file: "} name[size];" */
-	if (rcf)
-	{
-		for (int i = 0; i < level; i++)
-			fprintf( rcf, "    ");
-		fprintf( rcf,"} %s[%d];\n", name, arSz);
-	}
-}                       // wrStr
 /*=============================== COMMENTS ================================*/
 
 /*           NESTING one record type in another
@@ -2769,10 +2675,10 @@ LOCAL void wrStr(               // Do *struct field
 LOCAL void nest(                // Do *nest: imbed a previously defined record type's structure in record being defined
 
 	// verifies record type, writes member declaration, copies its field info to current record descriptor
-	// Does not generate field # define(s) (recs() generates ONE)
+	// Does not generate field # define(s) (Do_Recs() generates ONE)
 
 	FILE *rcf,          // File to which to write declarations, or NULL for none
-	char *recTyNm,      // name of record type to nest in current record type
+	const char* recTyNm,      // name of record type to nest in current record type
 	int arSz,			// 0 or array size for array of the entire record
 	RCD *rcdpin,        // record descriptor being filled -- field info added here
 	int evf,            // field variation to MERGE 12-91
@@ -3105,65 +3011,92 @@ LOCAL void wSrfd3( FILE *f)
 0	fprintf( f, "    {              0,   0,   0 }\t// terminate table for searching\n"
 0			 "};		// sRd[]\n");
 0
-0	// caller recs() finishes file and closes.
+0	// caller Do_Recs() finishes file and closes.
 0 }               // wSrfd4
 #endif
 
 //======================================================================
-LOCAL void sumry()              // write rcdef summary to screen and file
+static void write_summary(              // write rcdef summary to screen and file
+	OUTFILE& ofSummary)
 {
 	newsec("SUMMARY");
-	for (int i = 0; i < 2; i++)             // once to file, once to screen
+
+	write_summary1(stdout, false);
+
+	write_summary1(ofSummary.GetFile(), true);
+
+	// success (or not) message written at end of main
+
+}  // write_summary
+//-----------------------------------------------------------------------------
+static void write_summary1( FILE* stream, bool bListUnusedFields /*=false*/)
+{	
+	fprintf( stream, " %d errors\n", Errcount);
+	fprintf( stream, " Stbuf use: %zd of %zd\n", Stbp-Stbuf, STBUFSIZE);
+	fprintf( stream, " dtypes: %d of %d (%zd bytes)\n", ndtypes, MAXDT, dttabsz*sizeof(Dttab[0]));
+	fprintf( stream, " units: %d of %d\n", nuntypes, MAXUN);
+	fprintf( stream, " limits: %d of max %d\n", nlmtypes, MAXLM);
+	fprintf( stream, " fields: %d of %d\n", nfdtypes, MAXFIELDS);
+	fprintf( stream, " records: %d of %d\n", nrcnms, MAXRCS);
+	fprintf( stream, " most flds in a record: %d of %d\n", MaxNfields, MAXFDREC);
+
+	if (bListUnusedFields)
 	{
-		FILE *stream;
-		if (i)
-			stream = stdout;
-		else
-			stream = fopen("rcdef.sum","w");
-		fprintf( stream, "   %d errors\n", Errcount);
-		fprintf( stream, " Stbuf use: %zd of %zd\n",          Stbp-Stbuf, STBUFSIZE);
-		fprintf( stream, " dtypes: %d of %d (%zd bytes)  ",   ndtypes,  MAXDT, dttabsz*sizeof(Dttab[ 0]) );
-		fprintf( stream, " units: %d of %d \n",               nuntypes, MAXUN );
-		fprintf( stream, " limits: %d of max %d          ",   nlmtypes, MAXLM );
-		fprintf( stream, " fields: %d of %d\n",               nfdtypes, MAXFIELDS );
-		fprintf( stream, " records: %d of %d             ",   nrcnms,   MAXRCS );
-		fprintf( stream, " most flds in a record = %d of %d\n",   MaxNfields, MAXFDREC );
-		if (Errcount)
-			fprintf( stream, "Run did *NOT* complete correctly ************.\n");
-		if (i==0)
-		{	// list unused fields to rcdef.sum
-			int n = 0;
-			for (int j = 0; j < fdlut.lu_GetCount(); j++)        // loop over lupak table
-				if (!fdlut.lu_GetStat( j))                    // if defined (lu_Add'ed) but not used (not lufound)
-				{
-					if (!n++)                                   // 1st time
-						fprintf( stream, "\n\nUnused fields ->");
-					fprintf( stream, "\n   %s", fdlut.lu_GetName( j));
-				}
-		}
+		// list unused fields
+		int n = 0;
+		for (int j = 0; j < fdlut.lu_GetCount(); j++)        // loop over lupak table
+			if (!fdlut.lu_GetStat(j))                    // if defined (lu_Add'ed) but not used (not lufound)
+			{
+				if (!n++)                                   // 1st time
+					fprintf( stream, "\nUnused fields ->");
+				fprintf( stream, "\n   %s", fdlut.lu_GetName(j));
+			}
+		fprintf(stream, "\n");
 	}
-}                       // sumry
+}  // write_summary1
+
 //======================================================================
-LOCAL FILE * rcfopen(           // Open an existing input file from the command line
 
-	const char *s,		// File identifying comment for error messages
-	char **argv,		// Command line argument pointer array
-	int argi )			// Index of command line arg to be processed
-
-/* Returns FILE * for stream if open was successful.
-   Otherwise, returns NULL, errors have been reported, and Errcount incremented */
+// class INFILE: input file reader / parser
+//----------------------------------------------------------------------
+void INFILE::ClearVals()
 {
-	FILE *f = fopen( argv[argi], "r");
-	if (f==NULL)
+	for (int i = 0; i<MAXTOKS; i++)
 	{
-		printf( "\nCannot open %s definition file '%s'\n",
-				s, argv[argi]);
-		Errcount++;
+		memset(sVal[i], 0, sizeof(sVal[i]));
+		iVal[i] = 0;
+		fVal[i] = 0.f;
 	}
-	return f;
-}               // rcfopen
+}	// INFILE::ClearVals()
+//----------------------------------------------------------------------
+long INFILE::GetFilePos()
+// returns file position
+//         -1L if error
+{
+	return ftell(f_file);
+
+}	// INFILE::SaveFilePos()
+//----------------------------------------------------------------------
+int INFILE::SetFilePos( long filePos)
+// returns 0 iff success
+{
+	int ret = fseek(f_file, filePos, SEEK_SET);
+
+	return ret;
+
+}	// INFILE::SetFilePos
+//----------------------------------------------------------------------
+int INFILE::PeekToks( const char* tokf)		// retrieve future tokens
+// does NOT change file position
+// return values same as GetToks()
+{
+	long filePos = GetFilePos();
+	GetToks( tokf);	// sets .fi_ret
+	SetFilePos(filePos);
+	return fi_ret;
+}		// INFILE::PeekNext
 //======================================================================
-LOCAL int gtoks(                 // Retrieve tokens from input stream "Fpm" according to tokf
+int INFILE::GetToks(               // Retrieve tokens from input stream according to tokf
 
 	const char *tokf )        /* Format string, max length MAXTOKS,
 						   1 char for each desired token as follows:
@@ -3173,17 +3106,22 @@ LOCAL int gtoks(                 // Retrieve tokens from input stream "Fpm" acco
 						   q   quoted string
 						   p   peek-ahead: returns next non-blank char without removing it from input stream */
 
-/* decoded tokens are placed in global arrays indexed by token #:
-				Sval[]	string value (ALL types)
-				Dval[]	int value (d).
-				Fval[]	float value (f) */
-/* Returns (fcn value AND global gtokRet):
+/* decoded tokens are placed in INFILE:: arrays indexed by token #:
+				SVal[]	string value (ALL types)
+				IVal[]	int value (d).
+				FVal[]	float value (f) */
+/* Returns (fcn value AND this->fi_ret):
 		GTOK:       things seem ok
 		GTEOF:      unexpected EOF
 		GTEND:      first token was *END
 		GTERR:      conversion error or *END in pos other than first,
 					Error message has been issued. */
 {
+#undef SKIPCOMMENTS				// #defined to include UNMAINTAINED code to scan over /* */ comments
+								//   not needed because source files are preprocessed
+
+	ClearVals();	// insurance: empty / 0 return values
+
 	// loop over format chars
 
 	char f;             // format of current token
@@ -3194,38 +3132,39 @@ LOCAL int gtoks(                 // Retrieve tokens from input stream "Fpm" acco
 			rcderr("Too many tokens FUBAR !!!");
 
 		// first decomment, deblank, and scan token into token[]
-		char token[400];            // token from input file
+		char token[MAXQSTRL+100] = {0};            // token from input file
 		if (f=='q' || f=='p')
 		{
-
-			/* deblank/decomment for q or p */
+			// deblank for q or p
 			int c = 0;
 			while (1)
 			{
-				c = fgetc(Fpm);                // next input char
+				c = fgetc(f_file);                // next input char
 				if (c == EOF)                  // watch for unexpected eof
 				{
 					goto ueof;
 				}
+#if defined( SKIPCOMMENTS)
 				if (c=='/')                       // look for start comment
 				{
-					int nextc = fgetc(Fpm);
+					int nextc = fgetc(f_file);
 					if (nextc != '*')                       // if no * after /, unget and
-						ungetc( nextc, Fpm);                // fall thru to garbage msg
+						ungetc( nextc, f_file);                // fall thru to garbage msg
 					else
 					{
 						do                                   // pass the comment
 						{
-							while ((c=fgetc(Fpm)) != '*')     // ignore til *
+							while ((c=fgetc(f_file)) != '*')     // ignore til *
 								if (c == EOF)
 								{
 									goto ueof;
 								}
 						}
-						while (fgetc(Fpm) != '/');           // ignore til / follows an *
+						while (fgetc(f_file) != '/');           // ignore til / follows an *
 						continue;                            // resume " scan loop
 					}
 				}
+#endif	// SKIPCOMMENTS
 				if (!strchr(" \t\r\n\f", c))      // if not whitespace
 				{
 					if (f=='p')                           // for p, done deblank at any nonblank
@@ -3241,7 +3180,7 @@ LOCAL int gtoks(                 // Retrieve tokens from input stream "Fpm" acco
 
 				token[0] = (char)c;                      // nonblank on which deblank ended
 				token[1] = 0;
-				ungetc( c, Fpm);                         // put the char back in input stream
+				ungetc( c, f_file);                         // put the char back in input stream
 			}
 			else if (f=='q')
 			{
@@ -3250,7 +3189,7 @@ LOCAL int gtoks(                 // Retrieve tokens from input stream "Fpm" acco
 				int i;
 				for (i = 0; i >= 0; i++)                 // scan to close quote
 				{
-					if ((token[i] = (char)fgetc(Fpm))=='"') // get char / if ""
+					if ((token[i] = (char)fgetc(f_file))=='"') // get char / if ""
 					{
 						if (i <= 0  ||  token[i-1] != '\\') // if no \ b4 it
 							break;                        // end token
@@ -3260,7 +3199,7 @@ LOCAL int gtoks(                 // Retrieve tokens from input stream "Fpm" acco
 					{
 						token[i+1] = '\0';
 						rcderr("Warning: Newline in quote field: '%s'.", token);
-						return (gtokRet = GTERR);
+						return (fi_ret = GTERR);
 					}
 				}
 				token[i] = 0;
@@ -3271,6 +3210,7 @@ LOCAL int gtoks(                 // Retrieve tokens from input stream "Fpm" acco
 		else     // fmt not p or q
 		{
 
+#if defined( SKIPCOMMENTS)
 			/* deblank/decomment/get token for all other formats */
 
 			/* read tokens till not in comment */
@@ -3278,7 +3218,7 @@ LOCAL int gtoks(                 // Retrieve tokens from input stream "Fpm" acco
 			int oldcommentflag = 0;
 			do
 			{
-				int nchar = fscanf(Fpm,"%s",token);
+				int nchar = fscanf(f_file,"%s",token);
 				if (nchar < 0)
 				{
 					goto ueof;
@@ -3301,22 +3241,30 @@ LOCAL int gtoks(                 // Retrieve tokens from input stream "Fpm" acco
 					!(commentflag ^ (strcmp( token, comdelims[commentflag]) !=0) );
 			}
 			while (oldcommentflag || commentflag);
+#else
+	// get token for all other formats
+			int nchar = fscanf(f_file,"%s",token);
+			if (nchar < 0)
+			{
+				goto ueof;
+			}
+#endif
 
-			/* check for *END eof indicator (formerly $END 6-92, but Borland CPP won't pass $ thru) */
+			// check for *END eof indicator
 			if (!strcmp(token,"*END"))
 			{
 				if (ntok == 0)
-					return (gtokRet = GTEND);
+					return (fi_ret = GTEND);
 				rcderr("Unexpected *END.");
-				return (gtokRet = GTERR);
+				return (fi_ret = GTERR);
 			}
 
-			/* put token as a string in Sval[].  d,f,x further decoded below. */
+			// put token as a string in sVal[].  d,f,x further decoded below.
 			if (strlen(token) >= MAXNAMEL)
 				rcderr("Error: token longer than MAXNAMEL: '%s'.", token);
 		}                // if q else
 
-		strcpy( Sval[ntok], token);                      // put token in appropriate Sval[]
+		strcpy(sVal[ntok], token);
 
 		if (Debug)
 		{
@@ -3327,7 +3275,7 @@ LOCAL int gtoks(                 // Retrieve tokens from input stream "Fpm" acco
 			printf("%s",token);
 		}
 
-		/* decode token[] per format type */
+		// decode token[] per format type
 
 		switch (f)
 		{
@@ -3344,67 +3292,108 @@ LOCAL int gtoks(                 // Retrieve tokens from input stream "Fpm" acco
 					fmt = "%hd";
 					t2 = token;
 				}
-				if (sscanf(t2, fmt, &Dval[ntok]) != 1)
+				if (sscanf(t2, fmt, &iVal[ntok]) != 1)
 					rcderr("Bad integer value: '%s'.", token);
 			}
 			break;
 
 		case 'f':
-			if (sscanf(token,"%f",(float*)&Fval[ntok]) != 1)
-				rcderr("Bad real value: '%s'.", token);
+			if (sscanf(token,"%f",(float*)&fVal[ntok]) != 1)
+				rcderr("Bad float value: '%s'.", token);
 			break;
 
 		case 'p':                        // already decode separately above
 		case 'q':                        // already decode separately above
 		case 's':
-			break;               // already complete: Sval is set
+			break;               // already complete: sVal[] is set
 
 		default:
 			rcderr("Format FUBAR !!!");
 			break;
 		}
 	} // while (format char)
-	return (gtokRet = GTOK);            // multiple error returns above
+	return (fi_ret = GTOK);            // multiple error returns above
 ueof:
 	rcderr("Unexpected EOF: missing '*END'?");
-	return (gtokRet = GTEOF);
-}                       // gtoks
+	return (fi_ret = GTEOF);
+}  // INFILE::GetToks
+
+//=============================================================================
+// class OUTFILE: RAII output file
+//----------------------------------------------------------------------
+
 //======================================================================
-LOCAL void rcderr( const char *s, ...)                // Print an error message with optional arguments and count error
+LOCAL bool rcderr(const char* s, ...)                // Print an error message with optional arguments and count error
 
 // s is Error message, with optional %'s as for printf; any necessary arguments follow.
+
+// returns false as a convenience
 {
-	FILE *stream;
-	static FILE *errfile=NULL;
 	va_list ap;
+	va_start(ap, s);                   // point at args, if any
 
-	va_start( ap, s);                   // point at args, if any
-	const char* ss = strtvprintf( s, ap);           // format (printf-like) into Tmpstr
-	for (int i = 0; i < 2; i++)
-	{
-		if (i==0)
-			stream = stdout;
-		else
-		{
-			if (errfile == NULL)
-				errfile = fopen("rcdef.err","w");
-			stream = errfile;
-		}
-		fprintf( stream, "\n    %s\n", ss);
-		fprintf( stream, "Error occurred near: %s\n", Stbp );
-	}
-	Errcount++;
+	msgWriteV(ERR, s, ap);
+	msgWrite(WRN, "Error occurred near : %s\n", Stbp);
 
-	/* #define ABORTONERROR */
-#ifdef ABORTONERROR
-	exit(2);                            // (exit(1) reserved for poss alt good exit, 12-89)
-#endif
-}               // rcderr
-//======================================================================
-LOCAL void newsec(const char *s)              // Output heading (s) for new section of run
+	return false;
+
+} // rcderr
+//----------------------------------------------------------------------
+static void msgWrite(		// write msg to stdOut and maybe rcdef.err
+	int erOp,
+	const char* msg,		// text to write (may include printf-style formatting
+	...)
 {
-	printf("\n%-16s  ", s);             // no trailing \n.  -20s-->-16s 1-31-94.
-}                               // newsec
+	va_list ap;
+	va_start(ap, msg);
+	msgWriteV(erOp, msg, ap);
+}		// msgWrite
+//-----------------------------------------------------------------------------
+static void msgWriteV(		// write msg to stdOut and maybe rcdef.err
+	int erOp,
+	const char* msg,		// text to write (may include printf-style formatting
+	va_list ap /*= nullptr*/)	// optional arg list
+{
+	if (erOp == IGN)
+		return;
+
+	// format message
+	const char* ss = ap ? strtvprintf(msg, ap) : msg;
+
+	auto fprintf1 = [erOp, ss](FILE* stream) -> void
+	{	fprintf(stream, "\n    %s\n", ss);
+		if (erOp == ABT)
+			fprintf(stream, "\nAbort!\n");
+	};
+
+	fprintf1(stdout);
+#if 0
+x static FILE* errFile = nullptr;
+x re-enable to activate error file
+x	if (!errFile)
+x		errFile = fopen("rcdef.err", "w");
+x	fprintf1( errFile)
+#endif
+
+	switch (erOp)
+	{
+	case ABT:
+		++Errcount;
+		byebye(2);		// does not return
+		break;			// but supply break to avoid compiler warning
+	case ERR:
+		++Errcount;
+		break;
+	case WRN:
+	default:
+		break;
+	}
+}	// msgWriteV
+//======================================================================
+LOCAL void newsec(const char *s)    // Output heading (s) for new section of run
+{
+	printf("\n%s\n", s);
+}  // newsec
 //====================================================================
 LOCAL int update(              // replace old version of file with new if different, else just delete new.
 
@@ -3425,7 +3414,7 @@ LOCAL int update(              // replace old version of file with new if differ
 	}
 	else
 	{
-		printf(" %s unchanged. ", old);
+		printf(" %s unchanged", old);
 		ret = std::remove(nu);
 	}
 

@@ -40,7 +40,7 @@
 #include "cnguts.h"	// decls for this file
 
 //-------------------------------- DEFINES ----------------------------------
-
+RIGDIST x;
 
 //------------------------- FILE-GLOBAL VARIABLES ---------------------------
 

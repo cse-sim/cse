@@ -6466,13 +6466,15 @@ RC RSYS::rs_FinalizeSh()
 		else if (rs_IsCHDHW())
 		{	// cycling
 			// pump power
+
+			// CHDHW model: air flow / fan power derived from output
 			rs_outSenTot = rs_runF * rs_capHt;
-			float avf;
-			float fanPwr;
+			float avf;		// AVF, cfm
+			float fanPwr;	// fan power, W
 			rs_pCHDHW->hvt_BlowerAVFandPower(rs_outSenTot, avf, fanPwr);
 			// if (rs_runF < 1.) cycle?
 
-			rs_outFan = rs_runF * fanPwr * Top.tp_subhrDur * BtuperWh;
+			rs_outFan = rs_runF * fanPwr * BtuperWh;	// fan heat, Btuh
 			rs_outSen = max(0., rs_outSenTot - rs_outFan);		// net -> gross
 			runFFan = rs_runF;
 
