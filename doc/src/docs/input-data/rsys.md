@@ -328,14 +328,14 @@ Heating operating fan power. For most rsTypes, heating air flow is calculated fr
 
 Type: float
 
-For rsType=ASHP, Heating Seasonal Performance Factor (HSPF).
+For rsType=ASHP or rsType=ASHPPM, Heating Seasonal Performance Factor (HSPF).
 
 {{
   member_table({
     "units": "Btu/Wh",
     "legal_range": "*x* > 0", 
     "default": "*none*",
-    "required": "Yes if rsType=ASHP",
+    "required": "Yes if rsType=ASHP or rsType=ASHPPM",
     "variability": "constant" 
   })
 }}
