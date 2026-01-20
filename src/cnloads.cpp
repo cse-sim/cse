@@ -3724,6 +3724,12 @@ RC RSYS::rs_EndSubhr()
 		R.ecPrimary = rs_inPrimary * Top.tp_subhrDur;
 		R.ecFan = eFan;
 
+#if defined( _DEBUG)
+		float effX = abs(R.qcSen + R.qcLat) / max(R.ecPrimary, .001f);
+		if (frDiff(rs_effCt, effX) > 0.01f)
+			printf("\nMismatch");
+#endif
+
 		R.ecTot += R.ecPrimary + R.ecFan /* + R.ecParasitic, see above */;
 
 		for (int iM = 0; iM < 3; iM += 2)
@@ -4122,21 +4128,21 @@ x		printf("\nhit");
 			// total capacities and input, Btuh
 			//   include rated fan power
 			//   cap values are net Btuh, <0 (w/o rs_fChg adjust)
-			float capClg, inpClg;
+			float capClgNet, inpClgNet;
 			/* RC rc = */ rs_pPMACCESS[1]->pa_GetCapInp( rs_tdbOut, rs_speedF,
-				capClg, inpClg);
+				capClgNet, inpClgNet);
 			rs_SetSpeedFMin();
 
-			ASSERT(capClg <= 0.f);
+			ASSERT(capClgNet <= 0.f);
 
 			float fanHRtdCAtSpeed = rs_FanPwrRatedAtSpeedF(1, rs_cap95, rs_speedF);
 
-			// use correlations to get adjustments for entering air state
+			// use "Cutler curve" correlations to get adjustments for entering air state
 			rs_CoolingEnteringAirFactorsVC(rs_fCondCap, rs_fCondInp);
 
 			rs_capTotCt =		// gross total coil capacity at current conditions and speed, Btuh
-				(capClg - fanHRtdCAtSpeed) * rs_fCondCap;
-			rs_inpCt = (inpClg - fanHRtdCAtSpeed) * rs_fCondInp / rs_fChgC;	// full speed input power at current conditions w/o fan
+				(capClgNet - fanHRtdCAtSpeed) * rs_fCondCap;
+			rs_inpCt = (inpClgNet - fanHRtdCAtSpeed) * rs_fCondInp / rs_fChgC;	// full speed input power at current conditions w/o fan
 			rs_capSenCt = rs_SHR * rs_capTotCt;		// sensible coil capacity at current conditions and speed, Btuh
 		}
 		else
@@ -4542,9 +4548,6 @@ float RSYS::rs_PerfASHP2(		// ASHP heating performance
 		inpHtGross = (inpHtNet - fanHRtd) / (rs_fChgH * COPAdjF);
 
 		// use "Cutler curve" factors to get adjustments for entering air state
-		if (rs_fCondCap == 0.f || rs_fCondInp == 0.f)
-			err(ABT, "0 factor");
-
 		capHtGross *= rs_fCondCap;
 		inpHtGross *= rs_fCondInp;
 
