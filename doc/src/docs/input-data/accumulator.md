@@ -44,9 +44,6 @@ Generalizing what is illustrated, probing @accumulator[ ].H yields statistics fo
 
 A complete list of the available statistics for each interval is found in the ACCUMULATOR probe documentation.
 
-Note: The initial version of ACCUMULATOR contains unresolved bugs related to the timing of the determination of acmValue.  In some cases, acmValue is set to the expression value from the prior substep.  This is being investigated.
-
-
 ### acmName
 
 Name of ACCUMULATOR: required for referencing in reports.
@@ -77,6 +74,27 @@ The value being accumulated.  Generally expression with subhourly variability.
   })
 }}
 
+### acmCond
+
+Type: expression
+
+Conditional accumulation flag. If given, accumulation occurs only when the expression value is non-0. This permits selective accumulation according to any condition that can be expressed as a CSE expression.
+
+For example, the following would track RSYS supply cooling supply temperature when and only when the system is cooling.
+
+    ACCUMULATOR ClgTSupply acmValue=@RSYS[ 1].asSup.tDb acmCond=@RSYS[ 1].mode == 2
+
+The acmCond prevents accumulation of values during heating or idle operation so the derived min, mean, and max values reflect only cooling.
+
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*any numeric expression*", 
+    "default": "1 (accumulation enabled)",
+    "required": "No",
+    "variability": "subhour end of interval" 
+  })
+}}
 
 ### endACCUMULATOR
 
