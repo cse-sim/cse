@@ -4110,17 +4110,15 @@ x		printf("\nhit");
 		else if (rs_IsWSHP())
 		{
 			const float airMassFlowF = 1.f;  // temporary assumption
-			float capF, capSenF, inpF;
-			/* rc |= */ WSHPPerf.whp_CoolingFactors(capF, capSenF, inpF,
+			float capSenF;
+			/* rc |= */ WSHPPerf.whp_CoolingFactors(rs_fCondCap, capSenF, rs_fCondInp,
 				rs_tdbOut, rs_tdbCoilIn, rs_twbCoilIn, airMassFlowF);
-			rs_capTotCt = rs_capnfX * capF;		// total gross capacity at current conditions, Btuh
+			rs_capTotCt = rs_capnfX * rs_fCondCap;		// total gross capacity at current conditions, Btuh
 			rs_capSenCt = rs_SHRtarget * rs_capTotCt * capSenF;  // SHR set using air-to-air approach
 			if (rs_capSenCt > rs_capTotCt)
-			{
 				rs_capSenCt = rs_capTotCt;
-			}
 			rs_SHR = rs_capSenCt / rs_capTotCt;
-			rs_inpCt = ((rs_cap95 / (rs_EER95 / BtuperWh)) - rs_fanHRtdC) * inpF;
+			rs_inpCt = ((rs_cap95 / (rs_EER95 / BtuperWh)) - rs_fanHRtdC) * rs_fCondInp;
 		}
 		else if (rs_IsPMClg())
 		{
@@ -4137,19 +4135,19 @@ x		printf("\nhit");
 
 			float fanHRtdCAtSpeed = rs_FanPwrRatedAtSpeedF(1, rs_cap95, rs_speedF);
 
-			// use "Cutler curve" correlations to get adjustments for entering air state
+			// "Cutler curve" correlations to get adjustments for entering air state
 			rs_CoolingEnteringAirFactorsVC(rs_fCondCap, rs_fCondInp);
 
-			rs_capTotCt =		// gross total coil capacity at current conditions and speed, Btuh
-				(capClgNet - fanHRtdCAtSpeed) * rs_fCondCap;
-			rs_inpCt = (inpClgNet - fanHRtdCAtSpeed) * rs_fCondInp / rs_fChgC;	// full speed input power at current conditions w/o fan
-			rs_capSenCt = rs_SHR * rs_capTotCt;		// sensible coil capacity at current conditions and speed, Btuh
+			rs_capnfX = capClgNet - fanHRtdCAtSpeed;	// gross total capacity at rated conditions and current speed, Btuh
+			rs_capTotCt = rs_capnfX * rs_fCondCap;		// gross total capacity at current conditions and current speed, Btuh
+			rs_inpCt = (inpClgNet - fanHRtdCAtSpeed) * rs_fCondInp / rs_fChgC;	// gross input power at current conditions and current speed w/o fan
+			rs_capSenCt = rs_SHR * rs_capTotCt;		// sensible capacity at current conditions and speed, Btuh
 		}
 		else
 		{	// 1 spd, not autosizing warmup
 			rs_CoolingCapF1Spd();	// sets rs_fCondCap
-			rs_capTotCt = rs_capnfX * rs_fCondCap;		// total gross capacity at current conditions, Btuh
-			rs_capSenCt = rs_SHR * rs_capTotCt;			// sensible gross capacity at current conditions, Btuh
+			rs_capTotCt = rs_capnfX * rs_fCondCap;		// gross total capacity at current conditions, Btuh
+			rs_capSenCt = rs_SHR * rs_capTotCt;			// gross sensible capacity at current conditions, Btuh
 
 			rs_CoolingEff1Spd();	// derive rs_EERt (includes rs_fChgC)
 
@@ -4181,8 +4179,11 @@ x	rs_asOut = asSav;
 		rs_SHR = rs_capTotCt != 0.f ? rs_capSenCt / rs_capTotCt : 0.f;
 	}
 
+	// gross compressor efficiency
 	if (rs_inpCt > 0.f)
-		rs_effCt = abs( rs_capTotCt) * rs_fEffC / rs_inpCt;
+	{	rs_inpCt /= rs_fEffC;		// adjust input (reduces efficiency)
+		rs_effCt = abs(rs_capTotCt) / rs_inpCt;
+	}
 
 	// draw-thru fan heat
 	if (rs_fan.fanTy != C_FANTYCH_BLOWTHRU)
