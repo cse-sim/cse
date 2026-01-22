@@ -91,7 +91,6 @@ FIELD * directives are
    *array <n>	array of whatever field spec follows
    *noname	before *nest: omit structure name from SFIR table names (for probe).  C code still uses .struct.mbr.
    *nest <rec>	nest another record type in this one, as a C structure within record structure
-   *struct	embed a structure, unused for years
    *declare "text"	put text into record definition; use eg for C++ member function declarations.
    *s *h *mh *d *m	field variability (when changed by program): subhour, hour, monthly-hourly, daily, monthly
    *r 			runly (start of run) variability, incl things set by input check/setup (topCkf)
@@ -124,20 +123,20 @@ FIELD * directives are
 
 //===========================================================================================================
 RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-only user input stuff,
-				   as user language tools (cul.cpp/cncultx.cpp) stuff RATs only.  1 static entry. */
-	*prefix tp_
+                   as user language tools (cul.cpp/cncultx.cpp) stuff RATs only.  1 static entry. */
+    *prefix tp_
     *exdes	// *declare "~TOPRAT();"		// frees strings.
-	*ovrcopy
-	*declare "void freeDM();"
-	*declare "const char* When( IVLCH ivl) const;"
-	*declare "bool tp_IsLastStep() const { return isLastDay && isEndDay && isEndHour; }"	// true iff last step of run
-	*declare "bool tp_IsLastHour() const { return isLastDay && isEndDay; }"
+    *ovrcopy
+    *declare "void freeDM();"
+    *declare "const char* When( IVLCH ivl) const;"
+    *declare "bool tp_IsLastStep() const { return isLastDay && isEndDay && isEndHour; }"	// true iff last step of run
+    *declare "bool tp_IsLastHour() const { return isLastDay && isEndDay; }"
     *declare "RC FC brFileCk();"   			// checks inputs re binary results files.
     *declare "RC tp_CheckOutputFilePath( const char* filePath, const char** pMsg=NULL);"
     *declare "void tp_SetOptions();"
-	*declare "RC tp_SetDerived();"
+    *declare "RC tp_SetDerived();"
     *declare "RC tp_SetCheckTimeSteps();"
-	*declare "RC tp_FazInit();"
+    *declare "RC tp_FazInit();"
     *declare "RC tp_AirNetInit();"
     *declare "void tp_AirNetDestroy();"
     *declare "void tp_ClearAuszFlags();"
@@ -456,7 +455,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 						// autoSizing: "heating design day", or month for cooling.
     *d CULSTR dateStr  	// Date being simulated as string
 						// autoSizing: eg "heating design day" or "Jul cooling design day".
-    *d IDATE tp_date  	// Date: .month is 1-12, .mday 1-31, .wday 0-6. set/used: cnguts. used:cuparse;cgsolar;cgresult;cgenbal.
+    *declare "IDATE tp_date;"  // Date: .month is 1-12, .mday 1-31, .wday 0-6. set/used: cnguts. used:cuparse;cgsolar;cgresult;cgenbal.
 						// autoSizing: cool: near-mid-month day as used for solar calcs; heat: Dec 21. jDay ditto.
     *d DOY jDay			// Day of year now simulating, 1..365. set: tp_MainSimI; used:cnguts;cuparse;cgwthr;cgsolar;cgresult.
     *d DOY xJDay		// extended jDay: same for main sim, 512 heat autosizing, 529-540 cooling autosizing.
@@ -839,10 +838,10 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
     *r *hide SI hdrBytes 	// # header bytes before first record (used in wfread for file positioning)
     *r *hide SI hourBytes	// # bytes per hour
     *r *hide INT csvCols	// # of columns in comma separated formats (e.g. CSW)
-    *r *hide YACAMP yac		// pointer to "Yet Another Char Access Method" subobject for buffering & decoding weather file
-	*r *hide YACAMP yacTDV	// ditto TDV file
     *r INT wf_TDVFileJHr;	// last hour (row) in file that has read (1 based)
-    *r *hide WDYEARP wf_pWDY	// pointer to entire year weather data pre-read from file
+    *declare "class YACAM* yac;"		// pointer to YACAM for buffering & decoding weather file
+	*declare "class YACAM* yacTDV;"	    // pointer to YACAM for buffering & decoding TDV file
+    *declare "class WDYEAR* wf_pWDY;"	// pointer to entire year weather data pre-read from file
 *END			// WFILE
 //========================================================================================================
 RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
@@ -1155,7 +1154,7 @@ x  *h RIGTARG sb_rIg  	// radiant internal gain target (float) (Btuh).  TODO
 RECORD SBC "SBC" *SUBSTRUCT *BASECLASS SBCBASE		// surface boundary condition substructure
 // Partial overlap with MASSBC and SBC, should merge?
   *prefix sb_
-  *declare "void sb_Init( XSURFP xs, int si);"
+  *declare "void sb_Init( XSURF* xsParent, int side);"
   *declare "void sb_SGFInit();"
   *declare "virtual double sb_AreaNet() const;"
   *declare "virtual int sb_Class() const;"
@@ -1177,7 +1176,7 @@ RECORD SBC "SBC" *SUBSTRUCT *BASECLASS SBCBASE		// surface boundary condition su
   *declare "const char* sb_SideText();"
   *declare "static void sb_DbPrintf( const char* tag, const SBC& sbcO, const SBC& sbcI);"
 
-  *r XSURFP sb_pXS		// parent pointer
+  *declare "XSURF* sb_pXS;"		// parent pointer
   *r int sb_si			// side of *sb_pXS represented by this SBC
 						//   0=inside, 1=outside
   *r DBL sb_fcWind		// wind constant re sb_hcFrc (includes roughness, unit conversion, height adj, ...)
@@ -1579,10 +1578,12 @@ RECORD MSRAT "mass" *RAT 	// Masses run rat
 	*r *nest MASSBC outside // outside...
 	*r UH_GZ ms_UNom   		// overall uval incl nominal surface films, Btuh/ft2-F
 							//   used for reporting only
-	*r FLOAT ms_tc 			// time constant (con->hc/sfInH) as used to default sfModel & isSubhrly, for reporting, 1-95
+	*r FLOAT ms_tc 			// time constant (con->hc/sfInH) as used to default sfModel & isSubhrly, for reporting
 
-	// re-work interval energy balance info, 2-3-2012
-	// *h *e DBL ms_qBal		// total hour energy balance error for this mass, Btu
+    *declare "class MASSMODEL* ms_pMM;"	// pointer to runtime mass model for this mass (type determined per input)
+							        //   see mspak.h
+
+	// interval energy balance info
 	*h *e *hide *array IVLDATADIM DBL ms_qBal		// net energy balance during interval, Btu
 	*declare "double& ms_QBal( int ivl) { return IvlData( ms_qBal, ivl); }"
 	*h *e *hide *array IVLDATADIM DBL ms_qIE		// internal energy at beg of interval, Btu
@@ -1594,9 +1595,6 @@ RECORD MSRAT "mass" *RAT 	// Masses run rat
 	*declare "int& ms_Flags( int ivl) { return IvlData( ms_flags, ivl); }"
    	*s *e *hide INT ms_ebErrCount	// count of short-interval (day/hour/subhour) energy balance errors
 									//   detected for this zone; s/b 0; used to suppress excessive msgs
-
-	*r MASSMODELP ms_pMM	// pointer to runtime mass model for this mass (type determined per input)
-							//   see mspak.h
 
 *END			// MSRAT
 
@@ -1623,7 +1621,7 @@ RECORD SGRAT "solarGain" *RAT *hideall		// HIDE 1-92 due to doubts about whether
 	*declare "void sg_ToTarg( float bmRad, float dfRad);"
 	*declare "void sg_DbDump() const;"
     *mh *e SI sg_addIt	// 0 to store gain to init targ, nz to add to target (additional entry for same targ)
-    SGTARGP sg_pTarg	// where to add gain -- zone or surface
+    *declare "struct SGTARG* sg_pTarg;"	// where to add gain -- zone or surface
     BOO sg_isSubhrly	// non-0 for subhourly target, 0 for hourly
   #ifdef SOLAVNEND		// undef in cndefns.h (via cnglob.h) 1-18-94: only if computing & using end-ivl as well as ivl avg solar values
   o  BOO sg_isEndIvl	// non-0 to use end-interval value (zones) not interval average value (masses)
@@ -1702,19 +1700,20 @@ RECORD MAT "material" *RAT	// material (for construction layer) input info
 *declare "{	mt_CondAB( mt_cond, mt_condCT, mt_condTRat, A, B); }"
 
  //input.  *i's cuz VEOI's in cncult.
-    *i LEN_GZ mt_thk    	// -1 or optional default thickness, ft
-    *i CNDVY_GZ mt_cond 	// conductivity, Btuh-ft/ft2-F (at mt_condTRat)
-    *i FLOAT mt_condTRat	// rating temp for mt_cond, F (typically 70 F)
-    *i FLOAT mt_condCT		// conductivity temp coefficient, 1/F
-							//   condAtT = mt_cond*(1 + mt_condCT*(T - mt_condTRat)
-    *i SPECHEAT mt_spHt 	// specific heat, Btu/lb-F
-    *i DENSITY mt_dens  	// 0 (massless) or density, lb/ft3
-    *i RESVY_GZ mt_rNom 	// nominal R of insulation, ft2-F/Btuh-ft
-							//  = resistance of 1 ft2 per ft thick.
-							//  documentation only (typically round number, e.g. 13)
-							// -1 = not given
-	// derived.  *r: set in input check/setup.
-    *r HC_VOL mt_vhc  		// volumetric heat capac (Btu/ft3-F): mt_spHt*mt_dens
+*i LEN_GZ mt_thk    	// -1 or optional default thickness, ft
+*i CNDVY_GZ mt_cond 	// conductivity, Btuh-ft/ft2-F (at mt_condTRat)
+*i FLOAT mt_condTRat	// rating temp for mt_cond, F (typically 70 F)
+*i FLOAT mt_condCT		// conductivity temp coefficient, 1/F
+						//   condAtT = mt_cond*(1 + mt_condCT*(T - mt_condTRat)
+*i SPECHEAT mt_spHt 	// specific heat, Btu/lb-F
+*i DENSITY mt_dens  	// 0 (massless) or density, lb/ft3
+*i RESVY_GZ mt_rNom 	// nominal R of insulation, ft2-F/Btuh-ft
+						//  = resistance of 1 ft2 per ft thick.
+						//  documentation only (typically round number, e.g. 13)
+						// -1 = not given
+// derived.  *r: set in input check/setup.
+*r HC_VOL mt_vhc  		// volumetric heat capac (Btu/ft3-F): mt_spHt*mt_dens
+
 *END		// MAT
 
 //=============================================================================
@@ -1724,37 +1723,37 @@ RECORD FOUNDATION "foundation" *RAT	// foundation input info
 *declare "RC fd_SetupKiva();"
 
  //input
- *i LEN fd_wlHtAbvGrd		// Height of foundation wall above grade
- *i LEN fd_wlDpBlwSlb		// Depth of foundation wall below the slab
- *i TI fd_wlConi			// Foundation wall construction (CON subscript)
+    *i LEN fd_wlHtAbvGrd		// Height of foundation wall above grade
+    *i LEN fd_wlDpBlwSlb		// Depth of foundation wall below the slab
+    *i TI fd_wlConi			// Foundation wall construction (CON subscript)
 
-*END		// FND
+    *END		// FND
 
-//=============================================================================
-RECORD FNDBLOCK "foundationBlock" *RAT	// foundation component input info
-*prefix fb_
+    //=============================================================================
+    RECORD FNDBLOCK "foundationBlock" *RAT	// foundation component input info
+    *prefix fb_
 
- //input
- *i TI fb_mati				// Material (MAT subscript) for this component
- *i FBXREFCH fb_x1Ref		// Point 1 X reference
- *i FBZREFCH fb_z1Ref		// Point 1 Z reference
- *i FLOAT fb_x1				// Point 1 X value (relative to reference)
- *i FLOAT fb_z1				// Point 1 X value (relative to reference)
- *i FBXREFCH fb_x2Ref		// Point 2 X reference (defaults to Point 1 X reference)
- *i FBZREFCH fb_z2Ref		// Point 2 Z reference (defaults to Point 1 Z reference)
- *i FLOAT fb_x2				// Point 2 X value (relative to reference)
- *i FLOAT fb_z2				// Point 2 X value (relative to reference)
+     //input
+    *i TI fb_mati				// Material (MAT subscript) for this component
+    *i FBXREFCH fb_x1Ref		// Point 1 X reference
+    *i FBZREFCH fb_z1Ref		// Point 1 Z reference
+    *i FLOAT fb_x1				// Point 1 X value (relative to reference)
+    *i FLOAT fb_z1				// Point 1 X value (relative to reference)
+    *i FBXREFCH fb_x2Ref		// Point 2 X reference (defaults to Point 1 X reference)
+    *i FBZREFCH fb_z2Ref		// Point 2 Z reference (defaults to Point 1 Z reference)
+    *i FLOAT fb_x2				// Point 2 X value (relative to reference)
+    *i FLOAT fb_z2				// Point 2 X value (relative to reference)
 
-*END		// FDC
+    *END		// FDC
 
-//========================================================================================================
-RECORD RFI "reportFile" *RAT	// REPORTFILE (RfiB) and EXPORTFILE (XfiB) (.what altered) input records.
+    //========================================================================================================
+    RECORD RFI "reportFile" *RAT	// REPORTFILE (RfiB) and EXPORTFILE (XfiB) (.what altered) input records.
     *prefix rf_
     *ovrcopy
-	*declare "RC rf_CkF( int isExport);"
-	*declare "RC rf_CkF2( int isExport);"
+    *declare "RC rf_CkF( int isExport);"
+    *declare "RC rf_CkF2( int isExport);"
     *declare "RC rf_CheckForDupFileName();"
-	*declare "int rf_CheckAccessAndAlias( const char* fName, char* &fNameAlias, const char** ppMsg=NULL);"
+    *declare "int rf_CheckAccessAndAlias( const char* fName, char* &fNameAlias, const char** ppMsg=NULL);"
  //input
     *i CULSTR rf_fileName	// file name, path optional.  *i cuz VEOI in cncult.
     *r FILESTATCH fileStat	// fresh(overwrite,default)/new(err if exists)/append
@@ -1762,14 +1761,14 @@ RECORD RFI "reportFile" *RAT	// REPORTFILE (RfiB) and EXPORTFILE (XfiB) (.what a
  //derived
     *r SI fileStatChecked	// check fileStat only once to prevent "file exists" error or re-setting "overWrite" on later run
     *r SI overWrite			// append if 0.  set by fileStat=fresh, cleared on use, so addl runs do not erase earlier output.
-	*r SI wasNotEmpty			// nz if existed and size > 0 at fileStat check
-*END		// RFI
-//=============================================================================
-RECORD RI "report" *RAT	// REPORT (RiB) and EXPORT (XiB) (.what altered) input records
+    *r SI wasNotEmpty			// nz if existed and size > 0 at fileStat check
+    *END		// RFI
+    //=============================================================================
+    RECORD RI "report" *RAT	// REPORT (RiB) and EXPORT (XiB) (.what altered) input records
     *prefix ri_
     *ovrcopy
-	*declare "RC ri_CkF();"
-	*declare "RC ri_oneRxp();"
+    *declare "RC ri_CkF();"
+    *declare "RC ri_oneRxp();"
  //input                .ownTi is owning reportFile or exportFile subscript
     *i TI zi 		// zone for zone-specific reports. Can be TI_SUM, TI_ALL.
     *i TI mtri		// meter to report/export for meter-specific reports. Can be TI_SUM, TI_ALL.
@@ -1795,15 +1794,15 @@ RECORD RI "report" *RAT	// REPORT (RiB) and EXPORT (XiB) (.what altered) input r
     *r SI wid		// total col width for user-defined report
  //generated
     *r INT vrh		// assigned virtual report handle, used from here to build UnspoolInfo.
-*END		// RI
-//=============================================================================
-RECORD COL "reportCol" *RAT	// holds info for columns in user-defined table reports and exports
-					// for report input rat (RcoliB) and run rat (RcolB)
-					// and export input rat (XcoliB) and run rat (XcolB) (.what fudged at runtime)
+    *END		// RI
+    //=============================================================================
+    RECORD COL "reportCol" *RAT	// holds info for columns in user-defined table reports and exports
+                        // for report input rat (RcoliB) and run rat (RcolB)
+                        // and export input rat (XcoliB) and run rat (XcolB) (.what fudged at runtime)
     *excon
     *exdes
     *ovrcopy
-	*declare "virtual RC Validate( int options=0);"
+    *declare "virtual RC Validate( int options=0);"
 
  //input		.ownTi is RI subscript of owning report/export.   Column order is order of input.
     *i CULSTR colHead  	// column head string, in dm.  *i cuz VEOI in cncult.cpp:rpColT[].
@@ -2404,7 +2403,7 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     //   massO          MSRAT        .outside.qIg   to mass outside in this zone
     *r USI rIgDistNAl		// 0 or number of allocated entries in...
     *r USI rIgDistN			// 0 or number of used entries in...
-    *r RIGDISTP rIgDist   	// NULL or ptr to heap array of distrubution info for rad int gain originating in zone.
+    *declare "RIGDIST* rIgDist;"  	// NULL or ptr to heap array of distrubution info for rad int gain originating in zone.
 
 // ZNR solar gain targeting and radiation exchange variables set at setup time for use at runtime
 //   added re cavity absorptance, 1995
@@ -2892,7 +2891,7 @@ RECORD ANDAT "AirNet data sub" *SUBSTRUCT		// working data for AirNet
    *declare "void ad_SetFromFixedAVF( double avf);"
    *declare "void ad_DupHERV( const ANDAT& ad);"
 
-   *r *hide IZXRATP ad_pIZXRAT	// parent pointer
+   *declare "IZXRAT* ad_pIZXRAT;"	// parent pointer
    *h AREA_GEZ ad_Ae		// effective vent area, ft2; function of vent type and iz_cd
    *h AREA_GEZ ad_AeLin		// modified iz_Ae, ft2; prevents discontinuity at delPLinear
    *s *e DBL ad_pres1       // pressure at z1 side of element, lbf/sf (for pressure-dependent)
@@ -3211,7 +3210,7 @@ RECORD DBC "DBC" *SUBSTRUCT *BASECLASS SBCBASE	// duct boundary condition
 *declare "void sb_SetRunConstants( ZNR* zpx);"
 *declare "void sb_SetCoeffs( ZNR* zpx);"
 
-*i DUCTSEGP sb_pDS			// pointer to parent DUCTSEG
+*declare "DUCTSEG* sb_pDS;"			// pointer to parent DUCTSEG
 
 *END // DBC
 //-----------------------------------------------------------------------------
@@ -3454,7 +3453,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_PerfASHP( int ashpModel, float tdbOut, float speedF, float& COP, float fanHAdj=0.f);"
 *declare "float rs_PerfASHP2( int ashpModel, float tdbOut, float speedF, float fanHAdj, float& capHtGross, float& inpHtGross, float& capDfHt, float COPAdjF=1.f);"
 *declare "float rs_CapEffASHP( float tdbout=-999.f, float speedF=-1.f, int ashpModel=0, float fanHRtd=-1.f, float fanHOpr=-1.f, float COPAdjF=-1.f);"
-*declare "void rs_CapEffASHP2( float& capHtGross, float& inpHtGross, float& capDfHt);"
+*declare "float rs_CapEffASHP2( float& capHtGross, float& inpHtGross, float& capDfHt);"
 *declare "float rs_DefrostAdjustCapInp( float tdbOut, float& capGrossHt, float& inpGrossHt) const;"
 *declare "int rs_IsASHP() const { return rs_type == C_RSYSTY_ASHP || rs_type == C_RSYSTY_ASHPPKGRM || rs_IsASHPHydronic() || rs_IsASHPPM(); }"
 *declare "int rs_IsASHPHydronic() const { return rs_type == C_RSYSTY_ASHPHYD; }"
@@ -5035,7 +5034,7 @@ RECORD PBC "PBC" *SUBSTRUCT *BASECLASS SBCBASE	// pipe boundary condition
 *declare "void sb_SetCoeffs( ZNR* zpx);"
 #endif
 
-*i PIPESEGP sb_pPS			// pointer to parent PIPESEG
+*declare "PIPESEG* sb_pPS;"			// pointer to parent PIPESEG
 
 *END // PBC
 //=============================================================================
@@ -5550,6 +5549,7 @@ RECORD GAIN "gain" *RAT   	// (zone internal) Gain input and runtime
 RECORD ACCUMULATOR_IVL "accumulator interval sub" *SUBSTRUCT  // substruct for one accumulator for one interval
 *prefix acm_
 
+*declare "void acm_Clear();"
 *declare "void acm_Copy( const ACCUMULATOR_IVL* src);"
 *declare "void acm_PopulateSubhr( float value);"
 *declare "void acm_Accum( const ACCUMULATOR_IVL* sIvl, bool firstFlg, bool lastFlg, int options=0);"
@@ -5582,8 +5582,7 @@ SI acmMaxSubhour        // subhour within hour at which min occurs, 0 - Top.tp_n
 
 *END		// ACCUMULATOR_IVL
 //=============================================================================
-RECORD ACCUMULATOR "accumulator" *RAT 
-*prefix acm_
+RECORD ACCUMULATOR "accumulator" *RAT
 
     *declare "RC acm_CkF( int options);"
 
@@ -5591,7 +5590,8 @@ RECORD ACCUMULATOR "accumulator" *RAT
     //       WHY: the name "sum" is treated as reserved and rejected.
     //            Visible "acm" prefixes solve avoid that
     *s *e FLOAT acmValue;              // value being accumulated
-                                        // generally set via probe 
+                                        // generally set via probe
+    *s *e INT acmCond	// condition: if given, accumulation omitted when FALSE (INT used to hold NAN)
 
     *y *p *nest ACCUMULATOR_IVL Y   	// run (aka year or annual)
     *m *p *nest ACCUMULATOR_IVL M   	// current month

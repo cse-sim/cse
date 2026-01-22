@@ -1117,6 +1117,7 @@ static CULT exColT[] = //----------- EXPORTCOL cmd table, used from cnTopCult an
 CULT( "*",           STAR,  0,             0,       0, 0,        0,      0,      N,  0.f,     N,   N),
 CULT( "colExport",   DAT,   COL_OWNTI,     RDFLIN,  0, VEOI,     TYREF,  &XiB,   N,  0.f,     N,   N),
 CULT( "colHead",     DAT,   COL_COLHEAD,   0,       0, VEOI,     TYSTR,  0,      N,  0.f,     N,   N),
+CULT( "colGap",      DAT,   COL_COLGAP,    0,       0, VEOI,     TYSI,   0,     v 1, 0.f,     N,   N),
 CULT( "colWid",      DAT,   COL_COLWID,    0,       0, VEOI,     TYSI,   0,      N,  0.f,     N,   N),
 CULT( "colDec",      DAT,   COL_COLDEC,    0,       0, VEOI,     TYSI,   0,     v -1, 0.f,    N,   N),
 CULT( "colJust",     DAT,   COL_COLJUST,   0,       0, VEOI,     TYCH,   0,      N,  0.f,     N,   N),
@@ -1757,7 +1758,9 @@ static CULT accumT[] = //------ ACCUMULATOR cmd RAT Entry table
 CULT("*",          STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   accumStarCkf),
 CULT( "acmValue",  DAT,	ACCUMULATOR_ACMVALUE,0,		  0, VSUBHRLY|EVENDIVL,
 	                                                             TYFL, 0,       0.f,    N,   N),
-
+CULT("acmCond",    DAT,  ACCUMULATOR_ACMCOND,0,       0, VSUBHRLY|EVPSTIVL,		 	// ok if evaluated at end interval
+																		TYINT, 				// condition, dflt TRUE, in INT for NAN
+																			   0,       v 1L,      N, N),
 CULT("endACCUMULATOR", ENDER, 0,             0,       0, 0,      0,     0,      0.f,    N,   N),
 CULT()
 };	// accumT

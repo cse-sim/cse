@@ -7,8 +7,11 @@ DT = NO     // first run w/o daylight savings
 // trivial test case: accumulate constant 1
 ACCUMULATOR Accum1 acmValue = 1
 
+// trivial test case: accumulate constant 1 for half the hours
+ACCUMULATOR Accum1X acmCond=($hour&1) acmValue = 1
+
 // accumulate subhour beam solar: good test cuz it varies within hour
-ACCUMULATOR AccumBeam acmValue = @Top.radBeamShAv
+ACCUMULATOR AccumBeam acmValue = @Top.radBeamShAv acmCond = @Top.radBeamShAv > 0.
 
 // accumulate subhour surface heat flow: tests for lag
 ACCUMULATOR AccumQSrf acmValue = @xsurf[ "South Vertical Wall"].sbcO.qSrf
@@ -273,6 +276,13 @@ ACHOUR( "H1", "Accum1", Feb 1)
 ACDAY( "D1", "Accum1", Feb 1, Feb 28)
 
 ACMON( "M1", "Accum1")
+
+ACHOUR( "H1X", "Accum1X", Feb 1)
+
+ACDAY( "D1X", "Accum1X", Feb 1, Feb 28)
+
+ACMON( "M1X", "Accum1X")
+
 
 #define SHREP1(xdb, xde) REPORT rpType=UDT rpFreq=SUBHOUR rpDayBeg=xdb rpDayEnd=xde rpCPL=-1 \
   REPORTCOL colHead="Mon" colVal=$month colWid=3 \

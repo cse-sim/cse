@@ -61,7 +61,6 @@ Name     Name	Decl
 -------  -----	------------------------- */
 // char and variants: always 8 bits
 CH       --    "char"
-UCH      --		"unsigned char"	
 
 // SI and variants: always 16 bits
 SI       --		"int16_t"			
@@ -78,38 +77,24 @@ TI       --   "int32_t"			// (rat) table index (subscript); 0 means unset.
 LI		 --		"int64_t"
 ULI		 --		"uint64_t"
 #else
-LI       --		"int32_t"    		
-ULI      --		"uint32_t" 
+LI       --		"int32_t"
+ULI      --		"uint32_t"
 #endif
 
-FLOAT    --		"float"			
-FLOATP   --		"float *"
-// PERCENT  --  "float"    				// restoring PERCENT restores code in cvpak.cpp
+FLOAT    --		"float"
 DBL        --   "double"
 
 CULSTR   --     "struct CULSTR"		// string accessed via 4 byte handle
 
-VOIDP    --		"void *"
-
 DOW      --		"short"  			// day of week, sun=0 in tdpak (1 less than DOWCH)
 MONTH    --		"short"  			// month, jan=1 in tdpak
-
-IDATE    --		"struct {SI year;SI month;SI mday;SI wday;}"
-ITIME    --     "struct {SI hour;SI min;SI sec;}"
 DOY      --     "short"    		
 SHOY     --     "unsigned"			// subhour of year: (jday*24 + ihr)*4 + subhr
 									//  using jDay 1..365, ihr 0..23, subhr 0..3. 
 									//  value 0 thus reserved for unset. Rob 11-93.
-// CAUTION: code in tdpak.cpp (at least) assumes IDATETIME is same as an IDATE followed by an ITIME. 9-89.
-IDATETIME  -- 	"struct {SI year;SI month;SI mday;SI wday;SI hour;SI min;SI sec;}"
-LDATETIME  --   "time_t"		
-SGTARGP  --	"struct SGTARG *"			// pointer to SGTARG for SGRAT.targ
-MASSLAYERP --	"struct MASSLAYER *"
-MASSMODELP --	"class MASSMODEL *"
-IZXRATP --		"class IZXRAT *"
-				
+
 VALNDT    --	"struct VALNDT"		// value and data type, for user-defined reports
-                        			// code in cul.cpp,exman.cpp assumes .val is 1st member.*/
+                        			// code assumes .val is 1st member.
 
 // change ids to be like ZHXTY (bits already match)?
 // TCCM      -- 	// terminal capability control method
@@ -149,14 +134,8 @@ AHMODE    --  "enum { ahOFF=0,ahFAN=1,ahHEATBIT=2,ahHEATING=3,ahCOOLBIT=4,ahCOOL
 //			 tldMAX: full power, tpTs >= setpoint
 TOWLOADCASE  --  "enum { tldMIN, tldSP, tldMAX }"
 
-// pointer to XFILE structure (xiopak.h), added 1-94 for use in WFILE.
-XFILEP  --     "XFILE *"
-//
 WFileFormat -- "enum WFileFormat { UNK=-1,BSGS=1,BSGSdemo,ET1,ET2,CSW,T24DLL,EPW }" 
 									// open wthr file type (comments: wfpak.h)
-YACAMP  --	   "class YACAM *"	    
-WDYEARP  --	   "class WDYEAR *"	    
-
 
 // for radiant internal gains 11-95
 //  Radiant internal gains distribution table entry
@@ -177,13 +156,6 @@ RIGTARGTY --  "enum { nul,znTot,znTotO,znTotIz,znCAir,massI,massO }"	// RIGDIST 
 RIGTARG   --  "float"													// rad int gain target (accum mbr)
 RIGDIST   --  "struct { RIGTARGTY targTy; TI targTi; float targFr; RIGTARG * targP; }"	// comments above
 																		// rIg distrib info table entry
-RIGDISTP  --  "RIGDIST *"						// (array) ptr, for ZNR.rIgDist
-
-ZNRP		--	"class ZNR *"
-XSURFP	--	"struct XSURF *"
-DUCTSEGP -- "class DUCTSEG*"
-PIPESEGP -- "class PIPESEG*"
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // Choices: text <-> constant mapping
