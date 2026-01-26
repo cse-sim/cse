@@ -3453,7 +3453,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_PerfASHP( int ashpModel, float tdbOut, float speedF, float& COP, float fanHAdj=0.f);"
 *declare "float rs_PerfASHP2( int ashpModel, float tdbOut, float speedF, float fanHAdj, float& capHtGross, float& inpHtGross, float& capDfHt, float COPAdjF=1.f);"
 *declare "float rs_CapEffASHP( float tdbout=-999.f, float speedF=-1.f, int ashpModel=0, float fanHRtd=-1.f, float fanHOpr=-1.f, float COPAdjF=-1.f);"
-*declare "void rs_CapEffASHP2( float& capHtGross, float& inpHtGross, float& capDfHt);"
+*declare "float rs_CapEffASHP2( float& capHtGross, float& inpHtGross, float& capDfHt);"
 *declare "float rs_DefrostAdjustCapInp( float tdbOut, float& capGrossHt, float& inpGrossHt) const;"
 *declare "int rs_IsASHP() const { return rs_type == C_RSYSTY_ASHP || rs_type == C_RSYSTY_ASHPPKGRM || rs_IsASHPHydronic() || rs_IsASHPPM(); }"
 *declare "int rs_IsASHPHydronic() const { return rs_type == C_RSYSTY_ASHPHYD; }"
@@ -5549,6 +5549,7 @@ RECORD GAIN "gain" *RAT   	// (zone internal) Gain input and runtime
 RECORD ACCUMULATOR_IVL "accumulator interval sub" *SUBSTRUCT  // substruct for one accumulator for one interval
 *prefix acm_
 
+*declare "void acm_Clear();"
 *declare "void acm_Copy( const ACCUMULATOR_IVL* src);"
 *declare "void acm_PopulateSubhr( float value);"
 *declare "void acm_Accum( const ACCUMULATOR_IVL* sIvl, bool firstFlg, bool lastFlg, int options=0);"
@@ -5581,8 +5582,7 @@ SI acmMaxSubhour        // subhour within hour at which min occurs, 0 - Top.tp_n
 
 *END		// ACCUMULATOR_IVL
 //=============================================================================
-RECORD ACCUMULATOR "accumulator" *RAT 
-*prefix acm_
+RECORD ACCUMULATOR "accumulator" *RAT
 
     *declare "RC acm_CkF( int options);"
 
@@ -5590,7 +5590,8 @@ RECORD ACCUMULATOR "accumulator" *RAT
     //       WHY: the name "sum" is treated as reserved and rejected.
     //            Visible "acm" prefixes solve avoid that
     *s *e FLOAT acmValue;              // value being accumulated
-                                        // generally set via probe 
+                                        // generally set via probe
+    *s *e INT acmCond	// condition: if given, accumulation omitted when FALSE (INT used to hold NAN)
 
     *y *p *nest ACCUMULATOR_IVL Y   	// run (aka year or annual)
     *m *p *nest ACCUMULATOR_IVL M   	// current month
