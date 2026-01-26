@@ -22,7 +22,18 @@
 
 #include <penumbra/penumbra.h>
 
-
+inline float sunLitFnc( //
+	float AREAO,
+	float AREAV,
+	float ARintF,
+	float WAREA)
+// This function was created to replace the previous goto statement, 6-22
+{
+	float fsunlit = 1.f - (AREAO + AREAV + ARintF) / WAREA;
+	// return 0 if result so small that is probably just roundoff errors;
+	//  in particular, return 0 for small negative results.
+	return fsunlit > 1.e-7f ? fsunlit : 0.f;
+}
 
 float WSHADRAT::SunlitFract( 		// Calculate sunlit fraction of rectangle shaded
 									//   with fins and/or overhang
@@ -149,7 +160,9 @@ float WSHADRAT::SunlitFract( 		// Calculate sunlit fraction of rectangle shaded
 		}
 	}
 	if (AREAO >= WAREA)			/* if fully shaded */
-		goto exit68;			/* go exit */
+	{
+		return sunLitFnc(AREAO, AREAV, ARintF, WAREA);
+	}
 
  /*----- flap (vertical projection at end of horiz overhang) area AREAV -----*/
 
@@ -163,13 +176,17 @@ float WSHADRAT::SunlitFract( 		// Calculate sunlit fraction of rectangle shaded
 	{
 		AREAV = H2 * W2;			/* area shaded by flap */
 		if (AREAO + AREAV >= WAREA)	/* if now fully shaded */
-			goto exit68;			/* go exit */
+		{
+			return sunLitFnc(AREAO, AREAV, ARintF, WAREA);
+		}
 	}
 
 	/*----- FINS: select sunward fin and set up -----*/
 fin37:			/* come here if no overhang */
 	if (gamma == 0.f)  		/* if sun straight on, no fin shadows, exit */
-		goto exit68;		/* (and prevent division by hor: is 0) */
+		{
+			return sunLitFnc(AREAO, AREAV, ARintF, WAREA);
+		} 	/* (and prevent division by hor: is 0) */
 
 	float FD;	// fin depth: how far out fin projects
 	float FU;	// "fin up": fin top extension above top win
@@ -190,7 +207,9 @@ fin37:			/* come here if no overhang */
 		FBU = rfBotUp; 		/* bottom distance above windowsill */
 	}
 	if (FD <= 0.f)		/* if fin depth 0 */
-		goto exit68;		/* no fin, go exit */
+		{
+			return sunLitFnc(AREAO, AREAV, ARintF, WAREA);
+		}		/* no fin, go exit */
 
 	X3 = FD * hor;	/* how far over (antisunward) shadow comes */
 
@@ -211,7 +230,9 @@ fin37:			/* come here if no overhang */
 				FU = FUO;		/* chop off top of fin that shades oh shadow.
 							  FU < 0 (large E) appears ok 1-90. */
 				if (H + FU <= FBU) 	/* if top of fin now below bottom */
-					goto exit68;		/* no fin shadow */
+				{
+					return sunLitFnc(AREAO, AREAV, ARintF, WAREA);
+				}		/* no fin shadow */
 			}
 			else		/* vert edge fin shadow intersects hor edge oh shad */
 			{  /* count fin shadow area in chopped-off part of window now:
@@ -311,13 +332,7 @@ fin73:	/* come back here with window params changed to match flap shadow,
 		W = W2;			/* ... those of flap shadow */
 		goto fin73;
 	}
-
-exit68:  		// come here to exit
-	float fsunlit = 1.f - (AREAO + AREAV + ARintF) / WAREA;
-	// return 0 if result so small that is probably just roundoff errors;
-	//  in particular, return 0 for small negative results.
-	return fsunlit > 1.e-7f ? fsunlit : 0.f;
-
+	return sunLitFnc(AREAO, AREAV, ARintF, WAREA);
 }	// WSHADRAT::SunlitFract
 
 ///////////////////////////////////////////////////////////////////////////////
