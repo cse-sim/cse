@@ -2014,7 +2014,7 @@ RECORD AIRSTATE "AirState" *SUBSTRUCT
 *declare "float as_RhoDry() const { return psyDenDryAir( as_tdb, as_w); }"
 *declare "float as_RhoMoist() const { return psyDenMoistAir( as_tdb, as_w); }"
 *declare "double as_AddQSen( double q, double amf);"
-*declare "double as_DeltaTQSen( double q, double amf);"
+*declare "double as_DeltaTQSen( double q, double amf) const;"
 *declare "double as_CalcQSen( double q, double amf) const;"
 *declare "double as_AddQSen2( double q, double amf);"
 *declare "double as_CalcQSen2( double q, double amf) const;"
