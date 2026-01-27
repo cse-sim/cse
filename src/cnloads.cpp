@@ -2714,7 +2714,7 @@ RC RSYS::rs_endP1DsdIter(		// autosizing end of day
 				rs_capH *= f;
 		}
 		else
-		{	// pass1B: rs_capH sizes system
+		{	// pass1B or pass 2: rs_capH sizes system
 			//   change in small steps (can be unstable)
 			rs_capH *= bracket( 0.9f, f, 1.1f);
 
@@ -3839,12 +3839,12 @@ void RSYS::rs_HeatingOutletAirState(
 			rs_effHt = 1.f;		// need nz value, else ASHP assumes compressor off
 		}
 		else if (rs_IsASHP())
-		{	// ASHP heat autosize (based on rs_capH)
+		{	// ASHP heat autosize (based on rs_capH =)
 				rs_effHt = 1.f;
 				rs_capHtFS = rs_capHt = rs_capAuxH = rs_capH;	// same cap for aux during autosizing
 																//   used below if needed
 				if (rs_IsPMHtg())
-				{	// PM model: rs_capH is net cap at 400 cfm/ton, 70 F entering air
+				{	// PM model: rs_capH is net cap at outdoor design temp, 400 cfm/ton, 70 F entering air
 					// rs_tdbCoilIn = rs_asOut.as_tdb set above
 					rs_HeatingEnteringAirFactorsVC(rs_fCondCap, rs_fCondInp);
 					rs_capHt *= rs_fCondCap; // net cap at current entering air temp and cfm/ton

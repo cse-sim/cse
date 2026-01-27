@@ -3675,7 +3675,9 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 							// non-ASHP heating
 *f FRAC_GZ rs_AFUE			//   heating system rated AFUE, 0 < AFUE <= 1
 
-*f *e FLOAT_GEZ rs_capH;		// rated net heating output (including fan), Btuh
+*f *e FLOAT_GEZ rs_capH;		// rated net heating output (including fan) at design temp, Btuh
+                                //   (at 400 cfm/ton, 70F entering air during PM autosize)
+                                //   other types less rigorously defined
 *f *e FLOAT_GEZ rs_capH_As;		// autoSized capH (including fan), Btuh
 *f *e FLOAT_GEZ rs_capH_AsNov;	// raw autoSized capH w/o oversizing (including fan), Btuh
 // autoSize code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.

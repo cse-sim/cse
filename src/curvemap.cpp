@@ -217,7 +217,9 @@ RC PMACCESS::pa_Init(		// input -> Btwxt conversion
 	delete pa_pRGI;		// insurance
 
 	pa_pParent = pParent;
-	pa_capRef = capRef;
+
+	// insurance: capRef can be nan re autosizing
+	pa_capRef = isnan(capRef) ? 0. : capRef;
 
 	pa_pPERFORMANCEMAP = pPM;	// source performance map
 
@@ -242,6 +244,12 @@ RC PMACCESS::pa_GetCapInp(float dbtOut, float speedF, float& cap, float& inp)
 {
 	double capRat, inpRat;
 	RC rc = pa_GetCapInpRatios(dbtOut, speedF, capRat, inpRat);
+#if defined( _DEBUG)
+	if (isnan(pa_capRef))
+	{	printf("\npa_CapRef = nan");
+		pa_capRef = 0.;
+	}
+#endif
 	cap = capRat * pa_capRef;
 	inp = inpRat * abs(pa_capRef);
 	return rc;
