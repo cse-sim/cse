@@ -3868,7 +3868,7 @@ void RSYS::rs_HeatingOutletAirState(
 
 			float capHtGross, inpHtGross;
 			rs_effHt = rs_CapEffASHP2( capHtGross, inpHtGross, rs_capDfHt);	// sets rs_capHt
-	
+
 #if 0 && defined( _DEBUG)
 			if (frDiff(rs_effHt, capHtGross/inpHtGross) > .01f)
 				printf("\nEfficiency mismatch");
@@ -4525,10 +4525,10 @@ float RSYS::rs_PerfASHP2(		// ASHP heating performance
 						//    (depends on rs_defrostModel)
 	float COPAdjF /*=1.f*/)	// COP adjustment factor
 							//   multiplies final COP result
-							// 
+							//
 // note: if PM model rs_fCondCap / rs_fCondInp must be set by caller
 //       = entering condition adjustment factors ("Cutler curves")
-// 
+//
 // returns gross (compressor-only) full-speed COP
 {
 	capDfHt = 0.f;
