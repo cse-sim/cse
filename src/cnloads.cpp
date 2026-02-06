@@ -6456,7 +6456,11 @@ RC RSYS::rs_FinalizeSh()
 			rs_pCHDHW->hvt_BlowerAVFandPower(rs_outSenTot, avf, fanPwr);
 			// if (rs_runF < 1.) cycle?
 
+#if 1	// CHDHW fan power fix
 			rs_outFan = rs_runF * fanPwr * BtuperWh;	// fan heat, Btuh
+#else
+			rs_outFan = rs_runF * fanPwr * Top.tp_subhrDur * BtuperWh;	// WRONG fan heat, Btuh
+#endif
 			rs_outSen = max(0., rs_outSenTot - rs_outFan);		// net -> gross
 			runFFan = rs_runF;
 
