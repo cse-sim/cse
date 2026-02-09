@@ -84,7 +84,7 @@ class YACAM
     RC errFlLn( MSGORHANDLE s, ...);  // cond'l message "Error in <mWhat> <mPathName> near line <mLineNo>: %s". rets RCBAD.
 
     int mErOp;	// communicates erOp from entry points to error fcns
-				// note need a data mbr at end due to rcdef.exe deficiency 10-94.
+
 #if 0 // TODO (MP) The methods below are not used but have been modified to fit c standard file io.
     RC create(const char* pathName, const char* what = "file", int erOp = WRN);
     // random write from caller's buffer, RCOK if ok
@@ -120,7 +120,7 @@ struct CSVItem		// one item (column)
 class CSVGen
 {
 	CSVItem* cg_pCI;	// array of CSVItems
-	int cg_iUx;			// unit system
+	// int cg_iUx;		// TODO unit system
 
 public:
 	CSVGen(CSVItem* pCI) : cg_pCI(pCI) {}

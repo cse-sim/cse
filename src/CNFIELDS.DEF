@@ -52,12 +52,8 @@ FLOAT_LZ      FLOAT        LMLZ      UNNONE
 FRAC	      FLOAT        LMFR      UNNONE
 FRAC_GZ	      FLOAT        LMFGZ     UNNONE
 DBL           DBL          LMNONE    UNNONE
-//VOIDP       VOIDP        LMNONE    UNNONE	unused 5-95
-IDATE         IDATE        LMNONE    UNNONE
 
 //----- Types required re RATs (Record Array Tables):
-// string for use in RATs:
-ANAME         ANAME        LMNONE    UNNONE
 // for reference (subscript) to a RAT or table:
 TI	      TI           LMGEZ     UNNONE
 //                                                        
@@ -94,7 +90,7 @@ HUMRAT_GZ     FLOAT        LMFGZ     UNNONE	// humidity ratio. unitless; field a
 ENERGY        FLOAT        LMNONE    UNENERGY	// Btu
 POWER         FLOAT        LMNONE    UNPOWER	// Btuh
 POWER_NZ      FLOAT        LMNZ      UNPOWER	//      Many "POWER" fields actually
-POWER_GZ      FLOAT        LMGZ      UNPOWER	// 	should be "ENERGY".
+POWER_GZ      FLOAT        LMGZ      UNPOWER	// 	should be "ENERGY"
 POWER_GEZ     FLOAT        LMGEZ     UNPOWER	// 	otta review them, 6-92.
 //POWER_LEZ   FLOAT        LMLEZ     UNPOWER	// unused 9-92
 KW_GZ         FLOAT        LMGZ      UNELPWR2   // power entered in kW, internally in Btuh
@@ -118,10 +114,6 @@ HC_AREA       FLOAT        LMGEZ     UNHEATCAP_AREA
 //HC_AREA_GZ  FLOAT        LMGZ      UNHEATCAP_AREA
 HC_VOL        FLOAT        LMGZ      UNHEATCAP_VOL
 HOURS         FLOAT        LMGEZ     UNHOURS	// time interval in hours, rob 6-92
-SGTARGP       SGTARGP      LMNONE    UNNONE	// pointer to an SGTARG
-MASSLAYERP    MASSLAYERP   LMNONE    UNNONE
-MASSMODELP    MASSMODELP   LMNONE    UNNONE
-IZXRATP		  IZXRATP	   LMNONE	 UNNONE
 TCCM          TCCM         LMNONE    UNNONE	// term capab ctrl method: enum { cmNONE, cmSo, ...
 ZHXTY         ZHXTY        LMNONE    UNNONE	// zone hvac xfer type enum 3-92
 TCUSE         TCUSE        LMNONE    UNNONE	// terminal capability use this subhour enum
@@ -129,20 +121,9 @@ AHMODE        AHMODE	   LMNONE    UNNONE	// air handler mode enum 3-92
 TOWLOADCASE   TOWLOADCASE  LMNONE    UNNONE	// TOWERPLANT load case enum 9-92
 COILUSED      COILUSED     LMNONE    UNNONE	// AH coil used 12-92
 
-WFLOC         WFLOC        LMNONE    UNNONE	// arrays used in WFILE record 1-94
-WFLID         WFLID        LMNONE    UNNONE	// ..
-
 WFileFormat   WFileFormat  LMNONE    UNNONE	// open weather file type (see wfpak.h)
-WFLOC2	      WFLOC2       LMNONE    UNNONE	// "location 2" field in E10v1+ weather files
-YACAMP        YACAMP       LMNONE    UNNONE
-WDYEARP       WDYEARP      LMNONE    UNNONE
 
 RIGTARG       RIGTARG      LMNONE    UNNONE	// radiant internal gain target (accumulator)
-RIGDISTP      RIGDISTP     LMNONE    UNNONE	// ptr to array of above, for ZNR::rIgDist
-ZNRP		  ZNRP	       LMNONE	 UNNONE
-XSURFP		  XSURFP	   LMNONE	 UNNONE
-DUCTSEGP	  DUCTSEGP	   LMNONE    UNNONE
-PIPESEGP	  PIPESEGP	   LMNONE    UNNONE
 
 // choice (choicb) types
 NOYESCH       NOYESCH      LMNONE    UNNONE

@@ -985,10 +985,6 @@ RC AH::ahEstimate()	// set ahMode and supply temp for terminal computations b4 i
 	return RCOK;
 }				// AH::ahEstimate
 //-----------------------------------------------------------------------------------------------------------------------------
-//--- constants, also hard-coded in cncult2.cpp for Top.absTol; also in cnah2.cpp:
-//const float RELoverABS = .01f;		use commented out 5-95	// relative to absolute tol ratio: +-1 corrsponds to +- 1%.
-//const float ABSoverREL = 1.f/RELoverABS;	no uses 5-95		// reciprocal thereof
-//---------------------------------------------------------------------------------------------------------------------------
 RC AH::ahCompute()			// airHandler full computation ("refine"), after terminals have been estimated
 
 // (old) preceding call sequence: tuEstimate, ahEstimate, ztuCompute.

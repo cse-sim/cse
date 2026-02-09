@@ -40,7 +40,7 @@
 #include "cnguts.h"	// decls for this file
 
 //-------------------------------- DEFINES ----------------------------------
-
+RIGDIST x;
 
 //------------------------- FILE-GLOBAL VARIABLES ---------------------------
 
@@ -2154,12 +2154,13 @@ void LOCAL accumulatorsAccum(
 	{
 		ACCUMULATOR_IVL* pDst = &pACM->Y + (ivl - C_IVLCH_Y);	// point destination
 												// ASSUMES ACCUMULATOR interval members ordered like DTIVLCH choices
-		ACCUMULATOR_IVL* pSrc = pDst + 1;		// source: next shorter interval
-
 		if (ivl == C_IVLCH_H)
 		{	// construct temporary subhour ACCUMULATOR_IVL
 			ACCUMULATOR_IVL tempSubhr;
-			tempSubhr.acm_PopulateSubhr(pACM->acmValue);
+			if (pACM->acmCond)
+				tempSubhr.acm_PopulateSubhr(pACM->acmValue);
+			else
+				tempSubhr.acm_Clear();
 			pDst->acm_Accum(&tempSubhr, firstFlg, lastFlg);
 #if 0 && defined( _DEBUG)
 			// re lagged value investigation
@@ -2178,9 +2179,8 @@ void LOCAL accumulatorsAccum(
 }	// accumulatorsAccum
 //-----------------------------------------------------------------------------
 RC ACCUMULATOR::acm_CkF(
-	int options)
+	[[maybe_unused]] int options)
 {
-	options;
 	return RCOK;
 
 }	// ACCUMULATOR::acm_CkF
@@ -2191,6 +2191,12 @@ void ACCUMULATOR_IVL::acm_Copy(			// copy to this
 	memcpy(this, pSrc, sizeof(ACCUMULATOR_IVL));
 
 }	// ACCUMULATOR_IVL::acm_Copy
+//-----------------------------------------------------------------------------
+void ACCUMULATOR_IVL::acm_Clear()			// 0 this
+{
+	memset(this, 0, sizeof(ACCUMULATOR_IVL));
+
+}	// ACCUMULATOR_IVL::acm_Clear
 //-----------------------------------------------------------------------------
 void ACCUMULATOR_IVL::acm_PopulateSubhr(	// make full subhr object
 	float value)
@@ -2218,7 +2224,7 @@ void ACCUMULATOR_IVL::acm_Accum(			// accumulate to this
 {
 	if (firstFlg)
 		acm_Copy( pSrc);
-	else
+	else if (pSrc->acmCount > 0)
 	{
 		if (pSrc->acmMin < acmMin)
 		{
@@ -2241,8 +2247,10 @@ void ACCUMULATOR_IVL::acm_Accum(			// accumulate to this
 		acmSum += pSrc->acmSum;
 		acmCount += pSrc->acmCount;
 	}
+	// else pSrc->acmCount <= 0, do nothing
+
 	if (lastFlg)
-		acmMean = acmSum / acmCount;
+		acmMean = acmSum / max(1, acmCount);
 
 }	// ACCUMULATOR_IVL::amc_Accum
 //=============================================================================

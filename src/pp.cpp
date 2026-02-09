@@ -168,7 +168,7 @@ static char ppIdtx[512+1] = { 0 };	// text of identifier, set by ppcId()
 
 // re getting preprocessed text.
 //   see pp.h for: ppOpen(), ppClose(), ppGet().
-static RC FC ppOpI( const char *fname, char *defex);
+static RC FC ppOpI( const char* fname, const char* defex);
 
 // executing pp cmds
 static RC   FC ppcDo( const char *p, int ppCase);
@@ -298,8 +298,8 @@ LOCAL void FC lisBufAppend( const char *p, int n=-1);
 LOCAL void FC lisBufOut( int n);
 LOCAL void FC lisWrite( char *p, int n);
 LOCAL int  FC lisCmp( const char* s, int i, int* pPlace, int* pnl);
-LOCAL int  FC isFileLisLine( char *p);
-LOCAL void FC lisBufInsert( int* pPlace, char *p, int n=-1);
+LOCAL int  FC isFileLisLine( const char *p);
+LOCAL void FC lisBufInsert( int* pPlace, const char* p, int n=-1);
 
 
 /*=================== COMMAND LINE INTERFACE department ===================*/
@@ -521,12 +521,12 @@ bool ppFindFile( 	// find file using paths specified with ppAddPaths. Issues no 
 	return bFound;
 }						// ppFindFile
 //==========================================================================
-RC FC ppOpen( const char* fname, char *defex) 	// open and init cal non-res user language main input source file
+RC FC ppOpen( const char* fname, const char* defex) 	// open and init cal non-res user language main input source file
 
 // searches current directory, and drives/directories per preceding ppAddPath calls.
 
 {
-	RC rc;
+	RC rc = RCOK;
 
 // if file already open, message and continue: insurance
 	if (is && inDepth)
@@ -545,11 +545,11 @@ RC FC ppOpen( const char* fname, char *defex) 	// open and init cal non-res user
 	return rc;				// another return above (CSE_E macro)
 }			// ppOpen
 //==========================================================================
-RC FC ppOpI( const char* fname, char *defex)		// inner pp file opener: adds an input source stack level
+RC FC ppOpI( const char* fname, const char* defex)		// inner pp file opener: adds an input source stack level
 
 {
 	INSTK * isi;
-	RC rc;
+	RC rc = RCOK;
 
 // standardize name (upper case) and conditionally use default extension
 	fname = strffix( fname, defex);		// to tmpstr
@@ -588,7 +588,8 @@ RC FC ppOpI( const char* fname, char *defex)		// inner pp file opener: adds an i
 	inDepth++;			// input nest level
 	is = isi;			// file-global inStk pointer
 	isf = isi;			// ditto to file: 'is' changes for macro
-	return RCOK;		// good return
+
+	return rc;		// good return
 	// more returns above
 }			// ppOpI
 //==========================================================================
@@ -2185,7 +2186,7 @@ LOCAL int FC lisCmp( 		// multi-line compare text to listing text
 	}
 }		// lisCmp
 //-----------------------------------------------------------------------------------------------------------
-LOCAL int FC isFileLisLine( char *p)	// 0 if listing line is error message, ----- separator, or #line
+LOCAL int FC isFileLisLine( const char *p)	// 0 if listing line is error message, ----- separator, or #line
 {
 	return ( *p != '?'  				// is file line if not error message,
 			 &&  memcmp( p, "----", 4)			// not separator,
@@ -2229,13 +2230,13 @@ void FC lisInsertMsg( 				// insert error message in listing buffer
 LOCAL void FC lisBufInsert( 			// listing buffer inserter inner function
 
 	int* pPlace, 		// subscript of place to insert, returned updated to end of inserted text
-	char *p, 			// text
+	const char *p,		// text
 	int n/*=-1*/)		// length, default = use strlen
 
 {
 	int place = *pPlace;
 	if (n < 0)
-		n = static_cast<int>(strlen(p));
+		n = strlenInt(p);
 
 	while (n)				// may need repeated insertions for long message
 	{
@@ -2248,12 +2249,18 @@ LOCAL void FC lisBufInsert( 			// listing buffer inserter inner function
 			place -= m;
 		}
 
-		if (place==0)				// write direct if place is (now) at very beginning of buffer
-		{
-			lisWrite( p, n);
-			n = 0;
-		}
-		else					// move up tail of buffer and copy text into vacated space
+#if 0
+x Code removed 10-2025 to allow p to be const char*
+x lisWrite() modifies *p in place; if p pointed to a string literal
+x    that would trigger an exception.  No exceptions have been seen.
+x Conclusion: this code never executed / not needed.
+x		if (place==0)				// write direct if place is (now) at very beginning of buffer
+x		{
+x			lisWrite( p, n);
+x			n = 0;
+x		}
+x		else					// move up tail of buffer and copy text into vacated space
+#endif
 		{
 			int hole = min( n, LISBUFSZ - lisBufN);		// smaller of req'd space, space avail at end buffer
 			if (hole)									// insurance
@@ -2282,7 +2289,7 @@ LOCAL void FC lisBufInsert( 			// listing buffer inserter inner function
 
 // char fetch & tokenize for pp cmds
 //unused: LOCAL void FC ppUntok( void);
-LOCAL SI FC ppScanto( char *set);
+LOCAL SI FC ppScanto( const char* set);
 LOCAL void FC ppUncNdc( void);
 
 // error messages
@@ -2419,7 +2426,7 @@ reget:	// here to start token decode over (eg after illegal char)
 		while (c >= '0' && c < '0' + base);	// 0-7, 0-9, or 0-f
 		ppUncDc();				// unget last (non-digit) char
 		ppTokty = CUTSI;				// say is integer, value in ppSival
-		if ( base==10 && tem > 32767L		// decimal: +- 32767 (no -32768)
+		if ( (base==10 && tem > 32767L)		// decimal: +- 32767 (no -32768)
 				||  tem > 65535L )			// 0x or 0o: user beware of -
 			ppErr( MH_P0070 );		// error message: "Number too large, truncated"
 
@@ -2604,7 +2611,7 @@ void FC ppUncDc()	// unget char returned by ppCDc
 }		// ppUncDc
 
 //==========================================================================
-LOCAL SI FC ppScanto( char *set)
+LOCAL SI FC ppScanto( const char *set)
 
 // pass characters at ppCNdc level not in "set", for ppCDc
 
@@ -2717,8 +2724,8 @@ LOCAL RC FC ppErv(
 		3) raw file line,
 		4) macro being expanded, right? */
 
-		if ( (  (shoTx & 4) &&  ppcIsClarg	  	// if cmd line arg requested
-		 || (shoTx & 2) && !ppcIsClarg ) 	// if preproc cmd line req'd
+		if ( (  ((shoTx & 4) &&  ppcIsClarg)	  	// if cmd line arg requested
+		 || ((shoTx & 2) && !ppcIsClarg) ) 	// if preproc cmd line req'd
 		 && ppcBp != NULL )			// ... and is present
 	{
 		tex = ppcBp;      		// current preprocessor cmd line, if doing one
@@ -2805,14 +2812,16 @@ x              	          isf->line, isf->Name() );
 
 // make up 'where': "<file>(<line>): Error/Warning: " text
 
-	if (shoFnLn)				// if requested
-	if (ppcIsClarg)					// if doing cmd line
-		snprintf( where, sizeof(where), "Command line: %s: ",
-				 isWarn ? "Warning" : "Error" );
-	else if (inDepth > 0 && isf)			// if a file is open
-		snprintf( where, sizeof(where), "%s(%d): %s: ",
-				 getFileName(isf->fileIx), isf->line,
-				 isWarn ? "Warning" : "Error" );
+		if (shoFnLn)				// if requested
+		{
+			if (ppcIsClarg)					// if doing cmd line
+				snprintf(where, sizeof(where), "Command line: %s: ",
+						 isWarn ? "Warning" : "Error");
+			else if (inDepth > 0 && isf)			// if a file is open
+				snprintf(where, sizeof(where), "%s(%d): %s: ",
+						 getFileName(isf->fileIx), isf->line,
+						 isWarn ? "Warning" : "Error");
+		}
 #endif
 
 
@@ -3283,12 +3292,13 @@ const int MAXVAL = 16384;	// max #define value size.
 
 		// start or end quoted text (re whether to decomment above)
 		if (c=='"')			// a quote ...
-			if (inQuotes==0)
+		{	if (inQuotes==0)
 				inQuotes++;		// always opens "text"
 			else if (afBs==0)
-				inQuotes = 0;		// ends "text" only if not after \
+				inQuotes = 0;		// ends "text" only if not after backslash
+		}
 
-		// store char, count length.  Unstored \ is overwritten next iteration.
+		// store char, count length.  Unstored backslash is overwritten next iteration.
 		if (n <= MAXVAL)				// unless too long
 			theVal[n] = (char)c;			// store char
 		else if (n==MAXVAL)			// msg once per define only

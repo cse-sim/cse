@@ -1265,9 +1265,12 @@ void ZNR::zn_SetAirRadXArea()		// set mbrs re zone air radiant pseudo surface
 #endif
 }	// ZNR::zn_SetAirRadXArea
 //-----------------------------------------------------------------------------
+#if 0
 // FFactors() convergence failure seen in optimized release builds
 //   Disabling optimization seems to fix, did not fully analyze, 2-8-12
+//   Renabled optimization 10-9-2025, passes all tests
 #pragma optimize( "", off)
+#endif
 static int FFactors(			// derive spherical geometry factors
 	int nS,				// # of surfaces
 	const double areaS[],	// areas of surfaces
@@ -1322,7 +1325,9 @@ x				printf( "Mismatch\n");
 
 	return errTxt[ 0] ? RCBAD : RCOK;
 }	// FFactors
+#if 0
 #pragma optimize( "", on)
+#endif
 //-----------------------------------------------------------------------------
 // #undef CZM_COMPARE		// #define in cndefns.h to use exact CZM values re result comparison
 //-----------------------------------------------------------------------------
@@ -2275,7 +2280,9 @@ void XSURF::xs_Init(			// initialize
 //-----------------------------------------------------------------------------
 XSURF& XSURF::Copy( const XSURF* pXS, [[maybe_unused]] int options /*=0*/)
 {	record* pParent = xs_pParent;		// save parent ptr (set by c'tor)
-	memcpy( reinterpret_cast< void *>(this), pXS, sizeof( XSURF));	// bitwise copy
+	memcpy( reinterpret_cast< void *>(this), 
+		    reinterpret_cast< const void *>(pXS),
+		    sizeof( XSURF));	// bitwise copy
 	xs_pParent = pParent;				// restore parent ptr
 	xs_Init( xs_pParent);	// fix sub-objects
 							// (deletes FENAWs, xs_SetRunConstants remakes)
@@ -3376,11 +3383,11 @@ void XSURF::DbDump() const
 }	// XSURF::DbDump
 //=============================================================================
 void SBC::sb_Init(
-	XSURF* xs,		// parent XSURF
-	int si)			// which side of xs? 0=inside, 1=outside
-{	sb_pXS = xs;
-	sb_si = si;
-	sb_zi = xs->xs_GetZi( si);
+	XSURF* xsParent,	// parent XSURF
+	int side)				// which side of xs? 0=inside, 1=outside
+{	sb_pXS = xsParent;
+	sb_si = side;
+	sb_zi = xsParent->xs_GetZi( side);
 	sb_txa = 70.f;		// initialize to plausible value
 	sb_txr = 70.f;
 }		// SBC::sb_Init

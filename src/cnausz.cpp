@@ -41,7 +41,7 @@ ausz notes
 
 
 //------------------------- GLOBAL-ISH VARIABLES ---------------------------
-/*static*/ ANAME AUSZ::az_context;		// context text for verbose screen msgs
+/*static*/ char AUSZ::az_context[100];		// context text for verbose screen msgs
 
 //----------------------- LOCAL FUNCTION DECLARATIONS -----------------------
 

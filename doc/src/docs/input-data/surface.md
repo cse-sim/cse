@@ -64,7 +64,7 @@ Surface tilt from horizontal. Values outside the range 0 to 360 are first normal
 
 {{
   csv_table("sfType = FLOOR, *sfTilt*=180&comma; default = 180 (fixed value)
-sfType = WALL, 60 $<$ *sfTilt* $<$ 180&comma; default = 90
+sfType = WALL, 60 < *sfTilt* < 180&comma; default = 90
 sfType = CEILING, 0 ≤ *sfTilt* ≤ 60&comma; default = 0")
 }}
 
@@ -631,7 +631,7 @@ The following tables summarize the defaults and legal ranges of surface members 
   **Member** **WALL**                  **FLOOR**    **CEILING**
   ---------- ------------------------- ------------ -----------------------
   sfTilt     optional, default=90, 60  n.a. (fixed  optional, default=0, 0
-             $<$ *sfTilt* $<$ 180      at 180)      ≤ *sfTilt* ≤ 60
+             < *sfTilt* < 180      at 180)      ≤ *sfTilt* ≤ 60
 
   sfAzm      **required**              n.a.         **required if sfTilt
                                                     > 0**

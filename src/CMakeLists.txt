@@ -33,6 +33,7 @@ macro(c_preprocess defFile)
       -Dcompiler_arch=${CSE_BUILD_ARCHITECTURE}
       -P "${PROJECT_SOURCE_DIR}/cmake/preprocess.cmake"
     MAIN_DEPENDENCY "${CMAKE_CURRENT_SOURCE_DIR}/${defFile}"
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/cndefns.h"
   )
 endmacro()
 
@@ -40,28 +41,26 @@ foreach(defFile ${defs})
   c_preprocess(${defFile})
 endforeach()
 
+
 # Run RCDEF
 add_custom_command(
-  OUTPUT
+  OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/rcdef_success.txt"
+  BYPRODUCTS  # RCDEF will not update these files if there are no detected changes, therefore they are not OUTPUTs
     "${CMAKE_CURRENT_BINARY_DIR}/dtypes.h"
     "${CMAKE_CURRENT_BINARY_DIR}/rccn.h"
     "${CMAKE_CURRENT_BINARY_DIR}/dttab.cpp"
     "${CMAKE_CURRENT_BINARY_DIR}/srfd.cpp"
     "${CMAKE_CURRENT_BINARY_DIR}/untab.cpp"
-    "${CMAKE_CURRENT_BINARY_DIR}/rcdef.sum"
   COMMAND RCDEF "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i" "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i" "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"    . NUL NUL NUL  .
   DEPENDS RCDEF "${CMAKE_CURRENT_BINARY_DIR}/cndtypes.i" "${CMAKE_CURRENT_BINARY_DIR}/cnunits.i" "${CMAKE_CURRENT_BINARY_DIR}/dtlims.i" "${CMAKE_CURRENT_BINARY_DIR}/cnfields.i" "${CMAKE_CURRENT_BINARY_DIR}/cnrecs.i"
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 )
 
 # Needed to establish dependency for other targets that depend on generated RCDEF outputs
-add_custom_target(generate_rcdef_outputs DEPENDS
-        "${CSE_BINARY_DIR}/src/dtypes.h"
-        "${CSE_BINARY_DIR}/src/rccn.h"
-        "${CSE_BINARY_DIR}/src/dttab.cpp"
-        "${CSE_BINARY_DIR}/src/srfd.cpp"
-        "${CSE_BINARY_DIR}/src/untab.cpp"
+add_custom_target(generate_rcdef_outputs
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/rcdef_success.txt
 )
+
 
 # Set CSE Version
 add_custom_target(version_header
@@ -118,7 +117,6 @@ set(source
   datfcns.cpp
   dhwcalc.cpp
   dhwsolar.cpp
-  dttab.cpp
   exman.cpp
   foundation.cpp
   gmutil.cpp
@@ -138,6 +136,7 @@ set(source
   wfpak.cpp
   yacam.cpp
   culstr.natvis
+  "${CMAKE_CURRENT_BINARY_DIR}/dttab.cpp"
   "${CMAKE_CURRENT_BINARY_DIR}/srfd.cpp"
   "${CMAKE_CURRENT_BINARY_DIR}/untab.cpp"
 )
@@ -283,7 +282,7 @@ if(KIVA_GROUND_PLOT)
   target_link_libraries(CSE PUBLIC groundplot)
 endif()
 
-add_dependencies(CSE version_header)
+add_dependencies(CSE version_header generate_rcdef_outputs)
 
 if (${CSE_COMPILER_NAME} STREQUAL "msvc" AND ${CSE_BUILD_ARCHITECTURE} STREQUAL "32")
   set(executable_name "CSE")

@@ -199,7 +199,7 @@ Number of glazings in the Glazetype (bare glass only, not including any interior
 {{
   member_table({
     "units": "",
-    "legal_range": "*0* $<$ *x* ≤ *4*", 
+    "legal_range": "*0* < *x* ≤ *4*", 
     "default": "2",
     "required": "No",
     "variability": "constant" 

@@ -702,7 +702,6 @@ DHWSYS::~DHWSYS()
 //-------------------------------------------------------------------------------
 /*virtual*/ void DHWSYS::Copy( const record* pSrc, int options/*=0*/)
 {
-	options;
 	ws_dayUseName.Release();
 	record::Copy( pSrc, options);
 	ws_dayUseName.FixAfterCopy();
@@ -1307,7 +1306,7 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 
 		if (IsSet( DHWSYS_DAYUSENAME))
 		{	// beg of day: locate DHWDAYUSE, set ws_dayUsei
-			if (WduR.findRecByNm1( ws_dayUseName, &ws_dayUsei, NULL))
+			if (basAnc::FindRecByName( &WduR, ws_dayUseName, basAnc::frn1STMATCH, nullptr, &ws_dayUsei) !=  RCOK)
 				return orMsg( ERRRT+SHOFNLN, "DHWDAYUSE '%s' not found.", ws_dayUseName.CStr());
 		}
 
@@ -1753,7 +1752,7 @@ RC DHWSYS::ws_DoHourDWHR()		// current hour DHWHEATREC modeling (all DHWHEATRECs
 	// ws_qDWHRWH = 0.f;		// heat recovered to water heater inlet, Btu
 	// ws_whUseNoHR = 0.;		// check value: hour total hot water use w/o HR, gal
 								//  init'd by caller
-	int multiDraw = 0;
+	[[maybe_unused]] int multiDraw = 0;
 	// int nTk = Top.tp_NHrTicks();
 	for (int iTk=ws_iTk0DWHR; iTk < ws_iTkNDWHR; iTk++)
 	{	DHWTICK& tk = ws_ticks[ iTk];		// DHWSYS tick info
@@ -2417,7 +2416,8 @@ void DHWSYS::ws_AccumCHDHWFlowSh(
 	float vol,	// volume during current subhour, gal
 	float tR)	// return temperature, F
 // coupling of heating load to DHWSYS is subhour lagged
-// RSYS determines water volume needed for heating given available
+// Note a DHWSYS can serve multiple RSYSs.
+// each RSYS determines water volume needed for heating given available
 //   water temp.  That vol is accumulated here and added to draws
 //   for next subhour.
 {
@@ -3087,6 +3087,22 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 
 	{ C_WHASHPTYCH_AQUATHERMAIRE,    hwatSMALL | hpwh_presets::MODELS::AquaThermAire },
 
+	{ C_WHASHPTYCH_GENERICUEF217, hwatSMALL | hpwh_presets::MODELS::GenericUEF217 },
+	{ C_WHASHPTYCH_AWHSTIER4GENERIC40, hwatSMALL | hpwh_presets::MODELS::AWHSTier4Generic40 },
+	{ C_WHASHPTYCH_AWHSTIER4GENERIC50, hwatSMALL | hpwh_presets::MODELS::AWHSTier4Generic50 },
+	{ C_WHASHPTYCH_AWHSTIER4GENERIC65, hwatSMALL | hpwh_presets::MODELS::AWHSTier4Generic65 },
+	{ C_WHASHPTYCH_AWHSTIER4GENERIC80, hwatSMALL | hpwh_presets::MODELS::AWHSTier4Generic80 },
+
+	{ C_WHASHPTYCH_BRADFORDWHITEAEROTHERMRE2H50, hwatSMALL | hpwh_presets::MODELS::BradfordWhiteAeroThermRE2H50},
+	{ C_WHASHPTYCH_BRADFORDWHITEAEROTHERMRE2H65, hwatSMALL | hpwh_presets::MODELS::BradfordWhiteAeroThermRE2H65},
+	{ C_WHASHPTYCH_BRADFORDWHITEAEROTHERMRE2H80, hwatSMALL | hpwh_presets::MODELS::BradfordWhiteAeroThermRE2H80},
+	{ C_WHASHPTYCH_BRADFORDWHITEAEROTHERMRE2HP50, hwatSMALL | hpwh_presets::MODELS::BradfordWhiteAeroThermRE2HP50},
+	{ C_WHASHPTYCH_BRADFORDWHITEAEROTHERMRE2HP65, hwatSMALL | hpwh_presets::MODELS::BradfordWhiteAeroThermRE2HP65},
+	{ C_WHASHPTYCH_BRADFORDWHITEAEROTHERMRE2HP80, hwatSMALL | hpwh_presets::MODELS::BradfordWhiteAeroThermRE2HP80},
+
+    { C_WHASHPTYCH_LG_APHWC50, hwatSMALL | hpwh_presets::MODELS::LG_APHWC50},
+    { C_WHASHPTYCH_LG_APHWC80, hwatSMALL | hpwh_presets::MODELS::LG_APHWC80},
+
 // large
 	{ C_WHASHPTYCH_SANCO2_GS3,      hwatLARGE | hpwh_presets::MODELS::SancoGS3_45HPA_US_SP },
 	{ C_WHASHPTYCH_COLMACCXV5_SP,   hwatLARGE | hpwh_presets::MODELS::ColmacCxV_5_SP },
@@ -3138,19 +3154,6 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 
 	{ C_WHASHPTYCH_SCALABLE_SP,    hwatLARGE | hpwh_presets::MODELS::TamScalable_SP },
 	{ C_WHASHPTYCH_SCALABLE_MP,    hwatLARGE | hpwh_presets::MODELS::Scalable_MP },
-
-	{ C_WHASHPTYCH_GENERICUEF217, hwatSMALL | hpwh_presets::MODELS::GenericUEF217 },
-	{ C_WHASHPTYCH_AWHSTIER4GENERIC40, hwatSMALL | hpwh_presets::MODELS::AWHSTier4Generic40 },
-	{ C_WHASHPTYCH_AWHSTIER4GENERIC50, hwatSMALL | hpwh_presets::MODELS::AWHSTier4Generic50 },
-	{ C_WHASHPTYCH_AWHSTIER4GENERIC65, hwatSMALL | hpwh_presets::MODELS::AWHSTier4Generic65 },
-	{ C_WHASHPTYCH_AWHSTIER4GENERIC80, hwatSMALL | hpwh_presets::MODELS::AWHSTier4Generic80 },
-
-	{ C_WHASHPTYCH_BRADFORDWHITEAEROTHERMRE2H50,hwatSMALL | hpwh_presets::MODELS::BradfordWhiteAeroThermRE2H50},
-	{ C_WHASHPTYCH_BRADFORDWHITEAEROTHERMRE2H65,hwatSMALL | hpwh_presets::MODELS::BradfordWhiteAeroThermRE2H65},
-	{ C_WHASHPTYCH_BRADFORDWHITEAEROTHERMRE2H80,hwatSMALL | hpwh_presets::MODELS::BradfordWhiteAeroThermRE2H80},
-
-    { C_WHASHPTYCH_LG_APHWC50, hwatSMALL | hpwh_presets::MODELS::LG_APHWC50},
-    { C_WHASHPTYCH_LG_APHWC80, hwatSMALL | hpwh_presets::MODELS::LG_APHWC80},
 
 	{ 32767,                         hpwh_presets::MODELS::unknown }  };
 
@@ -3334,7 +3337,7 @@ RC HPWHLINK::hw_GetHeatingCap(			// get heating capacity
 	heatingCap = 0.f;
 	if (!hw_pHPWH)
 		return RCBAD;		// bad setup
-	
+
 	double cap = 0.;
     if (hw_pHPWH->hasACompressor()) {
         double minT = hw_pHPWH->getMinOperatingTemp(HPWH::UNITS_F);
@@ -3885,7 +3888,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 		{
 			hw_pFCSV = new std::ofstream;
 		}
-		if (!hw_pFCSV->is_open()) 
+		if (!hw_pFCSV->is_open())
 		{
 			// dump file name = <cseFile>_<DHWHEATER name>_hpwh.csv
 			//   Overwrite pre-existing file
@@ -4014,6 +4017,11 @@ DHWHEATER::~DHWHEATER()		// d'tor
 	wh_HPWH.hw_pNodePowerExtra_W.vector::~vector<double>();
 	record::Copy( pSrc, options);
 	// base class calls FixUp() and (if _DEBUG) Validate()
+
+	// dup copied CULSTRs
+	wh_desc.FixAfterCopy();
+
+	// dup copied heap table
 	new(&wh_HPWH.hw_pNodePowerExtra_W) std::vector<double>(((const DHWHEATER*)pSrc)->wh_HPWH.hw_pNodePowerExtra_W);
 }		// DHWHEATER::Copy
 //---------------------------------------------------------------------------
@@ -4295,7 +4303,7 @@ void DHWHEATER::wh_SetDesc()		// build probable description
 		hpTy = strtprintf( " %s",getChoiTx( DHWHEATER_ASHPTY, 1));
 
 	const char* t = strtprintf( "%s %s%s", whSrcTx, whTyTx, hpTy);
-	strncpy0( wh_desc, t, sizeof( wh_desc));
+	wh_desc.Set(t);
 }		// DHWHEATER::wh_SetDesc
 //-----------------------------------------------------------------------------
 int DHWHEATER::wh_ReportBalErrorsIf() const
@@ -4725,7 +4733,7 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 		if (!wh_HPWH.hw_pHPWH->canUseSoCControls())
 		{
 			rc |= oer("'%s' does not support StateOfCharge controls",
-				   wh_desc);
+				   GetDescription());
 		}
 		else
 		{

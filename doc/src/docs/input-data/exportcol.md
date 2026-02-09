@@ -70,6 +70,22 @@ Note: Due to quirk (or bug?) in CSE parsing, setting *colHead* equal to "sum", "
   })
 }}
 
+### colGap
+
+Type: int
+
+colGap is supported for compatibility with REPORTCOL -- this allows e.g. dual-purpose macros to be constructed that describe columns destined for either REPORT or EXPORT. colGap is ignored and has no effected when used in the EXPORTCOL context.
+
+{{
+  member_table({
+    "units": "",
+    "legal_range": "*x* ≥ 0", 
+    "default": "1",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
+
 ### colWid
 
 Type: int

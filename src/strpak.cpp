@@ -31,7 +31,7 @@ static char Tmpstr[ TMPSTRSZ+2];	// buffer.
 // +2 extra bytes at end hold flag re overwrite check (obsolete? 7-10)
 static int TmpstrNx = 0;	// Next available byte in Tmpstr[].
 
-// == CULTSTR ==
+// == CULSTR ==
 // Persistent string type that can be manipulated in the CUL realm.
 //    (e.g. user input data and expressions, probes etc.)
 //    Implemented as indicies into a vector of std::string.
