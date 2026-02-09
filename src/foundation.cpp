@@ -19,6 +19,13 @@
 #include <fmt/format.h>
 #endif
 
+FOUNDATION::~FOUNDATION()
+{
+	if (fd_kivaFnd)
+		delete fd_kivaFnd;
+	fd_kivaFnd = nullptr;
+}	// FOUNDATION::~FOUNDATION
+
 RC KIVA::kv_Create()
 {
 	if (!kv_instance.bcs)
