@@ -15,9 +15,9 @@ Aug  1.294      0      0      0  1.121  0.173      0      0      0      0      0
 Sep  1.275      0      0      0  1.074  0.201      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Oct  1.389      0      0      0  1.226  0.163      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Nov  1.802      0      0      0  1.247  0.555      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Dec  2.325      0      0      0  1.266  1.058      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec  2.326      0      0      0  1.265  1.061      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
-Yr  20.489      0      0      0 14.567  5.922      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Yr  20.490      0      0      0 14.565  5.925      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
 
 
@@ -99,9 +99,9 @@ Aug  1.234      0      0      0  1.069  0.165      0      0      0      0      0
 Sep  1.238      0      0      0  1.043  0.195      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Oct  1.389      0      0      0  1.226  0.163      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Nov  1.895      0      0      0  1.312  0.584      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Dec  2.552      0      0      0  1.389  1.163      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec  2.553      0      0      0  1.387  1.166      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
-Yr  20.809      0      0      0 14.645  6.164      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Yr  20.810      0      0      0 14.643  6.167      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
 
 
@@ -254,7 +254,7 @@ Yr        0       0       0       0       0       0       0
 
 ! Log for Run 001:
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+! CSE 0.927.0+init-presets-from-cbor-hpwh.83907440.97 for Win32 console
 
 
 
@@ -1771,18 +1771,18 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:48 pm
+! CSE 0.927.0+init-presets-from-cbor-hpwh.83907440.97 for Win32 console run(s) done: Mon 09-Feb-26   3:23:23 pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
+! Executable:   c:\users\tanaya mankad\source\repos\cse\builds\cse.exe
+!               09-Feb-26   3:12 pm   (VS 14.29    3595776 bytes)  (HPWH 1.24.1+add-commercial-models-phase-1.0334ee49.1089)
 ! Command line: -x!  -b -t1 dhw_C
-! Input file:   D:\cse\test\dhw_C.cse
-! Report file:  D:\CSE\TEST\DHW_C.REP
+! Input file:   C:\Users\Tanaya Mankad\source\repos\cse\test\dhw_C.cse
+! Report file:  C:\USERS\TANAYA MANKAD\SOURCE\REPOS\CSE\TEST\DHW_C.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.13     Calls = 1         T/C = 0.1340
+!                Input:  Time = 0.11     Calls = 1         T/C = 0.1120
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 3.07     Calls = 1         T/C = 3.0730
+!           Simulation:  Time = 3.06     Calls = 1         T/C = 3.0580
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
-!                Total:  Time = 3.21     Calls = 1         T/C = 3.2090
+!                Total:  Time = 3.17     Calls = 1         T/C = 3.1720
