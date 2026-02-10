@@ -20,7 +20,6 @@
 	C source code MAY VARY AMOUNG PRODUCTS because the same 
 	dtypes.h is used for all products.
 	
-
 	Uses of preprocessing of dtypes.def:
 	   individual data type choicas may be hidden in selected products 
 	      (e.g. C_BUILDTYP2_MOBILE, 8-12-89)
@@ -458,7 +457,6 @@ RIGDIST   --  "struct { RIGTARGTY targTy; TI targTi; float targFr; RIGTARG * tar
 			COLMACCXA25_MP "ColmacCxA25_MP"
 			COLMACCXA30_MP "ColmacCxA30_MP"
 								   
-
 			NYLEC25A_SP  "NyleC25A_SP"		// Nyle Cxx external HPWHs (SP = single pass mode)
 			NYLEC60A_SP  "NyleC60A_SP"
 			NYLEC90A_SP  "NyleC90A_SP"
@@ -694,7 +692,6 @@ RIGDIST   --  "struct { RIGTARGTY targTy; TI targTi; float targFr; RIGTARG * tar
 			  DEFAN		"DOAS_Exhaust"
 			}
 			
-
 *choicb FANTYCH   { NONE		"none"				// fan type/position 3-92
 			  DRAWTHRU	"drawthru"	
 			  BLOWTHRU	"blowthru"	
@@ -705,7 +702,6 @@ RIGDIST   --  "struct { RIGTARGTY targTy; TI targTi; float targFr; RIGTARG * tar
 			  EXHAUST	"exhaust"		//
 			}
 			
-
 *choicB MOTTYCH		// (fan) motor type
 			{ PSC "PSC"		// permanent split capacitor
 			  BPM "BPM"		// brushless permanent magnet (aka ECM)
@@ -807,7 +803,6 @@ RIGDIST   --  "struct { RIGTARGTY targTy; TI targTi; float targFr; RIGTARG * tar
                        ON         "on"		// 
                      }
                      
-
 *choicn VENTAVAILVC {			// vent availability
 			NONE "None"
 			WHOLEBLDG "WholeBuilding"
