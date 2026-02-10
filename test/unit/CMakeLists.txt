@@ -4,6 +4,7 @@ set(source
       xiopak.unit.cpp
       cvpak.unit.cpp
 	  nummeth.unit.cpp
+      tdpak.unit.cpp
       ${CSE_SOURCE_DIR}/src/libstubs.cpp
       ${CSE_BINARY_DIR}/src/untab.cpp
       ${CSE_BINARY_DIR}/src/dttab.cpp

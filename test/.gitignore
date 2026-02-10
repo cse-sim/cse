@@ -1,0 +1,21 @@
+## cse/test .gitignore
+
+*.rep
+*.REP
+*.csv
+*.err
+*.spl
+*.bat
+ref64/
+testing/
+error_handling/*.rep
+error_handling/*.csv
+error_handling/*.err
+error_handling/*.spl
+
+// re-include reference rep files
+!ref-win32-msvc/*.rep
+!ref-win32-msvc/*.REP
+
+# why?
+!*.exe
