@@ -29,6 +29,7 @@ METER   "MtrFuel"
 DHWMETER DHWMtrFXMix
 DHWMETER DHWMtrWH
 
+   
 
    // ACM AppE table 1 hourly use schedules
 //  should be written to cse file for use in wsUse input
@@ -1244,7 +1245,7 @@ REPORT rpType=MTR rpMeter=MtrElec rpFreq=Month
 #undef BATH
 REPORT HOURLYDHW rpType=UDT rpFreq=Hour rpDayBeg=jan 1 rpDayEnd=jan 31 rpcpl=83
     Reportcol colVal=$hour  colHead="Hr" colWid=2 colDec=0
-    Reportcol colVal=$tDbO colHead="Tout" colWid=4 colDec=1
+    Reportcol colVal=$tDbO colHead="Tout" colWid=4 colDec=1    
     // Reportcol colVal=@znRes["Attic"].h.tAir colHead="Tatt" colWid=4 colDec=1
 	Reportcol colVal= DHW3BR colHead="Day"  colWid=4
 	Reportcol colVal=@DHWSYS["DS1"].tInlet colHead="Tinlet" colWid=6 colDec=1
