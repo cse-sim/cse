@@ -460,7 +460,7 @@ public:
 // ============================================================================
 // class OUTFILE: RAII output file
 class OUTFILE : public BASEFILE
-{	
+{
 public:
 	OUTFILE() {}
 	OUTFILE(const char* fpath, const char* what)
@@ -541,7 +541,7 @@ int nlmtypes = 0;                                        // current number of li
 
 struct FIELDDESC
 {
-	int dtype; 
+	int dtype;
 	int lmtype;
 	int untype;
 };
@@ -560,7 +560,7 @@ int nfdtypes = 0;                                                        // Curr
 static bool VerifyDir( int erOp, const char* dirPath, const char* what)
 {	int xfRet = xfExist( dirPath);
 	if (xfRet == 3)
-		return true;	
+		return true;
 	const char* msg =
 		xfRet == 0 ? "path not found"
 		: xfRet == 1 || xfRet == 2 ? "not a directory"
@@ -595,7 +595,6 @@ int CDEC main( int argc, char * argv[] )
 	}
 
 	ofSummary.Open(ABT, "rcdef.sum", "run summary");
-	
 
 	// command line: check number of arguments
 	if (argc <= REQUIRED_ARGS || argc > REQUIRED_ARGS+2)
@@ -616,7 +615,6 @@ int CDEC main( int argc, char * argv[] )
 	const char* fNameFields = argv[4];
 	const char* fNameRecords = argv[5];
 
-	
 
 	// check include directory argument if specified
 	if (HFILESOUT)              /* if argv[6] not NUL */
@@ -682,7 +680,6 @@ int CDEC main( int argc, char * argv[] )
 			msgWrite(ABT, "Cannot open working file dtypes.hx\n");
 	}
 	Do_Dtypes(fNameDtypes, fdtyph);
-	
 
 	// Unit definitions
 	Do_Units( fNameUnits, fdtyph);
@@ -808,7 +805,6 @@ LOCAL void Do_Dtypes(                      // do data types
 	FILE* file_dtypesh)     // where to write dtypes.h[x]
 							//  nullptr if not writing, else assumed open
 {
-	
 
 	newsec("DATA TYPES");
 
@@ -829,8 +825,7 @@ LOCAL void Do_Dtypes(                      // do data types
 			  LI size				0 HIWORD could indicate not a choice type
 		  choice type (constructed struct CHOICB):
 			  LI SetHiLo16Bits( nChoices, size)	 size in lo16, nChoices in hi16
-			  char * choiceTexts[nChoices];  */ 
-											
+			  char * choiceTexts[nChoices];  */
 
 // 3-1-94 could now more cleanly store everything into Dttab thru srd.h:GetDttab(dt) -- do at next rework.
 
@@ -856,7 +851,7 @@ LOCAL void Do_Dtypes(                      // do data types
 
 		const char* cp = nullptr;
 		int choicb = 0;			// not (yet) a choice data type
-		int choicn = 0; 
+		int choicn = 0;
 		if (*fInDT.SVal(STK0) == '*')                             // is it "*choicb"?
 		{
 			if (_stricmp( fInDT.SVal(STK0) + 1, "choicb")==0)
@@ -1880,7 +1875,6 @@ LOCAL bool Do_Recs(                  // do records
 	frc = NULL;                         // no rcxxxx.h output file open yet (FILE)
 	rchFileNm = NULL;                   // .. (name)
 	char dbuff[80] = { 0 };					// filename .hx
-	 
 
 	/*--- decode records info in def file ---*/
 
@@ -1913,7 +1907,7 @@ LOCAL bool Do_Recs(                  // do records
 		/* process *file <name> statement before next record if present */
 
 		if (_stricmp(fInRc.SVal(0), "*file") == 0)              // if *file
-		{	
+		{
 			if (frc)                            // if a file open (HFILESOUT and not start)
 			{
 				char temp[80];
@@ -2548,7 +2542,6 @@ LOCAL void GetRecordFields( INFILE& fInRc)
 
 			}           // switch (val)
 
-			
 
 			if (wasDeclare)
 			{	if (fInRc.PeekToks("s") == GTEND)
@@ -3037,7 +3030,7 @@ static void write_summary(              // write rcdef summary to screen and fil
 }  // write_summary
 //-----------------------------------------------------------------------------
 static void write_summary1( FILE* stream, bool bListUnusedFields /*=false*/)
-{	
+{
 	fprintf( stream, " %d errors\n", Errcount);
 	fprintf( stream, " Stbuf use: %zd of %zd\n", Stbp-Stbuf, STBUFSIZE);
 	fprintf( stream, " dtypes: %d of %d (%zd bytes)\n", ndtypes, MAXDT, dttabsz*sizeof(Dttab[0]));
