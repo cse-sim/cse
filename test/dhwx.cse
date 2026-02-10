@@ -1386,6 +1386,16 @@ ALTER DHWSYS "DS1"
 RUN
 
 UNSET runTitle
+runTitle = "Generic Tier 4 50 gal UEF 5.0"
+
+ALTER DHWSYS "DS1"
+    ALTER DHWHEATER HPWH
+        whASHPType = AWHSTier4Generic50
+        whUEF = 5.0
+
+RUN
+
+UNSET runTitle
 runTitle = "BradfordWhiteAeroThermRE2HP50"
 
 ALTER DHWSYS "DS1"
