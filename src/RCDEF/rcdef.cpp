@@ -596,7 +596,6 @@ int CDEC main( int argc, char * argv[] )
 
 	ofSummary.Open(ABT, "rcdef.sum", "run summary");
 	
-
 	// command line: check number of arguments
 	if (argc <= REQUIRED_ARGS || argc > REQUIRED_ARGS+2)
 	{
@@ -617,7 +616,6 @@ int CDEC main( int argc, char * argv[] )
 	const char* fNameRecords = argv[5];
 
 	
-
 	// check include directory argument if specified
 	if (HFILESOUT)              /* if argv[6] not NUL */
 	{
@@ -683,7 +681,6 @@ int CDEC main( int argc, char * argv[] )
 	}
 	Do_Dtypes(fNameDtypes, fdtyph);
 	
-
 	// Unit definitions
 	Do_Units( fNameUnits, fdtyph);
 
@@ -809,7 +806,6 @@ LOCAL void Do_Dtypes(                      // do data types
 							//  nullptr if not writing, else assumed open
 {
 	
-
 	newsec("DATA TYPES");
 
 	INFILE fInDT( fNameDtypesDef, "data type definitions");		// open source def file (ABT on failure)
@@ -831,7 +827,6 @@ LOCAL void Do_Dtypes(                      // do data types
 			  LI SetHiLo16Bits( nChoices, size)	 size in lo16, nChoices in hi16
 			  char * choiceTexts[nChoices];  */ 
 											
-
 // 3-1-94 could now more cleanly store everything into Dttab thru srd.h:GetDttab(dt) -- do at next rework.
 
 // loop over info in data types definition file
@@ -1881,7 +1876,6 @@ LOCAL bool Do_Recs(                  // do records
 	rchFileNm = NULL;                   // .. (name)
 	char dbuff[80] = { 0 };					// filename .hx
 	 
-
 	/*--- decode records info in def file ---*/
 
 	/* top of records loop.  Process a between-records *word or a RECORD. */
@@ -2549,7 +2543,6 @@ LOCAL void GetRecordFields( INFILE& fInRc)
 			}           // switch (val)
 
 			
-
 			if (wasDeclare)
 			{	if (fInRc.PeekToks("s") == GTEND)
 					goto nextFld;
