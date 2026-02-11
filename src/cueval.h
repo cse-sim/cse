@@ -198,8 +198,8 @@ PSRATLOD2,	// rat load 2 bytes: fetches SI/USI.
 PSRATLOD4,	// rat load 4 bytes: fetches float/INT/UINT
 PSRATLODD,	// rat load double: converts it float.
 PSRATLODL,	// rat load INT: converts it float.
-PSRATLODA,	// rat load char array (eg ANAME): makes dm copy, leaves ptr in stack
-PSRATLODS,	// rat load string: loads char * from record, duplicates.
+PSRATLODA,	// rat load char array: makes dm copy, leaves ptr in stack
+PSRATLODS,	// rat load string: loads CULSTR from record, duplicates.
 
 // expression data access: used when an expr references (probes) an input data location already containing an expression.
 PSEXPLOD4,	// load 4 byte (INT,float) expr value.  2-byte expression number follows inline.

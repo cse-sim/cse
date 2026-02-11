@@ -9,17 +9,13 @@
 #if !defined( _ASHWAT_H)
 #define _ASHWAT_H
 
-#include <vector>
-#include <string>
-using namespace std;
-
 ///////////////////////////////////////////////////////////////////////////////
 // public functions
 ///////////////////////////////////////////////////////////////////////////////
 enum AWMSGTY { msgIGN, msgDBG, msgWRN, msgERR };
 void ASHWAT_Setup(
 	void* msgContext,
-	void (*_pMsgCallBackFunc)( void* msgContext, AWMSGTY msgTy, const string& msg),
+	void (*_pMsgCallBackFunc)( void* msgContext, AWMSGTY msgTy, const std::string& msg),
 	int options=0);
 //=============================================================================
 
@@ -48,7 +44,7 @@ struct CFSLWP
 	int clw_IsNEQ( const CFSLWP& lwp, double tol=0., int options=0,
 		const char* w1="?", const char* w2="?") const;
 	CFSLWP& clw_Reverse();
-	string DbFmt( const char* tag="") const;
+	std::string DbFmt( const char* tag="") const;
 };	// struct CFSLWP
 
 // Short wave (aka SW or solar) layer properties
@@ -89,7 +85,7 @@ struct CFSSWP
 	void csw_SpecularEstimateDiffuseProps();
 	bool csw_FabricEstimateDiffuseProps();
 
-	string DbFmt( const char* tag="") const;
+	std::string DbFmt( const char* tag="") const;
 };	// struct CFSSWP
 
 //=============================================================================
@@ -195,10 +191,10 @@ struct CFSLAYER
 	void cl_FillDefaultsGeom( const CFSSWP& swp);
 	void cl_FillDefaultsLWP( CFSLWP& lwp);
 	void cl_FillDefaultsSWP( CFSSWP& swp);
-	bool cl_CheckFixLWP( CFSLWP& lwp, vector< string> &msgs, const char* what);
-    bool cl_CheckFixSWP( CFSSWP& swp, vector< string> &msgs, const char* what);
-	bool cl_CheckFixGeom( vector< string> &msgs, const char* what);
-	bool cl_CheckFix( vector< string> &msgs, const char* what);
+	bool cl_CheckFixLWP( CFSLWP& lwp, std::vector< std::string> &msgs, const char* what);
+    bool cl_CheckFixSWP( CFSSWP& swp, std::vector< std::string> &msgs, const char* what);
+	bool cl_CheckFixGeom( std::vector< std::string> &msgs, const char* what);
+	bool cl_CheckFix( std::vector< std::string> &msgs, const char* what);
 	bool cl_CheckFix( const char* what);
 
 	bool cl_OffNormalProperties( double THETA, double OMEGA_V, double OMEGA_H,
@@ -239,7 +235,7 @@ struct CFSFILLGAS
 	void cfg_Clear();
 	bool cfg_GetFillGas( const char* FGID);
 	double cfg_Density( double P, double T) const;
-	string DbFmt( const char* tag="") const;
+	std::string DbFmt( const char* tag="") const;
 };	// struct CFSFILLGAS
 
 //=============================================================================
@@ -267,7 +263,7 @@ struct CFSGAP
 		double _TMan=21., double _PMan=-1.);
 	void cg_AdjustVBGap( const CFSLAYER& L);
 	double cg_HConvGap( double T1, double T2);
-	string DbFmt( const char* tag="") const;
+	std::string DbFmt( const char* tag="") const;
 };	// struct CFSGAP
 
 //=============================================================================
@@ -296,7 +292,7 @@ struct CFSTY
 	int cf_HasControlledShade() const;
 	int cf_Info( int& nGlz, int& nShd, int& iLShd) const;
 	bool cf_IsSealed() const;
-	bool cf_Finalize( string* pMsg=NULL);
+	bool cf_Finalize( std::string* pMsg=NULL);
 	int cf_Append( const CFSTY& FSX, bool bRev=false);
 	double cf_EffectiveEPSLB() const;
 	double cf_EffectiveEPSLF() const;

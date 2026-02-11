@@ -40,7 +40,7 @@ RC FC dStr2MonDay( 	// convert string to month and day. caller has removed any q
 {
 // split into month and day tokens and deblank both ends of both tokens in place (modifies caller's buffer)
 	while (isspaceW(*str))  				// deblank beginning: advance ptr
-		*str++;
+		str++;
 	char buf[30];
 	char * s1 = strncpy( buf, str, sizeof(buf)-1);	// make a copy to modify. s1 will be start 1st token.
 	buf[sizeof(buf)-1] = '\0';

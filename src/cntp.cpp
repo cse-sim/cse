@@ -383,8 +383,12 @@ RC TOWERPLANT::varSpeedF( 	// determine f needed for one tower to output power q
 // initial trial f: when possible, interpolate from prior f and q for fast repeated calls in same subhr
 // CAUTION: old q will not corres to old f if weather, setpoint, etc changed, so never save initial point.
 	if (_q > qMax1 || _q < qMin1)					// /0 and major change protection
-		if (_q <= qWant) _f  =  _f * (qWant - qMin1)/(_q - qMin1);	// if prior q too big (negative), linear inter tween qMin1 and q
-		else   	        _f += (1. - _f)*(qWant - _q)/(qMax1 - _q);	// else prior q too small (neg), interp tween q and qMax1
+	{
+		if (_q <= qWant)
+			_f = _f * (qWant - qMin1)/(_q - qMin1);	// if prior q too big (negative), linear inter tween qMin1 and q
+		else
+			_f += (1. - _f)*(qWant - _q)/(qMax1 - _q);	// else prior q too small (neg), interp tween q and qMax1
+	}
 	// else: fall thru with old f as 1st trial. f < 0 and f > 1 fixed below.
 
 #if 1	// believe this is faster than next, provided towModel is stable enuf to assure convergence. 9-92.
@@ -392,7 +396,7 @@ RC TOWERPLANT::varSpeedF( 	// determine f needed for one tower to output power q
 // search loop. secant method: inter/extrapolate from most recent two points
 
 	DBL f1=0., q1=qMin1;				// init prior point to one precomputed end of interval
-	for (SI niter = 0; ; )
+	for (int niter = 0; ; )
 	{
 		if   (_f <= 0.)
 		{

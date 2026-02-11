@@ -1,9 +1,18 @@
 build/
-output/
-node_modules/
 config.yaml
-erb-out.txt
-documentation-coverage-report.txt
-package-lock.json
 
+*.egg*/
+.doit.*
+.pytest_cache/
+.vscode/
+.venv/
+__pycache__/
+dist/
 
+**/probe-definitions/*.md
+!**/probe-definitions/index.md
+
+probes.txt
+cullist.txt
+
+.DS_Store

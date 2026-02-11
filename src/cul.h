@@ -290,7 +290,7 @@ extern SI firstCulCall;	// non-0 if first cul call, 0 on reentry (eg after a RUN
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
 // cul.cpp
 void FC culClean(CLEANCASE cs);
-SI FC cul( SI cs, const char* fName, char *defex, CULT *cult, record *e, BOO *pAuszF=NULL);
+SI FC cul( SI cs, const char* fName, const char* defex, CULT *cult, record *e, BOO *pAuszF=NULL);
 TI FC ratDefO( BP b);
 
 // cncult2.cpp

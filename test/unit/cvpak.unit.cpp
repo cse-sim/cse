@@ -47,7 +47,11 @@ TEST(cvpak, output_convert)
 	  { -11.3700f, UNNONE, 10, (FMTSQ | FMTRTZ) + 4, 0, "-11.37" },
           { nanf, UNNONE, 10, (FMTSQ | FMTRTZ) + 4, 0, "nan" },
           { nanf, UNLENGTH, 10, (FMTSQ | FMTRTZ) + 4, 0, "nan" },
-	};
+          { 1.5f, UNLENGTH, 10, (FMTSQ | FMTRTZ) + 6, 0, "1'6\"" },
+          { 1.55f, UNLENGTH, 10, (FMTSQ | FMTRTZ) + 6, 0, "1'6.6\"" },
+          { 1.0f, UNLENGTH, 10, (FMTSQ | FMTRTZ) + 6, 0, "1'0\"" },
+          { 1.5f, UNLENGTH, 10, (FMTRTZ) + 6, 0, "1' 6\"     " },
+	  };
 
 	for (FVTOS& fv : fvt)
 	{

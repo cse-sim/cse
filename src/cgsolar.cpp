@@ -244,7 +244,7 @@ LOCAL void sgrPut( const char* sgName, SGTARG* pTarg, float* pCtrl, BOO isSubhrl
 	BOO isEndIvl,
 #endif
 	double bmBm, double dfDf, double bmDf=0.);
-LOCAL void toSurfSide( TI xsi, SI si, TI czi, const double sgf[ socCOUNT][ sgcCOUNT]);
+LOCAL RC toSurfSide( TI xsi, SI si, TI czi, const double sgf[ socCOUNT][ sgcCOUNT]);
 LOCAL void toZoneCAir( TI zi, TI czi, float bmo, float dfo, float bmc, float dfc);
 
 //---------------------------------------------------------------------------
@@ -279,12 +279,6 @@ A Solar Gain Table entry (SGRAT record) contains:
 	a pointer to a TARGET (float * place to add gain to)
 	a pointer to a control variable to multiply gain, or NULL
 	1 single diffuse and 24 hourly beam RADIATION MULTIPLIERS.
-
-The possible targets (2-95) for gain are:
-		ZNR.qSgAir	zone air
-		ZNR.qSgTot	zone total (redundant check/report value)
-		ZNR.qSgTotSh	ditto, subhourly portion
-		MASSBC[].sg	mass inside [0], mass outside [1].
 
 Control variables: each target has an SGRAT record with NULL .control.
 In addition, if there is a controlled portion of its gain, it contains
@@ -520,7 +514,7 @@ void XSRAT::xr_SGAccumAbsTrans()	// accumulate zone surface absorptance and tran
 		// sum area weighted tau for room
 		ZNR* zp = ZrB.GetAt( ownTi);	// zone containing "inside" of this window
 		for (int oc=0; oc<socCOUNT; oc++)
-			zp->rmTrans[ oc] += tauAbsB[ oc] * x.xs_fMult * x.xs_area / zp->zn_surfA;
+			zp->rmTrans[ oc] += tauAbsB[ oc] * x.xs_areaGlz / zp->zn_surfA;
 	}
 }		// XSRAT::xr_SGAccumAbsTrans
 //----------------------------------------------------------------------
@@ -849,10 +843,9 @@ SgThruWin::SgThruWin(			// c'tor
 	double tBm1[ socCOUNT])	// unit area beam+diffuse transmitted per unit exterior beam, dimless
 		: tw_xr( xr)
 {
-	double Ag = tw_xr->x.xs_AreaGlazed();
 	for (int oc=0; oc<socCOUNT; oc++)
-	{	tw_tDf[ oc] = Ag*tDf1[ oc];		// scale by area
-		tw_tBm[ oc] = Ag*tBm1[ oc];
+	{	tw_tDf[ oc] = tw_xr->x.xs_areaGlz*tDf1[ oc];		// scale by area
+		tw_tBm[ oc] = tw_xr->x.xs_areaGlz*tBm1[ oc];
 	}
 }		// SgThruWin::SgThruWin
 //----------------------------------------------------------------------
@@ -1116,7 +1109,7 @@ void ZNR::zn_DbDumpSGDIST(		// dump zone solar gain distribution values
 //=============================================================================
 // non-member solar gain functions
 //----------------------------------------------------------------------
-LOCAL void toSurfSide( 	// add SgR entries for solar gain to surface side
+LOCAL RC toSurfSide( 	// add SgR entries for solar gain to surface side
 
 	TI xsi, 			// which surface (XsR subscript)
 						//   if <0, no matching zone energy bal entry
@@ -1125,9 +1118,9 @@ LOCAL void toSurfSide( 	// add SgR entries for solar gain to surface side
 	const double sgf[ socCOUNT][ sgcCOUNT])		// gain factors
 // does not use accumulators -- is used to distribute accumulated gain.
 {
-	RC rc;
+	RC rc = RCOK;
 	// shades open
-	rc = sgrAdd( 					// create or add to SGRAT SgR record; zone total also; nop if gains small or zero.
+	rc |= sgrAdd( 					// create or add to SGRAT SgR record; zone total also; nop if gains small or zero.
 		si ? SGDTTSURFO : SGDTTSURFI,     	// add gain to surface outside or inzide
 		xsi,								// surface subscript
 		NULL,  								// no control variable (shades open)
@@ -1136,7 +1129,7 @@ LOCAL void toSurfSide( 	// add SgR entries for solar gain to surface side
 	// shades closed
 	float* ctrl		// control variable pointer for shades-closed difference
 		= czi ? &ZrB[ czi].i.znSC : NULL;
-	rc = sgrAdd(
+	rc |= sgrAdd(
 		si ? SGDTTSURFO : SGDTTSURFI,     	// add gain to mass outside or inzide
 		xsi,								// surface subscript
 		ctrl,
@@ -1150,6 +1143,8 @@ LOCAL void toSurfSide( 	// add SgR entries for solar gain to surface side
 		//  in which case, there should be a control zone
 		printf( "toSurfSide inconsistency\n");
 #endif
+
+	return rc;
 
 }		// toSurfSide
 //----------------------------------------------------------------------
@@ -1238,6 +1233,7 @@ o   BOO isEndIvl = FALSE;	// non-0 for end-time-interval gain (zone air), 0 for 
 #ifdef SOLAVNEND
 o		isEndIvl = TRUE;
 #endif
+	default:
 		break;
 	}
 

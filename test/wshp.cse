@@ -896,7 +896,9 @@ MATERIAL   "IntMassMat-Gypsum"
 
 METER   "MtrElec"  
 
-METER   "MtrNatGas"  
+METER   "MtrNatGas"
+
+LOADMETER "MtrLoads"
 
 
 IZXFER   "Zone1ToAtticCeiling-BypassxA"  
@@ -2081,7 +2083,6 @@ ZONE   "GarageAttic-atc"
 
 #define HEATCAPF 1
 RSYS   "rsys1"
-#if 1
   rsType = WSHP
   rsCapC = 48000
   rsEER = 13.5
@@ -2093,50 +2094,11 @@ RSYS   "rsys1"
   rsFanPwrH = 0.45                     // Heating fan power.  Heating air flow is estimated based on a 50 ?F temperature rise.
   rsFanPwrC = 0.45                     // Cooling fan power.
   rsParElec = ($tdboHrAv < 50) * 40    // Parasitic electric use, W
-    // rsCtrlAuxH = CYCLE = default
- #else
-   rsType = "VCHP2"                     // System type
-   rsFChgC = 0.96                        // Refrigerant charge adjustment factor
-   rsSEER = 22                          // Cooling SEER
-   rsEER = 13.5
-   rsVfPerTon = 350                     // CFM per Ton (default = 350)
-   rsFanPwrH = 0.45                     // Heating fan power.  Heating air flow is estimated based on a 50 ?F temperature rise.
-   rsFanPwrC = 0.45                     // Cooling fan power.
-   rsAdjForFanHt = Yes
-   rsParElec = ($tdboHrAv < 50) * 40    // Parasitic electric use, W
-   rsDefrostModel = "RevCycleAux"       // Modeling options for ASHP outdoor coil defrosting
-   rsFxCapH = 1.466667                  // Heating sizing factor
-   rsHSPF = 11                          // ratio of BTU heat output over the heating season to watt-hours of electricity used, ratio
-   rsCap115 = 41846.2                   // Total cooling capacity (@ 115°F), Btuh
-   rsCapC = 48000                       // Total rated cooling capacity (@ 95°F), Btuh
-   rsCap82 = 52000                      // Total rated cooling capacity (@ 82°F), Btuh
-   rsCap47 = 46000*HEATCAPF             // Total rated heating capacity (@ 47°F), Btuh
-   rsCap17 = 42500*HEATCAPF             // Total rated heating capacity (@ 17°F), Btuh
-   rsCap05 = 31130*HEATCAPF             // Total rated heating capacity (@ 5°F), Btuh
-   rsCapAuxH = 50000
-   // rsCtrlAuxH = CYCLE = default
-   rsCOP115 = 2.16013                   // ratio of cooling provided over the electrical energy consumed (@ 115°F), ratio
-   rsCOP95 = 2.8                        // ratio of cooling provided over the electrical energy consumed (@ 95°F), ratio
-   rsCOP82 = 3.33                        // ratio of cooling provided over the electrical energy consumed (@ 82°F), ratio
-   rsCOP47 = 3.35                       // ratio of heating provided over the electrical energy consumed (@ 47°F), ratio
-   rsCOP17 = 2.61                       // ratio of heating provided over the electrical energy consumed (@ 17°F), ratio
-   rsCOP05 = 2.26                       // ratio of heating provided over the electrical energy consumed (@ 5°F), ratio
-   rsCOPMin115 = 1.66728                // ratio of cooling provided over the elec energy consumed @ minimum 115°F capacity, ratio
-   rsCOPMin95 = 4.01                       // ratio of cooling provided over the elec energy consumed @ minimum 95°F capacity, ratio
-   rsCOPMin82 = 4.78                     // ratio of cooling provided over the elec energy consumed @ minimum 82°F capacity, ratio
-   rsCOPMin47 = 4.23                    // ratio of heating provided over the elec energy consumed @ minimum 47°F capacity, ratio
-   rsCOPMin17 = 3.37                    // ratio of heating provided over the elec energy consumed @ minimum 17°F capacity, ratio
-   rsCOPMin05 = 2.86                    // ratio of heating provided over the elec energy consumed @ minimum 5°F capacity, ratio
-   rsLoadFMin115 = 7800./25800.             // turndown ratio -- lowest capacity fraction handled via compressor speed reduction (@ 115°F), ratio
-   rsLoadFMin95 = 7800./25800.             // turndown ratio -- lowest capacity fraction handled via compressor speed reduction (@ 95°F), ratio
-   rsLoadFMin82 = 8320./27520.             // turndown ratio -- lowest capacity fraction handled via compressor speed reduction (@ 82°F), ratio
-   rsLoadFMin47 = 7800./31400.               // turndown ratio -- lowest capacity fraction handled via compressor speed reduction (@ 47°F), ratio
-   rsLoadFMin17 = 4260./17041.              // turndown ratio -- lowest capacity fraction handled via compressor speed reduction (@ 17°F), ratio
-   rsLoadFMin05 = 3507./14028.            // turndown ratio -- lowest capacity fraction handled via compressor speed reduction (@ 5°F), ratio
-#endif
+  // rsCtrlAuxH = CYCLE = default
    rsOAVType = "None"                   // OAV system type
    rsElecMtr = "MtrElec"                // Electric use meter
    rsFuelMtr = "MtrNatGas"              // Natural gas use meter
+   rsLoadMtr = "MtrLoads"
 
 
 #if 1
@@ -2348,14 +2310,14 @@ DUCTCOLS( Reportcol, 1, 2, 3, Y, .001, "", "Yr")
   RXCOL colHead="QcBal"  colVal=(@RSYSRES[ rs].X.qcSenNet-@ZNRES[ zn].X.qscHvac-@DUCTSEGRES[ dctTot].X.qcTotSen)*f colWid=6 colDec=0
 
 REPORT rpType=UDT rpFreq=month  rpTitle="Duct / system / zone energy balance"
-DUCTCOLX( Reportcol,M, 1, 1, 1, 2, 3, .001, "Mon", @Top.monStr)
+DUCTCOLX(Reportcol,M,1,1,1,2,3,.001,"Mon",@Top.monStr)
 ENDREPORT
 REPORT rpType=UDT rpFreq=Year rpHeader = No
-DUCTCOLX( Reportcol,Y,1, 1, 1, 2, 3, .001, "", "Yr")
+DUCTCOLX(Reportcol,Y,1,1,1,2,3,.001,"","Yr")
 ENDREPORT
 
 REPORT rpType=UDT rpFreq=subhour rpDayBeg=(HD1)-1 rpDayEnd=(HD1)+1 rpCpl=-1 rpTitle="Duct / system / zone energy balance"
-DUCTCOLX( Reportcol,S, 1, 1, 1, 2, 3, 1, "SH", $subhour)
+DUCTCOLX(Reportcol,S,1,1,1,2,3,1,"SH",$subhour)
 ENDREPORT
 
 
@@ -2372,8 +2334,8 @@ ENDREPORT
     RXCOL colHead="Tlv"  colVal=@RSYS[ rs].asOut.tDb  colWid=6 colDec=2 \
     RXCOL colHead="Tsup"  colVal=@RSYS[ rs].asSup.tDb  colWid=6 colDec=2 \
     RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHrDH[ 0] colWid=5 colDec=2 \
-    RXCOL colHead="capFS" colVal=@RSYS[ rs].capHt colWid=5 colDec=0 \
-    RXCOL colHead="capMS" colVal=0 colWid=5 colDec=0 \
+    RXCOL colHead="capHt" colVal=@RSYS[ rs].capHt colWid=5 colDec=0 \
+    RXCOL colHead="capHtFS" colVal=@RSYS[ rs].capHtFS colWid=7 colDec=0 \
     RXCOL colHead="znLd" colVal=@RSYS[ rs].znLoad[ 0] colWid=5 colDec=0 \
     RXCOL colHead="capF" colVal=@RSYS[ rs].fCondCap colWid=5  colDec=3 \
     RXCOL colHead="inpF" colVal=@RSYS[ rs].fCondInp colWid=5  colDec=3 \
@@ -2399,7 +2361,55 @@ ENDREPORT
     RXCOL colHead="COPov"  colVal=abs( @Zone[zn].qsHVAC)/max( 1, @RSYS[rs].inPrimary+@RSYS[rs].inAux+@RSYS[rs].inDefrost+@RSYS[rs].inFan) colWid=5 colDec=3
 
 REPORT rpType=UDT rpFreq=subhour rpDayBeg=(HD1)-1 rpDayEnd=(HD1)+1 rpCpl=-1 rpTitle="RSYS Heating subhour details"
-SYSCOLSH( Reportcol, 1, 1, "Attic-atc", 3)
+SYSCOLSH(Reportcol,1,1,"Attic-atc",3)
+
+#if 1
+// report columns: RSYS cooling subhour details
+#define SYSCOLSC( RXCOL, rs, lm, zn, zat, dctTot) \
+    RXCOL colHead="mon" colVal=$Month colWid=3 \
+    RXCOL colHead="day" colVal=$Dayofmonth colWid=3 \
+    RXCOL colHead="Hr" colVal=@Top.iHr colWid=2  \
+    RXCOL colHead="Sh" colVal=@Top.iSubHr colWid=2 \
+    RXCOL colHead="ToDb" colVal=@Top.tDbOSh colWid=5 colDec=2 \
+    RXCOL colHead="Tatt"  colVal=@Zone[zat].tz colWid=5 colDec=2 \
+    RXCOL colHead="Tzn"  colVal=@Zone[zn].tz colWid=5 colDec=2 \
+    RXCOL colHead="Tent"  colVal=@RSYS[ rs].asIn.tDb  colWid=6 colDec=2 \
+    RXCOL colHead="Tlv"  colVal=@RSYS[ rs].asOut.tDb  colWid=6 colDec=2 \
+    RXCOL colHead="Tsup"  colVal=@RSYS[ rs].asSup.tDb  colWid=6 colDec=2 \
+    RXCOL colHead="UnMet" colVal=@ZnRes[zn].S.unMetHrs[ 1] colWid=5 colDec=2 \
+    RXCOL colHead="znLd" colVal=@RSYS[ rs].znLoad[ 0] colWid=6 colDec=0 \
+    RXCOL colHead="capF" colVal=@RSYS[ rs].fCondCap colWid=5  colDec=3 \
+    RXCOL colHead="inpF" colVal=@RSYS[ rs].fCondInp colWid=5  colDec=3 \
+    RXCOL colHead="SHR" colVal=@RSYS[ rs].shr  colWid=4 colDec=3 \
+    RXCOL colHead="capSenNetFS" colVal=@RSYS[ rs].capSenNetFS colWid=11 colDec=0 \
+    RXCOL colHead="capSen" colVal=@RSYS[rs].capSenCt colWid=6 colDec=0 \
+    RXCOL colHead="capLat" colVal=@RSYS[rs].capLatCt colWid=6 colDec=0 \
+    RXCOL colHead="capTot" colVal=@RSYS[rs].capTotCt colWid=6 colDec=0 \
+    RXCOL colHead="PLR" colVal=@RSYS[ rs].PLR colWid=5  colDec=3 \
+    RXCOL colHead="runF" colVal=@RSYS[ rs].runF colWid=5  colDec=3 \
+    RXCOL colHead="spdF" colVal=@RSYS[ rs].speedF colWid=5  colDec=3 \
+    RXCOL colHead="PLF"   colVal=@RSYS[ rs].plf  colWid=5  colDec=3 \
+    RXCOL colHead="CFMav" colVal=@Zone[ zn].rsAmfSup/4.5  colWid=5 colDec=1 \
+    RXCOL colHead="qSCoil" colVal=@RSYS[ rs].outSen colWid=6 colDec=0 \
+    RXCOL colHead="qSFan" colVal=@RSYS[ rs].outFan colWid=5 colDec=0 \
+    RXCOL colHead="qSNet" colVal=@RSYS[ rs].outSenTot colWid=6 colDec=0 \
+    RXCOL colHead="qSNet2"  colVal=@RSYSRES[ rs].S.qcSenNet/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="qLd" colVal=@LOADMETER[ lm].S.qClg/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="qSDct" colVal=@DuctSegRes[ dctTot].S.qcTotSen/@Top.subhrDur colWid=5 colDec=0 \
+    RXCOL colHead="qsZn1"  colVal=@ZnRes[zn].S.qscHVAC/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="qsZn2"  colVal=@Zone[ zn].qsHVAC colWid=6 colDec=0 \
+    RXCOL colHead="qBal1" colVal=@RSYS[ rs].outSenTot-@Zone[zn].qsHVAC-@DUCTSEGRES[ dctTot].S.qcTotSen/@Top.subhrDur colWid=5 colDec=0 \
+    RXCOL colHead="qBal2"  colVal=(@RSYSRES[ rs].S.qcSenNet-@ZNRES[ zn].S.qscHvac-@DUCTSEGRES[ dctTot].S.qcTotSen)/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="qLat1" colVal=@RSYS[ rs].outLat colWid=6 colDec=0 \
+    RXCOL colHead="qLat2"  colVal=@ZnRes[zn].S.qlMech/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="qtZn"   colVal=(@ZnRes[zn].S.qscHvac+@ZnRes[zn].S.qlMech)/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="eComp"  colVal=@RSYS[rs].inPrimary colWid=5 colDec=0 \
+    RXCOL colHead="eTot"   colVal=@RSYSRES[rs].S.ecTot/@Top.subhrDur colWid=6 colDec = 0
+
+REPORT rpType=UDT rpFreq=subhour rpDayBeg=(DD1)-1 rpDayEnd=(DD1)+1 rpCpl=-1 rpTitle="RSYS cooling subhour details"
+SYSCOLSC(Reportcol,1,1,1,"Attic-atc",3)
+
+#else
 
 // report columns: RSYS cooling subhour details
 #define SYSCOLSC( RXCOL, rs, zn, zat, dctTot) \
@@ -2444,7 +2454,9 @@ SYSCOLSH( Reportcol, 1, 1, "Attic-atc", 3)
 
 
 REPORT rpType=UDT rpFreq=subhour rpDayBeg=(DD1)-1 rpDayEnd=(DD1)+1 rpCpl=-1 rpTitle="RSYS cooling subhour details"
-SYSCOLSC( Reportcol, 1, 1, "Attic-atc", 3)
+// SYSCOLSC( Reportcol, 1, 1, "Attic-atc", 3)
+
+#endif
 
 
 #if 0
@@ -2453,7 +2465,7 @@ EXPORT exType=UDT exFreq=subhour  exDayBeg=(HD1)-1 exDayEnd=(HD1)+1
 SYSCOLSH( Exportcol, 1, 1, "Attic-atc", 3)
 
 EXPORT exType=UDT exFreq=subhour exDayBeg=(DD1)-1 exDayEnd=(DD1)+1
-SYSCOLSC( Exportcol, 1, 1, "Attic-atc", 3)
+SYSCOLSC( Exportcol, 1, 1, 1, "Attic-atc", 3)
 #endif
 
 RUN

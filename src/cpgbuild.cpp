@@ -75,7 +75,6 @@ LOCAL void pbLabel( SI pgfmt, SI row, SI col, SI wid, const char *label);
 
 //=========================================================================
 void CDEC pgbuildr(
-	/* declared new way for passing FLOATs 2-90. DOES *NOT* WORK: MSC 5.1 passes floats in variable arg list double. */
 
 	// Add text to a pgpak page per tables; optionally allocs, outputs (via cpnat.c), frees.
 
@@ -83,12 +82,12 @@ void CDEC pgbuildr(
 		   CAUTION: if ptr ptr given but page is alloc here (row nz), ptr must contain NULL or valid, freeable DM ptr. */
 	RC *prc,	/* If *prc is not RCOK, pgbuildr() does *NOTHING*;
 		   otherwise outcome of this operation is returned in *prc (non-RCOK if console interrupt, printer error, etc). */
-	SI rows, 	/* Size of page to alloc, or row 0 if *ppp already alloc'd. */
-	SI cols,	/* .. */
-	SI rOff,	/* Row offset for *ALL* rows specified in all actions in this call: shifts display down w/o changing
+	int rows, 	/* Size of page to alloc, or row 0 if *ppp already alloc'd. */
+	int cols,	/* .. */
+	int rOff,	/* Row offset for *ALL* rows specified in all actions in this call: shifts display down w/o changing
 		   many table entries.  Typical use: make blank space above title (idx'd methods).
 		   [ CAUTION: avoid both nz rOff and > 1 PGCUR in table rows.  fixing this bug 2-90.] */
-	char *title,	/* NULL or Title to appear PGLJ at position (1+rOff,1).
+	const char *title,	/* NULL or Title to appear PGLJ at position (1+rOff,1).
 		   " continued" is appended if table head repeated on continuation print page.
 		   Allow for row used by title in PBHEAD.val2 with PBTABLE, PBFILLREC. */
 
@@ -119,12 +118,6 @@ void CDEC pgbuildr(
 
 // *prc remains RCOK if allocation, addition, and output completed ok; else nz.  Errors have been reported (using WRN).
 {
-	va_list argp;   // Working pointer for variable args
-	USI meth;
-	SI keepgoing;
-	RC rc;
-	char *rp = nullptr;
-	char *tp;
 	/* Size table -- !! MUST match PBxxxx method type defns in cpgbuild.c.  Used to increment pointer through method driver tables.
 	   Currently not used by methods involving PBM_IDX (such as PB_TABCOL and PB_FILLREC), but they are in table anyway */
 	static char sizetab[] = {
@@ -141,7 +134,10 @@ void CDEC pgbuildr(
 	if (*prc != RCOK)
 		return;
 
+	char *rp = nullptr;
+
 	/* Initialize */
+	va_list argp;   // Working pointer for variable args
 	va_start( argp, title);
 
 	/* some arguments to file-globals for use by internal subfunctions */
@@ -166,10 +162,10 @@ void CDEC pgbuildr(
 
 	/* Loop over arguments */
 
-	keepgoing = TRUE;     		/* Loop termination flag, tested at end of loop */
+	bool keepgoing = true;     		/* Loop termination flag, tested at end of loop */
 	do
 	{
-		rc = RCOK;				/* no error yet this arg */
+		RC rc = RCOK;				/* no error yet this arg */
 		pbHd = va_arg( argp, PBHEAD *);		/* Ptr to PBHEAD, or spec fcn. file-global used by callees. */
 		if (pbHd==NULL)
 			continue;				/* skip NULL args */
@@ -202,8 +198,8 @@ void CDEC pgbuildr(
 			/* Other arguments: output per method */
 
 		{
-			meth = (pbHd->methopt) & PBMTHMASK;		/* Formatting method */
-			tp = (char *)pbHd->methtab;			/* method table pointer, actual type depends on meth. */
+			int meth = (pbHd->methopt) & PBMTHMASK;		/* Formatting method */
+			char* tp = (char *)pbHd->methtab;			/* method table pointer, actual type depends on meth. */
 			if (meth & PBM_RP)				/* method bit says rp arg follows */
 				rp = va_arg(argp, char *);			/* Pick up record pointer */
 			/* pbIdxMth() and its callees also picks up additional arguments */
@@ -222,16 +218,16 @@ void CDEC pgbuildr(
 
 				while ( ((PB_TEXT *)tp)->pgfmt != PBMETHEND )
 				{
-					SI wid = 0;
-					SI units, cvfmt;
-					SI off;
-					USI dt;
+					int wid = 0;
+					int units, cvfmt;
+					int off;
+					int dt;
 					char *p;
 
 					/* prefetch .pgfmt,.row,.col for cases where struct matches PBTEXT (all cases except those without .col, 2-90) */
-					SI pgfmt = ((PB_TEXT *)tp)->pgfmt | PGGROW;	/* pgpak format. PGGROW: say enlarge page if necess */
-					SI row = ROWOFF( ((PB_TEXT *)tp)->row);		/* ROWOFF: adds pbROff if not PGCUR-relative */
-					SI col = ((PB_TEXT *)tp)->col;
+					int pgfmt = ((PB_TEXT *)tp)->pgfmt | PGGROW;	/* pgpak format. PGGROW: say enlarge page if necess */
+					int row = ROWOFF( ((PB_TEXT *)tp)->row);		/* ROWOFF: adds pbROff if not PGCUR-relative */
+					int col = ((PB_TEXT *)tp)->col;
 
 					/* more common init */
 					const char* label = nullptr;	// default no label: for shared case code
@@ -297,17 +293,17 @@ void CDEC pgbuildr(
 						cvfmt = ((PB_DATA *)tp)->cvfmt;	/* get cvpak fmt */
 offJoin:			/* PBDATOFF/L join here */
 						if (dt==(USI)PBARGSI)		/* on special value get dt */
-							dt = va_arg( argp, USI);		/* ...from pgbuildr arg list*/
+							dt = va_arg( argp, int);		/* ...from pgbuildr arg list*/
 						if (p==NULL)				/* for NULL data ptr */
 							dt = DTUNDEF;			/* show '?' (historical) */
 						/* NB if both in arg list, dt precedes data */
 
 						if (units==PBARGSI)			/* spec value says */
-							units = va_arg( argp, SI);	/* get from arg list*/
+							units = va_arg( argp, int);	/* get from arg list*/
 						if (wid==PBARGSI)			/* spec value says */
-							wid = va_arg( argp, SI);		/* get from arg list*/
+							wid = va_arg( argp, int);		/* get from arg list*/
 						if (cvfmt==PBARGSI)			/* spec value says */
-							cvfmt = va_arg( argp, SI);	/* get from arg list*/
+							cvfmt = va_arg( argp, int);	/* get from arg list*/
 						if (p==PBOMITP)			/* ptr value omits output & label */
 						{
 							/* s is "" from above (write anyway for PGCUR) */

@@ -435,14 +435,12 @@ const char* tdtis( 		// Convert integer format time to string
 
 // Returns s
 {
-	char* sbeg;
 	const char* apchar;
-	int hour;
 
 	if (!s)
 		s = strtemp( TDTIMELENMAX);
-	sbeg = s;					// save beginning to return
-	hour = itm->hour;				// fetch hour for possible adjustment
+	char* sbeg = s;					// save beginning to return
+	int hour = itm->hour;				// fetch hour for possible adjustment
 	if (Td24hrtime) 				// global 24-hour time format flag
 		apchar = "";				// no am/pm
 	else 					// not 24 hour time
@@ -450,9 +448,9 @@ const char* tdtis( 		// Convert integer format time to string
 		apchar = (hour < 12) ? " am" : " pm";	// get am or pm to append
 		hour = (hour+11)%12 + 1;			// convert 0..23 to 1..12
 	}
-	s += snprintf( s, sizeof(s), "%d:%2.2d", hour, itm->min);	// format hour:min, point to end
+	s += snprintf( s, TDTIMELENMAX, "%d:%2.2d", hour, itm->min);	// format hour:min, point to end
 	if (itm->sec != -1) 					// seconds -1 --> no display
-		snprintf( s, sizeof(s), ":%2.2d", itm->sec);		// format & append :seconds
+		snprintf( s, TDTIMELENMAX, ":%2.2d", itm->sec);		// format & append :seconds
 	return strcat( sbeg, apchar);		// append am/pm if any and return
 }				    // tdtis
 

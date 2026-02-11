@@ -21,7 +21,7 @@ RC FC exOrk( SI toprec, USI wanTy, USI choiDt, USI evfOkPar, const char* ermTx,
 RC FC itPile( PSOP *dest, USI sizeofDest);
 RC FC finPile( USI *pCodeSize);
 RC FC expTy( SI toprec, USI wanTy, const char* tx, SI aN);
-SI FC toke();
+int toke();
 void FC unToke();
 
 RC FC cuAddItSyms( SI tokTyPar, SI casi, STBK *tbl, USI entLen, int op);

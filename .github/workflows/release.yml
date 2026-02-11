@@ -18,19 +18,21 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.13"
       - name: Build CSE
-        uses: ./.github/actions/build-cse
+        run: cmake -DBUILD_ARCHITECTURE=32 -DCOMPILER_ID=msvc -DCONFIGURATION=Release -DBUILD_DIRECTORY=build -DBUILD_DOCS_WITH_ALL=ON -P cmake/configure-and-build.cmake
       - name: Upload executable to release assets
         uses: softprops/action-gh-release@v2
         with:
           files: build/CSE.exe
-      - name: Build docs
-        uses: ./.github/actions/build-docs
       - name: Update gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: doc/output
+          publish_dir: doc/build
           user_name: 'cse-ci'
           user_email: 'ci@cse.org'
           full_commit_message: "Update docs for ${{ github.event.release.tag_name }}."

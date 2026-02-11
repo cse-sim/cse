@@ -131,6 +131,7 @@ extern anc<WFSTATSDAY> WfStatsDay;	// Weather statistics by day
 
 extern anc<DESCOND> DcR;		// design conditions
 
+extern anc<ACCUMULATOR> AccumR;	// accumulators
 extern anc<MTR> MtrB;   		// meters, by name, each containing use by interval H D M Y and end use
 extern anc<AFMTR> AfMtrR;		// air flow meters
 extern anc<DHWMTR> WMtrR;  		// DHW meters

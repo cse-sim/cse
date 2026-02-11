@@ -411,6 +411,7 @@ LOCAL RC FC cuEvalI(
 	static_assert( sizeof(SI)==sizeof(PSOP));		// assumed in (SI *) cast used in PSPKONN case
 
 	static bool bCoverageInited = false;
+	if (!bCoverageInited)
 	{	/* rc = */ CoverageInit();
 		bCoverageInited = true;
 	}
@@ -1042,12 +1043,14 @@ jmp:
 			defO = *IPI++;			// get 0 or default owner subscript for ambiquity resolution
 			p = *SPP;				// get ptr to name string from stack. no pop: will overwrite.
 			const char* pName = strTrim( (char *)p);	// trim in place
-			if (defO				// if defO given (owning input record subscript)
-			 && b->ownB )    		// if owning-basAnc pointer set in probed basAnc (should be set in run rat
-								   //    only if subscripts in owning run rat match input subscripts)
-				trc = b->findRecByNmDefO( pName, defO, SPPR, NULL);	// seek rcd by name & defO, repl ptr in stk.
-			else
-				trc = b->findRecByNmU( pName, NULL, SPPR);	// seek unique record by name, replace ptr in stk.
+			// if defO given (owning input record subscript)
+			// and owning-basAnc pointer set in probed basAnc (should be set in run rat
+			//    only if subscripts in owning run rat match input subscripts)
+			int ownerTIOpt = defO && b->ownB	
+				? defO | basAnc::frnACCEPTNONOWNER	// seek rcd by name & defO, accept alt owner if unique
+				: basAnc::frnUNIQUE;				// seek any rcd iff unique
+			trc = basAnc::FindRecByName(b, pName, ownerTIOpt, SPPR);
+
 			if (trc)
 			{
 				ms = strtprintf(
@@ -1086,13 +1089,13 @@ w	 case PSRATLOD1S: POINT; *--SPI = (SI)*(CH*)v; break; 	// 1 byte, extend sign
 		case PSRATLODA:
 			POINT;
 			* --SPP = strsave( (const char*)v);
-			break;  	// char[], eg ANAME: put in dm. NAN not expected.
+			break;  	// char[], put in dm. NAN not expected.
 
 		case PSRATLODS:		// CULSTR: 4 byte value
-			{	if ((rc = cuRmGet(vND,&ms,pBadH)) != RCOK)		// char *.  1st fetch/check/fix 4 bytes.
+			{	if ((rc = cuRmGet(vND,&ms,pBadH)) != RCOK)		// 1st fetch/check/fix 4 bytes.
 					goto breakbreak;				//   if unset data or uneval'd expr, ms set.
-				const char* s = AsCULSTR(&vND).CStr();
-				*--SPP = (void*)s;				//   stack pointer
+				const char* s = AsCULSTR(&vND).CStr();	// point to CULSTR chars
+				*--SPP = (void*)s;				// push pointer
 			}
 			break;
 

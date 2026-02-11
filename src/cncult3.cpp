@@ -273,8 +273,8 @@ RC SFI::sf_TopSf1()
 				// window area may be given explicitly, to allow using old test files where area != height * width. 2-91.
 				if ( !IsSet( SFI_SFAREA) )			// if area not given
 					sfArea = sf_height * sf_width;			// compute window area
-			sfArea *= mult;				// multiplier (dfl 1.0) for giving multiple similar windows in surf
-			// sfArea is copied to x.area below
+			sfArea *= sf_mult;				// multiplier (dfl 1.0) for giving multiple similar windows in surf
+			// sfArea is copied to x.xs_area below
 		}
 
 		// topSf1: door/window: subtract area from area of owning surface
@@ -326,7 +326,7 @@ RC SFI::sf_TopSf1()
 	if (sfc==sfcWINDOW			// window: not nec user-given
 	 || CkSet( SFI_SFAREA)==RCOK)	// verify RQD mbr given (FPE protection)
 		x.xs_area = sfArea;	// move area to where used at run. For surface, b4 XSURF is added to zn,
-							// window and door areas are subtracted from .x.area,
+							// window and door areas are subtracted from .x.xs_area,
     						// by code above in this fcn, on later call to this fcn.
 
 	// init SGDIST count
@@ -454,6 +454,9 @@ RC SFI::sf_TopSf1()
 					CSE_V x.scc = CSE_V x.sco;  		// use window shades-open value, checked/defaulted just above
 			}
 		}
+
+		x.xs_areaGlz = x.xs_area * x.xs_fMult;		// total glazed area (w/o frame)
+	
 		if (x.xs_IsASHWAT())
 		{	const char* when = "when wnModel=ASHWAT";
 			rc1 = requireN( when, SFX( UNFRC), SFX( SHGC), SFX( NGLZ), 0);
@@ -1262,9 +1265,12 @@ void ZNR::zn_SetAirRadXArea()		// set mbrs re zone air radiant pseudo surface
 #endif
 }	// ZNR::zn_SetAirRadXArea
 //-----------------------------------------------------------------------------
+#if 0
 // FFactors() convergence failure seen in optimized release builds
 //   Disabling optimization seems to fix, did not fully analyze, 2-8-12
+//   Renabled optimization 10-9-2025, passes all tests
 #pragma optimize( "", off)
+#endif
 static int FFactors(			// derive spherical geometry factors
 	int nS,				// # of surfaces
 	const double areaS[],	// areas of surfaces
@@ -1319,7 +1325,9 @@ x				printf( "Mismatch\n");
 
 	return errTxt[ 0] ? RCBAD : RCOK;
 }	// FFactors
+#if 0
 #pragma optimize( "", on)
+#endif
 //-----------------------------------------------------------------------------
 // #undef CZM_COMPARE		// #define in cndefns.h to use exact CZM values re result comparison
 //-----------------------------------------------------------------------------
@@ -1537,7 +1545,7 @@ SFI::SFI( basAnc* b, TI i, SI noZ /*=0*/)
 	sf_sharedFndWalls.vector::~vector<TI>();
 	record::Copy( pSrc, options);
 	// base class calls FixUp() and (if _DEBUG) Validate()
-	new(&sf_sharedFndWalls) vector<TI>(((const SFI*)pSrc)->sf_sharedFndWalls);
+	new(&sf_sharedFndWalls) std::vector<TI>(((const SFI*)pSrc)->sf_sharedFndWalls);
 }		// SFI::Copy
 //---------------------------------------------------------------------------
 /*virtual*/ void SFI::FixUp()		// fix links
@@ -2247,6 +2255,8 @@ void XSURF::xs_Init(			// initialize
 	{	// fixup, don't change data
 		xs_sbcI.sb_pXS = this;
 		xs_sbcO.sb_pXS = this;
+		xs_frmSbcI.sb_pXS = this;
+		xs_frmSbcO.sb_pXS = this;
 		for (int iFA=0; iFA<2; iFA++)
 		{	// relink FENAWs if they exist
 			if (xs_pFENAW[ iFA])
@@ -2257,6 +2267,8 @@ void XSURF::xs_Init(			// initialize
 	{	// full init
 		xs_sbcI.sb_Init( this, 0);
 		xs_sbcO.sb_Init( this, 1);
+		xs_frmSbcI.sb_Init( this, 0);	// set up linkage altho may not be used
+		xs_frmSbcO.sb_Init( this, 1);
 		xs_DeleteFENAW();		// no ASHWAT
 
 		// layer boundary temps: init to "unknown"
@@ -2268,7 +2280,9 @@ void XSURF::xs_Init(			// initialize
 //-----------------------------------------------------------------------------
 XSURF& XSURF::Copy( const XSURF* pXS, [[maybe_unused]] int options /*=0*/)
 {	record* pParent = xs_pParent;		// save parent ptr (set by c'tor)
-	memcpy( reinterpret_cast< void *>(this), pXS, sizeof( XSURF));	// bitwise copy
+	memcpy( reinterpret_cast< void *>(this), 
+		    reinterpret_cast< const void *>(pXS),
+		    sizeof( XSURF));	// bitwise copy
 	xs_pParent = pParent;				// restore parent ptr
 	xs_Init( xs_pParent);	// fix sub-objects
 							// (deletes FENAWs, xs_SetRunConstants remakes)
@@ -2336,12 +2350,6 @@ RC XSURF::xs_Validate(
 const char* XSURF::xs_Name() const
 {	return xs_pParent ? xs_pParent->Name() : "?";
 }		// XSURF::xs_Name
-//-----------------------------------------------------------------------------
-float XSURF::xs_AreaGlazed() const
-{
-	// TODO: complete xs_AreaGlazed
-	return xs_area * xs_fMult;
-}		// XSURF::xs_AreaGlazed
 //-----------------------------------------------------------------------------
 int XSURF::xs_Class() const
 {
@@ -2905,11 +2913,9 @@ float SBC::sb_CombineInHcNatFrc() const	// combine inside face hc
 {
 	assert((sb_pXS->sfAdjZi == 0 && sb_si == 0) || sb_pXS->sfAdjZi > 0);		// valid only zone-facing
 
-#if 1 && defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 	if (Top.jDay==191 && strMatch(sb_pXS->xs_pParent->Name(), "WallS1"))
 		printf("\nHit");
-
-
 #endif
 
 	switch (sb_hcModel)
@@ -3377,11 +3383,11 @@ void XSURF::DbDump() const
 }	// XSURF::DbDump
 //=============================================================================
 void SBC::sb_Init(
-	XSURF* xs,		// parent XSURF
-	int si)			// which side of xs? 0=inside, 1=outside
-{	sb_pXS = xs;
-	sb_si = si;
-	sb_zi = xs->xs_GetZi( si);
+	XSURF* xsParent,	// parent XSURF
+	int side)				// which side of xs? 0=inside, 1=outside
+{	sb_pXS = xsParent;
+	sb_si = side;
+	sb_zi = xsParent->xs_GetZi( side);
 	sb_txa = 70.f;		// initialize to plausible value
 	sb_txr = 70.f;
 }		// SBC::sb_Init

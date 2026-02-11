@@ -20,7 +20,7 @@
 /*----------------- cuparse.cpp's "mostly LOCAL" VARIABLES ----------------*/
 
 /*--- CURRENT TOKEN INFO.  Set mainly by toke().  Not changed by unToke(). */
-extern SI tokTy;   		// current token type (CUT__ define; cuTok ret val)
+extern int tokTy;   		// current token type (CUT__ define; cuTok ret val)
 extern SI prec;    		// "prec" (precedence) from opTbl[]. PR__ defines.
 extern SI nextPrec;		// "prec" of ungotten (ie next) token, only valid after expTy()/expr()/unToke().
 //extern SI lastPrec;		// "prec" of PRIOR token (0 at bof).
@@ -73,8 +73,8 @@ RC FC dropSfs( SI k, SI n);
 RC CDEC emiKon( USI ty, void *p, SI inDm, char **pp);
 RC FC emit( PSOP op);
 RC FC emit2( SI i);
-SI FC tokeNot( SI tokTyPar);
-SI FC tokeIf( SI tokTyPar);
+bool tokeNot( int tokTyPar);
+bool tokeIf( int tokTyPar);
 
 // cuprobe.cpp
 RC FC probe();

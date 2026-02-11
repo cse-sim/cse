@@ -511,35 +511,35 @@ RC RI::ri_oneRxp()		// process one report or export for topRxp
 
 // topZn and topCol must be called first; buildUnspoolInfo must be called afterwards.
 {
-	RC rc=RCOK;
+	RC rc = RCOK;
 
 	int isEx = isExport;					// 1 for export, 0 for report
 	const char* exrp = isEx ? "ex" : "rp"; 				// to insert in member names in error messages
 	const char* exrePort = isEx ? "export" : "report";	// to insert in errmsgs
 
-// get field texts for errMsgs.  No errmsg (except in returned text) if value out of range.
+	// get field texts for errMsgs.  No errmsg (except in returned text) if value out of range.
 
-	const char* tyTx = getChoiTx( RI_RPTY, 1);
-	const char* whenTy = strtprintf( "when %sType=%s", exrp, tyTx);
+	const char* tyTx = getChoiTx(RI_RPTY, 1);
+	const char* whenTy = strtprintf("when %sType=%s", exrp, tyTx);
 
-// check RQD members set -- else can bomb with FPE
+	// check RQD members set -- else can bomb with FPE
 
-	if (CkSet( RI_RPTY))
+	if (CkSet(RI_RPTY))
 		return RCBAD;					// if not set, no run, terminate checking this report/export now
 
-// recall entry time check function 1) as it has not been called for pre-stuffed default reports entries;
-// 2) to recheck references (DELETE given after entry?)(if it checks any); and 3) general paranoia.
+	// recall entry time check function 1) as it has not been called for pre-stuffed default reports entries;
+	// 2) to recheck references (DELETE given after entry?)(if it checks any); and 3) general paranoia.
 
 	if (!errCount())	// but if already have errors (hence no run), do not recall:
-    					//   would issue duplicate messages for any errors it detected.
+		//   would issue duplicate messages for any errors it detected.
 		if (ri_CkF())	// note this is the ckf for exports as well as reports
 			return RCBAD;			// bad. done with entry.
 
-// default start and/or end days of report.  Don't set nz b4 other checks as not allowed with some rpt types & freq's.
-//					     and, doing here sets dates for monthly default reports.
+	// default start and/or end days of report.  Don't set nz b4 other checks as not allowed with some rpt types & freq's.
+	//					     and, doing here sets dates for monthly default reports.
 
-	if ( rpFreq==C_IVLCH_M				// monthly frequency: default days to start and end of run
-	 ||  rpFreq==C_IVLCH_Y )			// annual frequency: this sets dates
+	if (rpFreq==C_IVLCH_M				// monthly frequency: default days to start and end of run
+	 ||  rpFreq==C_IVLCH_Y)			// annual frequency: this sets dates
 	{
 		if (!rpDayBeg)   rpDayBeg = Topi.tp_begDay;
 		if (!rpDayEnd)   rpDayEnd = Topi.tp_endDay;
@@ -547,9 +547,9 @@ RC RI::ri_oneRxp()		// process one report or export for topRxp
 	else if (!rpDayEnd)				// other frequencies; rpDayBeg is 0 if here and dates not used.
 		rpDayEnd = rpDayBeg;			// end day defaults to start day
 
-// disallow condition for types without repeated conditional lines
+	// disallow condition for types without repeated conditional lines
 
-	int rpCondGiven = IsSet( RI_RPCOND);			// 1 if rpCond entered by user, 0 if rpCond defaulted (to TRUE).
+	int rpCondGiven = IsSet(RI_RPCOND);			// 1 if rpCond entered by user, 0 if rpCond defaulted (to TRUE).
 	switch (rpTy)
 	{
 	case C_RPTYCH_SUM:
@@ -562,7 +562,7 @@ RC RI::ri_oneRxp()		// process one report or export for topRxp
 	case C_RPTYCH_TUSIZE:
 	case C_RPTYCH_TULOAD:			// 6-95
 		if (rpCondGiven)
-			rc = oer( MH_S0548, exrp, exrp, tyTx);			// "%sCond may not be given with %sType=%s"
+			rc = oer(MH_S0548, exrp, exrp, tyTx);			// "%sCond may not be given with %sType=%s"
 		break;
 	default:
 		;
@@ -574,38 +574,38 @@ RC RI::ri_oneRxp()		// process one report or export for topRxp
 	switch (rpTy)
 	{
 	case C_RPTYCH_MTR:							// "Meter" report/export requires rp/exMeter
-		rc |= require( whenTy, RI_MTRI);
-		rc |= disallowN( whenTy, RI_ZI, RI_AHI, RI_TUI, RI_DHWMTRI, RI_AFMTRI, 0);
+		rc |= require(whenTy, RI_MTRI);
+		rc |= disallowN(whenTy, RI_ZI, RI_AHI, RI_TUI, RI_DHWMTRI, RI_AFMTRI, 0);
 		break;
 
 	case C_RPTYCH_DHWMTR:							// "DHWMTR" report/export requires rp/exDHWMeter
-		rc |= require( whenTy, RI_DHWMTRI);
-		rc |= disallowN( whenTy, RI_ZI, RI_AHI, RI_TUI, RI_MTRI, RI_AFMTRI, 0);
+		rc |= require(whenTy, RI_DHWMTRI);
+		rc |= disallowN(whenTy, RI_ZI, RI_AHI, RI_TUI, RI_MTRI, RI_AFMTRI, 0);
 		break;
 
 	case C_RPTYCH_AFMTR:							// "AFMTR" report/export requires rp/exAFMeter
-		rc |= require( whenTy, RI_AFMTRI);
+		rc |= require(whenTy, RI_AFMTRI);
 		rc |= disallowN(whenTy, RI_ZI, RI_AHI, RI_TUI, RI_MTRI, RI_DHWMTRI, 0);
 		break;
 
 	case C_RPTYCH_AHSIZE:	// AH-specific reports
 	case C_RPTYCH_AHLOAD:
 	case C_RPTYCH_AH:
-		rc |= require( whenTy, RI_AHI);
-		rc |= disallowN( whenTy, RI_ZI, RI_TUI, RI_MTRI, RI_DHWMTRI, 0);
+		rc |= require(whenTy, RI_AHI);
+		rc |= disallowN(whenTy, RI_ZI, RI_TUI, RI_MTRI, RI_DHWMTRI, 0);
 		break;
 
 	case C_RPTYCH_TUSIZE:	// TU-specific reports
 	case C_RPTYCH_TULOAD:
-		rc |= require( whenTy, RI_TUI);
-		rc |= disallowN( whenTy, RI_ZI, RI_AHI, RI_MTRI, RI_DHWMTRI, 0);
+		rc |= require(whenTy, RI_TUI);
+		rc |= disallowN(whenTy, RI_ZI, RI_AHI, RI_MTRI, RI_DHWMTRI, 0);
 		break;
 
 	case C_RPTYCH_ZDD:	// zone-specific reports
 	case C_RPTYCH_ZEB:
 	case C_RPTYCH_ZST:
-		rc |= require( whenTy, RI_ZI);
-		rc |= disallowN( whenTy, RI_TUI, RI_AHI, RI_MTRI, RI_DHWMTRI, 0);
+		rc |= require(whenTy, RI_ZI);
+		rc |= disallowN(whenTy, RI_TUI, RI_AHI, RI_MTRI, RI_DHWMTRI, 0);
 		break;
 
 	case C_RPTYCH_SUM:	// non- zone -ah -tu -meter reports/exports
@@ -613,31 +613,32 @@ RC RI::ri_oneRxp()		// process one report or export for topRxp
 	case C_RPTYCH_ERR:
 	case C_RPTYCH_INP:
 	case C_RPTYCH_UDT:
-		rc |= disallowN( whenTy, RI_ZI, RI_TUI, RI_AHI, RI_MTRI, RI_DHWMTRI, 0);
+		rc |= disallowN(whenTy, RI_ZI, RI_TUI, RI_AHI, RI_MTRI, RI_DHWMTRI, 0);
 		break;
 
 	default:
 		if (!errCount())					// if other error has occurred, suppress msg: may be consequential
-			rc = oer( (const char *)MH_S0555, exrp, rpTy);  	// "cncult:topRp: Internal error: Bad %sType %d"
+			rc = oer((const char*)MH_S0555, exrp, rpTy);  	// "cncult:topRp: Internal error: Bad %sType %d"
 	}
 
-// default/check file reference. Defaulted to rp/exfile in which nested, else default here to "Primary" (supplied by TopStarPrf)
+	// default/check file reference. Defaulted to rp/exfile in which nested, else default here to "Primary" (supplied by TopStarPrf)
 
 	if (!ownTi)					// if no file given & not defaulted (note default does not set FsSET bit)
-	{	anc<RFI>* fb = isEx ? &XfiB : &RfiB;			// ptr to reportfile or exportfile input ratbase
-		if (fb->findRecByNm1("Primary", &ownTi, NULL))	// find first record by name (ancrec.cpp) / if not found
+	{
+		anc<RFI>* fb = isEx ? &XfiB : &RfiB;				// ptr to reportfile or exportfile input ratbase
+		if (basAnc::FindRecByName(fb, "Primary", 0, nullptr, &ownTi) != RCOK)	// find first record by name / if not found
 		{
 			if (fb->n)						// if not found, if there are ANY r/xport files,
 				ownTi = 1;					// use first one: is probably Primary renamed with ALTER
 			else							// no r/xport files at all
-				rc |= ooer(RI_OWNTI, 					// issue error once (cul.cpp), no run
-					   isEx ? MH_S0556 : MH_S0557);	// "No exExportfile given" or "No rpReportfile given"
+				rc |= ooer(RI_OWNTI, MH_S0556, 					// issue error once (cul.cpp), no run
+					   isEx ? "exExportFile" : "rpReportFile");	// "exExportFile/rpReportFile 'Primary' not found"
 		}
 	}
-	RFI* rfp=NULL;
-	if (ownTi)
-		if (ckRefPt( isEx ? &XfiB : &RfiB, ownTi,  isEx ? "exFile" : "rpFile",  NULL, (record **)&rfp ) )	// ck ref
-			return RCBAD;
+	RFI* rfp = NULL;
+	if (!ownTi
+	 || ckRefPt( isEx ? &XfiB : &RfiB, ownTi,  isEx ? "exFile" : "rpFile",  NULL, (record **)&rfp ) )	// ck ref
+		return RCBAD;
 
 // check zone reference or ALL or SUM
 	int isAll = 0;		// set nz iff ALL

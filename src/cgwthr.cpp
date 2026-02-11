@@ -549,7 +549,7 @@ RC DESCOND::dc_CkF()		// check after input
 static void DCTauTest( int doy)
 {
 float ebnlist[] = { 150.f, 200.f, 250.f, 300.f, -1.f };
-float edflist[] = { 20.f, 30.f, 40.f };
+float edflist[] = { 20.f, 30.f, 40.f, -1.f };
 
 	DESCOND dc( &DcR, 1);
 	dc.dc_doy = doy;

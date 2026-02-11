@@ -1117,6 +1117,7 @@ static CULT exColT[] = //----------- EXPORTCOL cmd table, used from cnTopCult an
 CULT( "*",           STAR,  0,             0,       0, 0,        0,      0,      N,  0.f,     N,   N),
 CULT( "colExport",   DAT,   COL_OWNTI,     RDFLIN,  0, VEOI,     TYREF,  &XiB,   N,  0.f,     N,   N),
 CULT( "colHead",     DAT,   COL_COLHEAD,   0,       0, VEOI,     TYSTR,  0,      N,  0.f,     N,   N),
+CULT( "colGap",      DAT,   COL_COLGAP,    0,       0, VEOI,     TYSI,   0,     v 1, 0.f,     N,   N),
 CULT( "colWid",      DAT,   COL_COLWID,    0,       0, VEOI,     TYSI,   0,      N,  0.f,     N,   N),
 CULT( "colDec",      DAT,   COL_COLDEC,    0,       0, VEOI,     TYSI,   0,     v -1, 0.f,    N,   N),
 CULT( "colJust",     DAT,   COL_COLJUST,   0,       0, VEOI,     TYCH,   0,      N,  0.f,     N,   N),
@@ -1741,6 +1742,28 @@ CULT( "endRSYS",     ENDER, 0,               0,       0, 0,      0,     0,      
 CULT()
 };	// rsysT
 #undef AS_OKIF
+
+//============================= ACCUMULATOR command =============================
+LOCAL RC accumStarCkf([[maybe_unused]] CULT* c, /*ACCUMULATOR* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
+// called at end of AFMETER input, to get messages near source of error.
+{
+	return ((ACCUMULATOR*)p)->acm_CkF( 0);
+}		// accumStarCkf
+//=============================================================================
+static CULT accumT[] = //------ ACCUMULATOR cmd RAT Entry table
+{
+// id              cs     fn                 f        uc evf     ty     b       dfls    p2   ckf
+//---------------- -----  -----------------  -------  -- ------  -----  ------  ------  ---- ----
+CULT("*",          STAR,  0,                 0,       0, 0,      0,     0,      0.f,    N,   accumStarCkf),
+CULT( "acmValue",  DAT,	ACCUMULATOR_ACMVALUE,0,		  0, VSUBHRLY|EVENDIVL,
+	                                                             TYFL, 0,       0.f,    N,   N),
+CULT("acmCond",    DAT,  ACCUMULATOR_ACMCOND,0,       0, VSUBHRLY|EVPSTIVL,		 	// ok if evaluated at end interval
+																		TYINT, 				// condition, dflt TRUE, in INT for NAN
+																			   0,       v 1L,      N, N),
+CULT("endACCUMULATOR", ENDER, 0,             0,       0, 0,      0,     0,      0.f,    N,   N),
+CULT()
+};	// accumT
+
 
 //============================= DHWMETER command =============================
 LOCAL RC wmtStarCkf([[maybe_unused]] CULT* c, /*DHWMTR* */ void *p, [[maybe_unused]] void *p2, [[maybe_unused]] void *p3)
@@ -2937,6 +2960,7 @@ CULT cnTopCult[] = 		// Top level table, points to all other tables, used in cal
 	CULT( "battery",     RATE,  0,                 0,          0, 0,      0,    &BTiB,   N,    0.f,           btT,  N),
 	CULT( "shadex",      RATE,  0,                 0,          0, 0,      0,    &SXiB,   N,    0.f,       shadexT,  N),
 	CULT( "airHandler",  RATE,  0,                 NM_RQD,     0, 0,      0,    &AhiB,   N,    0.f,           ahT,  N),
+	CULT( "accumulator", RATE,  0,                 NM_RQD,     0, 0,      0,    &AccumiB,N,    0.f,        accumT,  N),
 	CULT( "meter",       RATE,  0,                 NM_RQD,     0, 0,      0,    &MtriB,  N,    0.f,          mtrT,  N),
 	CULT( "gain",        RATE,  0,                 NOTOWNED,   0, 0,      0,    &GniB,   N,    0.f,           gnT,  N),
 	CULT( "reportCol",   RATE,  0,                 NOTOWNED,   0, 0,      0,    &RcoliB, N,    0.f,         rpColT, N),
@@ -3012,11 +3036,14 @@ TOPRAT Topi((anc<TOPRAT>*)& TopiR, 0);  	// "Top" info input RAT's one static en
 // inverse objects
 makAncINVERSE(IvB, inverseT);
 
-// zones, transfers, gains, meters
+// zones, transfers, gains
 makAncZNI(ZiB, znT);					// zones input info records basAnc
 makAncIZXRAT(IzxiB, izxT);				// interzone transfer input records basAnc
 makAncDUCTSEG(DsiB, dsT);				// duct segment input records basAnc
 makAncGAIN(GniB, gnT);					// (zone) gains input records basAnc
+
+// accumulators, meters
+makAncACCUMULATOR(AccumiB, accumT);		// Accumulator input records basAnc
 makAncMTR(MtriB, mtrT);					// Meters input records basAnc
 makAncAFMTR(AfMtriB, afMeterT);			// Airflow meters input records basAnc
 makAncDHWMTR(WMtriB, dhwMeterT);		// DHW meters
@@ -3107,7 +3134,7 @@ makAncWFSTATSDAY(WfStatsDay, nullptr);
 
 makAncDESCOND(DcR, dcT);						// design conditions
 
-// zones, transfers, gains, meters
+// zones, transfers, gains,
 makAncZNR(ZrB, znT);					// Zones runtime info: input set in cncult
 										//   use ZNI CULT table, ZNI and ZNR have same initial layout
 makAncZNRES(ZnresB, nullptr);			// Month and year simulation results for zones
@@ -3115,6 +3142,8 @@ makAncIZXRAT(IzxR, izxT);				// interZone transfers -- conductions / ventilation
 makAncDOAS(doasR, doasT);				// DOAS
 makAncGAIN(GnB, gnT);					// (zone) gains run records basAnc
 
+// accumulators, meters, 
+makAncACCUMULATOR(AccumR, accumT);		// Accumulator run records basAnc
 makAncMTR(MtrB, mtrT);					// meters (energy use) run records basAnc
 makAncAFMTR(AfMtrR, afMeterT);			// air flow meters run basAnc
 makAncLOADMTR(LdMtrR, ldMeterT);		// load meters run basAnc
@@ -3194,6 +3223,7 @@ void FC iRatsFree()	// free record storage for all input basAncs.
 {
 	ZiB.free();
 	IzxiB.free();
+	AccumiB.free();
 	MtriB.free();
 	AfMtriB.free();
 	WMtriB.free();

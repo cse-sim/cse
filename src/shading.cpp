@@ -267,11 +267,14 @@ fin73:	/* come back here with window params changed to match flap shadow,
 		}
 		/* subtract any lit rectangle and triangle below fin shadow */
 		if (NY < FBU)		/* if some of bottom of win lit */
+		{
 			if (FY >= FBU)		/* if less than full width lit */
 				AREA1 -= TRIA(FBU - NY);	    /* subtract bot near triangle */
 			else				/* full wid (both bot corners) lit */
 				AREA1 -= W * (FBU - FY)	    /* subtact lit bottom rectangle */
 				+ TRIA(FY - NY);	    /* and lit near triang above it */
+		}
+
 /* add in entire area as tho shaded (LAST for best precision: largest #) */
 		AREA1 += H * W;
 	}
@@ -512,12 +515,11 @@ RC SURFGEOM::gx_SetupShading(		// shading calcs setup
 	const CT3D* MT,			// point transformation matrix
 							//   (e.g. re bldgAzm rotation)
 							//   NULL -> no transformation
-	int options /*=0*/)		// options TBD
+	[[maybe_unused]] int options /*=0*/)		// options TBD
 // add this surface to the Penumbra model
 // returns RCOK: success or no geometry specified
 //    else RCBAD: bad geometry or addSurface fail
 {
-	options;
 	gx_pnIdx = -1;		// no associated Penumbra surface
 	RC rc = RCOK;
 	if (gx_sgDet && !gx_IsEmpty())

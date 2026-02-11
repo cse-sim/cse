@@ -40,7 +40,7 @@
 #include "cnguts.h"	// decls for this file
 
 //-------------------------------- DEFINES ----------------------------------
-
+RIGDIST x;
 
 //------------------------- FILE-GLOBAL VARIABLES ---------------------------
 
@@ -64,11 +64,12 @@ LOCAL RC   FC cgAfterWarmup();
 LOCAL RC   FC doHourGains();
 LOCAL RC   FC doIvlExprs( int ivlStage);
 LOCAL void FC doIvlAccum();
-LOCAL void FC mtrsAccum( IVLCH ivl, int firstflg, int lastflg);
 LOCAL void FC doIvlFinalize();
-LOCAL void FC mtrsFinalize( IVLCH ivl, int firstflg);
-LOCAL void FC accumZr( ZNRES_IVL_SUB *res1, ZNRES_IVL_SUB *res2, BOO firstflg, BOO lastflg);
-LOCAL void FC accumAhr( AHRES_IVL_SUB *res1, AHRES_IVL_SUB *res2, BOO firstflg, BOO lastflg);
+LOCAL void FC mtrsAccum( IVLCH ivl, int firstFlg, int lastFlg);
+LOCAL void FC mtrsFinalize( IVLCH ivl, int firstFlg);
+LOCAL void FC accumZr( ZNRES_IVL_SUB *res1, ZNRES_IVL_SUB *res2, BOO firstFlg, BOO lastFlg);
+LOCAL void FC accumAhr( AHRES_IVL_SUB *res1, AHRES_IVL_SUB *res2, BOO firstFlg, BOO lastFlg);
+LOCAL void    accumulatorsAccum(IVLCH ivl, bool firstFlg, bool lastFlg);
 LOCAL void FC doIvlPrior();
 LOCAL void FC setPriorRes( ZNRES_IVL_SUB* resCurr);
 LOCAL void FC doIvlReports();
@@ -776,7 +777,7 @@ LOCAL RC FC doEndIvl() 		// simulation run end-of-interval processing: results a
 		SubMeterSeq.smsq_AccumHour( MTR::ACCUMOPT::BATTERYONLY);
 	}
 
-	doIvlFinalize();	// finalize meters etc
+	doIvlFinalize();	// finalize meters and ACCUMULATORs
 
 	CSE_EF( doIvlExprs( EVPSTIVL))		// do all post load management expressions for this interval
 
@@ -1133,7 +1134,7 @@ LOCAL RC FC cgAfterWarmup()
 
 #if 0	// 7-19-2016
 x ? Clear results accumulated during warmup
-x Believed unnecessary due to firstflg initialization scheme in accumZr
+x Believed unnecessary due to firstFlg initialization scheme in accumZr
 x	ZNRES* pZR;
 x	RLUP( ZnresB, pZR)
 x		pZR->zr_InitCurr();	// 0 ZNRES.curr
@@ -1565,7 +1566,7 @@ LOCAL void FC doIvlAccum()
 *	          unused zone subscripts, perhaps after deletion, etc.  If nec, preset a last-zone
 *	          flag in zone record during setup, and use a first-iteration flag in loop. */
 #endif
-	}
+	}	// ZNRES loop
 
 	RSYSRES* pRSRSum = RsResR.p + RsResR.n;
 	RSYSRES* pRSR;
@@ -1788,6 +1789,7 @@ LOCAL void FC doIvlAccum()
 	RLUP( AhresB, ahres)							// loop air handers sim results
 		accumAhr( &ahres->D, &ahres->M, Top.isBegMonth, Top.isEndMonth);	// accumulate day ah results to month
 	mtrsAccum( C_IVLCH_M, Top.isBegMonth, Top.isEndMonth);					// accum METERs, DHWMETERs, AFMETERS, LOADMTRs: day to month
+
 #ifdef BINRES
 	if (brf)									// if outputting binary results for this run
 		//if (!Top.tp_autoSizing)						// not for ausz yet 6-95: tested above, and brf is off.
@@ -1830,6 +1832,7 @@ LOCAL void FC doIvlAccum()
 	RLUP(WsResR, pWSR)							// loop DHWSYSRES results incl sum_of.
 		pWSR->Y.wsr_Accum(&pWSR->M, Top.isFirstMon, Top.isLastDay);
 	mtrsAccum( C_IVLCH_Y, Top.isFirstMon, Top.isLastDay);					// accumulate metered energy use: month to year
+
 #ifdef BINRES
 	if (brf)						// if outputting any binary results this run
 	{
@@ -1848,32 +1851,37 @@ LOCAL void FC doIvlAccum()
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC doIvlFinalize()
 
-// finalize meters (and ?) after load management (battery, ) stage at end of interval
+// finalize MTRs and ACCUMULATORs after load management (battery, ) stage at end of interval
 
 // uses: Top.ivl: interval subhour, hour, day, month, year.  Coinciding shorter intervals also done.
 
+// always accum during warmup / autosize re possible expression use and prior values
+
 {
-// always accum during warmup / autosize
-// re possible expression use and prior values
+	accumulatorsAccum(C_IVLCH_H, Top.isBegHour, Top.isEndHour);		// ACCUMULATORs subhour->hour
 
 	if (Top.ivl > C_IVLCH_H)						// if subhour call, done
 		return;
 
-	mtrsFinalize( C_IVLCH_D, Top.isBegDay);  	// sum energy uses to hour's total, and accumulate hour meter use to day. local.
+	mtrsFinalize( C_IVLCH_D, Top.isBegDay);  	// finalize MTRs hour's totals, then hour->day
+
+	accumulatorsAccum(C_IVLCH_D, Top.isBegDay, Top.isEndDay);	// ACCUMULATORs hour->day
 
 	if (Top.ivl > C_IVLCH_D)					// if hour call, done
 		return;
 
-	mtrsFinalize( C_IVLCH_M, Top.isBegMonth);	// accum metered energy: day to month. local,below.
+	mtrsFinalize( C_IVLCH_M, Top.isBegMonth);	// MTRs: day->month
+
+	accumulatorsAccum(C_IVLCH_M, Top.isBegMonth, Top.isEndMonth);	// ACCUMULATORs day->month
 
 	if (Top.ivl > C_IVLCH_M)					// if day call, done.
 		return;
 
-	// accumulate month results to year
+	mtrsFinalize( C_IVLCH_Y, Top.isFirstMon);	// MTRs: month->year
 
-	mtrsFinalize( C_IVLCH_Y, Top.isFirstMon);	// accumulate metered energy use: month to year
+	accumulatorsAccum( C_IVLCH_Y, Top.isFirstMon, Top.isLastDay);	// ACCUMULATORs month->year
 
-	//if (Top.ivl > C_IVLCH_Y)					// if month call, done
+	// if (Top.ivl > C_IVLCH_Y)					// if month call, done
 	//   return;
 	// year (end of run) accumulation: nothing to do
 }							// doIvlFinalize
@@ -1884,12 +1892,12 @@ LOCAL void FC accumZr(
 
 	ZNRES_IVL_SUB *res1,    	// source interval results substruct (in ZNRES record)
 	ZNRES_IVL_SUB *res2,    	// destination: next longer interval, or same interval for sum-of-zones
-	BOO firstflg, 		// If TRUE, destination will be initialized before values are accumulated into it
-	BOO lastflg )  		// If TRUE, destination means will be computed after values are accumulated.
+	BOO firstFlg, 		// If TRUE, destination will be initialized before values are accumulated into it
+	BOO lastFlg )  		// If TRUE, destination means will be computed after values are accumulated.
 
 {
 // if first call, copy source into destination
-	if (firstflg)
+	if (firstFlg)
 	{
 		memcpy( res2, res1, sizeof(ZNRES_IVL_SUB) );
 		res2->n = 0;				// reset call count
@@ -1911,7 +1919,7 @@ LOCAL void FC accumZr(
 	res2->n++;					// divisor for averages
 
 // on last call, calculate averages members to be averaged (temperature and humidity values)
-	if (lastflg)
+	if (lastFlg)
 	{
 		float fn = res2->n;				// number of calls summed into res2
 		float *fp2 = &res2->ZRa1;		// ptr to 1st average in fV (cnguts.h)
@@ -1967,12 +1975,12 @@ void ZNRES_IVL_SUB::zr_Init1(
 void RSYSRES_IVL_SUB::rsr_Accum( 		// Accumulate RSYS results
 
 	const RSYSRES_IVL_SUB* src,  	// source: next longer interval, or same interval for sum_of_
-	int firstflg, 		// nz: *this will be initialized before values are accumulated into it
-	int lastflg )  		// nz: *this end-of-interval calcs as needed
+	int firstFlg, 		// nz: *this will be initialized before values are accumulated into it
+	int lastFlg )  		// nz: *this end-of-interval calcs as needed
 						//     +0x100: limit hrsOn to 1 (for H record)
 {
 	// first call: copy source into destination
-	if (firstflg)
+	if (firstFlg)
 	{	memcpy(this, src, sizeof(RSYSRES_IVL_SUB));
 		n = 0;				// reset call count. used?
 	}
@@ -1986,8 +1994,8 @@ void RSYSRES_IVL_SUB::rsr_Accum( 		// Accumulate RSYS results
 	n++;					// used?
 
 	// last call
-	if (lastflg & 0xff)
-	{	if (lastflg & 0x100)	// limit hrsOn (for H record only)
+	if (lastFlg & 0xff)
+	{	if (lastFlg & 0x100)	// limit hrsOn (for H record only)
 			if (hrsOn > 1.f)
 				hrsOn = 1.f;
 	}
@@ -2012,12 +2020,12 @@ void RSYSRES_IVL_SUB::rsr_SetPrior() const 		// copy to prior
 void DUCTSEGRES_IVL_SUB::dsr_Accum( 		// Accumulate RSYS results
 
 	const DUCTSEGRES_IVL_SUB* src,  	// source: next longer interval, or same interval for sum_of_
-	int firstflg, 		// nz: *this will be initialized before values are accumulated into it
-	[[maybe_unused]] int lastflg)  		// nz: *this end-of-interval calcs as needed
+	int firstFlg, 		// nz: *this will be initialized before values are accumulated into it
+	[[maybe_unused]] int lastFlg)  		// nz: *this end-of-interval calcs as needed
 						//     +0x100: limit hrsOn to 1 (for H record)
 {
 	// first call: copy source into destination
-	if (firstflg)
+	if (firstFlg)
 	{
 		memcpy(this, src, sizeof(DUCTSEGRES_IVL_SUB));
 		n = 0;				// reset call count. used?
@@ -2033,9 +2041,9 @@ void DUCTSEGRES_IVL_SUB::dsr_Accum( 		// Accumulate RSYS results
 
 #if 0
 	// last call
-	if (lastflg & 0xff)
+	if (lastFlg & 0xff)
 	{
-		if (lastflg & 0x100)	// limit hrsOn (for H record only)
+		if (lastFlg & 0x100)	// limit hrsOn (for H record only)
 			if (hrsOn > 1.f)
 				hrsOn = 1.f;
 	}
@@ -2072,13 +2080,13 @@ LOCAL void FC accumAhr( 		// Accumulate air handler simulation results
 
 	AHRES_IVL_SUB *ahres1,    	// source interval results substruct (in AHRES record)
 	AHRES_IVL_SUB *ahres2,    	// destination: next longer interval, or same interval for sum_of_ahs
-	BOO firstflg, 		// If TRUE, destination will be initialized before values are accumulated into it
-	BOO lastflg )  		// If TRUE, destination means will be computed after values are accumulated.
+	BOO firstFlg, 		// If TRUE, destination will be initialized before values are accumulated into it
+	BOO lastFlg )  		// If TRUE, destination means will be computed after values are accumulated.
 
 {
 
 // if first call, copy source into destination, weigh averages in place
-	if (firstflg)
+	if (firstFlg)
 	{
 		memcpy( ahres2, ahres1, sizeof(AHRES_IVL_SUB) );
 		ahres2->n = 0;					// reset call count. used?
@@ -2109,7 +2117,7 @@ LOCAL void FC accumAhr( 		// Accumulate air handler simulation results
 	ahres2->n++;					// used?
 
 // on last call, calculate averages for temperature and cfm values
-	if ( lastflg
+	if ( lastFlg
 			&&  ahres2->hrsOn != 0.)			// not if accumulated time is 0: all values already 0 and would divide by 0.
 	{
 		float t = ahres2->hrsOn;			// divisor is accumulated time in destination
@@ -2119,6 +2127,121 @@ LOCAL void FC accumAhr( 		// Accumulate air handler simulation results
 	}
 }               // accumAhr
 //=============================================================================
+
+///////////////////////////////////////////////////////////////////////////////
+// ACCUMULATORs: min/avg/max/sum tracking for arbitrary probed value
+///////////////////////////////////////////////////////////////////////////////
+void LOCAL accumulatorsAccum(
+	IVLCH ivl,	// destination interval C_IVLCH_H/D/M/Y.  Not Top.ivl!
+	bool firstFlg,		// true iff first call for destination
+	bool lastFlg)		// true iff last call for destination
+{
+	ACCUMULATOR* pACM;
+	RLUP(AccumR, pACM)
+	{
+		ACCUMULATOR_IVL* pDst = &pACM->Y + (ivl - C_IVLCH_Y);	// point destination
+												// ASSUMES ACCUMULATOR interval members ordered like DTIVLCH choices
+		if (ivl == C_IVLCH_H)
+		{	// construct temporary subhour ACCUMULATOR_IVL
+			ACCUMULATOR_IVL tempSubhr;
+			if (pACM->acmCond)
+				tempSubhr.acm_PopulateSubhr(pACM->acmValue);
+			else
+				tempSubhr.acm_Clear();
+			pDst->acm_Accum(&tempSubhr, firstFlg, lastFlg);
+#if 0 && defined( _DEBUG)
+			// re lagged value investigation
+			//   print value actually used
+			if (strMatch(pACM->Name(), "AccumQSrf") && Top.jDay == 67)
+				printf("\nAccum %d %d %d %0.2f", Top.jDay, Top.iHr, Top.iSubhr, pACM->acmValue);
+#endif
+		}
+		else
+		{
+			const ACCUMULATOR_IVL* pSrc = pDst + 1;		// source: next shorter interval
+			pDst->acm_Accum(pSrc, firstFlg, lastFlg);
+		}
+	}
+
+}	// accumulatorsAccum
+//-----------------------------------------------------------------------------
+RC ACCUMULATOR::acm_CkF(
+	[[maybe_unused]] int options)
+{
+	return RCOK;
+
+}	// ACCUMULATOR::acm_CkF
+//-----------------------------------------------------------------------------
+void ACCUMULATOR_IVL::acm_Copy(			// copy to this
+	const ACCUMULATOR_IVL* pSrc)		// source
+{
+	memcpy(this, pSrc, sizeof(ACCUMULATOR_IVL));
+
+}	// ACCUMULATOR_IVL::acm_Copy
+//-----------------------------------------------------------------------------
+void ACCUMULATOR_IVL::acm_Clear()			// 0 this
+{
+	memset(this, 0, sizeof(ACCUMULATOR_IVL));
+
+}	// ACCUMULATOR_IVL::acm_Clear
+//-----------------------------------------------------------------------------
+void ACCUMULATOR_IVL::acm_PopulateSubhr(	// make full subhr object
+	float value)
+{
+	acmMin = acmMax = acmMean = value;
+	acmSum = double(value);		// acmSum uses double
+								//   (truncation error insurance)
+	acmMinDayOfYear = acmMaxDayOfYear = Top.jDay;
+	acmMinDayOfYearST = acmMaxDayOfYearST = Top.jDayST;
+	acmMinHour = acmMaxHour = Top.iHr;
+	acmMinHourST = acmMaxHourST = Top.iHrST;
+	acmMinSubhour = acmMaxSubhour = Top.iSubhr;
+	acmCount = 1;
+
+}	// ACCUMULATOR_IVL::acm_PopulateSubhr
+//-----------------------------------------------------------------------------
+void ACCUMULATOR_IVL::acm_Accum(			// accumulate to this
+	const ACCUMULATOR_IVL* pSrc,		// source
+	bool firstFlg,				// true iff first accum into this (beg of ivl)
+	bool lastFlg,				// true iff last accum into this (end of ivl)
+	int options /*=0*/)			// option bits
+	//   1: use sIvl.amt_count to scale totals
+	//      effectively averages by day for annual values
+	//   2: sum only (do not average)
+{
+	if (firstFlg)
+		acm_Copy( pSrc);
+	else if (pSrc->acmCount > 0)
+	{
+		if (pSrc->acmMin < acmMin)
+		{
+			acmMin = pSrc->acmMin;
+			acmMinDayOfYear = pSrc->acmMinDayOfYear;
+			acmMinDayOfYearST = pSrc->acmMinDayOfYearST;
+			acmMinHour = pSrc->acmMinHour;
+			acmMinHourST = pSrc->acmMinHourST;
+			acmMinSubhour = pSrc->acmMinSubhour;
+		}
+		if (pSrc->acmMax > acmMax)
+		{
+			acmMax = pSrc->acmMax;
+			acmMaxDayOfYear = pSrc->acmMaxDayOfYear;
+			acmMaxDayOfYearST = pSrc->acmMaxDayOfYearST;
+			acmMaxHour = pSrc->acmMaxHour;
+			acmMaxHourST = pSrc->acmMaxHourST;
+			acmMaxSubhour = pSrc->acmMaxSubhour;
+		}
+		acmSum += pSrc->acmSum;
+		acmCount += pSrc->acmCount;
+	}
+	// else pSrc->acmCount <= 0, do nothing
+
+	if (lastFlg)
+		acmMean = acmSum / max(1, acmCount);
+
+}	// ACCUMULATOR_IVL::amc_Accum
+//=============================================================================
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // Submeters: METER and LOADMETER submeter checking and accumulation
@@ -2311,8 +2434,8 @@ void SUBMETERSEQ::smsq_AccumHour(	// submeter accum for meters with hour resolut
 LOCAL void FC mtrsAccum( 	// Accumulate metered results: add interval to next, + tot and sum.
 								// acts on METERs, DHWMTRs, LOADMTRs, and AFMTRs
 	IVLCH ivl,		// destination interval: day/month/year.  Accumulates from hour/day/month.  Not Top.ivl!
-	int firstflg, 	// iff TRUE, destination will be initialized before values are accumulated into it
-	int lastflg)	// iff TRUE, destination will be finalized (e.g. averages computed)
+	int firstFlg, 	// iff TRUE, destination will be initialized before values are accumulated into it
+	int lastFlg)	// iff TRUE, destination will be finalized (e.g. averages computed)
 					//   Note also mtrsFinalize()
 
 // Not called with ivl = C_IVLCH_H
@@ -2333,7 +2456,7 @@ LOCAL void FC mtrsAccum( 	// Accumulate metered results: add interval to next, +
 #if defined( _DEBUG)
 		int bTrc = 0; // strMatch( mtr->Name(), "ElecMtrInitNo");
 		if (bTrc)
-		   printf( "\nAccum Day=%d  hr=%d  mtr='%s' ivl=%d  ff=%d", Top.jDay, Top.iHr, mtr->Name(), ivl, firstflg);
+		   printf( "\nAccum Day=%d  hr=%d  mtr='%s' ivl=%d  ff=%d", Top.jDay, Top.iHr, mtr->Name(), ivl, firstFlg);
 #endif
 		
 		MTR_IVL* mtrSub2 = &mtr->Y + (ivl - C_IVLCH_Y);	// point destination meter interval substruct for interval
@@ -2358,32 +2481,32 @@ LOCAL void FC mtrsAccum( 	// Accumulate metered results: add interval to next, +
 
 		// accumulate: copy on first call (in lieu of 0'ing destination).
 		// Note: doHourGains 0's MTR hour info at start hour.
-		mtrSub2->mtr_Accum1( mtrSub1, ivl, 0 + (firstflg!=0));
+		mtrSub2->mtr_Accum1( mtrSub1, ivl, 0 + (firstFlg!=0));
 	}
 
 	// LOADMTRs
 	//   Accumulate all (including last record = "sum_of_loadmeters")
 	LOADMTR* pLM;
 	RLUP(LdMtrR, pLM)
-		pLM->lmt_Accum(ivl, firstflg, lastflg);
+		pLM->lmt_Accum(ivl, firstFlg, lastFlg);
 
 	// DHWMTRs
 	DHWMTR* pWM;
 	RLUP( WMtrR, pWM)
-		pWM->wmt_Accum( ivl, firstflg);
+		pWM->wmt_Accum( ivl, firstFlg);
 
 	// AFMTRs
 	AFMTR* pAM;
 	RLUP(AfMtrR, pAM)
 	{	// if (pAM->ss < AfMtrR.n)
-			pAM->amt_Accum(ivl, firstflg, lastflg);
+			pAM->amt_Accum(ivl, firstFlg, lastFlg);
 	}
 }               // mtrsAccum
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. battery)
 
 	IVLCH ivl,		// destination interval: day/month/year.  Accumulates from hour/day/month.  Not Top.ivl!
-	int firstflg ) 	// If TRUE, destination will be initialized before values are accumulated into it
+	int firstFlg ) 	// If TRUE, destination will be initialized before values are accumulated into it
 {
 	MTR* mtr;				// a meter record
 	int firstRec = 1;
@@ -2392,7 +2515,7 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 #if defined( _DEBUG)
 		int bTrc = 0;   // strMatch( mtr->Name(), "ElecMtrInitNo");
 		if (bTrc)
-		   printf( "\nFinal Day=%d  hr=%d  mtr='%s' ivl=%d  ff=%d", Top.jDay, Top.iHr, mtr->Name(), ivl, firstflg);
+		   printf( "\nFinal Day=%d  hr=%d  mtr='%s' ivl=%d  ff=%d", Top.jDay, Top.iHr, mtr->Name(), ivl, firstFlg);
 #endif
 
 		MTR_IVL* mtrSub2 = mtr->mtr_GetMTRIVL( ivl);	// point destination meter interval substruct for interval
@@ -2456,7 +2579,7 @@ LOCAL void FC mtrsFinalize( 	// Finalize meters (after post-stage calcs e.g. bat
 	// accumulate: copy on first call (in lieu of 0'ing destination).
 	//   handles dmd
 	// Note: doHourGains 0's MTR hour info at start hour.
-		mtrSub2->mtr_Accum1( mtrSub1, ivl, 2 + (firstflg!=0));
+		mtrSub2->mtr_Accum1( mtrSub1, ivl, 2 + (firstFlg!=0));
 
 #if defined( _DEBUG)
 		if (!Top.isWarmup)
@@ -2527,7 +2650,7 @@ void MTR_IVL::mtr_Accum1( 	// accumulate of one interval into another
 	const MTR_IVL* mtrSub1,	// source interval usage/demand/cost substruct in MTR record
 	IVLCH ivl,					// destination interval: day/month/year.  Accumulates from hour/day/month.  Not Top.ivl!
 	int options /*=0*/)			// option bits
-								//   1: copy to *this (re firstflg)
+								//   1: copy to *this (re firstFlg)
 								//      else accumulate
 								//   2: do "finalize" accumulation (after batttery calcs)
 								//      else end-of-calc
@@ -3127,6 +3250,7 @@ RC INVERSE::iv_Calc(
 
 }		// INVERSE::iv_Calc
 //============================================================================
+
 #if defined( BINRES)
 //-----------------------------------------------------------------------------------------------------------
 LOCAL void FC binResInit( int isAusz)	// initialize & open binary results (if to be used) at start run
@@ -3211,12 +3335,12 @@ x
 x     AHRES_IVL_SUB *ahres1,    	// source interval results substruct (in AHRES record)
 x     AHRES_IVL_SUB *ahres2,    	// destination: next longer interval, or same interval for sum-of-ahs
 x     FLOAT subhrDur,		// fraction weight for this subhour's results; weights in hour should add to 1.
-x     BOO firstflg ) 		// If TRUE, destination will be initialized before values are accumulated into it
-x     //BOO lastflg )  	arg not needed	// If TRUE, destination means will be computed after values are accumulated.
+x     BOO firstFlg ) 		// If TRUE, destination will be initialized before values are accumulated into it
+x     //BOO lastFlg )  	arg not needed	// If TRUE, destination means will be computed after values are accumulated.
 x
 x{
 x // if first call, copy source into destination, weight averages
-x     if (firstflg)
+x     if (firstFlg)
 x     {
 x        memcpy( ahres2, ahres1, sizeof(AHRES_IVL_SUB) );	// copy entire subrecord bitwise
 x        float *fp2 = &ahres2->ARa1;			// point 1st average in destination

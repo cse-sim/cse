@@ -175,15 +175,18 @@ bool CFSTYX::cfx_CalcRatings(
 //-----------------------------------------------------------------------------
 CFSTYX::CFSTYX(			// build a CFS
 	const char* id,			// unique ID (max len = CFSIDLEN)
-	float _UcogNFRC,		// externally calculated NFRC cog U-factor, Btuh/ft2-F
-	float _SHGCcogNFRC,		// externally calculated NFRC cog SHGC
+	double _UcogNFRC,		// externally calculated NFRC cog U-factor, Btuh/ft2-F
+	double _SHGCcogNFRC,	// externally calculated NFRC cog SHGC
 	...)					// add'l gap / layer info
+// NOTE: double not float for _UcogNFRC and _SHGCcogNFRC for consistency
+//    with other numeric args (which will be promoted to double)
 // call = id, U, SHGC, layerID, gasID, gapT (inches), layerID, ...
+//   layer order = outside -> inside
 {
 	Clear();
 	FCSET( ID, id);
-	UcogNFRC = _UcogNFRC;
-	SHGCcogNFRC = _SHGCcogNFRC;
+	UcogNFRC = float(_UcogNFRC);
+	SHGCcogNFRC = float(_SHGCcogNFRC);
 	va_list ap;
 	va_start( ap, _SHGCcogNFRC);
 	RC rc = RCBAD;
@@ -235,9 +238,6 @@ void CFSTYX::Clear()
 // class FENAW -- XSURF substructure for ASHWAT glazings
 ///////////////////////////////////////////////////////////////////////////////
 FENAW::FENAW( XSURF* pXS /*=NULL*/)
-#if defined( ASHWAT_REV2)
-	: fa_X( 25000)
-#endif
 {
 	fa_pXS = pXS;
 	fa_Init();
@@ -246,8 +246,6 @@ FENAW::FENAW( XSURF* pXS /*=NULL*/)
 void FENAW::fa_Init()
 {	// fa_pXS do not alter
 	fa_UNFRC = fa_SHGC = fa_frmF = fa_frmArea = fa_frmUNFRC = fa_frmUC = 0.f;
-	fa_frmSbcI.sb_Init( fa_pXS, 0);
-	fa_frmSbcO.sb_Init( fa_pXS, 1);
 	fa_CFS.cf_Clear();
 	VZero( fa_refDesc, CFSIDLEN+30);
 	fa_mSolar = fa_mCond = fa_dfAbsB = fa_dfRhoB = fa_dfTauB = 0.f;
@@ -257,12 +255,7 @@ void FENAW::fa_Init()
 	fa_iterControl = 100;
 	fa_nCall = fa_nCalc = 0;
 	fa_awO.aw_Init();
-#if defined( ASHWAT_REV2)
-	fa_X.clear();
-#else
-	fa_incSlrPC = 0.;
-	fa_txaiPC = fa_hxaiPC = fa_txaoPC = 0.f;
-#endif
+	fa_awI.aw_Init();
 }		// FENAW::FENAW
 //-----------------------------------------------------------------------------
 const char* FENAW::fa_Name() const
@@ -364,8 +357,8 @@ RC FENAW::fa_SetupBare(		// FENAW init glazing alone
 
 		// frame
 		if (fa_frmArea > 0.f)
-		{	fa_frmSbcI = fa_SBC( 0);		// same boundary conditions as XSRAT
-			fa_frmSbcO = fa_SBC( 1);
+		{	fa_FrmSBC( 0) = fa_SBC( 0);		// same boundary conditions as XSRAT
+			fa_FrmSBC( 1) = fa_SBC( 1);
 			// TODO: roughness or other differences?
 		}
 	}
@@ -499,8 +492,8 @@ RC FENAW::fa_FrameBC()
 	RC rc = RCOK;
 	// frame is modeled as a quick surface (no mass)
 	if (fa_frmArea > 0.)
-	{	fa_frmSbcI.sb_SetCoeffs( fa_frmArea, fa_frmUC);
-		fa_frmSbcO.sb_SetCoeffs( fa_frmArea, fa_frmUC);
+	{	fa_FrmSBC( 0).sb_SetCoeffs( fa_frmArea, fa_frmUC);
+		fa_FrmSBC( 1).sb_SetCoeffs( fa_frmArea, fa_frmUC);
 	}
 	return rc;
 }		// FENAW::fa_FrameBC
@@ -509,9 +502,9 @@ RC FENAW::fa_FrameQS()
 {
 	RC rc = RCOK;
 	if (fa_frmArea > 0.)
-	{	ZNR& z = ZrB[ fa_frmSbcI.sb_zi];
-		z.zn_AccumBalTermsQS( fa_frmArea, fa_frmSbcI, fa_frmSbcO);
-		// if (fa_frmSbcO.sb_zi) ... generalize if supporting interzone fenestration
+	{	ZNR& z = ZrB[ fa_FrmSBC( 0).sb_zi];
+		z.zn_AccumBalTermsQS( fa_frmArea, fa_FrmSBC( 0), fa_FrmSBC( 1));
+		// if (fa_FrmSBC( 1).sb_zi) ... generalize if supporting interzone fenestration
 	}
 	return rc;
 }		// FENAW::fa_FrameQS
@@ -520,10 +513,10 @@ RC FENAW::fa_FrameEndSubhr()
 {
 	RC rc = RCOK;
 	if (fa_frmArea > 0.)
-	{	ZNR& z = ZrB[ fa_frmSbcI.sb_zi];
-		fa_frmSbcI.sb_SetTx();
-		fa_frmSbcO.sb_SetTx();
-		z.zn_EndSubhrQS( fa_frmArea, fa_frmUC, fa_frmSbcI, fa_frmSbcO);
+	{	ZNR& z = ZrB[ fa_FrmSBC( 0).sb_zi];
+		fa_FrmSBC( 0).sb_SetTx();
+		fa_FrmSBC( 1).sb_SetTx();
+		z.zn_EndSubhrQS( fa_frmArea, fa_frmUC, fa_FrmSBC( 0), fa_FrmSBC( 1));
 	}
 	return rc;
 }		// FENAW::fa_FrameEndSubhr
@@ -564,24 +557,15 @@ RC FENAW::fa_Subhr(				// subhr calcs for single time step
 	// solar gain
 	double incSlrIP = sbcO.sb_sgTarg.st_tot + sbcI.sb_sgTarg.st_tot;
 	double incSlr = IrIPtoSI( incSlrIP);	// total incident solar, W/m2 (used re SHGC calc)
-	double absSlr[ CFSMAXNL+1];				// absorbed by layer, W/m2 (including layer nL = "room")
-	double absSlrF[ CFSMAXNL+1];			// abs fraction by layer (test/debug aid only)
 
-#if defined( ASHWAT_REV2)
-	int bDoAW = TRUE;
-#if 0 && defined( _DEBUG)
-	if (fa_nCalc == 0)
-		fa_PerfMap();
-#endif
-#else
 	// do full ASHWAT iff conditions have changed "enough"
 	int bDoAW = Top.isBegRun
 		     // || Top.iSubhr == 1 ... idea: effect of hour changes appear at 2nd step
-			 || fabs( fa_txaoPC - sbcO.sb_txa) > Top.tp_AWTrigT		// default 1 F
-			 || fabs( fa_txaiPC - sbcI.sb_txa) > Top.tp_AWTrigT
-			 || frDiff( fa_incSlrPC, incSlr) > Top.tp_AWTrigSlr		// default .05
-			 || frDiff( fa_hxaiPC, sbcI.sb_hxa) > Top.tp_AWTrigH;	// default .1
-#endif
+			 || fabs( fa_awI.aw_txaO - sbcO.sb_txa) > Top.tp_AWTrigT		// default 1 F
+			 || fabs( fa_awI.aw_txaI - sbcI.sb_txa) > Top.tp_AWTrigT
+			 || frDiff( fa_awI.aw_incSlr, incSlr) > Top.tp_AWTrigSlr		// default .05
+			 || frDiff( fa_awI.aw_hxaI, double( sbcI.sb_hxa)) > Top.tp_AWTrigH;	// default .1
+
 
 	if (bDoAW || bDbPrint)
 	{	// derive layer-by-layer absorbed solar
@@ -589,39 +573,29 @@ RC FENAW::fa_Subhr(				// subhr calcs for single time step
 		if (incSlr > 0.)
 		{	// nL+1 cuz innermost = room pseudo-layer
 			for (iL=0; iL<nL+1; iL++)
-			{	absSlr[ iL] = IrIPtoSI( fa_bmLAbsF[ iH][ iL]*sbcO.sb_sgTarg.st_bm
+			{	fa_absSlr[ iL] = IrIPtoSI( fa_bmLAbsF[ iH][ iL]*sbcO.sb_sgTarg.st_bm
 				 			          + fa_dfLAbsF[ iL]     *sbcO.sb_sgTarg.st_df
 									  + fa_dfLAbsB[ iL]     *sbcI.sb_sgTarg.st_df);
-				absSlrF[ iL] = absSlr[ iL] / incSlr;
+				fa_absSlrF[ iL] = fa_absSlr[ iL] / incSlr;
 			}
 		}
 		for (; iL < CFSMAXNL+1; iL++)
-		{	absSlr[ iL] = 0.;	// clear unused values (= all at night)
-			absSlrF[ iL] = 0.;
+		{	fa_absSlr[ iL] = 0.;	// clear unused values (= all at night)
+			fa_absSlrF[ iL] = 0.;
 		}
 	}
 
-	AWIN awI;
-	awI.aw_Set(
-		sbcO.sb_txa, sbcO.sb_hxa, sbcO.sb_txr,
-		sbcI.sb_txa, sbcI.sb_hxa, sbcI.sb_txr,
-		incSlr, absSlr);
-
-#if defined( ASHWAT_REV2)
-	rc |= fa_ThermalCache( awI, fa_awO);
-	fa_iterControl = -1;
-#else
 	if (bDoAW)
-	{	fa_incSlrPC = incSlr;
-		fa_txaiPC = sbcI.sb_txa;
-		fa_hxaiPC = sbcI.sb_hxa;
-		fa_txaoPC = sbcO.sb_txa;
+	{
+		fa_awI.aw_Set(
+			sbcO.sb_txa, sbcO.sb_hxa, sbcO.sb_txr,
+			sbcI.sb_txa, sbcI.sb_hxa, sbcI.sb_txr,
+			incSlr, fa_absSlr);
 
-		rc |= fa_Thermal( awI, fa_awO);
+		rc |= fa_Thermal( fa_awI, fa_awO);
 		fa_iterControl = -1;		// don't init / don't iterate
 									//   subsequent calls
 	}
-#endif
 
 	// map results to CSE vars
 	//  Note CSE 0=inside, ASHWAT 0=outside
@@ -629,22 +603,46 @@ RC FENAW::fa_Subhr(				// subhr calcs for single time step
 	sbcO.sb_tSrf = DegKtoF( fa_awO.aw_TL[ 0]);			// outside
 	sbcO.sb_txe = sbcO.sb_txr*fa_awO.aw_FHR_OUT + sbcO.sb_txa*( 1. - fa_awO.aw_FHR_OUT);	// effective outside temp
 
-	double Ag = fActive * fa_pXS->xs_AreaGlazed();		// note: glazed area only
+	double Ag = fActive * fa_pXS->xs_areaGlz;		// note: glazed area only
 	z.zn_nAirSh += Ag*(sbcO.sb_txe*fa_awO.aw_cc + sbcO.sb_sgTarg.st_tot*fa_awO.aw_FP*fa_mSolar);
 	z.zn_dAirSh += Ag*fa_awO.aw_cc;
 	z.zn_nRadSh += Ag*(sbcO.sb_txe*fa_awO.aw_cr + sbcO.sb_sgTarg.st_tot*fa_awO.aw_FM*fa_mSolar);
 	z.zn_dRadSh += Ag*fa_awO.aw_cr;
 	z.zn_cxSh   += Ag*USItoIP( fa_awO.aw_Cx);
 
+	// transmitted SW solar, Btuh/ft2
+	fa_pXS->xs_glzTrans = fa_mSolar * (sbcO.sb_sgTarg.st_bm*fa_BmTauF(iH) + sbcO.sb_sgTarg.st_df*fa_DfTauF());
+	
+#if 0 && defined( _DEBUG)
+	if (fa_absSlr[nL] > 0.)
+	{
+		double trans2 = fa_mSolar * IrSItoIP(fa_absSlr[nL]);
+		double diff = frDiff(double(fa_pXS->xs_glzTrans), trans2);
+		if (diff > .01)
+			printf("\nMismatch %s %s: %0.3f", fa_pXS->xs_Name(), Top.When(C_IVLCH_S), diff);
+	}
+#endif
+
+
+#if 0 && defined( _DEBUG)
+	// compare transmitted to zone total from targetting
+	// test valid iff one one window
+	// perfect match not expected due to cavity abs
+
+	double ratTr = z.qSgTotSh > 0. ? Ag*fa_pXS->xs_glzTrans / z.qSgTotSh
+		: fa_pXS->xs_glzTrans == 0. ? 1.
+		: 999.;
+	if (fabs(ratTr - 1.) > .001)
+		printf("\nMismatch %s: %0.6f", Top.When(C_IVLCH_S), ratTr);
+#endif
+
+	// inward flowing heat gain (convective and radiant), Btuh/ft2
+	fa_pXS->xs_glzInward = fa_mSolar * sbcO.sb_sgTarg.st_tot*(fa_awO.aw_FP+fa_awO.aw_FM);
+
 	// zone solar gain
 	//   add inward flowing fraction of absorbed
 	//   transmitted already included in qSgTotSh
-#if 0 && defined( _DEBUG)
-	double trans = sbcO.sb_sgTarg.st_bm*fa_BmTauF( iH) + sbcO.sb_sgTarg.st_df*fa_DfTauF();
-	if (fabs( Ag*fa_mSolar*trans - z.qSgTotSh) > .1)
-		printf( "mismatch ");
-#endif
-	z.qSgTotSh  += Ag*sbcO.sb_sgTarg.st_tot*(fa_awO.aw_FP+fa_awO.aw_FM)*fa_mSolar;
+	z.qSgTotSh  += Ag*fa_pXS->xs_glzInward;
 
 #if defined( DEBUGDUMP)
 	if (bDbPrint)
@@ -655,8 +653,8 @@ RC FENAW::fa_Subhr(				// subhr calcs for single time step
 				fa_pXS->xs_Name(), nL,
 				sbcO.sb_txa, sbcO.sb_txr, sbcO.sb_txe, sbcI.sb_txa, sbcI.sb_txr, sbcI.sb_txe);
 		DbPrintf("   incSlr=%0.2f  trans=%0.2f (%0.3f)",
-			sbcO.sb_sgTarg.st_tot, IrSItoIP( absSlr[ nL]), absSlrF[ nL]);
-		VDbPrintf( "  layer abs=", absSlr, nL, "  %0.2f", 1./cfIr);
+			sbcO.sb_sgTarg.st_tot, IrSItoIP( fa_absSlr[ nL]), fa_absSlrF[ nL]);
+		VDbPrintf( "  layer abs=", fa_absSlr, nL, "  %0.2f", 1./cfIr);
 		// layer temps, F
 		DbPrintf("   layer temps= ");
 		for (iL=0; iL<nL; iL++)
@@ -665,8 +663,8 @@ RC FENAW::fa_Subhr(				// subhr calcs for single time step
 			AWO( SHGCrt), AWO( Urt), AWO( cr), AWO( cc), AWO( FP), AWO( FM), USItoIP( AWO( Cx)));
 		SBC::sb_DbPrintf( "COG", sbcO, sbcI);
 		if (fa_frmArea > 0.  && bDoFrm)
-		{	const FENAW* A0= fa_pXS->xs_pFENAW[ 0];	// frame BCs always in [ 0]
-			SBC::sb_DbPrintf( "Frame", A0->fa_frmSbcO, A0->fa_frmSbcI);
+		{	FENAW* A0= fa_pXS->xs_pFENAW[ 0];	// frame BCs always in [ 0]
+			SBC::sb_DbPrintf( "Frame", A0->fa_FrmSBC( 1), A0->fa_FrmSBC( 0));
 		}
 	}
 #endif
@@ -683,7 +681,7 @@ RC FENAW::fa_EndSubhr(			// ASHWAT end-of-subhour (accounting etc)
 	ZNR& z = ZrB[ sbcI.sb_zi];
 
 	// glazed area
-	double Ag = fActive * fa_pXS->xs_AreaGlazed();
+	double Ag = fActive * fa_pXS->xs_areaGlz;
 	sbcO.sb_qSrf =  fa_awO.aw_cc*(sbcO.sb_txe - sbcI.sb_txa)
 		                + fa_awO.aw_cr*(sbcO.sb_txe - sbcI.sb_txr);
 	sbcI.sb_qSrf = -sbcO.sb_qSrf;
@@ -749,14 +747,8 @@ x	fax_stats[ fsxFR.sx_Obs( FRX, FR);
 #endif
 #if 0 && defined( _DEBUG)
 	if (Top.tp_IsLastStep())
-#if defined( ASHWAT_REV2)
-		DbPrintf( "\nASHWAT %s  nCall=%d   nCalc=%d   fCalc=%.3f   mapLoad=%.3f",
-			fa_pXS->xs_Name(), fa_nCall, fa_nCalc, double( fa_nCalc)/double( fa_nCall),
-			fa_X.max_load_factor());
-#else
 		DbPrintf( "\nASHWAT %s  nCall=%d   nCalc=%d   fCalc=%.3f",
 			fa_pXS->xs_Name(), fa_nCall, fa_nCalc, double( fa_nCalc)/double( fa_nCall));
-#endif
 #endif
 
 	return RCOK;
@@ -778,27 +770,6 @@ x	fax_stats[ fsxFR.sx_Obs( FRX, FR);
 	return 1.f / (1.f/max( Uc, .01f) + RoutNFRC + RinNFRC);
 }		// FENAW::fa_CtoUNFRC
 //=============================================================================
-void AWIN::aw_Round()
-{
-	roundNearest( aw_txaO, 5.);
-	roundNearest( aw_hxaO, .5);
-	roundNearest( aw_txrO, 5.);
-	roundNearest( aw_txaI, 2.);
-	roundNearest( aw_hxaI, .1);
-	roundNearest( aw_txrI, 2.);
-	roundNearest( aw_incSlr, 10.);
-	for (int iL=0; iL<CFSMAXNL+1; iL++)
-		roundNearest (aw_absSlr[ iL], 2.);
-}		// AWIN::aw_Round
-//-----------------------------------------------------------------------------
-size_t AWIN::aw_Hash() const
-{	return (size_t( (aw_txaO+100.)/5.))
-         + (size_t( aw_txaI/2.) << 6)
-		 + (size_t( aw_hxaO*2.) << 12)
-		 + (size_t( aw_hxaI*10.) << 16)
-		 + (size_t( aw_incSlr/10.) << 22);
-}		// AWIN::aw_Hash
-//-----------------------------------------------------------------------------
 bool AWIN::operator==( const AWIN& awI) const
 {	if (aw_txaO != awI.aw_txaO
 	 || aw_incSlr != awI.aw_incSlr)
@@ -865,36 +836,6 @@ WStr AWOUT::aw_CSVRow() const
 #undef TL
 }	// AWOUT::aw_CSVRow
 //=============================================================================
-#if defined( ASHWAT_REV2)
-RC FENAW::fa_ThermalCache(		// ASHWAT thermal calcs
-	const AWIN& awI,		// input values
-	AWOUT& awO)			// output values
-{
-	RC rc = RCOK;
-	AWIN awIX( awI);
-	awIX.aw_Round();
-	if (fa_X.size() > 0 && fa_X.count( awIX))
-		awO = fa_X[ awIX];
-	else
-	{
-#if defined( XX)
-		if (fa_nCalc == 0)
-		{
-		}
-		fa_Thermal( awI, awO);		// unrounded calc
-		WStr oUnR = awO.aw_CSVRow();
-#endif
-		rc = fa_Thermal( awIX, awO);
-		fa_X[ awIX] = awO;
-#if defined( XX)
-
-
-#endif
-	}
-	return rc;
-}
-#endif
-//-----------------------------------------------------------------------------
 RC FENAW::fa_Thermal(		// ASHWAT thermal calcs
 	const AWIN& awI,		// input values
 	AWOUT& awO)			// output values
@@ -1135,7 +1076,7 @@ static bool bSetup = false;
 /*static*/ void XASHWAT::MsgCallBackFunc(
 	[[maybe_unused]] void* msgContext,
 	AWMSGTY msgTy,
-	const string& msg)
+	const std::string& msg)
 {
 	if (msgTy == msgDBG)
 		DbPrintf( msg.c_str());
@@ -1148,10 +1089,10 @@ bool XASHWAT::xw_CheckFixCFSLayer(
 	[[maybe_unused]] const char* what)	// context for messages
 {
 #if defined( ASHWAT_USECPP)
-	vector< string> msgs;
+	std::vector< std::string> msgs;
 	bool bRet = L.cl_CheckFix( msgs, "Test");
 	if (!bRet)
-	{	vector< string>::const_iterator  pos;
+	{	std::vector< std::string>::const_iterator  pos;
 		for (pos=msgs.begin(); pos!=msgs.end(); ++pos)
 			warn( pos->c_str());
 	}
@@ -1197,7 +1138,7 @@ char fWhat[ MSGMAXLEN];
 RC XASHWAT::xw_FinalizeCFS( CFSTY& CFS)
 {
 #if defined( ASHWAT_USECPP)
-	string msg;
+	std::string msg;
 	bool bRet = CFS.cf_Finalize( &msg);
 	if (!bRet)
 		warn( msg.c_str());
@@ -1326,14 +1267,14 @@ RC XASHWAT::xw_BuildLib()		// libary of built-in types
 // Beam total transmittance = tauBT = 0.11
 // Beam total reflectance     = rhoBT = 0.38
 	xw_layerLib.push_back( CFSLAYER( "DrapeMed",  ltyDRAPE, 0.01f, 0.38f, 0.10f));
-
-	xw_CFSLib.push_back( CFSTYX( "CLEAR_SINGLE", 1.042, 0.860, "102",  NULL));
-	xw_CFSLib.push_back( CFSTYX( "CLEAR_AIR",    0.481, 0.763, "102",  "Air", .492, "102",   NULL));
-	xw_CFSLib.push_back( CFSTYX( "EHSLE_AIR",    0.337, 0.721, "102",  "Air", .492, "9921",  NULL));
-	xw_CFSLib.push_back( CFSTYX( "HSLE_AIR",     0.320, 0.686, "102",  "Air", .492, "2184F", NULL));
-	xw_CFSLib.push_back( CFSTYX( "MSLE_AIR",     0.297, 0.419, "2010", "Air", .492, "102",   NULL));
-	xw_CFSLib.push_back( CFSTYX( "LSLE_AIR",     0.295, 0.371, "2026", "Air", .492, "102",   NULL));
-	xw_CFSLib.push_back( CFSTYX( "ELSLE_AIR",    0.289, 0.277, "2154", "Air", .492, "102",   NULL));
+//                                               UcogNFRC SHGCcogNFRC  Layers (outside to inside order)
+	xw_CFSLib.push_back( CFSTYX( "CLEAR_SINGLE", 1.042,   0.860,       "102",  NULL));
+	xw_CFSLib.push_back( CFSTYX( "CLEAR_AIR",    0.481,   0.763,       "102",  "Air", .492, "102",   NULL));
+	xw_CFSLib.push_back( CFSTYX( "EHSLE_AIR",    0.337,   0.721,       "102",  "Air", .492, "9921",  NULL));
+	xw_CFSLib.push_back( CFSTYX( "HSLE_AIR",     0.320,   0.686,       "102",  "Air", .492, "2184F", NULL));
+	xw_CFSLib.push_back( CFSTYX( "MSLE_AIR",     0.297,   0.419,       "2010", "Air", .492, "102",   NULL));
+	xw_CFSLib.push_back( CFSTYX( "LSLE_AIR",     0.295,   0.371,       "2026", "Air", .492, "102",   NULL));
+	xw_CFSLib.push_back( CFSTYX( "ELSLE_AIR",    0.289,   0.277,       "2154", "Air", .492, "102",   NULL));
 
 	return rc;
 
