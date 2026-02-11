@@ -5,7 +5,7 @@
 
 TEST(tdpak, basic_calendar_functions) 
 {
-	// placeholder -- many functions to be added
+	// Many functions to be added
 	EXPECT_EQ(tddmon("Feb"), 2);
 
 	EXPECT_EQ(tdIsLeapYear(-1), false);
