@@ -1,4 +1,5 @@
 build/
+output/
 config.yaml
 
 *.egg*/
