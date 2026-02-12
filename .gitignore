@@ -1,22 +1,11 @@
 ## CSE .gitignore
 
-# test files
-/test/*.rep
-/test/*.REP
-/test/*.csv
-/test/*.err
-/test/*.spl
-/test/*.bat
-/test/ref64/
-/test/error_handling/*.rep
-/test/error_handling/*.csv
-/test/error_handling/*.err
-/test/error_handling/*.spl
-# !/test/*.exe see below
-
 projects/
 sandbox/
 src/ideas
+memos/
+wthr/
+std140/
 
 # User-specific files
 .editorconfig
@@ -91,9 +80,7 @@ artifacts/
 *.svclog
 *.scc
 *.exe
-!/test/*.exe
 *.VC.db
-
 
 # Chutzpah Test files
 _Chutzpah*
