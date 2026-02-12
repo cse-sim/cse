@@ -1719,6 +1719,7 @@ RECORD MAT "material" *RAT	// material (for construction layer) input info
 //=============================================================================
 RECORD FOUNDATION "foundation" *RAT	// foundation input info
 *prefix fd_
+*exdes
 *declare "class Kiva::Foundation* fd_kivaFnd;"
 *declare "RC fd_SetupKiva();"
 
