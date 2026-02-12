@@ -2015,7 +2015,7 @@ RECORD AIRSTATE "AirState" *SUBSTRUCT
 *declare "float as_RhoDry() const { return psyDenDryAir( as_tdb, as_w); }"
 *declare "float as_RhoMoist() const { return psyDenMoistAir( as_tdb, as_w); }"
 *declare "double as_AddQSen( double q, double amf);"
-*declare "double as_DeltaTQSen( double q, double amf);"
+*declare "double as_DeltaTQSen( double q, double amf) const;"
 *declare "double as_CalcQSen( double q, double amf) const;"
 *declare "double as_AddQSen2( double q, double amf);"
 *declare "double as_CalcQSen2( double q, double amf) const;"
@@ -3676,7 +3676,9 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 							// non-ASHP heating
 *f FRAC_GZ rs_AFUE			//   heating system rated AFUE, 0 < AFUE <= 1
 
-*f *e FLOAT_GEZ rs_capH;		// rated net heating output (including fan), Btuh
+*f *e FLOAT_GEZ rs_capH;		// rated net heating output (including fan) at design temp, Btuh
+                                //   (at 400 cfm/ton, 70F entering air during PM autosize)
+                                //   other types less rigorously defined
 *f *e FLOAT_GEZ rs_capH_As;		// autoSized capH (including fan), Btuh
 *f *e FLOAT_GEZ rs_capH_AsNov;	// raw autoSized capH w/o oversizing (including fan), Btuh
 // autoSize code ASSUMES x, x_As, x_AsNov together for access thru one ptr. cuprobe.cpp's name search also requires together.
