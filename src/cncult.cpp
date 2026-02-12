@@ -34,7 +34,7 @@ cnculti.h: cncult internal functions shared only amoung cncult,2,3,4,5,6.cpp */
 #include "rccn.h"	// TOPRATstr ZNRstr SFIstr SDIstr
 #include "msghans.h"	// MH_S0400
 
-#include "cnguts.h"	// Top CTWINDOW
+#include "cnguts.h"	// Top
 #include "vrpak.h"	// isUsedVrFile 7-13-92
 
 #include "cuparse.h"	// TYFL TYSTR evfTx
@@ -3128,6 +3128,10 @@ WFDATA Wthr((anc<WFDATA>*)& WthrR, 0);			// record containing current hour's wea
 makAncWFDATA2(WthrNxHrR, nullptr, "weatherNextHour");	// basAnc for...
 WFDATA WthrNxHr((anc<WFDATA>*)& WthrNxHrR, 0);	// record containing current next hour's weather data,
 												// extracted and adjusted, for cgWthr.cpp read-ahead
+
+makAncWFSTATSDAY(WfStatsDay, nullptr);
+// WFSTATSDAY WfStatsDay((anc<WFSTATSDAY>*)& WfStatsDay, 0);
+
 makAncDESCOND(DcR, dcT);						// design conditions
 
 // zones, transfers, gains,
@@ -3295,6 +3299,7 @@ void FC cnPreInit()		// preliminary cncult.cpp initialization [needed before sho
 //  and are detected if used in expressions.)
 	WthrR.ba_flags |= RFNOEX;
 	WthrNxHrR.ba_flags |= RFNOEX;
+	WfStatsDay.ba_flags |= RFNOEX;
 
 	SetupProbeModernizeTables();
 

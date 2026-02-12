@@ -201,6 +201,9 @@ REPORT rpType = UDT  rpFreq = YEAR rpCPL=-1
   REPORTCOL colHead="TOP elev" colVal=@top.elevation  colDec=1 colWid=8
   REPORTCOL colHead="TDVDesc" colVal=@weatherfile.tdvFileTitle colWid=20
   REPORTCOL colHead="TDVTimeStamp" colVal=@weatherfile.TDVFileTimeStamp colWid=30
+  REPORTCOL colHead="DT"  colVal=@top.dt colWid=3
+  REPORTCOL colHead="skyLW" colVal=@top.skyModelLW colWid=5
+  REPORTCOL colHead="sltInt" colVal=@top.slrInterpMeth colWid=6
 
 
 #define CSEBtuSF 1000
@@ -265,6 +268,10 @@ ZNCOLS(1, Y)
   REPORTCOL colHead="FHr" colVal= $hour + ($subhour - 1.)/ @Top.nsubsteps colDec=3 colWid=5\
   REPORTCOL colHead="DNI" colVal=@weather.DNI colDec=1 colWid=6 \
   REPORTCOL colHead="DHI" colVal=@weather.DHI colDec=1 colWid=6 \
+  REPORTCOL colHead="GHI" colVal=@weather.glrad colDec=1 colWid=6 \
+  REPORTCOL colHead="DayDNI" colVal=@wfstatsDay[ $dayOfYear].DNI colDec=1 colWid=6 \
+  REPORTCOL colHead="DayDHI" colVal=@wfstatsDay[ $dayOfYear].DHI colDec=1 colWid=6 \
+  REPORTCOL colHead="DayGHI" colVal=@wfstatsDay[ $dayOfYear].GHI colDec=1 colWid=6 \
   REPORTCOL colHead="RBHrAv" colVal=@top.radBeamHrAv colDec=1 colWid=6 \
   REPORTCOL colHead="RDHrAv" colVal=@top.radDiffHrAv colDec=1 colWid=6 \
   REPORTCOL colHead="RBShAv" colVal=@top.radBeamShAv colDec=1 colWid=6 \
@@ -273,19 +280,63 @@ ZNCOLS(1, Y)
   REPORTCOL colHead="IHDiff" colVal=@xsurf["Horizontal Roof"].sbcO.sgTarg.df colDec=1 colWid=6 \
   REPORTCOL colHead="IHTot" colVal=@xsurf["Horizontal Roof"].sbcO.sgTarg.tot colDec=1 colWid=6
 
+// year end wrap
+SHREP1( Dec 31, Jan 1)
+SHREP2( Dec 31, Jan 1)
+
+// not daylight savings
 SHREP1( Feb 1, Feb 3)
 SHREP2( Feb 1, Feb 3)
 
+// changeover to daylight savings
 SHREP1( Mar 5, Mar 10)
 SHREP2( Mar 5, Mar 10)
 
+// is daylight savings
 SHREP1( Aug 1, Aug 3)
 SHREP2( Aug 1, Aug 3)
 
+// changeover from daylight savings
+SHREP1( Oct 30, Nov 2)
+SHREP2( Oct 30, Nov 2)
 
+#define HRREP(xdb, xde) REPORT rpType=UDT rpFreq=HOUR rpDayBeg=xdb rpDayEnd=xde \
+  REPORTCOL colHead="Mon" colVal=$month colWid=3 \
+  REPORTCOL colHead="Day" colVal=$dayOfMonth colWid=3 \
+  REPORTCOL colHead="Hr" colVal=$hour colWid=3 \
+  REPORTCOL colHead="HrST" colVal=$hourST colWid=4 \
+  REPORTCOL colHead="taDb" colVal=@weather.db colDec=1 colWid=5 \
+  REPORTCOL colHead="taWb" colVal=@weather.wb colDec=1 colWid=5 \
+  REPORTCOL colHead="taDp" colVal=@weather.tadp colDec=1 colWid=5 \
+  REPORTCOL colHead="DNI" colVal=@weather.DNI colDec=1 colWid=5 \
+  REPORTCOL colHead="DHI" colVal=@weather.DHI colDec=1 colWid=5 \
+  REPORTCOL colHead="bmrad" colVal=@weather.bmrad colDec=1 colWid=5 \
+  REPORTCOL colHead="dfrad" colVal=@weather.dfrad colDec=1 colWid=5 \
+  REPORTCOL colHead="glrad" colVal=@weather.glrad colDec=1 colWid=5 \
+  REPORTCOL colHead="tdvE" colVal=@weather.tdvElec colDec=2 colWid=6 \
+  REPORTCOL colHead="tdvEPk" colVal=@weather.tdvElecPk colDec=2 colWid=6 \
+  REPORTCOL colHead="tdvEAv" colVal=@weather.tdvElecAvg colDec=2 colWid=6
+
+
+#define DAYREP(xdb, xde) REPORT rpType=UDT rpFreq=DAY rpDayBeg=xdb rpDayEnd=xde \
+  REPORTCOL colHead="Mon" colVal=$month colWid=3 \
+  REPORTCOL colHead="Day" colVal=$dayOfMonth colWid=3 \
+  REPORTCOL colHead="tdvEPk" colVal=@wfstatsDay[ $dayOfYear].tdvElecPk colDec=2 colWid=6 \
+  REPORTCOL colHead="tdvEAv" colVal=@wfstatsDay[ $dayOfYear].tdvElecAvg colDec=2 colWid=6
+
+HRREP( feb 1, feb 3)
+
+DAYREP( feb 1, feb 3)
 
 
 RUN
+
+#if 0
+  REPORTCOL colHead="DayDNI" colVal=@wfstatsDay[ $dayOfYear].DNI colDec=1 colWid=6
+  REPORTCOL colHead="DayDHI" colVal=@wfstatsDay[ $dayOfYear].DHI colDec=1 colWid=6
+  REPORTCOL colHead="DayGHI" colVal=@wfstatsDay[ $dayOfYear].GHI colDec=1 colWid=6
+#endif
+
 
 UNSET DT
 DT = Yes
@@ -301,6 +352,17 @@ UNSET skyModelLW
 skyModelLW = IRHORIZ
 
 RUN
+
+UNSET wfName
+wfName = "CA_BLUE-CANYON-AP_725845S_STYP20.EPW"
+
+UNSET slrInterpMeth
+UNSET DT
+DT = No
+UNSET skyModelLW
+
+RUN
+
 
 
 
