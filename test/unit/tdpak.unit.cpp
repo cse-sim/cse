@@ -5,10 +5,9 @@
 
 TEST(tdpak, basic_calendar_functions) 
 {
-	// placeholder -- many functions to be added
+	// Many functions to be added
 	EXPECT_EQ(tddmon("Feb"), 2);
-#if 0
-	// tdIsLeapYear has been eliminated, 2-10-2026.  Why?
+
 	EXPECT_EQ(tdIsLeapYear(-1), false);
 	EXPECT_EQ(tdIsLeapYear(-2), false);
 	EXPECT_EQ(tdIsLeapYear(-3), false);
@@ -33,7 +32,6 @@ TEST(tdpak, basic_calendar_functions)
 	EXPECT_EQ(tdLeapDay(2000, 3), 1);
 	EXPECT_EQ(tdLeapDay(2001, 1), 0);
 	EXPECT_EQ(tdLeapDay(2001, 3), 0);
-#endif
 
 }
 
