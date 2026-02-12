@@ -32,7 +32,6 @@ TEST(tdpak, basic_calendar_functions)
 	EXPECT_EQ(tdLeapDay(2000, 3), 1);
 	EXPECT_EQ(tdLeapDay(2001, 1), 0);
 	EXPECT_EQ(tdLeapDay(2001, 3), 0);
-#endif
 
 }
 
