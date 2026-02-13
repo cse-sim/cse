@@ -1396,14 +1396,4 @@ ALTER DHWSYS "DS1"
 
 RUN
 
-UNSET runTitle
-runTitle = "BradfordWhiteAeroThermRE2HP50"
-
-ALTER DHWSYS "DS1"
-    ALTER DHWHEATER HPWH
-        whASHPType = BradfordWhiteAeroThermRE2HP50
-        UNSET whUEF
-
-RUN
-
 $EOF
