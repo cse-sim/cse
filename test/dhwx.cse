@@ -30,6 +30,7 @@ DHWMETER DHWMtrFXMix
 DHWMETER DHWMtrWH
 
    
+
    // ACM AppE table 1 hourly use schedules
 //  should be written to cse file for use in wsUse input
 #define HWUSEF_WD hourval( \

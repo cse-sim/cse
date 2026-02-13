@@ -3019,140 +3019,140 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 // table of known HPHWs 1) maps to HPWH preset  2) holds attributes
 	static const WWTABLE /* { SI key, value; } */ presetTbl[] = {
 	// small storage
-	{ C_WHASHPTYCH_BASICINT,         hwatSMALL | HPWH::MODELS_basicIntegrated },
-	{ C_WHASHPTYCH_RESTANK,          hwatSMALL | HPWH::MODELS_restankRealistic },
-	{ C_WHASHPTYCH_RESTANKNOUA,      hwatSMALL | HPWH::MODELS_restankNoUA },
- 	{ C_WHASHPTYCH_AOSMITHSHPT50,    hwatSMALL | HPWH::MODELS_GE2012 },	// AO Smith SHPT models: base on GE2012
-	{ C_WHASHPTYCH_AOSMITHSHPT66,    hwatSMALL | HPWH::MODELS_GE2012 },	//  caller must modify UA and vol
-	{ C_WHASHPTYCH_AOSMITHSHPT80,    hwatSMALL | HPWH::MODELS_GE2012 },
-	{ C_WHASHPTYCH_AOSMITHPHPT60,	 hwatSMALL | HPWH::MODELS_AOSmithPHPT60 },
-	{ C_WHASHPTYCH_AOSMITHPHPT80,	 hwatSMALL | HPWH::MODELS_AOSmithPHPT80 },
-	{ C_WHASHPTYCH_AOSMITHHPTU50,	 hwatSMALL | HPWH::MODELS_AOSmithHPTU50 },
-	{ C_WHASHPTYCH_AOSMITHHPTU66,	 hwatSMALL | HPWH::MODELS_AOSmithHPTU66 },
-	{ C_WHASHPTYCH_AOSMITHHPTU80,	 hwatSMALL | HPWH::MODELS_AOSmithHPTU80 },
-	{ C_WHASHPTYCH_AOSMITHHPTU80DR,  hwatSMALL | HPWH::MODELS_AOSmithHPTU80_DR },
-	{ C_WHASHPTYCH_AOSMITHCAHP120,   hwatSMALL | HPWH::MODELS_AOSmithCAHP120 },
-	{ C_WHASHPTYCH_AOSMITHHPTS40,	 hwatSMALL | HPWH::MODELS_AOSmithHPTS40},
-	{ C_WHASHPTYCH_AOSMITHHPTS50,	 hwatSMALL | HPWH::MODELS_AOSmithHPTS50 },
-	{ C_WHASHPTYCH_AOSMITHHPTS66,	 hwatSMALL | HPWH::MODELS_AOSmithHPTS66 },
-	{ C_WHASHPTYCH_AOSMITHHPTS80,	 hwatSMALL | HPWH::MODELS_AOSmithHPTS80 },
-	{ C_WHASHPTYCH_GE2012,           hwatSMALL | HPWH::MODELS_GE2012 },
-	{ C_WHASHPTYCH_GE2014,           hwatSMALL | HPWH::MODELS_GE2014 },
-	{ C_WHASHPTYCH_GE2014_80,        hwatSMALL | HPWH::MODELS_GE2014_80 },
-	{ C_WHASHPTYCH_GE2014_80DR,      hwatSMALL | HPWH::MODELS_GE2014_80DR },
-	{ C_WHASHPTYCH_GE2014STDMODE,    hwatSMALL | HPWH::MODELS_GE2014STDMode },
-	{ C_WHASHPTYCH_GE2014STDMODE_80, hwatSMALL | HPWH::MODELS_GE2014STDMode_80 },
+	{ C_WHASHPTYCH_BASICINT,         hwatSMALL | hpwh_presets::MODELS::basicIntegrated },
+	{ C_WHASHPTYCH_RESTANK,          hwatSMALL | hpwh_presets::MODELS::restankRealistic },
+	{ C_WHASHPTYCH_RESTANKNOUA,      hwatSMALL | hpwh_presets::MODELS::restankNoUA },
+ 	{ C_WHASHPTYCH_AOSMITHSHPT50,    hwatSMALL | hpwh_presets::MODELS::GE2012_50 },	// AO Smith SHPT models: base on GE2012
+	{ C_WHASHPTYCH_AOSMITHSHPT66,    hwatSMALL | hpwh_presets::MODELS::GE2012_50 },	//  caller must modify UA and vol
+	{ C_WHASHPTYCH_AOSMITHSHPT80,    hwatSMALL | hpwh_presets::MODELS::GE2012_50 },
+	{ C_WHASHPTYCH_AOSMITHPHPT60,	 hwatSMALL | hpwh_presets::MODELS::AOSmithPHPT60 },
+	{ C_WHASHPTYCH_AOSMITHPHPT80,	 hwatSMALL | hpwh_presets::MODELS::AOSmithPHPT80 },
+	{ C_WHASHPTYCH_AOSMITHHPTU50,	 hwatSMALL | hpwh_presets::MODELS::AOSmithHPTU50 },
+	{ C_WHASHPTYCH_AOSMITHHPTU66,	 hwatSMALL | hpwh_presets::MODELS::AOSmithHPTU66 },
+	{ C_WHASHPTYCH_AOSMITHHPTU80,	 hwatSMALL | hpwh_presets::MODELS::AOSmithHPTU80 },
+	{ C_WHASHPTYCH_AOSMITHHPTU80DR,  hwatSMALL | hpwh_presets::MODELS::AOSmithHPTU80_DR },
+	{ C_WHASHPTYCH_AOSMITHCAHP120,   hwatSMALL | hpwh_presets::MODELS::AOSmithCAHP120 },
+	{ C_WHASHPTYCH_AOSMITHHPTS40,	 hwatSMALL | hpwh_presets::MODELS::AOSmithHPTS40},
+	{ C_WHASHPTYCH_AOSMITHHPTS50,	 hwatSMALL | hpwh_presets::MODELS::AOSmithHPTS50 },
+	{ C_WHASHPTYCH_AOSMITHHPTS66,	 hwatSMALL | hpwh_presets::MODELS::AOSmithHPTS66 },
+	{ C_WHASHPTYCH_AOSMITHHPTS80,	 hwatSMALL | hpwh_presets::MODELS::AOSmithHPTS80 },
+	{ C_WHASHPTYCH_GE2012,           hwatSMALL | hpwh_presets::MODELS::GE2012_50 },
+	{ C_WHASHPTYCH_GE2014,           hwatSMALL | hpwh_presets::MODELS::GE2014_50 },
+	{ C_WHASHPTYCH_GE2014_80,        hwatSMALL | hpwh_presets::MODELS::GE2014_80 },
+	{ C_WHASHPTYCH_GE2014_80DR,      hwatSMALL | hpwh_presets::MODELS::GE2014_80DR },
+	{ C_WHASHPTYCH_GE2014STDMODE,    hwatSMALL | hpwh_presets::MODELS::GE2014STDMode_50 },
+	{ C_WHASHPTYCH_GE2014STDMODE_80, hwatSMALL | hpwh_presets::MODELS::GE2014STDMode_80 },
 
-	{ C_WHASHPTYCH_BWC202065,        hwatSMALL | HPWH::MODELS_BWC2020_65 },
+	{ C_WHASHPTYCH_BWC202065,        hwatSMALL | hpwh_presets::MODELS::BWC2020_65 },
 
-	{ C_WHASHPTYCH_RHEEMHB50,        hwatSMALL | HPWH::MODELS_RheemHB50 },
-	{ C_WHASHPTYCH_RHEEMHBDR2250,    hwatSMALL | HPWH::MODELS_RheemHBDR2250 },
-	{ C_WHASHPTYCH_RHEEMHBDR4550,    hwatSMALL | HPWH::MODELS_RheemHBDR4550 },
-	{ C_WHASHPTYCH_RHEEMHBDR2265,    hwatSMALL | HPWH::MODELS_RheemHBDR2265 },
-	{ C_WHASHPTYCH_RHEEMHBDR4565,    hwatSMALL | HPWH::MODELS_RheemHBDR4565 },
-	{ C_WHASHPTYCH_RHEEMHBDR2280,    hwatSMALL | HPWH::MODELS_RheemHBDR2280 },
-	{ C_WHASHPTYCH_RHEEMHBDR4580,    hwatSMALL | HPWH::MODELS_RheemHBDR4580 },
+	{ C_WHASHPTYCH_RHEEMHB50,        hwatSMALL | hpwh_presets::MODELS::RheemHB50 },
+	{ C_WHASHPTYCH_RHEEMHBDR2250,    hwatSMALL | hpwh_presets::MODELS::RheemHBDR2250 },
+	{ C_WHASHPTYCH_RHEEMHBDR4550,    hwatSMALL | hpwh_presets::MODELS::RheemHBDR4550 },
+	{ C_WHASHPTYCH_RHEEMHBDR2265,    hwatSMALL | hpwh_presets::MODELS::RheemHBDR2265 },
+	{ C_WHASHPTYCH_RHEEMHBDR4565,    hwatSMALL | hpwh_presets::MODELS::RheemHBDR4565 },
+	{ C_WHASHPTYCH_RHEEMHBDR2280,    hwatSMALL | hpwh_presets::MODELS::RheemHBDR2280 },
+	{ C_WHASHPTYCH_RHEEMHBDR4580,    hwatSMALL | hpwh_presets::MODELS::RheemHBDR4580 },
 
-	{ C_WHASHPTYCH_RHEEM2020PREM40, hwatSMALL | HPWH::MODELS_Rheem2020Prem40 },
-	{ C_WHASHPTYCH_RHEEM2020PREM50, hwatSMALL | HPWH::MODELS_Rheem2020Prem50 },
-	{ C_WHASHPTYCH_RHEEM2020PREM65, hwatSMALL | HPWH::MODELS_Rheem2020Prem65 },
-	{ C_WHASHPTYCH_RHEEM2020PREM80, hwatSMALL | HPWH::MODELS_Rheem2020Prem80 },
-	{ C_WHASHPTYCH_RHEEM2020BUILD40,hwatSMALL | HPWH::MODELS_Rheem2020Build40 },
-	{ C_WHASHPTYCH_RHEEM2020BUILD50,hwatSMALL | HPWH::MODELS_Rheem2020Build50 },
-	{ C_WHASHPTYCH_RHEEM2020BUILD65,hwatSMALL | HPWH::MODELS_Rheem2020Build65 },
-	{ C_WHASHPTYCH_RHEEMHBDRBUILD80,hwatSMALL | HPWH::MODELS_Rheem2020Build80 },
+	{ C_WHASHPTYCH_RHEEM2020PREM40, hwatSMALL | hpwh_presets::MODELS::Rheem2020Prem40 },
+	{ C_WHASHPTYCH_RHEEM2020PREM50, hwatSMALL | hpwh_presets::MODELS::Rheem2020Prem50 },
+	{ C_WHASHPTYCH_RHEEM2020PREM65, hwatSMALL | hpwh_presets::MODELS::Rheem2020Prem65 },
+	{ C_WHASHPTYCH_RHEEM2020PREM80, hwatSMALL | hpwh_presets::MODELS::Rheem2020Prem80 },
+	{ C_WHASHPTYCH_RHEEM2020BUILD40,hwatSMALL | hpwh_presets::MODELS::Rheem2020Build40 },
+	{ C_WHASHPTYCH_RHEEM2020BUILD50,hwatSMALL | hpwh_presets::MODELS::Rheem2020Build50 },
+	{ C_WHASHPTYCH_RHEEM2020BUILD65,hwatSMALL | hpwh_presets::MODELS::Rheem2020Build65 },
+	{ C_WHASHPTYCH_RHEEMHBDRBUILD80,hwatSMALL | hpwh_presets::MODELS::Rheem2020Build80 },
 
-	{ C_WHASHPTYCH_RHEEMPLUGINSHARED40,hwatSMALL | HPWH::MODELS_RheemPlugInShared40 },
-	{ C_WHASHPTYCH_RHEEMPLUGINSHARED50,hwatSMALL | HPWH::MODELS_RheemPlugInShared50 },
-	{ C_WHASHPTYCH_RHEEMPLUGINSHARED65,hwatSMALL | HPWH::MODELS_RheemPlugInShared65 },
-	{ C_WHASHPTYCH_RHEEMPLUGINSHARED80,hwatSMALL | HPWH::MODELS_RheemPlugInShared80 },
+	{ C_WHASHPTYCH_RHEEMPLUGINSHARED40,hwatSMALL | hpwh_presets::MODELS::RheemPlugInShared40 },
+	{ C_WHASHPTYCH_RHEEMPLUGINSHARED50,hwatSMALL | hpwh_presets::MODELS::RheemPlugInShared50 },
+	{ C_WHASHPTYCH_RHEEMPLUGINSHARED65,hwatSMALL | hpwh_presets::MODELS::RheemPlugInShared65 },
+	{ C_WHASHPTYCH_RHEEMPLUGINSHARED80,hwatSMALL | hpwh_presets::MODELS::RheemPlugInShared80 },
 
-	{ C_WHASHPTYCH_RHEEMPLUGINDEDICATED40,hwatSMALL | HPWH::MODELS_RheemPlugInDedicated40 },
-	{ C_WHASHPTYCH_RHEEMPLUGINDEDICATED50,hwatSMALL | HPWH::MODELS_RheemPlugInDedicated50 },
+	{ C_WHASHPTYCH_RHEEMPLUGINDEDICATED40,hwatSMALL | hpwh_presets::MODELS::RheemPlugInDedicated40 },
+	{ C_WHASHPTYCH_RHEEMPLUGINDEDICATED50,hwatSMALL | hpwh_presets::MODELS::RheemPlugInDedicated50 },
 
-	{ C_WHASHPTYCH_STIEBEL220E,      hwatSMALL | HPWH::MODELS_Stiebel220E },
-    { C_WHASHPTYCH_SANCO2_43,         hwatSMALL | HPWH::MODELS_SANCO2_43 },
-	{ C_WHASHPTYCH_SANCO2_83,         hwatSMALL | HPWH::MODELS_SANCO2_83 },
-	{ C_WHASHPTYCH_SANCO2_119,        hwatSMALL | HPWH::MODELS_SANCO2_119 },
+	{ C_WHASHPTYCH_STIEBEL220E,      hwatSMALL | hpwh_presets::MODELS::Stiebel220E },
+    { C_WHASHPTYCH_SANCO2_43,         hwatSMALL | hpwh_presets::MODELS::Sanco43 },
+	{ C_WHASHPTYCH_SANCO2_83,         hwatSMALL | hpwh_presets::MODELS::Sanco83 },
+	{ C_WHASHPTYCH_SANCO2_119,        hwatSMALL | hpwh_presets::MODELS::Sanco119 },
 
-	{ C_WHASHPTYCH_GENERIC1,         hwatSMALL | HPWH::MODELS_Generic1 },
-	{ C_WHASHPTYCH_GENERIC2,         hwatSMALL | HPWH::MODELS_Generic2 },
-	{ C_WHASHPTYCH_GENERIC3,         hwatSMALL | HPWH::MODELS_Generic3 },
-	{ C_WHASHPTYCH_UEF2GENERIC,      hwatSMALL | HPWH::MODELS_UEF2generic },
-	{ C_WHASHPTYCH_WORSTCASEMEDIUM,  hwatSMALL | HPWH::MODELS_UEF2generic },	// alias (testing aid)
-	{ C_WHASHPTYCH_AWHSTIER3GENERIC40, hwatSMALL | HPWH::MODELS_AWHSTier3Generic40 },
-	{ C_WHASHPTYCH_AWHSTIER3GENERIC50, hwatSMALL | HPWH::MODELS_AWHSTier3Generic50 },
-	{ C_WHASHPTYCH_AWHSTIER3GENERIC65, hwatSMALL | HPWH::MODELS_AWHSTier3Generic65 },
-	{ C_WHASHPTYCH_AWHSTIER3GENERIC80, hwatSMALL | HPWH::MODELS_AWHSTier3Generic80 },
+	{ C_WHASHPTYCH_GENERIC1,         hwatSMALL | hpwh_presets::MODELS::Generic1 },
+	{ C_WHASHPTYCH_GENERIC2,         hwatSMALL | hpwh_presets::MODELS::Generic2 },
+	{ C_WHASHPTYCH_GENERIC3,         hwatSMALL | hpwh_presets::MODELS::Generic3 },
+	{ C_WHASHPTYCH_UEF2GENERIC,      hwatSMALL | hpwh_presets::MODELS::UEF2generic },
+	{ C_WHASHPTYCH_WORSTCASEMEDIUM,  hwatSMALL | hpwh_presets::MODELS::UEF2generic },	// alias (testing aid)
+	{ C_WHASHPTYCH_AWHSTIER3GENERIC40, hwatSMALL | hpwh_presets::MODELS::AWHSTier3Generic40 },
+	{ C_WHASHPTYCH_AWHSTIER3GENERIC50, hwatSMALL | hpwh_presets::MODELS::AWHSTier3Generic50 },
+	{ C_WHASHPTYCH_AWHSTIER3GENERIC65, hwatSMALL | hpwh_presets::MODELS::AWHSTier3Generic65 },
+	{ C_WHASHPTYCH_AWHSTIER3GENERIC80, hwatSMALL | hpwh_presets::MODELS::AWHSTier3Generic80 },
 
-	{ C_WHASHPTYCH_AQUATHERMAIRE,    hwatSMALL | HPWH::MODELS_AquaThermAire },
+	{ C_WHASHPTYCH_AQUATHERMAIRE,    hwatSMALL | hpwh_presets::MODELS::AquaThermAire },
+
+	{ C_WHASHPTYCH_GENERICUEF217, hwatSMALL | hpwh_presets::MODELS::GenericUEF217 },
+	{ C_WHASHPTYCH_AWHSTIER4GENERIC40, hwatSMALL | hpwh_presets::MODELS::AWHSTier4Generic40 },
+	{ C_WHASHPTYCH_AWHSTIER4GENERIC50, hwatSMALL | hpwh_presets::MODELS::AWHSTier4Generic50 },
+	{ C_WHASHPTYCH_AWHSTIER4GENERIC65, hwatSMALL | hpwh_presets::MODELS::AWHSTier4Generic65 },
+	{ C_WHASHPTYCH_AWHSTIER4GENERIC80, hwatSMALL | hpwh_presets::MODELS::AWHSTier4Generic80 },
+
+	{ C_WHASHPTYCH_BRADFORDWHITEAEROTHERMRE2H50, hwatSMALL | hpwh_presets::MODELS::BradfordWhiteAeroThermRE2H50},
+	{ C_WHASHPTYCH_BRADFORDWHITEAEROTHERMRE2H65, hwatSMALL | hpwh_presets::MODELS::BradfordWhiteAeroThermRE2H65},
+	{ C_WHASHPTYCH_BRADFORDWHITEAEROTHERMRE2H80, hwatSMALL | hpwh_presets::MODELS::BradfordWhiteAeroThermRE2H80},
+
+    { C_WHASHPTYCH_LG_APHWC50, hwatSMALL | hpwh_presets::MODELS::LG_APHWC50},
+    { C_WHASHPTYCH_LG_APHWC80, hwatSMALL | hpwh_presets::MODELS::LG_APHWC80},
 
 // large
-	{ C_WHASHPTYCH_SANCO2_GS3,      hwatLARGE | HPWH::MODELS_SANCO2_GS3_45HPA_US_SP },
-	{ C_WHASHPTYCH_COLMACCXV5_SP,   hwatLARGE | HPWH::MODELS_ColmacCxV_5_SP },
-	{ C_WHASHPTYCH_COLMACCXA10_SP,  hwatLARGE | HPWH::MODELS_ColmacCxA_10_SP },
-	{ C_WHASHPTYCH_COLMACCXA15_SP,  hwatLARGE | HPWH::MODELS_ColmacCxA_15_SP },
-	{ C_WHASHPTYCH_COLMACCXA20_SP,  hwatLARGE | HPWH::MODELS_ColmacCxA_20_SP },
-	{ C_WHASHPTYCH_COLMACCXA25_SP,  hwatLARGE | HPWH::MODELS_ColmacCxA_25_SP },
-	{ C_WHASHPTYCH_COLMACCXA30_SP,  hwatLARGE | HPWH::MODELS_ColmacCxA_30_SP },
+	{ C_WHASHPTYCH_SANCO2_GS3,      hwatLARGE | hpwh_presets::MODELS::SancoGS3_45HPA_US_SP },
+	{ C_WHASHPTYCH_COLMACCXV5_SP,   hwatLARGE | hpwh_presets::MODELS::ColmacCxV_5_SP },
+	{ C_WHASHPTYCH_COLMACCXA10_SP,  hwatLARGE | hpwh_presets::MODELS::ColmacCxA_10_SP },
+	{ C_WHASHPTYCH_COLMACCXA15_SP,  hwatLARGE | hpwh_presets::MODELS::ColmacCxA_15_SP },
+	{ C_WHASHPTYCH_COLMACCXA20_SP,  hwatLARGE | hpwh_presets::MODELS::ColmacCxA_20_SP },
+	{ C_WHASHPTYCH_COLMACCXA25_SP,  hwatLARGE | hpwh_presets::MODELS::ColmacCxA_25_SP },
+	{ C_WHASHPTYCH_COLMACCXA30_SP,  hwatLARGE | hpwh_presets::MODELS::ColmacCxA_30_SP },
 
-	{ C_WHASHPTYCH_COLMACCXV5_MP,   hwatLARGE | HPWH::MODELS_ColmacCxV_5_MP },
-	{ C_WHASHPTYCH_COLMACCXA10_MP,  hwatLARGE | HPWH::MODELS_ColmacCxA_10_MP },
-	{ C_WHASHPTYCH_COLMACCXA15_MP,  hwatLARGE | HPWH::MODELS_ColmacCxA_15_MP },
-	{ C_WHASHPTYCH_COLMACCXA20_MP,  hwatLARGE | HPWH::MODELS_ColmacCxA_20_MP },
-	{ C_WHASHPTYCH_COLMACCXA25_MP,  hwatLARGE | HPWH::MODELS_ColmacCxA_25_MP },
-	{ C_WHASHPTYCH_COLMACCXA30_MP,  hwatLARGE | HPWH::MODELS_ColmacCxA_30_MP },
+	{ C_WHASHPTYCH_COLMACCXV5_MP,   hwatLARGE | hpwh_presets::MODELS::ColmacCxV_5_MP },
+	{ C_WHASHPTYCH_COLMACCXA10_MP,  hwatLARGE | hpwh_presets::MODELS::ColmacCxA_10_MP },
+	{ C_WHASHPTYCH_COLMACCXA15_MP,  hwatLARGE | hpwh_presets::MODELS::ColmacCxA_15_MP },
+	{ C_WHASHPTYCH_COLMACCXA20_MP,  hwatLARGE | hpwh_presets::MODELS::ColmacCxA_20_MP },
+	{ C_WHASHPTYCH_COLMACCXA25_MP,  hwatLARGE | hpwh_presets::MODELS::ColmacCxA_25_MP },
+	{ C_WHASHPTYCH_COLMACCXA30_MP,  hwatLARGE | hpwh_presets::MODELS::ColmacCxA_30_MP },
 
-	{ C_WHASHPTYCH_NYLEC25A_SP,     hwatLARGE | HPWH::MODELS_NyleC25A_SP },
-	{ C_WHASHPTYCH_NYLEC60A_SP,     hwatLARGE | HPWH::MODELS_NyleC60A_SP  },
-	{ C_WHASHPTYCH_NYLEC90A_SP,     hwatLARGE | HPWH::MODELS_NyleC90A_SP  },
-	{ C_WHASHPTYCH_NYLEC125A_SP,    hwatLARGE | HPWH::MODELS_NyleC125A_SP },
-	{ C_WHASHPTYCH_NYLEC185A_SP,    hwatLARGE | HPWH::MODELS_NyleC185A_SP  },
-	{ C_WHASHPTYCH_NYLEC250A_SP,    hwatLARGE | HPWH::MODELS_NyleC250A_SP },
+	{ C_WHASHPTYCH_NYLEC25A_SP,     hwatLARGE | hpwh_presets::MODELS::NyleC25A_SP },
+	{ C_WHASHPTYCH_NYLEC60A_SP,     hwatLARGE | hpwh_presets::MODELS::NyleC60A_SP  },
+	{ C_WHASHPTYCH_NYLEC90A_SP,     hwatLARGE | hpwh_presets::MODELS::NyleC90A_SP  },
+	{ C_WHASHPTYCH_NYLEC125A_SP,    hwatLARGE | hpwh_presets::MODELS::NyleC125A_SP },
+	{ C_WHASHPTYCH_NYLEC185A_SP,    hwatLARGE | hpwh_presets::MODELS::NyleC185A_SP  },
+	{ C_WHASHPTYCH_NYLEC250A_SP,    hwatLARGE | hpwh_presets::MODELS::NyleC250A_SP },
 
-	{ C_WHASHPTYCH_NYLEC60AC_SP,     hwatLARGE | HPWH::MODELS_NyleC60A_C_SP  },
-	{ C_WHASHPTYCH_NYLEC90AC_SP,     hwatLARGE | HPWH::MODELS_NyleC90A_C_SP  },
-	{ C_WHASHPTYCH_NYLEC125AC_SP,    hwatLARGE | HPWH::MODELS_NyleC125A_C_SP },
-	{ C_WHASHPTYCH_NYLEC185AC_SP,    hwatLARGE | HPWH::MODELS_NyleC185A_C_SP  },
-	{ C_WHASHPTYCH_NYLEC250AC_SP,    hwatLARGE | HPWH::MODELS_NyleC250A_C_SP },
+	{ C_WHASHPTYCH_NYLEC60AC_SP,     hwatLARGE | hpwh_presets::MODELS::NyleC60A_C_SP  },
+	{ C_WHASHPTYCH_NYLEC90AC_SP,     hwatLARGE | hpwh_presets::MODELS::NyleC90A_C_SP  },
+	{ C_WHASHPTYCH_NYLEC125AC_SP,    hwatLARGE | hpwh_presets::MODELS::NyleC125A_C_SP },
+	{ C_WHASHPTYCH_NYLEC185AC_SP,    hwatLARGE | hpwh_presets::MODELS::NyleC185A_C_SP  },
+	{ C_WHASHPTYCH_NYLEC250AC_SP,    hwatLARGE | hpwh_presets::MODELS::NyleC250A_C_SP },
 
-	{ C_WHASHPTYCH_MITSU_QAHVN136TAUHPB_SP, hwatLARGE | HPWH::MODELS_MITSUBISHI_QAHV_N136TAU_HPB_SP },
+	{ C_WHASHPTYCH_MITSU_QAHVN136TAUHPB_SP, hwatLARGE | hpwh_presets::MODELS::Mitsubishi_QAHV_N136TAU_HPB_SP },
 
-	// { C_WHASHPTYCH_NYLEC25A_MP,     hwatLARGE | HPWH::MODELS_NyleC25A_MP }, not available
-	{ C_WHASHPTYCH_NYLEC60A_MP,     hwatLARGE | HPWH::MODELS_NyleC60A_MP },
-	{ C_WHASHPTYCH_NYLEC90A_MP,     hwatLARGE | HPWH::MODELS_NyleC90A_MP },
-	{ C_WHASHPTYCH_NYLEC125A_MP,    hwatLARGE | HPWH::MODELS_NyleC125A_MP },
-	{ C_WHASHPTYCH_NYLEC185A_MP,    hwatLARGE | HPWH::MODELS_NyleC185A_MP },
-	{ C_WHASHPTYCH_NYLEC250A_MP,    hwatLARGE | HPWH::MODELS_NyleC250A_MP },
+	// { C_WHASHPTYCH_NYLEC25A_MP,     hwatLARGE | hpwh_presets::MODELS::NyleC25A_MP }, not available
+	{ C_WHASHPTYCH_NYLEC60A_MP,     hwatLARGE | hpwh_presets::MODELS::NyleC60A_MP },
+	{ C_WHASHPTYCH_NYLEC90A_MP,     hwatLARGE | hpwh_presets::MODELS::NyleC90A_MP },
+	{ C_WHASHPTYCH_NYLEC125A_MP,    hwatLARGE | hpwh_presets::MODELS::NyleC125A_MP },
+	{ C_WHASHPTYCH_NYLEC185A_MP,    hwatLARGE | hpwh_presets::MODELS::NyleC185A_MP },
+	{ C_WHASHPTYCH_NYLEC250A_MP,    hwatLARGE | hpwh_presets::MODELS::NyleC250A_MP },
 
-	{ C_WHASHPTYCH_NYLEC60AC_MP,     hwatLARGE | HPWH::MODELS_NyleC60A_C_MP },
-	{ C_WHASHPTYCH_NYLEC90AC_MP,     hwatLARGE | HPWH::MODELS_NyleC90A_C_MP },
-	{ C_WHASHPTYCH_NYLEC125AC_MP,    hwatLARGE | HPWH::MODELS_NyleC125A_C_MP },
-	{ C_WHASHPTYCH_NYLEC185AC_MP,    hwatLARGE | HPWH::MODELS_NyleC185A_C_MP },
-	{ C_WHASHPTYCH_NYLEC250AC_MP,    hwatLARGE | HPWH::MODELS_NyleC250A_C_MP },
+	{ C_WHASHPTYCH_NYLEC60AC_MP,     hwatLARGE | hpwh_presets::MODELS::NyleC60A_C_MP },
+	{ C_WHASHPTYCH_NYLEC90AC_MP,     hwatLARGE | hpwh_presets::MODELS::NyleC90A_C_MP },
+	{ C_WHASHPTYCH_NYLEC125AC_MP,    hwatLARGE | hpwh_presets::MODELS::NyleC125A_C_MP },
+	{ C_WHASHPTYCH_NYLEC185AC_MP,    hwatLARGE | hpwh_presets::MODELS::NyleC185A_C_MP },
+	{ C_WHASHPTYCH_NYLEC250AC_MP,    hwatLARGE | hpwh_presets::MODELS::NyleC250A_C_MP },
 
-	{ C_WHASHPTYCH_RHEEM_HPHD60HNU_201_MP,    hwatLARGE | HPWH::MODELS_RHEEM_HPHD60HNU_201_MP },
-	{ C_WHASHPTYCH_RHEEM_HPHD60VNU_201_MP,    hwatLARGE | HPWH::MODELS_RHEEM_HPHD60VNU_201_MP },
-	{ C_WHASHPTYCH_RHEEM_HPHD135HNU_483_MP,   hwatLARGE | HPWH::MODELS_RHEEM_HPHD135HNU_483_MP },
-	{ C_WHASHPTYCH_RHEEM_HPHD135VNU_483_MP,   hwatLARGE | HPWH::MODELS_RHEEM_HPHD135VNU_483_MP },
+	{ C_WHASHPTYCH_RHEEM_HPHD60HNU_201_MP,    hwatLARGE | hpwh_presets::MODELS::RheemHPHD60 },
+	{ C_WHASHPTYCH_RHEEM_HPHD60VNU_201_MP,    hwatLARGE | hpwh_presets::MODELS::RheemHPHD60 },
+	{ C_WHASHPTYCH_RHEEM_HPHD135HNU_483_MP,   hwatLARGE | hpwh_presets::MODELS::RheemHPHD135},
+	{ C_WHASHPTYCH_RHEEM_HPHD135VNU_483_MP,   hwatLARGE | hpwh_presets::MODELS::RheemHPHD135 },
 
-	{ C_WHASHPTYCH_SCALABLE_SP,    hwatLARGE | HPWH::MODELS_TamScalable_SP },
-	{ C_WHASHPTYCH_SCALABLE_MP,    hwatLARGE | HPWH::MODELS_Scalable_MP },
+	{ C_WHASHPTYCH_SCALABLE_SP,    hwatLARGE | hpwh_presets::MODELS::TamScalable_SP },
+	{ C_WHASHPTYCH_SCALABLE_MP,    hwatLARGE | hpwh_presets::MODELS::Scalable_MP },
 
-	{ C_WHASHPTYCH_GENERICUEF217, hwatSMALL | HPWH::MODELS_GenericUEF217 },
-	{ C_WHASHPTYCH_AWHSTIER4GENERIC40, hwatSMALL | HPWH::MODELS_AWHSTier4Generic40 },
-	{ C_WHASHPTYCH_AWHSTIER4GENERIC50, hwatSMALL | HPWH::MODELS_AWHSTier4Generic50 },
-	{ C_WHASHPTYCH_AWHSTIER4GENERIC65, hwatSMALL | HPWH::MODELS_AWHSTier4Generic65 },
-	{ C_WHASHPTYCH_AWHSTIER4GENERIC80, hwatSMALL | HPWH::MODELS_AWHSTier4Generic80 },
-
-	{ C_WHASHPTYCH_BRADFORDWHITEAEROTHERMRE2H50,hwatSMALL | HPWH::MODELS_BradfordWhiteAeroThermRE2H50},
-	{ C_WHASHPTYCH_BRADFORDWHITEAEROTHERMRE2H65,hwatSMALL | HPWH::MODELS_BradfordWhiteAeroThermRE2H65},
-	{ C_WHASHPTYCH_BRADFORDWHITEAEROTHERMRE2H80,hwatSMALL | HPWH::MODELS_BradfordWhiteAeroThermRE2H80},
-
-    { C_WHASHPTYCH_LG_APHWC50, hwatSMALL | HPWH::MODELS_LG_APHWC50},
-    { C_WHASHPTYCH_LG_APHWC80, hwatSMALL | HPWH::MODELS_LG_APHWC80},
-
-	{ 32767,                         HPWH::MODELS(-1) }  };
+	{ 32767,                         hpwh_presets::MODELS::unknown }  };
 
 	SI tableVal = presetTbl->lookup(ashpTy);
 	int preset;
@@ -3182,22 +3182,22 @@ RC HPWHLINK::hw_InitPreset(		// set up HPWH from model type choice
 	float UAX = -1.f;		// alternative UA, Btuh/F
 
 	int attrs;
-	HPWH::MODELS preset = HPWH::MODELS( hw_HPWHInfo( ashpTy, attrs));	// HPWH "preset"
+	hpwh_presets::MODELS preset = hpwh_presets::MODELS( hw_HPWHInfo( ashpTy, attrs));	// HPWH "preset"
 										// predefined type that determines most model parameters
 
 	// alternative values for some special cases
 	if (ashpTy == C_WHASHPTYCH_AOSMITHSHPT50)
-	{	// preset = HPWH::MODELS_GE2012;	// AO Smith SHPT models: base on GE2012
+	{	// preset = hpwh_presets::MODELS::GE2012;	// AO Smith SHPT models: base on GE2012
 		volX = 45.f;			// ... and change vol / UA
 		UAX = 2.9f;
 	}
 	else if (ashpTy == C_WHASHPTYCH_AOSMITHSHPT66)
-	{	// preset = HPWH::MODELS_GE2012;
+	{	// preset = hpwh_presets::MODELS::GE2012;
 		volX = 63.9f;
 		UAX = 3.4f;
 	}
 	else if (ashpTy == C_WHASHPTYCH_AOSMITHSHPT80)
-	{	// preset = HPWH::MODELS_GE2012;
+	{	// preset = hpwh_presets::MODELS::GE2012;
 		volX = 80.7f;
 		UAX = 4.7f;
 	}
@@ -3223,8 +3223,7 @@ RC HPWHLINK::hw_InitTank(	// init HPWH for use as storage tank
 // use hw_AdjustUAIf() to set UA
 // returns RCOK iff success
 {
-	HPWH::MODELS preset = HPWH::MODELS_StorageTank;
-    hw_pHPWH->initPreset(preset);
+    hw_pHPWH->initPreset(hpwh_presets::MODELS::StorageTank);
     hw_pHPWH->setTankSize(vol, HPWH::UNITS_GAL);
 
 	return RCOK;
@@ -3335,7 +3334,7 @@ RC HPWHLINK::hw_GetHeatingCap(			// get heating capacity
 	heatingCap = 0.f;
 	if (!hw_pHPWH)
 		return RCBAD;		// bad setup
-	
+
 	double cap = 0.;
     if (hw_pHPWH->hasACompressor()) {
         double minT = hw_pHPWH->getMinOperatingTemp(HPWH::UNITS_F);
@@ -3886,7 +3885,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 		{
 			hw_pFCSV = new std::ofstream;
 		}
-		if (!hw_pFCSV->is_open()) 
+		if (!hw_pFCSV->is_open())
 		{
 			// dump file name = <cseFile>_<DHWHEATER name>_hpwh.csv
 			//   Overwrite pre-existing file
@@ -4695,9 +4694,13 @@ RC DHWHEATER::wh_HPWHInit()		// initialize HPWH model
 			// Temporarily turn off warnings (to avoid excessive messages during iteration)
 			auto courier = dynamic_cast<CSERecordCourier*>(wh_HPWH.hw_pHPWH->get_courier().get());
 			courier->set_message_level(MSGTY::msgtyERROR);
-			
-			// Adjust COP coefficients to match UEF
-			wh_HPWH.hw_pHPWH->makeGenericUEF(wh_UEF);
+
+			// Adjust tier3 COP coefficients to match UEF
+			HPWH::PerformancePolySet hpwh_tier = HPWH::tier3;
+			if (wh_HPWH.hw_pHPWH->name.find("Tier4") != std::string::npos) { // Hack for now...
+				hpwh_tier = HPWH::tier4;
+			}
+			wh_HPWH.hw_pHPWH->makeGenericUEF(wh_UEF, hpwh_tier);
 
 			courier->restore_message_level();
 		}
