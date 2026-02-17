@@ -3096,6 +3096,9 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	{ C_WHASHPTYCH_BRADFORDWHITEAEROTHERMRE2H50, hwatSMALL | hpwh_presets::MODELS::BradfordWhiteAeroThermRE2H50},
 	{ C_WHASHPTYCH_BRADFORDWHITEAEROTHERMRE2H65, hwatSMALL | hpwh_presets::MODELS::BradfordWhiteAeroThermRE2H65},
 	{ C_WHASHPTYCH_BRADFORDWHITEAEROTHERMRE2H80, hwatSMALL | hpwh_presets::MODELS::BradfordWhiteAeroThermRE2H80},
+	{ C_WHASHPTYCH_BRADFORDWHITEAEROTHERMRE2HP50, hwatSMALL | hpwh_presets::MODELS::BradfordWhiteAeroThermRE2HP50},
+	{ C_WHASHPTYCH_BRADFORDWHITEAEROTHERMRE2HP65, hwatSMALL | hpwh_presets::MODELS::BradfordWhiteAeroThermRE2HP65},
+	{ C_WHASHPTYCH_BRADFORDWHITEAEROTHERMRE2HP80, hwatSMALL | hpwh_presets::MODELS::BradfordWhiteAeroThermRE2HP80},
 
     { C_WHASHPTYCH_LG_APHWC50, hwatSMALL | hpwh_presets::MODELS::LG_APHWC50},
     { C_WHASHPTYCH_LG_APHWC80, hwatSMALL | hpwh_presets::MODELS::LG_APHWC80},
@@ -3151,6 +3154,9 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 
 	{ C_WHASHPTYCH_SCALABLE_SP,    hwatLARGE | hpwh_presets::MODELS::TamScalable_SP },
 	{ C_WHASHPTYCH_SCALABLE_MP,    hwatLARGE | hpwh_presets::MODELS::Scalable_MP },
+
+    { C_WHASHPTYCH_ICEAIR_HPWH275D_MP,    hwatLARGE | hpwh_presets::MODELS::IceAirccHPWH275D },
+    { C_WHASHPTYCH_ICEAIR_HPWH550D_MP,    hwatLARGE | hpwh_presets::MODELS::IceAirccHPWH550D },
 
 	{ 32767,                         hpwh_presets::MODELS::unknown }  };
 

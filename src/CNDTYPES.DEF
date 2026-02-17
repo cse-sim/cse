@@ -511,6 +511,8 @@ RIGDIST   --  "struct { RIGTARGTY targTy; TI targTi; float targFr; RIGTARG * tar
 
             LG_APHWC50 "LG_APHWC50" // 50-gal LG model (added 11-11-2024)
             LG_APHWC80 "LG_APHWC80" // 80-gal LG model (added 12-10-2024)
+			ICEAIR_HPWH275D_MP "ICEAIR_HPWH275D_MP" // 72 GPM ICE Air commercial HPWH (added 12-10-2024)
+			ICEAIR_HPWH550D_MP "ICEAIR_HPWH550D_MP" // 145 GPM ICE Air commercial HPWH (added 12-10-2024)
 		}
 
 *choicb WHRESTYCH {			// resistance heater types
