@@ -447,7 +447,7 @@ BradfordWhiteAeroThermRE2HP80,Bradford White 80-gal Series G2
 LG_APHWC50,LG 50-gal integrated HPWH
 LG_APHWC80,LG 580-gal integrated HPWH
 IceAirccHPWH275D,Ice Air 275 double-wall commercial multi-pass
-IceAirccHPWH550D,Ice Air 550 double-wall commercial multi-pass, True)
+IceAirccHPWH550D,Ice Air 550 double-wall commercial multi-pass", True)
 }}
 
 {{
