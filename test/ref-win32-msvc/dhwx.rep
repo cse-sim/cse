@@ -1936,7 +1936,7 @@ ws_whUseTot
 
 ! Log for Run 001: GE2014STDMode
 
-! CSE 0.927.0+init-presets-from-cbor-hpwh.d3157998.107.dirty for Win32 console
+! CSE 0.927.0+add-commercial-units-1.6df8b4b7.110 for Win32 console
 
 
 
@@ -1963,7 +1963,7 @@ Yr   4.247      0      0      0  2.912  1.334      0      0      0      0      0
 
 ! Log for Run 002: Generic UEF 2 50 gal
 
-! CSE 0.927.0+init-presets-from-cbor-hpwh.d3157998.107.dirty for Win32 console
+! CSE 0.927.0+add-commercial-units-1.6df8b4b7.110 for Win32 console
 
 
 
@@ -1990,7 +1990,7 @@ Yr   3.498      0      0      0  2.508  0.990      0      0      0      0      0
 
 ! Log for Run 003: AOSmithHPTU50
 
-! CSE 0.927.0+init-presets-from-cbor-hpwh.d3157998.107.dirty for Win32 console
+! CSE 0.927.0+add-commercial-units-1.6df8b4b7.110 for Win32 console
 
 
 
@@ -2017,7 +2017,7 @@ Yr   2.748      0      0      0  2.112  0.636      0      0      0      0      0
 
 ! Log for Run 004: AOSmithHPTS50
 
-! CSE 0.927.0+init-presets-from-cbor-hpwh.d3157998.107.dirty for Win32 console
+! CSE 0.927.0+add-commercial-units-1.6df8b4b7.110 for Win32 console
 
 
 
@@ -2044,7 +2044,7 @@ Yr   3.949      0      0      0  2.893  1.056      0      0      0      0      0
 
 ! Log for Run 005: Generic Tier 3 50 gal
 
-! CSE 0.927.0+init-presets-from-cbor-hpwh.d3157998.107.dirty for Win32 console
+! CSE 0.927.0+add-commercial-units-1.6df8b4b7.110 for Win32 console
 
 
 
@@ -2071,7 +2071,7 @@ Yr   4.269      0      0      0  3.185  1.084      0      0      0      0      0
 
 ! Log for Run 006: Generic Tier 3 50 gal UEF 2.6
 
-! CSE 0.927.0+init-presets-from-cbor-hpwh.d3157998.107.dirty for Win32 console
+! CSE 0.927.0+add-commercial-units-1.6df8b4b7.110 for Win32 console
 
 
 
@@ -2098,7 +2098,7 @@ Yr   3.090      0      0      0  2.133  0.957      0      0      0      0      0
 
 ! Log for Run 007: Generic Tier 3 50 gal UEF 3.8
 
-! CSE 0.927.0+init-presets-from-cbor-hpwh.d3157998.107.dirty for Win32 console
+! CSE 0.927.0+add-commercial-units-1.6df8b4b7.110 for Win32 console
 
 
 
@@ -2125,7 +2125,7 @@ Yr   2.537      0      0      0  1.632  0.906      0      0      0      0      0
 
 ! Log for Run 008: Generic Tier 3 50 gal UEF 5.0
 
-! CSE 0.927.0+init-presets-from-cbor-hpwh.d3157998.107.dirty for Win32 console
+! CSE 0.927.0+add-commercial-units-1.6df8b4b7.110 for Win32 console
 
 
 
@@ -2152,7 +2152,7 @@ Yr   3.188      0      0      0  2.494  0.694      0      0      0      0      0
 
 ! Log for Run 009: Generic Tier 4 50 gal
 
-! CSE 0.927.0+init-presets-from-cbor-hpwh.d3157998.107.dirty for Win32 console
+! CSE 0.927.0+add-commercial-units-1.6df8b4b7.110 for Win32 console
 
 
 
@@ -2179,7 +2179,7 @@ Yr   4.262      0      0      0  3.455  0.807      0      0      0      0      0
 
 ! Log for Run 010: Generic Tier 4 50 gal UEF 2.6
 
-! CSE 0.927.0+init-presets-from-cbor-hpwh.d3157998.107.dirty for Win32 console
+! CSE 0.927.0+add-commercial-units-1.6df8b4b7.110 for Win32 console
 
 
 
@@ -2206,7 +2206,7 @@ Yr   2.916      0      0      0  2.257  0.659      0      0      0      0      0
 
 ! Log for Run 011: Generic Tier 4 50 gal UEF 3.8
 
-! CSE 0.927.0+init-presets-from-cbor-hpwh.d3157998.107.dirty for Win32 console
+! CSE 0.927.0+add-commercial-units-1.6df8b4b7.110 for Win32 console
 
 
 
@@ -2233,22 +2233,49 @@ Yr   2.270      0      0      0  1.674  0.596      0      0      0      0      0
 
 ! Log for Run 012: Generic Tier 4 50 gal UEF 5.0
 
-! CSE 0.927.0+init-presets-from-cbor-hpwh.d3157998.107.dirty for Win32 console
+! CSE 0.927.0+add-commercial-units-1.6df8b4b7.110 for Win32 console
 
 
 
-! CSE 0.927.0+init-presets-from-cbor-hpwh.d3157998.107.dirty for Win32 console run(s) done: Fri 13-Feb-26   4:39:23 pm
+Monthly Energy Use, meter "MtrElec"
+
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+--- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+Jan  0.337      0      0      0  0.235  0.102      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Feb  0.289      0      0      0  0.201 0.0879      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Mar  0.270      0      0      0  0.224 0.0463      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Apr  0.284      0      0      0  0.200 0.0837      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+May  0.223      0      0      0  0.174 0.0489      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jun  0.204      0      0      0  0.162 0.0416      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jul  0.183      0      0      0  0.144 0.0392      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Aug  0.181      0      0      0  0.140 0.0418      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Sep  0.183      0      0      0  0.145 0.0375      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Oct  0.194      0      0      0  0.158 0.0358      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Nov  0.270      0      0      0  0.196 0.0740      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec  0.326      0      0      0  0.205  0.122      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+
+Yr   2.944      0      0      0  2.184  0.760      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+
+
+
+! Log for Run 013: BradfordWhiteAeroThermRE2HP50
+
+! CSE 0.927.0+add-commercial-units-1.6df8b4b7.110 for Win32 console
+
+
+
+! CSE 0.927.0+add-commercial-units-1.6df8b4b7.110 for Win32 console run(s) done: Wed 18-Feb-26   8:56:21 am
 
 ! Executable:   c:\src\cse\builds\cse.exe
-!               13-Feb-26   4:07 pm   (VS 14.29    3595264 bytes)  (HPWH 1.4.1+main.6a0decce.2131)
+!               18-Feb-26   8:49 am   (VS 14.29    3595264 bytes)  (HPWH 1.4.1+HEAD.11240a73.2140)
 ! Command line: -x!  -b -t1 dhwX
 ! Input file:   C:\src\cse\test\dhwX.cse
 ! Report file:  C:\SRC\CSE\TEST\DHWX.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.83     Calls = 12        T/C = 0.0688
+!                Input:  Time = 0.86     Calls = 13        T/C = 0.0661
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 9.83     Calls = 12        T/C = 0.8188
-!              Reports:  Time = 0.01     Calls = 12        T/C = 0.0006
-!                Total:  Time = 10.66    Calls = 1         T/C = 10.6610
+!           Simulation:  Time = 12.52    Calls = 13        T/C = 0.9628
+!              Reports:  Time = 0.01     Calls = 13        T/C = 0.0006
+!                Total:  Time = 13.38    Calls = 1         T/C = 13.3850
