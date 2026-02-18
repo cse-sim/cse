@@ -9353,6 +9353,16 @@ DHWSYS   "dhwsys1"
       whASHPSrcT = ($tDbO+70)/2
       whXBUEndUse = "User2"
 
+  DHWHEATER   "dhwhtr2"  
+      whMult = 1                        // Water heater multiplier
+      whType = "BuiltUp"                // Type of water heater
+      whHeatSrc = "ASHPX"               // Fuel source for water heater
+      whASHPType = "IceAir_ccHPWH550D_MP"        // <<< only supported type
+      whInsulR = 12
+	  whTEx = 70
+      whASHPSrcT = ($tDbO+70)/2
+      whXBUEndUse = "User2"
+
  DHWLOOPHEATER   "dhwlphtr-LoopTank2"  
       whType = "SmallStorage"           // Type of water heater
       whHeatSrc = "ResistanceX"         // Fuel source for water heater
@@ -9574,6 +9584,14 @@ ALTER DHWSYS "dhwsys1"
   wsCalcMode = Simulate     // redundant but clear
   ALTER DHWHEATER "dhwhtr1"
     whASHPType = "Mitsubishi_QAHV_N136TAU_HPB_SP"
+    UNSET whHeatingCap
+
+RUN
+
+ALTER DHWSYS "dhwsys1"
+  wsCalcMode = Simulate     // redundant but clear
+  ALTER DHWHEATER "dhwhtr2"
+    whASHPType = "IceAir_ccHPWH550D_MP"
     UNSET whHeatingCap
 
 RUN

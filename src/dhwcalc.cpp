@@ -3155,8 +3155,8 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
 	{ C_WHASHPTYCH_SCALABLE_SP,    hwatLARGE | hpwh_presets::MODELS::TamScalable_SP },
 	{ C_WHASHPTYCH_SCALABLE_MP,    hwatLARGE | hpwh_presets::MODELS::Scalable_MP },
 
-    { C_WHASHPTYCH_ICEAIR_HPWH275D_MP,    hwatLARGE | hpwh_presets::MODELS::IceAirccHPWH275D },
-    { C_WHASHPTYCH_ICEAIR_HPWH550D_MP,    hwatLARGE | hpwh_presets::MODELS::IceAirccHPWH550D },
+    { C_WHASHPTYCH_ICEAIR_CCHPWH275D_MP,    hwatLARGE | hpwh_presets::MODELS::IceAirccHPWH275D },
+    { C_WHASHPTYCH_ICEAIR_CCHPWH550D_MP,    hwatLARGE | hpwh_presets::MODELS::IceAirccHPWH550D },
 
 	{ 32767,                         hpwh_presets::MODELS::unknown }  };
 

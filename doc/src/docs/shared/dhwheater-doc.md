@@ -441,13 +441,13 @@ AWHSTier4Generic80, A 80-gal tank meeting Advanced Water Heating Specification T
 BradfordWhiteAeroThermRE2H50,Bradford White 50-gal AeroTherm2023
 BradfordWhiteAeroThermRE2H65,Bradford White 65-gal AeroTherm2023
 BradfordWhiteAeroThermRE2H80,Bradford White 80-gal AeroTherm2023
-BradfordWhiteAeroThermRE2HP50,Bradford White 50-gal Series G2
-BradfordWhiteAeroThermRE2HP65,Bradford White 65-gal Series G2
-BradfordWhiteAeroThermRE2HP80,Bradford White 80-gal Series G2
+BradfordWhiteAeroThermRE2HP50,Bradford White 50-gal AeroTherm Series G2
+BradfordWhiteAeroThermRE2HP65,Bradford White 65-gal AeroTherm Series G2
+BradfordWhiteAeroThermRE2HP80,Bradford White 80-gal AeroTherm Series G2
 LG_APHWC50,LG 50-gal integrated HPWH
 LG_APHWC80,LG 580-gal integrated HPWH
-IceAirccHPWH275D,Ice Air 275 double-wall commercial multi-pass
-IceAirccHPWH550D,Ice Air 550 double-wall commercial multi-pass", True)
+IceAirccHPWH275D,Ice Air cold-climate 248 kBTUh commercial multi-pass
+IceAirccHPWH550D,Ice Air cold-climate 516 kBTUh commercial multi-pass", True)
 }}
 
 {{
