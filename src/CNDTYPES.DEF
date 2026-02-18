@@ -511,8 +511,8 @@ RIGDIST   --  "struct { RIGTARGTY targTy; TI targTi; float targFr; RIGTARG * tar
 
             LG_APHWC50 "LG_APHWC50" // 50-gal LG model (added 11-11-2024)
             LG_APHWC80 "LG_APHWC80" // 80-gal LG model (added 12-10-2024)
-			ICEAIR_CCHPWH275D_MP "IceAir_ccHPWH275D_MP" // Ice Air cold-climate 248 kBTUh commercial multi-pass
-			ICEAIR_CCHPWH550D_MP "IceAir_ccHPWH550D_MP" // Ice Air cold-climate 516 kBTUh commercial multi-pass
+			ICEAIR_CCHPWH275D_MP "IceAir_ccHPWH275D_MP" // Ice Air cold-climate 275 kBTU/h commercial multi-pass
+			ICEAIR_CCHPWH550D_MP "IceAir_ccHPWH550D_MP" // Ice Air cold-climate 550 kBTU/h commercial multi-pass
 		}
 
 *choicb WHRESTYCH {			// resistance heater types

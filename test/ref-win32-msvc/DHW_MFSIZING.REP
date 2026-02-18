@@ -2,7 +2,7 @@
 
 ! Log for Run 001:
 
-! CSE 0.926.0+init-presets-from-cbor-hpwh.327c2c73.32 for Win32 console
+! CSE 0.927.0+add-commercial-units-1.76d7b66b.112 for Win32 console
 
 
 
@@ -347,7 +347,7 @@ Yr   11344      0      0      0  11344      0      0      0      0      0      0
 
 ! Log for Run 002:
 
-! CSE 0.926.0+init-presets-from-cbor-hpwh.327c2c73.32 for Win32 console
+! CSE 0.927.0+add-commercial-units-1.76d7b66b.112 for Win32 console
 
 
 
@@ -458,7 +458,7 @@ Yr   10905      0      0      0  10905      0      0      0      0      0      0
 
 ! Log for Run 003:
 
-! CSE 0.926.0+init-presets-from-cbor-hpwh.327c2c73.32 for Win32 console
+! CSE 0.927.0+add-commercial-units-1.76d7b66b.112 for Win32 console
 
 
 
@@ -538,7 +538,7 @@ Yr   10971      0      0      0  10971      0      0      0      0      0      0
 
 ! Log for Run 004:
 
-! CSE 0.926.0+init-presets-from-cbor-hpwh.327c2c73.32 for Win32 console
+! CSE 0.927.0+add-commercial-units-1.76d7b66b.112 for Win32 console
 
 
 
@@ -615,7 +615,7 @@ Yr   11822      0      0      0  11822      0      0      0      0      0      0
 
 ! Log for Run 005:
 
-! CSE 0.926.0+init-presets-from-cbor-hpwh.327c2c73.32 for Win32 console
+! CSE 0.927.0+add-commercial-units-1.76d7b66b.112 for Win32 console
 
 
 
@@ -633,23 +633,98 @@ Input for Run 005:
                   hourval(.15,.15,.15,.15,.15,.15,.15,.15,.15,.15,.15,.15,.15,.60,.60,.60,.15,.15,.15,.15,.15,.15,.15,.15))
         
         RUN
+
+
+
+DHWHEATER Primary
+
+  loadMax loadMaxDur loadMaxAvg  drawMax drawMaxDur drawMaxAvg  dayWasteS htCapDes tSpDes  volRDes Count  htCap  VolEa VolTot   totHARL
+ -------- ---------- ---------- -------- ---------- ---------- ---------- -------- ------ -------- ----- ------ ------ ------ ---------
+ 262024       12      21835.3    233.029      4         58.257      0.290    20470    120     72.0     1 418810 1224.8 1224.8  77394024
+
+
+
+DHWLOOPHEATER Info
+
+ LH Vol  LH UA LH RIns  htCap
+ ------ ------ ------- ------
+   80.0   2.66   10.87 4777.0
+
+
+
+Monthly Energy Use, meter "MtrElec"
+
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+--- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+Jan 2734.8      0      0      0 2684.0      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Feb 2364.5      0      0      0 2318.7      0 45.859      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Mar 2544.0      0      0      0 2493.3      0 50.704      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Apr 2413.9      0      0      0 2364.8      0 49.135      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+May 1305.9      0      0      0 1255.1      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jun 1208.7      0      0      0 1159.6      0 49.135      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jul 1152.0      0      0      0 1101.2      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Aug 1134.5      0      0      0 1083.7      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Sep 1082.1      0      0      0 1033.0      0 49.135      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Oct 1190.8      0      0      0 1140.0      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Nov 1416.1      0      0      0 1366.9      0 49.203      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec 2523.0      0      0      0 2472.3      0 50.773      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+
+Yr   21070      0      0      0  20473      0 597.81      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+
+
+
+Monthly Energy Use, meter "MtrElecLH"
+
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+--- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+Jan 1435.7      0      0      0 1435.7      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Feb 1318.3      0      0      0 1318.3      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Mar 1424.1      0      0      0 1424.1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Apr 1380.1      0      0      0 1380.1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+May 2399.9      0      0      0 2381.2      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 18.654      0      0
+Jun 2385.5      0      0      0 2358.5      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 26.936      0      0
+Jul 2447.4      0      0      0 2419.1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 28.366      0      0
+Aug 2427.2      0      0      0 2406.8      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 20.360      0      0
+Sep 2365.5      0      0      0 2345.3      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 20.161      0      0
+Oct 2463.5      0      0      0 2439.9      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 23.670      0      0
+Nov 2388.9      0      0      0 2357.9      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 31.013      0      0
+Dec 1414.0      0      0      0 1414.0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+
+Yr   23850      0      0      0  23681      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 169.16      0      0
+
+
+
+! Log for Run 006:
+
+! CSE 0.927.0+add-commercial-units-1.76d7b66b.112 for Win32 console
+
+
+
+Input for Run 006:
+
+        
+        ALTER DHWSYS "dhwsys1"
+          ALTER DHWHEATER "dhwhtr1"
+            whASHPType = "IceAir_ccHPWH550D_MP"
+        RUN
+        
         
         $EOF
 
 
 
-! CSE 0.926.0+init-presets-from-cbor-hpwh.327c2c73.32 for Win32 console run(s) done: Mon 30-Jun-25   6:0 pm
+! CSE 0.927.0+add-commercial-units-1.76d7b66b.112 for Win32 console run(s) done: Wed 18-Feb-26   2:17:27 pm
 
-! Executable:   d:\a\cse\cse\build\cse.exe
-!               30-Jun-25   6:0 pm   (VS 14.29    3561984 bytes)  (HPWH 1.26.0+HEAD.f991c214.216)
+! Executable:   c:\src\cse\builds\cse.exe
+!               18-Feb-26   1:32 pm   (VS 14.29    3595264 bytes)  (HPWH 1.4.1+HEAD.11240a73.2140)
 ! Command line: -x!  -b -t1 dhw_mfsizing
-! Input file:   D:\a\cse\cse\test\dhw_mfsizing.cse
-! Report file:  D:\A\CSE\CSE\TEST\DHW_MFSIZING.REP
+! Input file:   C:\src\cse\test\dhw_mfsizing.cse
+! Report file:  C:\SRC\CSE\TEST\DHW_MFSIZING.REP
 
 ! Timing info --
 
-!                Input:  Time = 1.31     Calls = 5         T/C = 0.2618
+!                Input:  Time = 1.11     Calls = 6         T/C = 0.1845
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 12.64    Calls = 5         T/C = 2.5284
-!              Reports:  Time = 0.00     Calls = 5         T/C = 0.0004
-!                Total:  Time = 13.96    Calls = 1         T/C = 13.9550
+!           Simulation:  Time = 12.27    Calls = 6         T/C = 2.0452
+!              Reports:  Time = 0.01     Calls = 6         T/C = 0.0012
+!                Total:  Time = 13.39    Calls = 1         T/C = 13.3870
