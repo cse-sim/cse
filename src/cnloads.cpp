@@ -3846,7 +3846,11 @@ void RSYS::rs_HeatingOutletAirState(
 				if (rs_IsPMHtg())
 				{	// PM model: rs_capH is net cap at outdoor design temp, 400 cfm/ton, 70 F entering air
 					// rs_tdbCoilIn = rs_asOut.as_tdb set above
+#if defined( FIX_PMHEATING)
 					rs_HeatingEnteringAirFactorsVC(rs_fCondCap, rs_fCondInp);
+#else
+					rs_fCondCap = rs_fCondInp = 1.f;
+#endif
 					rs_capHt *= rs_fCondCap; // net cap at current entering air temp and cfm/ton
 				}
 		}
@@ -3863,7 +3867,13 @@ void RSYS::rs_HeatingOutletAirState(
 		if (rs_IsASHP())
 		{
 			if (rs_IsPMHtg())
+			{
+#if defined( FIX_PMHEATING)
 				rs_HeatingEnteringAirFactorsVC(rs_fCondCap, rs_fCondInp);
+#else
+				rs_fCondCap = rs_fCondInp = 1.f;
+#endif
+			}
 
 			float capHtGross, inpHtGross;
 			rs_effHt = rs_CapEffASHP2( capHtGross, inpHtGross, rs_capDfHt);	// sets rs_capHt
@@ -6457,10 +6467,10 @@ RC RSYS::rs_FinalizeSh()
 			rs_pCHDHW->hvt_BlowerAVFandPower(rs_outSenTot, avf, fanPwr);
 			// if (rs_runF < 1.) cycle?
 
-#if 0	// CHDHW fan power fix, deferred by CEC, 1-27-2026
+#if 1	// CHDHW fan power fix, 2/2026
 			rs_outFan = rs_runF * fanPwr * BtuperWh;	// fan heat, Btuh
 #else
-			rs_outFan = rs_runF * fanPwr * Top.tp_subhrDur * BtuperWh;	// WRONG fan heat, Btuh
+x			rs_outFan = rs_runF * fanPwr * Top.tp_subhrDur * BtuperWh;	// WRONG fan heat, Btuh
 #endif
 			rs_outSen = max(0., rs_outSenTot - rs_outFan);		// net -> gross
 			runFFan = rs_runF;
