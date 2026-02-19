@@ -35,6 +35,9 @@
 
 #include "ashwface.h"		// #includes xmodule.h
 
+#define PMHEATING_ENTCONDFIX	// #define to include entering conditions adjustments ("Cutler curves")
+								// for PM heating
+
 /*-------------------------------- OPTIONS --------------------------------*/
 // 7-92 MARG1 and MARG2 2.0 made NO DIFFERENCE even in # itertions (q2, q3, q4)
 //   suspect means humidity is limiting condition.
@@ -3846,7 +3849,7 @@ void RSYS::rs_HeatingOutletAirState(
 				if (rs_IsPMHtg())
 				{	// PM model: rs_capH is net cap at outdoor design temp, 400 cfm/ton, 70 F entering air
 					// rs_tdbCoilIn = rs_asOut.as_tdb set above
-#if defined( FIX_PMHEATING)
+#if defined( PMHEATING_ENTCONDFIX)
 					rs_HeatingEnteringAirFactorsVC(rs_fCondCap, rs_fCondInp);
 #else
 					rs_fCondCap = rs_fCondInp = 1.f;
@@ -3868,7 +3871,7 @@ void RSYS::rs_HeatingOutletAirState(
 		{
 			if (rs_IsPMHtg())
 			{
-#if defined( FIX_PMHEATING)
+#if defined( PMHEATING_ENTCONDFIX)
 				rs_HeatingEnteringAirFactorsVC(rs_fCondCap, rs_fCondInp);
 #else
 				rs_fCondCap = rs_fCondInp = 1.f;
