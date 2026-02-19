@@ -35,7 +35,7 @@
 
 #include "ashwface.h"		// #includes xmodule.h
 
-#define PMHEATING_ENTCONDFIX	// #define to include entering conditions adjustments ("Cutler curves")
+#undef PMHEATING_ENTCONDFIX	// #define to include entering conditions adjustments ("Cutler curves")
 								// for PM heating
 
 /*-------------------------------- OPTIONS --------------------------------*/
