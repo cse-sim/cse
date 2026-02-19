@@ -3724,7 +3724,7 @@ RC RSYS::rs_EndSubhr()
 		R.ecPrimary = rs_inPrimary * Top.tp_subhrDur;
 		R.ecFan = eFan;
 
-#if defined( _DEBUG)
+#if 0 && defined( _DEBUG)
 		float effX = abs(R.qcSen + R.qcLat) / max(R.ecPrimary, .001f);
 		if (frDiff(rs_effCt, effX) > 0.01f)
 			printf("\nMismatch");

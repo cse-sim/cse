@@ -1558,6 +1558,10 @@ bool ZNR::zn_TrackUnmetLoads() const	// unmet load statistics
 		zrs.unMetMaxTD[iHC] = tzErr;	// min/max tracking done in accumZr()
 		if (Top.isEndHour)
 			zrs.unMetHrDH[iHC] = tzErr /* * 1.f */;
+
+		// calc energy to hold setpoint
+		double q = zn_QAirCR(zn_tzsp);
+		zrs.unMetQsen[ iHC] = q * Top.tp_subhrDur - zrs.qsMech;
 	}
 
 	return bUnMet;
