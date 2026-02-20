@@ -3646,7 +3646,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.927.0+rsys-fixes.4c6789ff.42.dirty for Win32 console
+! CSE 0.927.0+rsys-PM-airflowfix.a4ba26c1.58 for Win32 console
 
 
 
@@ -9896,7 +9896,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 002:
 
-! CSE 0.927.0+rsys-fixes.4c6789ff.42.dirty for Win32 console
+! CSE 0.927.0+rsys-PM-airflowfix.a4ba26c1.58 for Win32 console
 
 
 
@@ -9946,18 +9946,18 @@ Input for Run 001:
 
 
 
-! CSE 0.927.0+rsys-fixes.4c6789ff.42.dirty for Win32 console run(s) done: Wed 21-Jan-26  11:13:46 am
+! CSE 0.927.0+rsys-PM-airflowfix.a4ba26c1.58 for Win32 console run(s) done: Thu 19-Feb-26   4:28:08 pm
 
 ! Executable:   d:\cse\builds\cse.exe
-!               21-Jan-26  11:03 am   (VS 14.29    4233216 bytes)  (HPWH 1.26.0)
+!               19-Feb-26   4:25 pm   (VS 14.29    4232704 bytes)  (HPWH 1.26.0)
 ! Command line: -x!  -t1 chdhw
 ! Input file:   D:\cse\test\chdhw.cse
 ! Report file:  D:\CSE\TEST\CHDHW.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.32     Calls = 2         T/C = 0.1615
+!                Input:  Time = 0.35     Calls = 2         T/C = 0.1740
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 5.25     Calls = 2         T/C = 2.6250
-!              Reports:  Time = 0.03     Calls = 2         T/C = 0.0155
-!                Total:  Time = 5.61     Calls = 1         T/C = 5.6060
+!           Simulation:  Time = 5.21     Calls = 2         T/C = 2.6060
+!              Reports:  Time = 0.03     Calls = 2         T/C = 0.0140
+!                Total:  Time = 5.59     Calls = 1         T/C = 5.5910
