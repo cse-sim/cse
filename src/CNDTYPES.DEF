@@ -505,9 +505,14 @@ RIGDIST   --  "struct { RIGTARGTY targTy; TI targTi; float targFr; RIGTARG * tar
 			BRADFORDWHITEAEROTHERMRE2H50 "BradfordWhiteAeroThermRE2H50"		// 50-gal AeroTherm2023
             BRADFORDWHITEAEROTHERMRE2H65 "BradfordWhiteAeroThermRE2H65"		// 65-gal AeroTherm2023
             BRADFORDWHITEAEROTHERMRE2H80 "BradfordWhiteAeroThermRE2H80"		// 80-gal AeroTherm2023
+			BRADFORDWHITEAEROTHERMRE2HP50 "BradfordWhiteAeroThermRE2HP50"   // 50-gal AeroTherm Series G2
+            BRADFORDWHITEAEROTHERMRE2HP65 "BradfordWhiteAeroThermRE2HP65"   // 65-gal AeroTherm Series G2
+            BRADFORDWHITEAEROTHERMRE2HP80 "BradfordWhiteAeroThermRE2HP80"   // 80-gal AeroTherm Series G2
 
             LG_APHWC50 "LG_APHWC50" // 50-gal LG model (added 11-11-2024)
             LG_APHWC80 "LG_APHWC80" // 80-gal LG model (added 12-10-2024)
+			ICEAIR_CCHPWH275D_MP "IceAir_ccHPWH275D_MP" // Ice Air cold-climate 275 kBTU/h commercial multi-pass
+			ICEAIR_CCHPWH550D_MP "IceAir_ccHPWH550D_MP" // Ice Air cold-climate 550 kBTU/h commercial multi-pass
 		}
 
 *choicb WHRESTYCH {			// resistance heater types
