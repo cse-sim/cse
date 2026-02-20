@@ -244,12 +244,6 @@ RC PMACCESS::pa_GetCapInp(float dbtOut, float speedF, float& cap, float& inp)
 {
 	double capRat, inpRat;
 	RC rc = pa_GetCapInpRatios(dbtOut, speedF, capRat, inpRat);
-#if defined( _DEBUG)
-	if (isnan(pa_capRef))
-	{	printf("\npa_CapRef = nan");
-		pa_capRef = 0.;
-	}
-#endif
 	cap = capRat * pa_capRef;
 	inp = inpRat * abs(pa_capRef);
 	return rc;
