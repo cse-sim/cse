@@ -3646,7 +3646,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.927.0+init-presets-from-cbor-hpwh.83907440.97 for Win32 console
+! CSE 0.927.0+add-commercial-units-1.2b98d458.113 for Win32 console
 
 
 
@@ -9896,7 +9896,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 002:
 
-! CSE 0.927.0+init-presets-from-cbor-hpwh.83907440.97 for Win32 console
+! CSE 0.927.0+add-commercial-units-1.2b98d458.113 for Win32 console
 
 
 
@@ -9946,18 +9946,18 @@ Input for Run 001:
 
 
 
-! CSE 0.927.0+init-presets-from-cbor-hpwh.83907440.97 for Win32 console run(s) done: Mon 09-Feb-26   3:24:30 pm
+! CSE 0.927.0+add-commercial-units-1.2b98d458.113 for Win32 console run(s) done: Fri 20-Feb-26   1:06:56 pm
 
-! Executable:   c:\users\tanaya mankad\source\repos\cse\builds\cse.exe
-!               09-Feb-26   3:12 pm   (VS 14.29    3595776 bytes)  (HPWH 1.24.1+add-commercial-models-phase-1.0334ee49.1089)
+! Executable:   c:\src\cse\builds\cse.exe
+!               20-Feb-26  12:36 pm   (VS 14.29    3594752 bytes)  (HPWH 1.4.1+HEAD.11240a73.2140)
 ! Command line: -x!  -b -t1 chdhw
-! Input file:   C:\Users\Tanaya Mankad\source\repos\cse\test\chdhw.cse
-! Report file:  C:\USERS\TANAYA MANKAD\SOURCE\REPOS\CSE\TEST\CHDHW.REP
+! Input file:   C:\src\cse\test\chdhw.cse
+! Report file:  C:\SRC\CSE\TEST\CHDHW.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.92     Calls = 2         T/C = 0.4585
+!                Input:  Time = 0.71     Calls = 2         T/C = 0.3575
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 15.01    Calls = 2         T/C = 7.5030
-!              Reports:  Time = 0.01     Calls = 2         T/C = 0.0075
-!                Total:  Time = 15.94    Calls = 1         T/C = 15.9410
+!           Simulation:  Time = 12.88    Calls = 2         T/C = 6.4420
+!              Reports:  Time = 0.02     Calls = 2         T/C = 0.0080
+!                Total:  Time = 13.62    Calls = 1         T/C = 13.6170

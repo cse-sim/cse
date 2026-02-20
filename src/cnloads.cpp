@@ -35,6 +35,9 @@
 
 #include "ashwface.h"		// #includes xmodule.h
 
+#undef PMHEATING_ENTCONDFIX	// #define to include entering conditions adjustments ("Cutler curves")
+								// for PM heating
+
 /*-------------------------------- OPTIONS --------------------------------*/
 // 7-92 MARG1 and MARG2 2.0 made NO DIFFERENCE even in # itertions (q2, q3, q4)
 //   suspect means humidity is limiting condition.
@@ -2677,7 +2680,7 @@ void RSYS::rs_RddiInit()		// init before each autosize design day ITERATION
 			rs_SetupCapH( rs_areaServed * cfmPerFt2);		// rs_capH derived from AVF
 		}
 		else
-		{	// pass1B: rs_capH has latest value
+		{	// pass1B or pass2: rs_capH has latest value
 			if (Top.tp_auszDsDayItr < 2)
 				rs_capH = rs_auszH.az_a;	// 1st iteration cap may be 0 (see rs_pass1AtoB)
 			rs_SetupCapH();
@@ -2714,7 +2717,7 @@ RC RSYS::rs_endP1DsdIter(		// autosizing end of day
 				rs_capH *= f;
 		}
 		else
-		{	// pass1B: rs_capH sizes system
+		{	// pass1B or pass 2: rs_capH sizes system
 			//   change in small steps (can be unstable)
 			rs_capH *= bracket( 0.9f, f, 1.1f);
 
@@ -3724,12 +3727,6 @@ RC RSYS::rs_EndSubhr()
 		R.ecPrimary = rs_inPrimary * Top.tp_subhrDur;
 		R.ecFan = eFan;
 
-#if defined( _DEBUG)
-		float effX = abs(R.qcSen + R.qcLat) / max(R.ecPrimary, .001f);
-		if (frDiff(rs_effCt, effX) > 0.01f)
-			printf("\nMismatch");
-#endif
-
 		R.ecTot += R.ecPrimary + R.ecFan /* + R.ecParasitic, see above */;
 
 		for (int iM = 0; iM < 3; iM += 2)
@@ -3827,11 +3824,16 @@ void RSYS::rs_HeatingOutletAirState(
 	// preconditions
 	assert(auszMode == rsmOFF || auszMode == rsmHEAT);
 
-
 	// determine current heating capacity and efficiency
 
-	rs_capHt = -1.f;	// heat to be added to airstream (=net sensible capacity)
+	rs_capHt = -1.f;	// heat to be added to airstream (=net sensible capacity at current conditions)
 						//  <0 = not yet known
+
+	// rs_asOut = rs_asIn per caller
+	// see analoguous cooling code in rs_CoolingOutletAirState
+	//   rs_twbCoilIn not needed for heating
+	//   rs_tdbCoilIn modified below re fan heat
+	rs_tdbCoilIn = rs_asOut.as_tdb;
 
 	if (auszMode == rsmHEAT)
 	{	if (Top.tp_pass1A)
@@ -3840,29 +3842,41 @@ void RSYS::rs_HeatingOutletAirState(
 			rs_effHt = 1.f;		// need nz value, else ASHP assumes compressor off
 		}
 		else if (rs_IsASHP())
-		{	// ASHP heat autosize (based on rs_capH)
+		{	// ASHP heat autosize (based on rs_capH =)
 				rs_effHt = 1.f;
-				rs_capHtFS = rs_capHt = rs_capAuxH = rs_capH;		// same cap for aux during autosizing
-				//   used below if needed
-
+				rs_capHtFS = rs_capHt = rs_capAuxH = rs_capH;	// same cap for aux during autosizing
+																//   used below if needed
+				if (rs_IsPMHtg())
+				{	// PM model: rs_capH is net cap at outdoor design temp, 400 cfm/ton, 70 F entering air
+					// rs_tdbCoilIn = rs_asOut.as_tdb set above
+#if defined( PMHEATING_ENTCONDFIX)
+					rs_HeatingEnteringAirFactorsVC(rs_fCondCap, rs_fCondInp);
+#else
+					rs_fCondCap = rs_fCondInp = 1.f;
+#endif
+					rs_capHt *= rs_fCondCap; // net cap at current entering air temp and cfm/ton
+				}
 		}
 		// other autosize: use full model (why?)
 	}
 	
-	if (rs_capHt < 0.f)
+	if (rs_capHt < 0.f)		// if autosize did not set capacity
 	{
 		// fan heat: coil entering conditions
-		// rs_asOut = rs_asIn per caller
-		// see analoguous cooling code in rs_CoolingOutletAirState
-		//   rs_twbCoilIn not needed for heating
-		rs_tdbCoilIn = rs_asOut.as_tdb;
+		//   (does not alter rs_asOut)
 		if (rs_fan.fanTy == C_FANTYCH_BLOWTHRU)
 			rs_tdbCoilIn += rs_asOut.as_DeltaTQSen(rs_fanPwr, rs_amf);
 
 		if (rs_IsASHP())
 		{
 			if (rs_IsPMHtg())
+			{
+#if defined( PMHEATING_ENTCONDFIX)
 				rs_HeatingEnteringAirFactorsVC(rs_fCondCap, rs_fCondInp);
+#else
+				rs_fCondCap = rs_fCondInp = 1.f;
+#endif
+			}
 
 			float capHtGross, inpHtGross;
 			rs_effHt = rs_CapEffASHP2( capHtGross, inpHtGross, rs_capDfHt);	// sets rs_capHt
@@ -6456,7 +6470,11 @@ RC RSYS::rs_FinalizeSh()
 			rs_pCHDHW->hvt_BlowerAVFandPower(rs_outSenTot, avf, fanPwr);
 			// if (rs_runF < 1.) cycle?
 
+#if 1	// CHDHW fan power fix, 2/2026
 			rs_outFan = rs_runF * fanPwr * BtuperWh;	// fan heat, Btuh
+#else
+x			rs_outFan = rs_runF * fanPwr * Top.tp_subhrDur * BtuperWh;	// WRONG fan heat, Btuh
+#endif
 			rs_outSen = max(0., rs_outSenTot - rs_outFan);		// net -> gross
 			runFFan = rs_runF;
 
