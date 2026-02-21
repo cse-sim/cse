@@ -152,6 +152,9 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *declare "void tp_DoDateDowStuff();"
     *declare "void tp_DTInit();"
     *declare "void tp_DoDTStuff();"
+    *declare "int tp_WthrHoursInDay( int jDayX) const;"
+    *declare "int tp_WthrDayHr0( int jDayX, int yrDays) const;"
+    *declare "bool tp_IsDTAtDayBeg( int jDayX) const;"
     *declare "void tp_tmrSnapshot();"
     *declare "const char* tp_AuszDoing() const;"
     *declare "RC tp_BegDesDay();"
@@ -261,7 +264,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
 				            //      brfr.h:getWorkDayMask() default, opk\progr.h/cpp:ProGrSub::workDayMask.
     *i NOYESCH DT			// YES (default) to enable daylight saving time
     *r DOY DTBegDay			// Daylight saving start day, 1-365, default 1st Sun (Sun after 1st Sat?) in April
-    *r DOY DTEndDay			// Daylight saving end day, 1-365, defaulted by cncult2.cpp code to last Sun in October
+    *r DOY DTEndDay			// Daylight saving end day, 1-365, defaulted by cncult2.cpp code to first Sun in November
 
 							// wind speed adjustment, see cgwthr.cpp
 							//    appl sees Top.windF * max( wthrfile.wndSpd, Top.windSpeedMin);
@@ -764,6 +767,7 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
 	*declare "RC wf_EtDecodeHdr( char* hdr, int erOp, float* clrnss, float* turbid, float* atmois);"
 	*declare "RC wf_DecodeHdrFields( char* hdr, struct WFHTAB* wfht0, int erOp);"
 	*declare "RC wf_FillWDYEAR( int erOp=WRN);"
+	*declare "RC wf_InitStatRATs() const;"
 	*declare "enum { gshrFILEDAY, gshrDSDAY, gshrDSDAY0 };"
 	*declare "RC wf_GenSubhrRad( SLRINTERPMETH slrInterpMeth, int dayTy, int jDay);"
 	*declare "RC wf_GetSubhrRad( int jDay, int iHrST, int iSh, float& radBeamAv, float& radDiffAv);"
@@ -777,8 +781,6 @@ RECORD WFILE "weatherFile" *RAT	// weather file info, one static instance "Wfile
 	*declare "RC wf_CSWHdrVal( const char* key, const char* val, float& v, RC& rcAll, int erOp=WRN);"
 	*declare "RC wf_CSWHdrVal( const char* key, const char* val, int& v, RC& rcAll, int erOp=WRN);"
 	*declare "RC wf_CSWPosHr1( int erOp=WRN);"
-	*declare "RC wf_T24DLLOpen( const char* wfName, int erOp);"
-	*declare "RC wf_T24DLLRead( WDHR* pwd, int jDay, int iHr, int erOp);"
 	*declare "RC wf_EPWOpen( const char* wfName, int erOp );"
 	*declare "RC wf_EPWPosHr1( int erOp=WRN);"
 	*declare "RC wf_EPWRead( WDHR* pwd, int jDay, int iHr, int erOp );"
@@ -862,9 +864,8 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
 	*declare "RC wd_GenDesCondHeating( WFILE* pWF, int jDayST, int iHrST);"
 	*declare "RC wd_UpdateDesCondHeating();"
 	*declare "void wd_FillFromDESCOND( const DESCOND& dc, int iHr);"
-	*declare "void wd_SetDayValues( const class WDDAY& wdd);"
-	*declare "void wd_SetDayValuesIfMissing( const class WDDAY& wdd);"
-	*declare "void wd_SetTdvElecHrRank( const class WDDAY& wdd);"
+	*declare "void wd_SetDayValues( const class WDDAY& wdd, int options=0);"
+	*declare "void wd_SetDayValues( const class WFSTATSDAY& wxd, const class WFSTATSDAY& wxdPv, int options=0);"
 	*declare "void wd_ShiftTdvElecHrRankForDST();"
 	*declare "bool wd_HasTdvData() const;"
 
@@ -952,6 +953,54 @@ RECORD WFDATA "weather" *RAT	// hourly weather data, one static instance "Wthr",
 							//   WFDATA must be record re probing
 							//   WDHR used elsewhere (e.g. whole file pre-read)
 *END		// WFDATA
+//========================================================================================================
+RECORD WFSTATSSUB "wfstatssub" *SUBSTRUCT       // aggregated weather file statistics (day, month, year)
+*prefix wx_
+*declare "void wx_Accum( const WFSTATSSUB& wxSrc, bool bFirst, bool bLast);"
+
+FLOAT wx_taDbMin;		// min air dry bulb temp, F
+FLOAT wx_taDbAvg;		// mean air dry bulb temp, F
+FLOAT wx_taDbMax;		// max air dry bulb temp, F
+FLOAT wx_tGrnd;		    // ground temp, F.  Calculated with Kusuda model
+						//   depth=10 ft, soilDiff = per user input
+FLOAT wx_tMains;		// cold water mains temp, F.  calc'd per
+						//   CEC 2013 methods, see CalcTMainsCEC()
+FLOAT wx_GHI;           // total GHI for interval, Btu/ft2
+FLOAT wx_DHI;           // total DHI for interval, Btu/ft2
+FLOAT wx_DNI;           // total DNI for interval, Btu/ft2
+
+FLOAT wx_tdvElecPk;	    // TDV peak
+FLOAT wx_tdvElecAvg;	// TDV avg
+
+*END    // WFSTATSSUB
+//========================================================================================================
+RECORD WFSTATSDAY "wfstatsday" *RAT       // aggregated weather file statistics for one day
+
+*prefix wx_
+
+*declare "RC wx_ComputeStats( const class WDYEAR& wdy);"
+*declare "static int wx_TdvPkCompare(const void* p1, const void* p2);"
+
+*d SI wx_dayOfYear      // day of year of this WFSTATSDAY (1-365/366)
+
+*d *noname *nest WFSTATSSUB d
+
+*d SI wx_tdvElecPkRank;	//   rank within year of wx_tdvElecPk (1-366)
+*d FLOAT wx_tdvElecPvPk;	//   peak for prior day
+*d FLOAT wx_tdvElecAvg01;	//   avg for print day
+*d *ARRAY 24 SI wx_tdvElecHrSTRank;	// TDV hr ranking
+								//   [ 0] = hour (1-24) with highest TDVElec
+								//   [ 1] = hour (1-24) with 2nd highest TDVElec
+								//   [ 2 .. 23] etc
+
+						// mean dry bulb temp over recent days, F
+						// *not* including current day
+*d FLOAT wx_taDbAvg01;	//    1 day
+*d FLOAT wx_taDbAvg07;	//    7 day
+*d FLOAT wx_taDbAvg14;	//   14 day
+*d FLOAT wx_taDbAvg31;	//   31 day
+
+*END    // WFSTATSDAY
 //========================================================================================================
 RECORD DESCOND "DESCOND" *RAT		// cooling design conditions
 *prefix dc_

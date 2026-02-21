@@ -212,5 +212,17 @@ const int WF_SAVESLRGEOM = EROP7;	// wfRead: do NOT overwrite solar geometry val
 float CalcSkyTemp( int skyModelLW, int iHr, float taDb, float taDp, float cldCvr,
 	float presAtm, float irHoriz);
 
+// weather-related globals
+extern anc<WFILE> WfileR;		// basAnc for the one weather file info record 1-94. Runtime only - no input basAnc.
+extern WFILE Wfile;				// the one static WFILE record with overall info and file buffer for 1 day's data
+extern anc<WFDATA> WthrR;		// basAnc for hour's weather data record. Runtime only - no corress input basAnc.
+extern WFDATA Wthr;				// the one static WFDATA record containing unpacked & adjusted data for hour 1-94
+extern anc<WFDATA> WthrNxHrR;	// basAnc for next hour's weather data record ("weatherNextHour")
+extern WFDATA WthrNxHr;			// static record for next hour's unpacked & adjusted data for cgwthr.cpp read-ahead
+
+extern anc<WFSTATSDAY> WfStatsDay;	// Weather statistics by day
+
+extern anc<DESCOND> DcR;		// design conditions
+
 
 // end of wfpak.h

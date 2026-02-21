@@ -1,5 +1,6 @@
 set(source
       cse_tests.unit.cpp
+      tdpak.unit.cpp
       strpak.unit.cpp
       xiopak.unit.cpp
       cvpak.unit.cpp
