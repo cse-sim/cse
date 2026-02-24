@@ -308,7 +308,7 @@ whZone and whTEx cannot both be specified.
 
 Type: float
 
-Water heater surround temperature, used only in detailed HPWH models (whHeatSrc=ASHPX or whHeatSrc=RESISTANCEX), otherwise no effect.  When whTEx is specified, tank heat losses are calculated using whTEx and modify tank water temperatures, but the lost heat has no external effect.
+Water heater surround temperature, used only in detailed HPWH models (whHeatSrc=ASHPX or whHeatSrc=RESISTANCEX), otherwise no effect.  When whZzone is not specified, tank heat losses and tank water temperatures are calculated using whTEx (as input or defaulted), but the lost heat has no external effect.
 
 whZone and whTEx cannot both be specified.
 

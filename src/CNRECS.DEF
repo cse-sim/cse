@@ -4678,13 +4678,12 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 								//	  C_WHRESTYCH_xxx, etc
                                 //    documentation only (9-2021)
   *i TI wh_znTi;                // DHWHEATER location zone re tank loss
-								//    0 iff wh_tEx being used
+								//    nullptr iff wh_tEx being used
 								//	  heat losses go to half to zone air / half radiant
-  *declare "ZNR* wh_pZn;"		// pointer to location zone, use wh_tEx if NULL
-  *s FLOAT wh_tEx;				// surrounding temperature, F for tank loss
-								//    when wh_tEx set
-								//    - wh_znTi ignored
-								//    - heat loss discarded
+  *declare "ZNR* wh_pZn;"		// pointer to location zone, use wh_tEx if nullptr
+  *s FLOAT wh_tEx;				// surrounding temperature, F for tank loss (default 70 F)
+								//    used iff wh_znTi=nullptr (heat loss discarded)
+								//    else unused / ignored
   *i TI wh_ashpSrcZnTi;			// ASHP source zone
 								//    0 iff wh_ashpTSrc being used
 								//    input heat removed from zone air
