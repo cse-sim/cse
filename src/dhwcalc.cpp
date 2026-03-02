@@ -4832,6 +4832,7 @@ RC DHWHEATER::wh_DoSubhrStart()
 	//   used by e.g. HPWH
 	if (wh_pZn)
 		wh_tEx = wh_pZn->tzls;
+	// else wh_tEx = input expression or default 70F from CULT
 	if (wh_pAshpSrcZn)
 		wh_ashpTSrc = wh_pAshpSrcZn->tzls;
 
