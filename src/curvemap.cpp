@@ -305,6 +305,51 @@ double PMACCESS::pa_GetRatedFanFlowFactor(
 
 	return flowFactor;
 }		// PMACCESS::pa_GetRatedFanFlowFactor
+//-----------------------------------------------------------------------------
+double PMACCESS::pa_GetRatedFanFlowFactor(
+	float ratedFlowRat,	// rated current mode fan flow / rated cooling fan flow
+	float speedF)		// speed fraction
+
+// returns (air flow at speedF) / (reference air flow at rated speed)
+{
+	double capRat, inpRatSink;
+	RC rc = pa_GetCapInpRatios(pa_tdbRated, speedF, capRat, inpRatSink);
+	double flowFactor = 1.;
+	if (rc)
+		pa_pParent->oer("pa_GetRatedFanFlow fail (speedF = %0.3f)", speedF);
+	else
+		flowFactor = capRat * ratedFlowRat;
+
+	return flowFactor;
+}		// PMACCESS::pa_GetRatedFanFlowFactor
+//-----------------------------------------------------------------------------
+#if 0
+double GetRatedFanFlowFactor(
+	PMACCESS* pPMA[2],
+	int iHC,
+	float speedF)
+
+	// returns (mode iHC air flow at speedF) / (cooling air flow at rated speed)
+{
+	RC rc = RCOK;
+	double capRatClg, inpRatClg;
+	rc |= pPMA[1]->pa_GetCapInpRatios(pPMA[1]->pa_tdbRated, 1.f, capRatClg, inpRatClg);
+
+
+	double capRatMode, inpRatMode;
+	rc |= pPMA[iHC]->pa_GetCapInpRatios(pPMA[iHC]->pa_tdbRated, speedF, capRatMode, inpRatMode);
+
+	double flowFactor = 1.;
+	if (rc)
+		pPMA[0]->pa_pParent->oer("GetRatedFanFlowFactor fail (speedF = %0.3f)", speedF);
+	else
+		flowFactor = pPMA[iHC]->pa_capRef * capRatMode / (pPMA[1]->pa_capRef * capRatClg);
+
+	return flowFactor;
+
+}	// ::GetRatedFanFlowFactor
+#endif
+
 //=============================================================================
 /*static*/ RC PERFORMANCEMAP::pm_Top()
 // Check/init *all* PERFORMANCEMAPs for validity at run start.
