@@ -264,7 +264,7 @@ RC PMACCESS::pa_GetCapInpRatios(
 	pa_vResult = (*pa_pRGI)(pa_vTarget);
 
 	capRat = pa_vResult.data()[0];
-	inpRat    = pa_vResult.data()[1];
+	inpRat = pa_vResult.data()[1];
 
 	return rc;
 }	// PMACCESS::pa_GetCapInpRatios
@@ -308,7 +308,7 @@ double PMACCESS::pa_GetRatedFanFlowFactor(
 //-----------------------------------------------------------------------------
 double PMACCESS::pa_GetRatedFanFlowFactor(
 	float ratedFlowRat,	// rated current mode fan flow / rated cooling fan flow
-	float speedF)		// speed fraction
+	float speedF)	// speed fraction
 
 // returns (air flow at speedF) / (reference air flow at rated speed)
 {
