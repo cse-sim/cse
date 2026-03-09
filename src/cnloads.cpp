@@ -1273,7 +1273,7 @@ RC ZNR::zn_AirRequest(		// determine air requirement given rs_asSup
 {
 	RC rc = RCOK;
 	double tSup0 = rs->rs_asSup.as_tdb;
-#if 0 && defined( _DEBUG)
+#if 1 && defined( _DEBUG)
 	if ((options & 1) && !Top.isWarmup && rs->rs_speedF > 0.99f
 		&& (   (zn_hcMode == RSYS::rsmCOOL && tSup0 >= zn_tzsp)
 		    || (zn_hcMode == RSYS::rsmHEAT && tSup0 <= zn_tzsp && rs->rs_effHt > 0.f)))
@@ -3405,7 +3405,7 @@ float RSYS::rs_FanFlowRatedFullSpeedRatio(		// fan flow ratio
 float RSYS::rs_FanPwrRated(		// rated fan power
 	int iHC,		// 0=htg, 1=clg
 	float capRef,	// reference capacity (typically rs_cap47 or rs_cap95)
-	PMSPEED whichSpeed)	// speed selector
+	PMSPEED whichSpeed)	const // speed selector
 							// (PMSPEED::MIN, ::RATED, ::MAX)
 // returns fan power included in rated net capacity and input, Btuh
 {
@@ -3480,7 +3480,7 @@ float RSYS::rs_FanPwrAtSpeedF(
 float RSYS::rs_FanPwrOperating(
 	int iHC,		// 0=htg, 1=clg
 	float capRef,	// reference capacity (typically rs_cap47 or rs_cap95)
-	PMSPEED whichSpeed)	// speed selector
+	PMSPEED whichSpeed)	const // speed selector
 							// (PMSPEED::MIN, ::RATED, ::MAX)
 {
 	float speedF = rs_pPMACCESS[iHC] ? rs_pPMACCESS[iHC]->pa_GetSpeedF(whichSpeed) : 1.f;
@@ -3490,7 +3490,7 @@ float RSYS::rs_FanPwrOperating(
 float RSYS::rs_FanPwrOperatingAtSpeedF(		// operating fan heat
 	int iHC,	// 0=heating, 1=cooling
 	float capRef,		// reference (rated) capacity, Btuh
-	float speedF)	// current speed fraction
+	float speedF) const // current speed fraction
 // returns fan heat, Btuh
 {
 	float amfRef;	// air mass flow at capRef
@@ -3518,7 +3518,7 @@ float RSYS::rs_FanPwrOperatingAtSpeedF(		// operating fan heat
 //-----------------------------------------------------------------------------
 float RSYS::rs_FanPwrOperatingAtSpeedF(		// operating fan heat
 	int iHC,	// 0=heating, 1=cooling
-	float speedF)	// current speed fraction
+	float speedF) const // current speed fraction
 // uses rs_fanHeatH and rs_fanHeatC
 // returns fan heat, Btuh
 {
