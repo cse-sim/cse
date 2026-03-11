@@ -87,7 +87,7 @@ DHWSYS (kBtu)
 
 ! Log for Run 001:
 
-! CSE 0.924.1+fChg.f06b0588.8.dirty for Win32 console
+! CSE 0.926.0+wthr-stats.d578aa63.7.dirty for Win32 console
 
 
 
@@ -3735,13 +3735,13 @@ DHWSYS (kBtu)
  Nov 743.632       0      0      0      0      0      0 986.929 -247.49      0   1.204 -0.0000       0       0      0       0       0       0       0  2.990    1.872
  Dec 803.454       0      0      0      0      0      0 1068.00 -272.28      0   3.184 -0.0000       0       0      0       0       0 0.00534       0  4.545    1.723
 
- Yr  8869.15       0      0      0      0      0      0 11662.8 -2831.1      0 .000029 -0.0000       0       0      0       0       0   0.850       0 36.631    2.067
+ Yr  8869.15       0      0      0      0      0      0 11662.8 -2831.1      0 .000030 -0.0000       0       0      0       0       0   0.850       0 36.631    2.067
 
 
 
 ! Log for Run 002:
 
-! CSE 0.924.1+fChg.f06b0588.8.dirty for Win32 console
+! CSE 0.926.0+wthr-stats.d578aa63.7.dirty for Win32 console
 
 
 
@@ -3760,18 +3760,18 @@ Input for Run 002:
 
 
 
-! CSE 0.924.1+fChg.f06b0588.8.dirty for Win32 console run(s) done: Thu 27-Mar-25   4:1 pm
+! CSE 0.926.0+wthr-stats.d578aa63.7.dirty for Win32 console run(s) done: Tue 08-Jul-25  11: am
 
 ! Executable:   d:\cse\builds\cse.exe
-!               27-Mar-25   3:2 pm   (VS 14.29    2951168 bytes)  (HPWH 1.24.1)
+!               07-Jul-25   2:1 pm   (VS 14.29    3352576 bytes)  (HPWH 1.26.0)
 ! Command line: -x!  -t1 dhw_aquathermaire
 ! Input file:   D:\cse\test\dhw_aquathermaire.cse
 ! Report file:  D:\CSE\TEST\DHW_AQUATHERMAIRE.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.14     Calls = 2         T/C = 0.0710
+!                Input:  Time = 0.13     Calls = 2         T/C = 0.0670
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 8.19     Calls = 2         T/C = 4.0930
-!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0020
-!                Total:  Time = 8.34     Calls = 1         T/C = 8.3410
+!           Simulation:  Time = 7.42     Calls = 2         T/C = 3.7085
+!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0010
+!                Total:  Time = 7.56     Calls = 1         T/C = 7.5640
