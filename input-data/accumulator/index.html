@@ -825,6 +825,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#acmcond" class="md-nav__link">
+    <span class="md-ellipsis">
+      acmCond
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#endaccumulator" class="md-nav__link">
     <span class="md-ellipsis">
       endACCUMULATOR
@@ -3480,6 +3489,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#acmcond" class="md-nav__link">
+    <span class="md-ellipsis">
+      acmCond
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#endaccumulator" class="md-nav__link">
     <span class="md-ellipsis">
       endACCUMULATOR
@@ -3545,7 +3563,6 @@ REPORT rpType=UDT rpFreq=Year rpHeader=No
 </code></pre></div>
 <p>Generalizing what is illustrated, probing @accumulator[ ].H yields statistics for the current hour, .D for the current day, .M the current month, and .Y for the year (or, more precisely, the full run, which may or may not be a full year).</p>
 <p>A complete list of the available statistics for each interval is found in the ACCUMULATOR probe documentation.</p>
-<p>Note: The initial version of ACCUMULATOR contains unresolved bugs related to the timing of the determination of <a class="autorefs autorefs-internal" href="#acmvalue">acmValue</a>.  In some cases, <a class="autorefs autorefs-internal" href="#acmvalue">acmValue</a> is set to the expression value from the prior substep.  This is being investigated.</p>
 <h3 id="acmname">acmName<a class="headerlink" href="#acmname" title="Permanent link">¶</a></h3>
 <p>Name of ACCUMULATOR: required for referencing in reports.</p>
 <div class="member-table-sibling"></div>
@@ -3590,6 +3607,34 @@ REPORT rpType=UDT rpFreq=Year rpHeader=No
 <td></td>
 <td>Yes</td>
 <td>subhourly</td>
+</tr>
+</tbody>
+</table>
+<h3 id="acmcond">acmCond<a class="headerlink" href="#acmcond" title="Permanent link">¶</a></h3>
+<p>Type: expression</p>
+<p>Conditional accumulation flag. If given, accumulation occurs only when the expression value is non-0. This permits selective accumulation according to any condition that can be expressed as a CSE expression.</p>
+<p>For example, the following would track <a class="autorefs autorefs-internal" href="../rsys/#rsys">RSYS</a> supply cooling supply temperature when and only when the system is cooling.</p>
+<div class="language-text highlight"><pre><span></span><code>ACCUMULATOR ClgTSupply acmValue=@RSYS[ 1].asSup.tDb acmCond=@RSYS[ 1].mode == 2
+</code></pre></div>
+<p>The acmCond prevents accumulation of values during heating or idle operation so the derived min, mean, and max values reflect only cooling.</p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td><em>any numeric expression</em></td>
+<td>1 (accumulation enabled)</td>
+<td>No</td>
+<td>subhour end of interval</td>
 </tr>
 </tbody>
 </table>

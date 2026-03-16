@@ -4760,7 +4760,7 @@ FAN runtime members, set by cnah.cpp:FAN::pute( cFlow, temp)
 <li>re consistent htg/clg size iff both autosized</li>
 <li>(else inconsistency ignored)</li>
 <li>default=correlation per A. Conant</li>
-<li>see ashpCap95FromCap47() and ashpCap47FromCap95()</li>
+<li>see rs_ASHPCap95FromCap47() and rs_ASHPCap47FromCap95()</li>
 </ul></td>
 </tr>
 </tbody>
@@ -5029,7 +5029,11 @@ FAN runtime members, set by cnah.cpp:FAN::pute( cFlow, temp)
 <td>capH</td>
 <td>FLOAT_GEZ</td>
 <td>End of phase</td>
-<td>rated net heating output (including fan), Btuh</td>
+<td><ul>
+<li>rated net heating output (including fan) at design temp, Btuh</li>
+<li>(at 400 cfm/ton, 70F entering air during PM autosize)</li>
+<li>other types less rigorously defined</li>
+</ul></td>
 </tr>
 <tr>
 <td>capH_As</td>

@@ -3456,7 +3456,7 @@
 </tr>
 <tr>
 <td>desc</td>
-<td>ANAME</td>
+<td>CULSTR</td>
 <td>input time</td>
 <td>probe-able description text</td>
 </tr>
@@ -3504,7 +3504,7 @@
 <td>input time</td>
 <td><ul>
 <li>[DHWHEATER][dhwheater] location zone re tank loss</li>
-<li>0 iff wh_tEx being used</li>
+<li>nullptr iff wh_tEx being used</li>
 <li>heat losses go to half to zone air / half radiant</li>
 </ul></td>
 </tr>
@@ -3513,10 +3513,9 @@
 <td>number</td>
 <td>Start of subhour</td>
 <td><ul>
-<li>surrounding temperature, F for tank loss</li>
-<li>when wh_tEx set</li>
-<li>- wh_znTi ignored</li>
-<li>- heat loss discarded</li>
+<li>surrounding temperature, F for tank loss (default 70 F)</li>
+<li>used iff wh_znTi=nullptr (heat loss discarded)</li>
+<li>else unused / ignored</li>
 </ul></td>
 </tr>
 <tr>

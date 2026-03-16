@@ -4275,7 +4275,7 @@ activated via <a class="autorefs autorefs-internal" href="../../input-data/dhwsy
 </table>
 <h3 id="whtex">whTEx<a class="headerlink" href="#whtex" title="Permanent link">¶</a></h3>
 <p>Type: float</p>
-<p>Water heater surround temperature, used only in detailed HPWH models (<a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=ASHPX or <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=RESISTANCEX), otherwise no effect.  When whTEx is specified, tank heat losses are calculated using whTEx and modify tank water temperatures, but the lost heat has no external effect.</p>
+<p>Water heater surround temperature, used only in detailed HPWH models (<a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=ASHPX or <a class="autorefs autorefs-internal" href="#whheatsrc">whHeatSrc</a>=RESISTANCEX), otherwise no effect.  When whZzone is not specified, tank heat losses and tank water temperatures are calculated using whTEx (as input or defaulted), but the lost heat has no external effect.</p>
 <p><a class="autorefs autorefs-internal" href="#whzone">whZone</a> and whTEx cannot both be specified.</p>
 <div class="member-table-sibling"></div>
 <table>
@@ -4866,6 +4866,21 @@ activated via <a class="autorefs autorefs-internal" href="../../input-data/dhwsy
 <td></td>
 </tr>
 <tr>
+<td>BradfordWhiteAeroThermRE2HP50</td>
+<td>Bradford White 50-gal AeroTherm Series G2</td>
+<td></td>
+</tr>
+<tr>
+<td>BradfordWhiteAeroThermRE2HP65</td>
+<td>Bradford White 65-gal AeroTherm Series G2</td>
+<td></td>
+</tr>
+<tr>
+<td>BradfordWhiteAeroThermRE2HP80</td>
+<td>Bradford White 80-gal AeroTherm Series G2</td>
+<td></td>
+</tr>
+<tr>
 <td>LG_APHWC50</td>
 <td>LG 50-gal integrated HPWH</td>
 <td></td>
@@ -4873,6 +4888,16 @@ activated via <a class="autorefs autorefs-internal" href="../../input-data/dhwsy
 <tr>
 <td>LG_APHWC80</td>
 <td>LG 580-gal integrated HPWH</td>
+<td></td>
+</tr>
+<tr>
+<td>IceAirccHPWH275D</td>
+<td>Ice Air cold-climate 248 kBTUh commercial multi-pass</td>
+<td></td>
+</tr>
+<tr>
+<td>IceAirccHPWH550D</td>
+<td>Ice Air cold-climate 516 kBTUh commercial multi-pass</td>
 <td></td>
 </tr>
 </tbody>
