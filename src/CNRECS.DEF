@@ -3432,9 +3432,13 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "RC rs_FinalizeSh();"
 *declare "float rs_FanSpecificFanPowerRated( int iHC) const;"
 *declare "float rs_FanPwrRatedFullSpeed( int iHC, float capFS) const;"
+*declare "float rs_FanFlowRatedFullSpeed( int iHC, float capFS) const;"
+*declare "float rs_FanFlowRatedFullSpeedRatio( int iHC, float capModeFS, float capClgFS) const;"
 *declare "float rs_FanPwrRated( int iHC, float capFS, PMSPEED speedWhich) const;"
-*declare "float rs_FanPwrRatedAtSpeedF( int iHC, float capFS, float speedF) const;"
-*declare "float rs_FanPwrAtSpeedF( int iHC, float fanHeatFS, float speedF) const;"
+*declare "float rs_FanPwrRatedHtgAtSpeedF( float capHtgFS, float speedF) const;"
+*declare "float rs_FanPwrRatedClgAtSpeedF( float capClgFS, float speedF) const;"
+*declare "float rs_FanPwrRatedAtSpeedF( int iHC, float capFS, float flowRatioFS, float speedF) const;"
+*declare "float rs_FanPwrAtSpeedF( int iHC, float fanHeatFS, float ratedFlowRat, float speedF) const;"
 *declare "float rs_FanPwrOperating( int iHC, float capFS, PMSPEED speedWhich) const;"
 *declare "float rs_FanPwrOperatingAtSpeedF( int iHC, float capFS, float speedF) const;"
 *declare "float rs_FanPwrOperatingAtSpeedF( int iHC, float speedF) const;"
@@ -3496,6 +3500,8 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_CapRat1747() const;"
 *declare "float rs_Cap35Default( float cap47, float cap17) const;"
 *declare "float rs_Inp35Default( float inp47, float inp17) const;"
+*declare "float rs_ASHPCap95FromCap47( float cap47) const;"
+*declare "float rs_ASHPCap47FromCap95( float cap95) const;"
 *declare "float rs_CapHtCurSpeedF() const;"
 *declare "float rs_CapDfHtCurSpeedF() const;"
 *declare "float rs_InpHtCurSpeedF() const;"
@@ -3628,7 +3634,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
                             //   re consistent htg/clg size iff both autosized
                             //   (else inconsistency ignored)
                             //   default=correlation per A. Conant
-                            //   see ashpCap95FromCap47() and ashpCap47FromCap95()
+                            //   see rs_ASHPCap95FromCap47() and rs_ASHPCap47FromCap95()
 
 *f *e FLOAT_GZ rs_COPMin47	// Rated net COP at ODB=47 F, min speed (for reporting only)
 *f *e FLOAT_GZ rs_COPMin35	// Rated net COP at ODB=35 F, min speed (for reporting only)
