@@ -674,7 +674,7 @@ void FC impfEnd()			// import files stuff done at end run
 				nlnfwud = 1;
 				break;	// incl C_IVLCH_Y
 			}
-			if (1 || impf->lineNo >= nlnfwud)		// if more data used than warmup could require
+			if (impf->lineNo >= nlnfwud)		// if more data used than warmup could require
 				if (impf->readRec())			// read next record from file / true if successful
 					impf->oInfo( MH_R1904,		// "Import File %s has too many lines. \n"
 						  impf->im_fileName.CStr(), 		// "    Text at at/after line %d not used." */
