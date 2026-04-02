@@ -205,7 +205,7 @@ const int MAXFDREC=1050;	// Max fields in a record. Separated from MAXFIELDS, 4-
 
 const int MAXDTH=700;		// max+1 data type handle. 800-->200 1-92 ->400 3-92. ->432(0x1b0) 2-94. ->352 (0x160) 5-95.
 							//   352->400, 1-16; 400->500, 4-16; 500->600, 9-20; 600->700, 12-24
-const int MAXDTC=111;		// maximum number of choices for choice data type.
+const int MAXDTC=150;		// maximum number of choices for choice data type.
 //#define MAXARRAY  20		// largest number of record array structure members * NOT checked, but should be.
 const int MAXNAMEL = 40;	// Max length of name, etc ("s" token)
 const int AVFDS = 70;		// Max average # fields / record, for Rcdtab alloc.  Reduce if MAXRCS*RCDSIZE(AVFDS) approaches 64K.

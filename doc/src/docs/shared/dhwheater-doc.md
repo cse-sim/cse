@@ -308,7 +308,7 @@ whZone and whTEx cannot both be specified.
 
 Type: float
 
-Water heater surround temperature, used only in detailed HPWH models (whHeatSrc=ASHPX or whHeatSrc=RESISTANCEX), otherwise no effect.  When whTEx is specified, tank heat losses are calculated using whTEx and modify tank water temperatures, but the lost heat has no external effect.
+Water heater surround temperature, used only in detailed HPWH models (whHeatSrc=ASHPX or whHeatSrc=RESISTANCEX), otherwise no effect.  When whZzone is not specified, tank heat losses and tank water temperatures are calculated using whTEx (as input or defaulted), but the lost heat has no external effect.
 
 whZone and whTEx cannot both be specified.
 
@@ -441,8 +441,13 @@ AWHSTier4Generic80, A 80-gal tank meeting Advanced Water Heating Specification T
 BradfordWhiteAeroThermRE2H50,Bradford White 50-gal AeroTherm2023
 BradfordWhiteAeroThermRE2H65,Bradford White 65-gal AeroTherm2023
 BradfordWhiteAeroThermRE2H80,Bradford White 80-gal AeroTherm2023
+BradfordWhiteAeroThermRE2HP50,Bradford White 50-gal AeroTherm Series G2
+BradfordWhiteAeroThermRE2HP65,Bradford White 65-gal AeroTherm Series G2
+BradfordWhiteAeroThermRE2HP80,Bradford White 80-gal AeroTherm Series G2
 LG_APHWC50,LG 50-gal integrated HPWH
-LG_APHWC80,LG 580-gal integrated HPWH", True)
+LG_APHWC80,LG 580-gal integrated HPWH
+IceAirccHPWH275D,Ice Air cold-climate 248 kBTUh commercial multi-pass
+IceAirccHPWH550D,Ice Air cold-climate 516 kBTUh commercial multi-pass", True)
 }}
 
 {{
