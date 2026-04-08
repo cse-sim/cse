@@ -1858,13 +1858,13 @@ RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) reco
     *exdes					// destructor (cncult4.cpp) frees heap items
     *ovrcopy
     *declare "RC if_CkF();"
-    *declare "RC FC scanHdr();"		// impf.ccp member fcns
-    *declare "bool FC readRec();"
-    *declare "bool FC scanNextField();"
-    *declare "bool    scanField( char *&p, char *&start);"
-    *declare "bool FC readBuf();"
-    *declare "void FC close();"
-    *declare "void FC fnrtAl(SI nNfnr);"
+    *declare "RC scanHdr();"		// impf.ccp member fcns
+    *declare "bool readRec();"
+    *declare "bool scanNextField();"
+    *declare "bool scanField( char *&p, const char *&start);"
+    *declare "bool readBuf();"
+    *declare "void close();"
+    *declare "void fnrtAl(int nNfnr);"
  //input. name is required.
     *f CULSTR im_fileName	// file name, path optional, in heap or pseudocode. *i cuz VEOI in cncult. RQD.
     *f CULSTR im_title		// title string. If given, file's must match.
@@ -1894,7 +1894,7 @@ RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) reco
     *declare "bool eorScanned;"	// true iff all fields in record have been scanned
     //fields-by-number info. IFFNM.fnmt[] used to get #'s of named fields at runtime.
 	*declare "struct FNRT* fnrt;" // ptr to heap array of info subscripted by 1-based field number.
-    *r *hide USI fnrtNAl 	// allocated size of .fnrt[]. Max subscript fnrtNAl-1; [0] unused.
+    *r *hide INT fnrtNAl 	// allocated size of .fnrt[]. Max subscript fnrtNAl-1; [0] unused.
 *END		// IMPF
 //=============================================================================
 RECORD IFFNM "impFileFldNames" *RAT	// IMPORT FILE FIELD NAMES TABLE (IffnmB) records
