@@ -217,7 +217,9 @@ RC PMACCESS::pa_Init(		// input -> Btwxt conversion
 	delete pa_pRGI;		// insurance
 
 	pa_pParent = pParent;
-	pa_capRef = capRef;
+
+	// insurance: capRef can be nan re autosizing
+	pa_capRef = isnan(capRef) ? 0. : capRef;
 
 	pa_pPERFORMANCEMAP = pPM;	// source performance map
 
@@ -262,7 +264,7 @@ RC PMACCESS::pa_GetCapInpRatios(
 	pa_vResult = (*pa_pRGI)(pa_vTarget);
 
 	capRat = pa_vResult.data()[0];
-	inpRat    = pa_vResult.data()[1];
+	inpRat = pa_vResult.data()[1];
 
 	return rc;
 }	// PMACCESS::pa_GetCapInpRatios
@@ -300,6 +302,23 @@ double PMACCESS::pa_GetRatedFanFlowFactor(
 	{	pa_pParent->oer("pa_GetRatedFanFlow fail (speedF = %0.3f)", speedF);
 		flowFactor = 1.;
 	}
+
+	return flowFactor;
+}		// PMACCESS::pa_GetRatedFanFlowFactor
+//-----------------------------------------------------------------------------
+double PMACCESS::pa_GetRatedFanFlowFactor(
+	float ratedFlowRat,	// rated current mode fan flow / rated cooling fan flow
+	float speedF)	// speed fraction
+
+// returns (air flow at speedF) / (reference air flow at rated speed)
+{
+	double capRat, inpRatSink;
+	RC rc = pa_GetCapInpRatios(pa_tdbRated, speedF, capRat, inpRatSink);
+	double flowFactor = 1.;
+	if (rc)
+		pa_pParent->oer("pa_GetRatedFanFlow fail (speedF = %0.3f)", speedF);
+	else
+		flowFactor = capRat * ratedFlowRat;
 
 	return flowFactor;
 }		// PMACCESS::pa_GetRatedFanFlowFactor

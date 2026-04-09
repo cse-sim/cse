@@ -383,13 +383,12 @@ double AIRSTATE::as_AddQSen(		// add sensible heat to an air stream
 		as_tdb += q / fabs( amf*(PsyShDryAir + as_w*PsyShWtrVpr));
 	return as_tdb;
 }		// AIRSTATE::as_AddQSen
-
 //------------------------------------------------------------------------------
 double AIRSTATE::as_DeltaTQSen(		// air stream temp change due to added sensible heat
 	double q,		// heat to be added, Btuh (+ = into air stream)
-	double amf)		// dry air mass flow rate, lbm/hr
+	double amf) const		// dry air mass flow rate, lbm/hr
 // air specific heat adjusted per as_w
-// returns updated dry-bulb temp, F
+// returns dry-bulb change, F
 {
 	double deltaT = 0.;
 	if (amf != 0.)

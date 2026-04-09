@@ -9590,4 +9590,10 @@ ALTER DHWSYS "dhwsys1"
 
 RUN
 
+ALTER DHWSYS "dhwsys1"
+  ALTER DHWHEATER "dhwhtr1"
+    whASHPType = "IceAir_ccHPWH550D_MP"
+RUN
+
+
 $EOF
