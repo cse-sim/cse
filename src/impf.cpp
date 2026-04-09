@@ -91,8 +91,9 @@ struct FNRT  	// fields-by-number table struct for IMPF.fnrt[] in heap
 };
 //=============================================================================
 struct FNMT		// field names table struct for IFFNM.fnmt[] in heap
-{  char* fnmt_fieldName;	// field name used in Import() (no entry for fields not used by name in Import()s)
-   SI fnmt_fnr;					// field NUMBER established when file opened
+{  const char* fnmt_fieldName;	// field name used in Import() (no entry for fields not used by name in Import()s)
+   int fnmt_fnr;					// field NUMBER established when file opened
+   FNMT::~FNMT();
 };
 //=============================================================================
 class ImpFldDcdr
@@ -110,7 +111,7 @@ class ImpFldDcdr
 	int fileIx;		// CSE input file name index for use in error messages
 	const char* srcFile;	// text for fileIx: "" or CSE source file in which import() occurred
 	int inputLineNo;		// line # in cse source file
-	const char* fieldName;	// field name text for error messages, when known (no names if no file header)
+	const char* imf_fieldName;	// field name text for error messages, when known (no names if no file header)
 	MSGORHANDLE* pms;	// c'tor arg: where to return TmpStr error msg pointer, so caller can embed in msg giving context.
 public:
 	ImpFldDcdr( int fileIx, int inputLineNo, MSGORHANDLE* pms);	// c'tor. *pms receives TmpStr error submessage pointer.
@@ -138,7 +139,7 @@ ImpFldDcdr::ImpFldDcdr( 		// constructor: initializes
 	fnr = 0;
 	fnrt = NULL;
 	rc1 = rc2 = RCBAD;
-	impfName = fieldName = "";
+	impfName = imf_fieldName = "";
 	this->fileIx = fileIx;
 	this->srcFile = getFileName(fileIx);		// access text now (fast) for use in error messages. does not dmIncRef.
 	this->inputLineNo = _inputLineNo;
@@ -205,7 +206,7 @@ RC FC ImpFldDcdr::axscanFnm(int fnmi)		// access field by name: set fieldName, f
 												       "    field name index %d out of range 1 to %d." */
 						srcFile, inputLineNo, impfName, fnmi, iffnm->fnmiN ));
 	if (iffnm->fnmt[fnmi].fnmt_fieldName)					// insurance: for NULL leave "" stored by c'tor
-		fieldName = iffnm->fnmt[fnmi].fnmt_fieldName;		// field name text, for error messages, eg in decNum
+		imf_fieldName = iffnm->fnmt[fnmi].fnmt_fieldName;		// field name text, for error messages, eg in decNum
 	int tfnr =   iffnm->fnmt[fnmi].fnmt_fnr;			// 1-based field number for this field name index, to local til validated.
 	if (tfnr <= 0 || tfnr > FNRMAX)			// FNRMAX: impf.h
 		return IMPERR(( MH_R1913,	/* "%s(%d): Internal error:\n"
@@ -221,7 +222,7 @@ RC FC ImpFldDcdr::axscanFnm(int fnmi)		// access field by name: set fieldName, f
 			return IMPERR(( MH_R1914,		/* "%s(%d): Too few fields in line %d of import file %s:\n"
 													 "      looking for field %s (field # %d), found only %d fields." */
 							srcFile, inputLineNo, impf->lineNo, impfName,
-							fieldName, tfnr, impf->nFieldsScanned ));
+							imf_fieldName, tfnr, impf->nFieldsScanned ));
 
 	fnr = tfnr;   			// store field #. scanNextField has alloc'd .fnrt[] this big. used eg in decNum.
 	fnrt = impf->fnrt + tfnr;		// store pointer to field names info entry
@@ -255,7 +256,7 @@ RC FC ImpFldDcdr::axscanFnr(int _fnr)	// access and scan field by number, set .f
 	this->fnr = _fnr;			// store field #. scanNextField has alloc'd .fnrt[] this big. used eg in decNum.
 	fnrt = impf->fnrt + _fnr;		// store pointer to field names info entry
 	if (fnrt->fnrt_fieldName)            // for NULL (eg no header), leave "" stored by c'tor
-		fieldName = fnrt->fnrt_fieldName;    // retrieve field name for number -- set at open if file had header
+		imf_fieldName = fnrt->fnrt_fieldName;    // retrieve field name for number -- set at open if file had header
 
 	rc2 = RCOK;				// say field accessed and scanned successfully
 	return RCOK;
@@ -306,7 +307,8 @@ x    							// (if error, later calls get 0 without repeating message)
 	}
 
 subErr:	// error using subtext "sub", eg "non-numeric value"
-	const char* fldSub = fieldName && *fieldName ? strtprintf( "%s (#%d)", fieldName, fnr)	// show field name if set
+	const char* fldSub = imf_fieldName && *imf_fieldName
+		           ? strtprintf( "%s (#%d)", imf_fieldName, fnr)	// show field name if set
 				   : strtprintf( "%d", fnr);
 						/* MH_R1922: "%s(%d): \n"
 						 "    Import file %s, line %d, field %s:\n"
