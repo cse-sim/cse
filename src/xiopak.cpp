@@ -51,6 +51,12 @@ namespace filesys = std::experimental::filesystem;
 //   Functionality replaced with C lib calls and caller local path searches
 //   Also deleted file directry.cpp containing functions used only by deleted xf functions
 
+#if CSE_OS == CSE_OS_WINDOWS
+static constexpr char PATH_DELIMETER = ';';
+#else
+static constexpr char PATH_DELIMETER = ':';
+#endif
+
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL SEC FC xioerr( XFILE *xf);
@@ -660,10 +666,10 @@ bool findFile( 	// non-member function to find file on given path
 			if (!path)						// if NULL given
 				path = getenv("PATH");		//   search environment path
 			char* p = strTrim( NULL, path);	// working copy
-			const char* pToks[ 100];
-			int n = strTokSplit( p, ";", pToks, 100);
+			const char* pToks[ CSE_MAX_PATH];
+			int n = strTokSplit( p, &PATH_DELIMETER, pToks, CSE_MAX_PATH);
 			if (n < 0)
-				n = 100;
+				n = CSE_MAX_PATH;
 			for (int i=0; !found && i<n; i++)
 				found = fileFind1( pToks[ i], fName, fNameFound);
 		}
@@ -694,7 +700,7 @@ void Path::add( 		// add ;-delimited paths to Path object
 
 // determine size
 	size_t lenNow = p ? strlen(p) : 0;			// 0 or length of existing path(s) string
-	size_t sneed = (lenNow + strlen(s) + 2) | 32;  	// space needed: old, new, ';', '\0', | 32 for less reallocation
+	size_t sneed = (lenNow + strlen(s) + 2) | 32;  	// space needed: old, new, PATH_DELIMETER, '\0', | 32 for less reallocation
 	size_t snow = (lenNow+1) | 32;			// now big it must be now (if p != NULL)
 
 // allocate
@@ -719,8 +725,8 @@ void Path::add( 		// add ;-delimited paths to Path object
 // update
 	char *q = nup + lenNow;		// pointer to end of current paths
 	if (lenNow)				// if there were already any paths
-		if (*(q-1) != ';' && *s != ';')	// unless there already is a ';'
-			*q++ = ';';			// supply separating ;
+		if (*(q-1) != PATH_DELIMETER && *s != PATH_DELIMETER)	// unless there already is a PATH_DELIMETER
+			*q++ = PATH_DELIMETER;			// supply separating ;
 	strcpy( q, s);			// append new path(s)
 	_strupr(q);				/* upper-case user-entered paths for uniform appearance 2-95
           				   (paths from system are upper case; most filenames get uppercased eg by strffix). */
