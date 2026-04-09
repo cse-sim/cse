@@ -123,7 +123,7 @@ Battery/PV Output for Wed 01-Jul
 
 ! Log for Run 001: Import test with autosizing
 
-! CSE 0.927.0+import-fix.b8487750.150.dirty for Win32 console
+! CSE 0.927.0+import-fix.5ad4e17e.151.dirty for Win32 console
 
 
 
@@ -1651,7 +1651,7 @@ Input for Run 001:
         ALTER PVARRAY "pvarray 1";
             pvDCSysSize = 5;
         
-        IMPORTFILE btCR imFileName="importfile_test.csv" imFreq=Hour imTitle="x-ZoneTStat"
+        IMPORTFILE btCR imFileName="importfile_test.dat" imFreq=Hour imTitle="x-ZoneTStat"
         ALTER BATTERY "battery 1";
             btMaxCap = 13.5;
             btMaxChgPwr = 5.67;
@@ -1683,18 +1683,18 @@ Input for Run 001:
 
 
 
-! CSE 0.927.0+import-fix.b8487750.150.dirty for Win32 console run(s) done: Wed 08-Apr-26   2:58:07 pm
+! CSE 0.927.0+import-fix.5ad4e17e.151.dirty for Win32 console run(s) done: Thu 09-Apr-26   8:24:17 am
 
 ! Executable:   d:\cse\builds\cse.exe
-!               06-Apr-26   2:04 pm   (VS 14.29    4466688 bytes)  (HPWH 1.26.0+HEAD.11240a73.553)
+!               09-Apr-26   7:55 am   (VS 14.29    4466688 bytes)  (HPWH 1.26.0+HEAD.11240a73.553)
 ! Command line: -x!  -t1 import
 ! Input file:   D:\cse\test\import.cse
 ! Report file:  D:\CSE\TEST\IMPORT.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.08     Calls = 2         T/C = 0.0400
-!           AutoSizing:  Time = 0.22     Calls = 1         T/C = 0.2200
-!           Simulation:  Time = 2.88     Calls = 1         T/C = 2.8810
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0050
-!                Total:  Time = 3.19     Calls = 1         T/C = 3.1880
+!                Input:  Time = 0.05     Calls = 2         T/C = 0.0255
+!           AutoSizing:  Time = 0.21     Calls = 1         T/C = 0.2130
+!           Simulation:  Time = 2.88     Calls = 1         T/C = 2.8800
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0040
+!                Total:  Time = 3.15     Calls = 1         T/C = 3.1510

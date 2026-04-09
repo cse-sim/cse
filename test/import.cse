@@ -1520,7 +1520,7 @@ ALTER ZONE "Unit1-zn";
 ALTER PVARRAY "pvarray 1";
     pvDCSysSize = 5;
 
-IMPORTFILE btCR imFileName="importfile_test.csv" imFreq=Hour imTitle="x-ZoneTStat"
+IMPORTFILE btCR imFileName="importfile_test.dat" imFreq=Hour imTitle="x-ZoneTStat"
 ALTER BATTERY "battery 1";
     btMaxCap = 13.5;
     btMaxChgPwr = 5.67;
