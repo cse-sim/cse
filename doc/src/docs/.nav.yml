@@ -1,7 +1,7 @@
 nav:
 - introduction.md
 - operation.md
-- input-structure.md
+- input-structure
 - input-data
 - output-reports.md
 - probe-definitions
