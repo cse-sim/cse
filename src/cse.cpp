@@ -972,7 +972,7 @@ noHans:
 // set up search paths for input and #include files, 2-95. Also used for weather file, 3-95.
 	//ppAddPath done from ppClargIf call above for -i paths	   first search user-specified paths
 	ppAddPath( InputDirPath);				// then input file path
-	ppAddPath( NULL);						// then DOS environment PATH paths
+	ppAddPath( NULL);						// then environment PATH paths
 	ppAddPath( exePath);					// finally, look in .exe/.dll directorie(s)
 
 #if 0	// introduce, when/if desired to control spool file (user path command so can go on ram disk?
