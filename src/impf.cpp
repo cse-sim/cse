@@ -75,18 +75,25 @@ TODO 11-2016 (when documentation written)
 * Improve messages
 */
 
+#define USE_STRING	// for field name storage in fnrt, fnmt.  If not defined, use const char* to text in heap.  If defined, use std::string, which is more robust and easier to use but adds some overhead.  See FNRT and FNMT structs below.
+
 ///////////////////////////////////////////////////////////////////////////////
 // local classes
 ///////////////////////////////////////////////////////////////////////////////
 struct FNRT  	// fields-by-number table struct for IMPF.fnrt[] in heap
-{  const char* fnrt_fieldName;	// NULL or field name (in heap) per file header, for error messages
+{
+#if defined( USE_STRING)
+   std::string fnrt_fieldName;	// field name (in heap) per file header, for error messages
+#else
+   const char* fnrt_fieldName;	// NULL or field name (in heap) per file header, for error messages
+#endif
    SI fnmi;					// 0 or field name info subscript for IFFNM.p[iffnmi].fnm[]
    const char* fp;			// NULL or pointer to field's null-terminated text in current record in .buf (do not free here)
    bool nDecoded;			// true if numeric value of field in current record has been decoded
    FLOAT fnv;				// if nDecoded, this is the numeric value -- don't decode twice
-   FNRT::FNRT()
+   FNRT()
    { }
-   FNRT::~FNRT()
+   ~FNRT()
    { }
 };
 //=============================================================================
@@ -255,8 +262,13 @@ RC FC ImpFldDcdr::axscanFnr(int _fnr)	// access and scan field by number, set .f
 
 	this->fnr = _fnr;			// store field #. scanNextField has alloc'd .fnrt[] this big. used eg in decNum.
 	fnrt = impf->fnrt + _fnr;		// store pointer to field names info entry
+#if defined( USE_STRING)
+	if (!fnrt->fnrt_fieldName.empty())            // for NULL (eg no header), leave "" stored by c'tor
+		imf_fieldName = fnrt->fnrt_fieldName.c_str();    // retrieve field name for number -- set at open if file had header
+#else
 	if (fnrt->fnrt_fieldName)            // for NULL (eg no header), leave "" stored by c'tor
 		imf_fieldName = fnrt->fnrt_fieldName;    // retrieve field name for number -- set at open if file had header
+#endif
 
 	rc2 = RCOK;				// say field accessed and scanned successfully
 	return RCOK;
@@ -836,14 +848,23 @@ IMPF::~IMPF()		// IMPORTFILE destructor
 
 	// fields-by-number table
 	if (fnrt)					// if table allocated
+#if defined( USE_STRING)
 		for (int fnr = 1; fnr < fnrtNAl; fnr++)		// loop over table entries
 		{
-			dmfree( DMPP( fnrt[fnr].fnrt_fieldName));		// decref/free string member
+			fnrt[fnr].~FNRT();
+		}
+		delete[] fnrt;			// free the table block if allocated, and NULL pointer. dmpak.cpp.
+		fnrtNAl = 0;
+#else	
+		for (int fnr = 1; fnr < fnrtNAl; fnr++)		// loop over table entries
+		{
+			dmfree(DMPP(fnrt[fnr].fnrt_fieldName));		// decref/free string member
 			// note member fp points into buf, not to own heap block.
 		}
-	dmfree( DMPP( fnrt));			// free the table block if allocated, and NULL pointer. dmpak.cpp.
-	fnrtNAl = 0;				// say none allocated
+		dmfree(DMPP(fnrt));			// free the table block if allocated, and NULL pointer. dmpak.cpp.
 
+		fnrtNAl = 0;				// say none allocated
+#endif
 	//record::~record() (call supplied by compiler) zeroes .gud to mark space unused.
 }			// IMPF::~IMPF
 //-----------------------------------------------------------------------------
@@ -979,8 +1000,12 @@ bad:
 		while (scanNextField())   		// scan field in place in record buffer. ++'s nFieldsScanned.
 		{	const char* nm = fnrt[nFieldsScanned].fp;	// point to scanned field text: this is name of field in this position
 			fnrtAl(nFieldsScanned);    			// (re)allocate field numbers table if necessary
+#if defined( USE_STRING)
+			fnrt[nFieldsScanned].fnrt_fieldName = nm;	// save field name for use in error msgs. string class makes copy in setter.
+#else
 			dmfree(DMPP(fnrt[nFieldsScanned].fnrt_fieldName));
 			fnrt[nFieldsScanned].fnrt_fieldName = strsave(nm);	// save field name for use in error msgs
+#endif
 		}
 #if 0
 x only report duplicates if referenced (see below)
@@ -1015,7 +1040,12 @@ x		}
 		 && fnmt)   		// and names table record has allocated heap names table -- insurance
 		{	for (fnmi = 1; fnmi <= iffnm->fnmiN; fnmi++)	// search names table for this name
 			{	for (int ifn=1; ifn<=nFieldsScanned; ifn++)
-				{	const char* nm = fnrt[ ifn].fnrt_fieldName;
+				{
+#if defined( USE_STRING)
+					const char* nm = fnrt[ ifn].fnrt_fieldName.c_str();
+#else
+					const char* nm = fnrt[ifn].fnrt_fieldName;
+#endif
 					if (!_stricmp( nm, fnmt[fnmi].fnmt_fieldName))	// if this entry matches
 					{	if (fnmt[ fnmi].fnmt_fnr == 0)	// if name previously seen
 						{	fnmt[fnmi].fnmt_fnr = ifn;  		// store field number with name for use during run
@@ -1338,14 +1368,19 @@ void FC IMPF::close()		// close import file & free buffer
 void FC IMPF::fnrtAl(int nNfnr)		// (re)allocate IMPF.fnrt for given # fields or larger
 {
 #define CHUNK 32		// number of fields to allocate at a time
-	if ( nNfnr >= fnrtNAl 	// if needs to be bigger (>= like +1 for 1-based field numbers)
-			||  !fnrt )		// or not allocated yet (insurance)
+	if (nNfnr >= fnrtNAl 	// if needs to be bigger (>= like +1 for 1-based field numbers)
+		|| !fnrt)		// or not allocated yet (insurance)
 	{
+#if defined( USE_STRING)
+		fnrt = new FNRT[CHUNK];
+		fnrtNAl = CHUNK;
+#else
 		int toAl = fnrtNAl + CHUNK;		// # slots to allocate
 		if (!dmral( DMPP( fnrt), 		// (re) allocate, dmpak.cpp. RCOK (0) if successful.
 					toAl * sizeof(FNRT),
 					ABT|DMZERO ) )		// abort program (no return) if fails.
 			fnrtNAl = toAl;			// [if ok], store # elements now allocated
+#endif
 	}
 }		// IMPF::fnrtAl
 //---------------------------------------------------------------------------
