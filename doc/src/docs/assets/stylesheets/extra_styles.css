@@ -1,5 +1,440 @@
-.md-typeset .admonition, .md-typeset details {
-  font-size: 0.9em;
+:root {
+  --cse-colors-pitch-black: hsl(213.3, 29%, 6.1%);
+  --cse-colors-midnight: hsl(216, 29.4%, 10%);
+  --cse-colors-before-dawn: hsl(217.2, 32.6%, 17.5%);
+
+  --cse-colors-bright-blue: #60A5FA;
+  --cse-colors-bright-blue--light: #8dc6ff;
+  --cse-colors-bright-blue--dark: #4186d8;
+  --cse-colors-bright-blue--darker: #2167b7;
+  --cse-colors-sky-blue: #d5ecff;
+  --cse-colors-dark-blue: #2b4058;
+  --cse-colors-fresh-mint: #34D399;
+  --cse-colors-winter-green: #ccf4e5;
+  --cse-colors-moss-green: #1B473F;
+  --cse-colors-muted-amber: #F59E0B;
+  --cse-colors-sunlit-orange: #FDE7C1;
+  --cse-colors-rust-orange: #4C3A1B;
+  --cse-colors-muted-red: #EF4444;
+  --cse-colors-salmon-red: #FBD0D0;
+  --cse-colors-rust-red: #4A232A;
+
+  --cse-colors-white: hsl(0, 0%, 100%);
+  --cse-colors-whiteish: hsl(0, 0%, 96.1%);
+  --cse-colors-lesswhite: hsl(0, 0%, 88.6%);
+
+  --cse-colors-fg: rgb(200, 200, 200);
+  --cse-colors-fg-light: rgb(75, 75, 75);
+
+  --cse-colors-fg-info: var(--cse-colors-bright-blue);
+  --cse-colors-fg-success: var(--cse-colors-fresh-mint);
+  --cse-colors-fg-warning: var(--cse-colors-muted-amber);
+  --cse-colors-fg-error: var(--cse-colors-muted-red);
+
+  --cse-colors-bg-info: var(--cse-colors-dark-blue);
+  --cse-colors-bg-success: var(--cse-colors-moss-green);
+  --cse-colors-bg-warning: var(--cse-colors-rust-orange);
+  --cse-colors-bg-error: var(--cse-colors-rust-red);
+
+  --cse-colors-bg: var(--cse-colors-midnight);
+  --cse-colors-bg-subtle: var(--cse-colors-pitch-black);
+  --cse-colors-bg-emphasized: var(--cse-colors-before-dawn);
+
+  --cse-colors-heading: var(--cse-colors-white);
+  --cse-colors-heading-muted: var(--cse-colors-whiteish);
+
+
+}
+
+[data-md-color-scheme="default"] {
+  /* Custom CSE tokens for light mode. Dark is default, so tokens are updated here for light mode.*/
+  --cse-colors-bg-info: var(--cse-colors-sky-blue);
+  --cse-colors-bg-success: var(--cse-colors-winter-green);
+  --cse-colors-bg-warning: var(--cse-colors-sunlit-orange);
+  --cse-colors-bg-error: var(--cse-colors-salmon-red);
+
+  --cse-colors-bg: var(--cse-colors-white);
+  --cse-colors-bg-subtle: var(--cse-colors-whiteish);
+  --cse-colors-bg-emphasized: var(--cse-colors-lesswhite);
+
+  --cse-colors-heading: var(--cse-colors-midnight);
+  --cse-colors-heading-muted: var(--cse-colors-before-dawn);
+  /* End custom CSE tokens for light mode.*/
+
+  --md-default-fg-color: var(--cse-colors-fg-light);
+  --md-default-fg-color--light: hsla(0, 0%, 0%, 0.54);
+  --md-default-fg-color--lighter: hsla(0, 0%, 0%, 0.32);
+  --md-default-fg-color--lightest: hsla(0, 0%, 0%, 0.07);
+  --md-default-bg-color: white;
+  --md-default-bg-color--light: hsla(0, 0%, 50%, 0.7);
+  --md-default-bg-color--lighter: hsla(0, 0%, 50%, 0.3);
+  --md-default-bg-color--lightest: hsla(0, 0%, 50%, 0.12);
+
+  --md-code-fg-color: var(--cse-colors-heading-muted);
+  --md-code-bg-color: var(--cse-colors-bg-subtle);
+
+  --md-typeset-color: var(--md-default-fg-color);
+  --md-typeset-a-color: var(--cse-colors-bright-blue--dark);
+  --md-typeset-a-hover-color: var(--cse-colors-bright-blue--darker);
+
+  --md-admonition-fg-color: var(--md-default-fg-color);
+  --md-admonition-bg-color: var(--md-default-bg-color);
+
+  --md-footer-bg-color: var(--cse-colors-before-dawn);
+  --md-footer-bg-color--dark: var(--cse-colors-pitch-black);
+
+  --md-primary-fg-color: var(--cse-colors-fg-light);
+  --md-primary-bg-color: hsla(0, 0%, 100%, 0.87);
+  --md-primary-bg-color--light: hsla(0, 0%, 100%, 0.54);
+
+  --md-accent-fg-color: var(--cse-colors-pitch-black);
+  --md-accent-fg-color--transparent: rgb(from var(--cse-colors-pitch-black) / 10%);
+  --md-accent-bg-color: hsla(0, 0%, 0%, 0.87);
+  --md-accent-bg-color--light: hsla(0, 0%, 0%, 0.54);
+
+}
+
+[data-md-color-scheme="slate"] {
+  --md-default-fg-color: var(--cse-colors-fg);
+  --md-default-fg-color--light: hsla(var(--md-hue), 15%, 90%, 0.56);
+  --md-default-fg-color--lighter: hsla(var(--md-hue), 15%, 90%, 0.32);
+  --md-default-fg-color--lightest: hsla(var(--md-hue), 15%, 90%, 0.12);
+  --md-default-bg-color: var(--cse-colors-midnight);
+  --md-default-bg-color--light: hsla(var(--md-hue), 15%, 86%, 0.54);
+  --md-default-bg-color--lighter: hsla(var(--md-hue), 15%, 86%, 0.26);
+  --md-default-bg-color--lightest: hsla(var(--md-hue), 15%, 86%, 0.07);
+
+  --md-code-fg-color: var(--cse-colors-whiteish);
+  --md-code-bg-color: var(--cse-colors-pitch-black);
+
+  --md-typeset-color: var(--md-default-fg-color);
+  --md-typeset-a-color: var(--cse-colors-bright-blue);
+  --md-typeset-a-hover-color: var(--cse-colors-bright-blue--light);
+
+
+  --md-admonition-fg-color: var(--md-default-fg-color);
+  --md-admonition-bg-color: var(--md-default-bg-color);
+
+  --md-footer-bg-color: var(--cse-colors-before-dawn);
+  --md-footer-bg-color--dark: var(--cse-colors-pitch-black);
+
+  --md-primary-fg-color: var(--cse-colors-fg);
+  /* --md-primary-fg-color--light: blue; */
+  /* --md-primary-fg-color--dark: green; */
+  --md-primary-bg-color: hsla(0, 0%, 100%, 0.87);
+  --md-primary-bg-color--light: hsla(0, 0%, 100%, 0.54);
+
+
+  --md-accent-fg-color: var(--cse-colors-whiteish);
+  --md-accent-fg-color--transparent: rgb(from var(--cse-colors-whiteish) / 10%);
+  --md-accent-bg-color: hsla(0, 0%, 0%, 0.87);
+  --md-accent-bg-color--light: hsla(0, 0%, 0%, 0.54);
+}
+
+.md-typeset pre>code:hover,
+.md-sidebar__scrollwrap:focus-within,
+.md-sidebar__scrollwrap:hover {
+  scrollbar-color: var(--md-default-fg-color--light) #0000;
+}
+
+.md-header {
+  min-height: 3.2rem;
+  background-color: var(--cse-colors-midnight);
+  border-bottom: 1px solid var(--cse-colors-before-dawn);
+}
+
+.md-header nav {
+  min-height: 3.2rem;
+}
+
+.md-header__button.md-logo img,
+.md-header__button.md-logo svg {
+  height: 1.6rem;
+}
+
+.md-header__title {
+  position: relative;
+}
+
+.md-header__title::before {
+  content: "";
+  width: 2px;
+  height: 2.4rem;
+  position: absolute;
+  top: 50%;
+  /* -1 for title margin, -0.6 for logo image padding/margin */
+  left: calc(-1rem / 2 + -0.6rem / 2);
+  translate: 0 -50%;
+  background-color: var(--cse-colors-fresh-mint);
+  border-radius: 9999px;
+}
+
+.md-header .md-search__form {
+  border-radius: 0.2rem 0.2rem 0 0;
+}
+
+.md-search__input {
+  border-radius: 4px;
+  background-color: var(--cse-colors-before-dawn);
+}
+
+.md-search__input.focus-visible {
+  border-radius: 4px;
+  background-color: unset;
+}
+
+@media screen and (max-width: 76.2344em) {
+  .md-nav--primary .md-nav__title {
+    background-color: var(--cse-colors-bg-subtle);
+    color: var(--cse-colors-heading-muted);
+  }
+}
+
+@media screen and (max-width: 76.2344em) {
+  .md-nav--primary .md-nav__title[for=__drawer] {
+    background-color: var(--cse-colors-midnight);
+    color: var(--cse-colors-fg);
+    font-weight: 700;
+    border-bottom: 1px solid;
+    border-color: var(--cse-colors-bg-subtle);
+  }
+}
+
+@media screen and (max-width: 59.9844em) {
+  .md-nav__source {
+    background-color: var(--cse-colors-bg-emphasized);
+    color: var(--md-primary-fg-color);
+  }
+}
+
+
+@media screen and (max-width: 76.2344em) {
+  .md-nav--primary .md-nav__link[for=__toc] .md-icon:after,
+  .md-nav--primary .md-nav__link .md-nav__icon:after {
+    background-color: var(--md-primary-fg-color);
+  }
+}
+
+@media screen and (min-width: 76.25em) {
+  .md-sidebar--primary .md-sidebar__scrollwrap {
+    border-right: 1px solid var(--md-default-bg-color--lighter);
+  }
+}
+
+.md-typeset h1 {
+  font-size: 2.6rem;
+  font-weight: 500;
+  color: var(--cse-colors-heading);
+  margin: 0 0 0.5em;
+}
+
+.md-typeset h2 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--cse-colors-heading-muted);
+  text-decoration: underline;
+  text-underline-offset: 0.25rem;
+  text-decoration-color: var(--md-primary-fg-color);
+}
+
+
+.md-typeset h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--cse-colors-heading-muted);
+}
+
+.md-typeset h4 {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--cse-colors-heading-muted);
+}
+
+.md-typeset p {
+  color: var(--md-primary-fg-color);
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.6;
+  margin-block: 1.2rem;
+}
+
+.md-typeset li p {
+  color: var(--cse-colors-heading-muted);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  font-size: 0.8rem;
+  line-height: 1rem;
+}
+
+.md-typeset a:not(.headerlink):focus,
+.md-typeset a:not(.headerlink):hover {
+  color: var(--md-typeset-a-hover-color);
+  text-decoration: underline;
+}
+
+.md-nav__item {
+  --md-typeset-a-color: var(--cse-colors-fresh-mint);
+}
+
+.md-nav__link[for]:focus,
+.md-nav__link[for]:hover,
+.md-nav__link[href]:focus,
+.md-nav__link[href]:hover {
+  color: var(--cse-colors-heading);
+}
+
+.md-nav__link--active:is(.md-nav__link[for]:focus,
+  .md-nav__link[for]:hover,
+  .md-nav__link[href]:focus,
+  .md-nav__link[href]:hover) {
+  color: var(--cse-colors-fresh-mint);
+}
+
+.md-sidebar--secondary .md-nav__link--active {
+  position: relative;
+}
+
+.md-sidebar--secondary .md-nav__link--active::before {
+  content: "";
+  width: 2px;
+  height: 110%;
+  position: absolute;
+  inset: 0;
+  translate: -0.5rem -5%;
+  background-color: var(--cse-colors-fresh-mint);
+  border-radius: 1e5rem;
+}
+
+.md-typeset :is(.admonition, details) {
+  font-size: 1em;
+  position: relative;
+  box-shadow: none;
+}
+
+/* Starting selector had html for some reason, so we add it here to match specificity */
+html .md-typeset :is(.admonition, details)>:last-child {
+  margin-block: 0.6em;
+  padding-inline-start: 0.3em;
+}
+
+
+.md-typeset :is(.admonition, details):is(.note, .info, .quote) {
+  border-color: transparent;
+}
+
+.md-typeset :is(.admonition, details):is(.tip, .abstract, .question, .example) {
+  border-color: var(--cse-colors-fg-info);
+}
+
+.md-typeset :is(.admonition, details):is(.success) {
+  border-color: var(--cse-colors-fg-success);
+}
+
+.md-typeset :is(.admonition, details):is(.warning) {
+  border-color: var(--cse-colors-fg-warning);
+}
+
+.md-typeset :is(.admonition, details):is(.failure, .danger, .bug) {
+  border-color: var(--cse-colors-fg-error);
+}
+
+.md-typeset :is(.admonition, details):is(.note, .info, .quote)::before {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 100%;
+  inset: 0;
+  background-color: var(--cse-colors-fg-success);
+  border-radius: 9999px;
+  z-index: 1;
+}
+
+.md-typeset :is(.admonition, details):is(.quote)::before {
+  background-color: rgb(75, 75, 75);
+}
+
+[data-md-color-scheme="default"] {
+  .md-typeset :is(.admonition, details):is(.quote)::before {
+    background-color: rgb(200, 200, 200);
+  }
+}
+
+/* Info and note get a fresh-mint-tinge to the background. Quote is just gray. */
+.md-typeset :is(.admonition, details):is(.note, .info, .quote) .admonition-title {
+  background-color: rgb(52, 211, 153, 0.06);
+  border-top-right-radius: 0.2rem;
+  border-bottom-right-radius: 0.2rem;
+}
+
+.md-typeset :is(.admonition, details):is(.quote) .admonition-title {
+  background-color: rgb(255, 255, 255, 0.04);
+}
+
+[data-md-color-scheme="default"] {
+  .md-typeset :is(.admonition, details):is(.quote) .admonition-title {
+    background-color: rgb(0, 0, 0, 0.04);
+  }
+}
+
+.md-typeset :is(.admonition, details):is(.tip, .abstract, .question, .example) .admonition-title {
+  background-color: var(--cse-colors-bg-info);
+}
+
+.md-typeset :is(.admonition, details):is(.success) .admonition-title {
+  background-color: var(--cse-colors-bg-success);
+}
+
+.md-typeset :is(.admonition, details):is(.warning) .admonition-title {
+  background-color: var(--cse-colors-bg-warning);
+}
+
+.md-typeset :is(.admonition, details):is(.failure, .danger, .bug) .admonition-title {
+  background-color: var(--cse-colors-bg-error);
+}
+
+.md-typeset :is(.admonition, details):is(.note, .info) .admonition-title::before {
+  background-color: var(--cse-colors-fg-success);
+}
+
+.md-typeset :is(.admonition, details):is(.tip, .abstract, .question, .example) .admonition-title::before {
+  background-color: var(--cse-colors-fg-info);
+}
+
+.md-typeset :is(.admonition, details):is(.success) .admonition-title::before {
+  background-color: var(--cse-colors-fg-success);
+}
+
+.md-typeset :is(.admonition, details):is(.warning) .admonition-title::before {
+  background-color: var(--cse-colors-fg-warning);
+}
+
+.md-typeset :is(.admonition, details):is(.failure, .danger, .bug) .admonition-title::before {
+  background-color: var(--cse-colors-fg-error);
+}
+
+.md-typeset code {
+  /* typically, 14 px when 1em is 15 px */
+  font-size: 0.933333333em;
+}
+
+.md-typeset figure {
+  background-color: var(--cse-colors-bg-subtle);
+  border-radius: 0.2rem;
+}
+
+
+.md-typeset img {
+  display: block;
+  max-width: 50%;
+  margin-inline: auto;
+}
+
+.md-typeset *:is(figcaption, figcaption > p) {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.25px;
+  color: var(--cse-colors-heading-muted);
+  text-align: end;
 }
 
 @media screen and (min-width: 76.25em) {
@@ -102,6 +537,26 @@ Workaround term requiring margin-top fix
   width: 25%;
 }
 
-.md-typeset img {
-  max-width: 50%;
+.probe-table-sibling + * table:not([class]) :is(.admonition, details).note {
+  background-color: transparent;
+  border: 1px solid;
+  border-color: var(--cse-colors-bg-emphasized);
+  box-shadow: none;
+}
+
+.probe-table-sibling + * table:not([class]) :is(.admonition, details).note::before {
+  display: none
+}
+
+.probe-table-sibling + * table:not([class]) :is(.admonition, details).note summary {
+  background-color: var(--md-default-bg-color--lightest);
+}
+
+.probe-table-sibling + * table:not([class]) :is(.admonition, details).note summary::before {
+  opacity: 0;
+  display: none
+}
+
+.probe-table-sibling + * table:not([class]) :is(.admonition, details).note summary::after {
+  color: var(--md-default-fg-color--light);
 }
