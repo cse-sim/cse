@@ -1853,9 +1853,22 @@ RECORD DVRI "dvri" *RAT *hideall	// Date-dependent Virtual Report Info -- at run
     					//  (list headed by Top.drviY, -M, D, H, HS, S updated daily so don't need to search subHourly)
 *END		// DVRI
 //=============================================================================
+
+#if defined( IMPORT_REWORK)
+RECORD FNRT "fnrt" *SUBSTRUCT   // IMPORTFILE substructure
+   *excon
+   *exdes
+   *declare "std::string fnrt_fieldName;"	// field name (in heap) per file header, for error messages
+   INT fnmi;					// 0 or field name info subscript for IFFNM.p[iffnmi].fnm[]
+   *declare "const char* fp;"			// NULL or pointer to field's null-terminated text in current record in .buf (do not free here)
+   *declare "bool nDecoded;"			// true if numeric value of field in current record has been decoded
+   *declare "FLOAT fnv;"				// if nDecoded, this is the numeric value -- don't decode twice
+*END
+#endif
+//=============================================================================
 RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) records
     *prefix im_
-    *exdes					// destructor (cncult4.cpp) frees heap items
+    *exdes					// destructor frees heap items
     *ovrcopy
     *declare "RC if_CkF();"
     *declare "RC scanHdr();"		// impf.ccp member fcns
@@ -1893,8 +1906,13 @@ RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) reco
     *h *e SI nFieldsScanned	// 0 or number of fields already scanned in current record
     *declare "bool eorScanned;"	// true iff all fields in record have been scanned
     //fields-by-number info. IFFNM.fnmt[] used to get #'s of named fields at runtime.
+#if defined( IMPORT_REWORK)
+    *declare "std::vector<FNRT> im_fnrt;"    // info subscripted by 1-based field number
+                                                    //  [ 0] unused
+#else
 	*declare "struct FNRT* fnrt;" // ptr to heap array of info subscripted by 1-based field number.
     *r *hide INT fnrtNAl 	// allocated size of .fnrt[]. Max subscript fnrtNAl-1; [0] unused.
+#endif
 *END		// IMPF
 //=============================================================================
 RECORD IFFNM "impFileFldNames" *RAT	// IMPORT FILE FIELD NAMES TABLE (IffnmB) records

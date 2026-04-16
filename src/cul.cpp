@@ -1613,7 +1613,7 @@ LOCAL RC FC clearRat( CULT *c)
 
 // loop over records in this basAnc to free data
 
-	for (xSp->i = xSp->b->mn;  xSp->i <= xSp->b->n;  xSp->i++)	// loop basAnc records, even .gud <= 0 ones
+	for (xSp->i = xSp->b->mn;  xSp->i <= xSp->b->n;  xSp->i++)	// loop basAnc records, even .r_status <= 0 ones
 	{
 		xStkPt();				// compute xSp->e and xSp->fs0 for xSp->i. local, below.
 
@@ -3764,7 +3764,7 @@ LOCAL SI FC xnxDatMbr(
 	/* extended first/next data member of world of current xSp level:
 	   loops basAncs, basAnc records, members in each record */
 
-	SI bads,	// 0 to include only basAnc records with .gud > 0
+	SI bads,	// 0 to include only basAnc records with .r_status > 0
 	void **pp )	// init *pp NULL on 1st call; rcvs data ptr (same as xSp->p)
 
 // uses: xSp->b, xSp->cult (current/top level)
@@ -3912,7 +3912,7 @@ LOCAL SI FC nxRat( 	// first/next basAnc in current+nested tables
 //===========================================================================
 LOCAL SI FC nxRec( 	// first/next record in current basAnc (xSp->b)
 
-	SI bads,	// 0 to include only records with .gud > 0
+	SI bads,	// 0 to include only records with .r_status > 0
 	void **pe )	// init *pe NULL on 1st call; rcvs record ptr (same as xSp->e)
 
 // also uses: xSp->b
