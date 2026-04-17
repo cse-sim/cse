@@ -505,7 +505,7 @@ class ProbeWriter:
 
 
 def on_config(config, **kwargs):
-    docs_dir = Path(__file__).parent / "docs"
+    docs_dir = Path(config["docs_dir"])
     probes_out_dir = docs_dir / "probe-definitions"
 
     probes_out_dir_rel_path = probes_out_dir.relative_to(Path.cwd())
