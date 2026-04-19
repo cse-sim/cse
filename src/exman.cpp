@@ -158,7 +158,7 @@ LOCAL RC addStore(int h, const WHERE& w);
 struct EXTAB	// expression table (*exTab[i]) struct
 {
 	SI ext_nx;			// 0 or subscript of next entry in evaluation order (chain), -1 if deleted entry.
-	PSOP* ext_ip;    	// ptr to pseudo-code dm block.  PSOP: cueval.h/cnglob.h.  (was void * b4 bcpp, 2-91)
+	PSOP* ext_ip;    	// ptr to pseudo-code dm block.  PSOP: cueval.h/cnglob.h.
 	USI ext_evf;		// evaluation frequency (EVF___ defines, cuevf.h)
 	USI ext_useCl;		// caller's use class bits for selective eval (EVBEGIVL
 	USI ext_ty;			// data type TYLLI/TYFL/TYSTR/[TYSI/]TYCH/TYNC, cuparse.h.
@@ -189,6 +189,7 @@ struct EXTAB	// expression table (*exTab[i]) struct
 	~EXTAB();
 	EXTAB& ext_Copy(const EXTAB& src);
 	void ext_Efree();
+	void ext_Clear();
 	void ext_StoreValue() const;
 #if defined( EXTDUMP)
 	void extDump1() const;
@@ -202,18 +203,22 @@ LOCAL USI exN = 0;		// used ditto = next avail expr # less 1
 LOCAL USI exTail = 0;	// subscript of last exTab entry in eval order; 0 for empty table
 
 //===========================================================================
-#if defined( USEVECT)
-constexpr size_t extSIZENOVECTORS = sizeof(EXTAB) - offsetof(EXTAB, ext_whVal);
+#if !defined( USEVECT)
+// safe size for memset
+//  see ext_Clear();
+constexpr size_t extCLEARSIZE = sizeof(EXTAB);
+#else defined( USEVECT)
+constexpr size_t extCLEARSIZE = sizeof(EXTAB) - offsetof(EXTAB, ext_whVal);
 //---------------------------------------------------------------------------
 EXTAB::EXTAB() : ext_whVal(), ext_whChaf()
 {
-	memset(this, 0, extSIZENOVECTORS);
+	ext_Clear();
 
 }	// EXTAB::EXTAB
 //---------------------------------------------------------------------------
 EXTAB::~EXTAB()
 {
-
+	ext_EFree();
 }	// EXTAB::~EXTAB
 //---------------------------------------------------------------------------
 EXTAB& EXTAB::ext_Copy(const EXTAB& src)	// copy w/o WHERE vectors
@@ -256,8 +261,6 @@ LOCAL RC FC extAdd(USI* ph)
 
 // allocate exTab entry and return expression number
 {
-#define EXTAB_NADD 16		// make 50?
-
 	// use next entry at end if there is one - fastest
 	if (exNal > exN + 1 + 1)		// +1 for 1-based exN, +1 for ++ next
 	{
@@ -275,9 +278,11 @@ LOCAL RC FC extAdd(USI* ph)
 		}
 	}
 
-	// expression table is full, or not yet allocated.  (re)alloc it and assign next expresion number.
+	// expression table is full, or not yet allocated.
+	//  (re)alloc it and assign next expresion number.
 	RC rc;
-	USI nuNal = exNal + EXTAB_NADD;
+	static constexpr int EXTAB_NADD = 50;
+	int nuNal = exNal + EXTAB_NADD;
 	CSE_E(dmral(DMPP(exTab),
 		nuNal * sizeof(EXTAB),
 		WRN | DMZERO))		// zero added space; return bad if out of memory
@@ -285,50 +290,48 @@ LOCAL RC FC extAdd(USI* ph)
 	*ph = ++exN;			// 0 is not used (h==0 means unset; exTab[0].ext_nx is head of eval order list)
 	return RCOK;
 
-#undef EXTAB_NADD
 }			// extAdd
 //===========================================================================
-void FC extDelFn(BP b, TI i, SI fn)	// delete expression table entry if any for given field
+static void extUnlinkAndFree(		// delete exTab entry from expression table evaluation sequence
+	int hm1)	// prior eval order entry (exTab[hm1].ext_nx will be deleted)
 {
-	USI h;
-	if (exTab)						// if expr table allocated 1-92
+	int h = exTab[hm1].ext_nx;
+	EXTAB* ex = exTab + h;
+	exTab[hm1].ext_nx = ex->ext_nx;   	// unlink
+	if (exTail == h)				// if it was the end of the eval order list
+		exTail = hm1;			// now the one before it is end
+	ex->ext_Efree();		// free entry subobjects
+	ex->ext_Clear();		// 0 all (not necessary / insurance)
+	ex->ext_nx = -1;    	// flag free
+}		// extUnlinkAndFree
+//-----------------------------------------------------------------------------
+void FC extDelFn(BP b, TI i, int fn)	// delete expression table entry if any for given field
+{
+	if (exTab)						// if expr table allocated
 	{
-		for (USI hm1 = 0; (h = exTab[hm1].ext_nx) != 0; )	// loop over exprs in evaluation list order. note hm1=h at end loop.
-		{
-			if (exTab[h].ext_srcFn == fn)    			// test 1 condition asap for speed: fcn is called every expr compiled.
-			{
-				EXTAB* ex = exTab + h;
-				if (ex->ext_srcB == b && ex->ext_srcI == i /*&& ex->ext_srcFn==fn*/)	// if is entry to delete
-				{
-					exTab[hm1].ext_nx = ex->ext_nx;   			// unlink
-					ex->ext_nx = -1;    					// flag free
-					if (exTail == h)  					// if it was the end of the list
-						exTail = hm1;					// now the one before it is end
-					continue;						// bypass hm1 = h.
-				}
-			}
-			hm1 = h; 			// loop increment: advance in list.  Note don't get here after unlinking entry to delete
+		for (int hm1 = 0; exTab[hm1].ext_nx != 0; )	// loop over exprs in evaluation list order. note hm1=h at end loop.
+		{	int h = exTab[hm1].ext_nx;
+			EXTAB* ex = exTab + h;
+			if (ex->ext_srcB == b && ex->ext_srcI == i && ex->ext_srcFn==fn)	// if is entry to delete
+				extUnlinkAndFree( hm1);
+			else
+				hm1 = h; 			// loop increment: advance in list.  Note don't get here after unlinking entry to delete
 		}
 	}
 }		// extDelFn
 //===========================================================================
 void FC extDel(record* e)	// delete all expression table entries for given record
 {
-	USI h;
 	if (exTab)						// if expr table allocated 1-92
 	{
-		for (USI hm1 = 0; (h = exTab[hm1].ext_nx) != 0; )	// loop over exprs in evaluation list order. note hm1=h at end loop.
+		for (USI hm1 = 0; exTab[hm1].ext_nx != 0; )	// loop over exprs in evaluation list order. note hm1=h at end loop.
 		{
+			int h = exTab[hm1].ext_nx;
 			EXTAB* ex = exTab + h;
-			if (ex->ext_srcB == e->b && ex->ext_srcI == e->ss) 	// if is an entry to delete
-			{
-				exTab[hm1].ext_nx = ex->ext_nx;   			// unlink
-				ex->ext_nx = -1;    			// flag free
-				if (exTail == h)				// if it was the end of the eval order list
-					exTail = hm1;			// now the one before it is end
-			}
+			if (ex->ext_srcB == e->b && ex->ext_srcI == e->ss) 	// if is entry to delete
+				extUnlinkAndFree(hm1);
 			else
-				hm1 = h;			// loop increment: advance in list.  Note don't get here unlinking entry to delete
+				hm1 = h; 			// loop increment: advance in list.  Note don't get here after unlinking entry to delete
 		}
 	}
 }		// extDel
@@ -511,8 +514,17 @@ void EXTAB::ext_Efree()		// free heap stuff used by this expression
 	dmfree(DMPP(ext_whVal));
 	dmfree(DMPP(ext_whChaf));
 	ext_whValN = ext_whValNal = ext_whChafN = ext_whChafNal = 0;
+
+	// ext_Clear() NO! some re-use cases exist
 #endif
 }		// EXTAB::ext_Efree
+//-----------------------------------------------------------------------------
+void EXTAB::ext_Clear()		// 0 all
+// Caution: Generally call ext_Efree() prior to ext_Clear
+//    else subobject memory leaks
+{
+	memset(this, 0, extCLEARSIZE);
+}	// EXTAB::ext_Clear
 //-----------------------------------------------------------------------------
 
 
@@ -725,6 +737,10 @@ RC FC exPile(		// compile an expression from current input
 		// start/end interval is really independent of evf and ucl; separate if found necessary.
 		// fill expression table entry
 		ex = exTab + h;				// point expression table entry
+#if defined( _DEBUG)
+		if (ex->ext_ip)
+			err(PWRN, "Overwrite non-null EXTAB[ %d].ext_ip (memory leak)", h);
+#endif
 		ex->ext_ip = ip;				// set pseudo-code ptr for later eval
 		ex->ext_evf = gotEvf;
 		ex->ext_useCl = useCl;
@@ -853,10 +869,6 @@ RC FC exClrExUses(	// re-init old expr table entries for next run
 	{
 		if (!jfc)		// if doing full clear, set like newly-init expr tbl entry (but retain alloc'd storage).
 		{
-#if 0
-			if (ex->ext_ty==TYSTR)		// if string value
-				cupfree( DMPP( ex->ext_v)); 		// if in dm (not inline in code, not UNSET), decr ref count or free, NULL ptr. cueval.cpp.
-#endif
 			ex->ext_v = UNSET;    		// set prior value to "unset", to be sure stored/chaf'd when first evaluated
 #if defined( USEVECT)
 #if 0
@@ -1073,10 +1085,10 @@ LOCAL RC addStore( 		// register use of expression h in basAnc record
 #if defined( USEVECT)
 	ex->ext_whVal.push_back(w);
 #else
-#define WHVAL_NADD 4		// make 10?
 	if (ex->ext_whValNal <= ex->ext_whValN + 1)			// test if necessary to allocate (more) where's for expression
 	{
-		USI nuNal = ex->ext_whValNal + WHVAL_NADD;
+		static constexpr int WHVAL_NADD = 4;	// make 10?
+		int nuNal = ex->ext_whValNal + WHVAL_NADD;
 		RC rc;
 		CSE_E( dmral( DMPP( ex->ext_whVal), nuNal * sizeof(WHERE), WRN) )  	// (re)allocate heap block, dmpak.cpp
 		ex->ext_whValNal = nuNal;
@@ -1264,11 +1276,9 @@ RC FC exEvEvf( 			// evaluate expressions and do their updates
 			// maxErrors: cuparse.cpp. Data init, accessible as $maxErrors.
 			return rInfo( MH_E0102, maxErrors );	/* runtime "Information" message, exman.cpp
           							   "More than %d errors.  Terminating run." */
-#if 1 // 6-95. case: probed record name not found when setting tuQMxLh.
-		// 6-95 stop run on ANY expr evaluation error cuz unstored result might have left a NAN in target --> crash.
+		// stop run on ANY expr evaluation error cuz unstored result might have left a NAN in target --> crash.
 		if (exerr)				// if any exEvUp errors occurred that were not fixed by reordering exprs
 			return rInfo( "Error (above) while evaluating expression. Terminating run.");	// NUMS
-#endif
 	}
 	return RCOK;		   	// say continue run (to non-EVEOI|EVFFAZ callers).
 	// another return above
@@ -1292,11 +1302,6 @@ LOCAL RC FC exEvUp( 	// evaluate expression.  If ok and changed, store and incre
 	EXTAB *ex = exTab + h;
 	if (ex->ext_ip==NULL)
 		return err( PWRN, MH_E0103, h );   	// "exman.cpp:exEv: expr %d has NULL ip"
-
-#if 0
-	if (ex->ext_ty == TYSTR)
-		printf("\nString");
-#endif
 
 	const char* ms;
 	NANDAT* pv = nullptr;
@@ -1832,23 +1837,5 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 0    return &ex->ext_whChaf[ ex->ext_whChafN++];
 0}					// addWhChaf
 #endif
-
-#if 0	// poss useful code fragment
-w
-w //--------------------------------------------------------------------------
-w /* to free expression number (h) */
-w{
-w  EXTAB* px = exTab + h;
-w    dmfree( DMPP( px->ip));
-w    if (px->ty==TYSTR)		// free string ??? are private copies used?
-w       cupfree(px->v);
-w    dmfree(px->whVal);
-w    dmfree(px->chafp);
-w    memset( px, 0, sizeof(EXTAB) );	// zero entry in case reused
-w    if (h==exN)
-w       exN--;
-w    // else expression number is not recovered
-w}
-#endif	// 0
 
 // end of exman.cpp

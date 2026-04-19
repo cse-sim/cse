@@ -40,7 +40,7 @@ void FC extAdj( BP b, TI minI, TI delta);
 void FC extMove( record *nuE, record *e);
 void FC extDup( record *nuE, record *e);
 void FC extDel( record *e);
-void FC extDelFn( BP b, TI i, SI fn);
+void FC extDelFn( BP b, TI i, int fn);
 void FC extClr( void);
 RC FC exClrExUses( BOO jfc);	// arg added 10-95
 RC FC exWalkRecs( void);
