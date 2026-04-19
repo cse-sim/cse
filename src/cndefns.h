@@ -247,8 +247,6 @@
 							// (else float).  6-23 experiment, infinitesimal impact.
 							// code out when confirmed useless.
 
-#define IMPORT_REWORK		// transition aid re conversion of import-related data structs
-
 #endif	// ifndef _CNDEFNS_H
 
 // cndefns.h end

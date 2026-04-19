@@ -78,24 +78,7 @@ TODO 11-2016 (when documentation written)
 ///////////////////////////////////////////////////////////////////////////////
 // local classes
 ///////////////////////////////////////////////////////////////////////////////
-#if !defined( IMPORT_REWORK)
-struct FNRT  	// fields-by-number table struct for IMPF.fnrt[] in heap
-{
-#if defined( IMPORT_REWORK)
-   std::string fnrt_fieldName;	// field name (in heap) per file header, for error messages
-#else
-   const char* fnrt_fieldName;	// NULL or field name (in heap) per file header, for error messages
-#endif
-   SI fnmi;					// 0 or field name info subscript for IFFNM.p[iffnmi].fnm[]
-   const char* fp;			// NULL or pointer to field's null-terminated text in current record in .buf (do not free here)
-   bool nDecoded;			// true if numeric value of field in current record has been decoded
-   FLOAT fnv;				// if nDecoded, this is the numeric value -- don't decode twice
-   FNRT()
-   { }
-   ~FNRT()
-   { }
-};
-#endif
+// struct FNRT: fields-by-number table for IMPF.im_fnrt (see cnrecs.def)
 //=============================================================================
 struct FNMT		// field names table struct for IFFNM.fnmt[] in heap
 {  const char* fnmt_fieldName;	// field name used in Import() (no entry for fields not used by name in Import()s)
@@ -128,8 +111,10 @@ public:
 	RC FC axscanFnm(int fnmi);	// access and scan field by name: for field name idx, set .fnr, .fnrt, .fieldName
 	RC FC axscanFnr(int _fnr);	// access and scan field by number: for field number, set .fnr, .fnrt, .fieldname
 	RC FC decNum();		// decode field's numeric value. uses .fnrt, sets ifd_fnrt->fnv, ->nDecoded.
-	char * sVal()
-	{	return strsave( ifd_fnrt && ifd_fnrt->fp ? ifd_fnrt->fp : "");    // string value (private heap copy), "" if error
+	const char* sVal()
+	{	// strsave()? NO, causes memory leaks
+		// string will be copied to CULSTR in exEvUp() (exman.cpp) / ifd_fnrt->fp points to persistent string
+		return ifd_fnrt && ifd_fnrt->fp ? ifd_fnrt->fp : "";    // string value, "" if error
 	}
 	float nVal()
 	{	return ifd_fnrt ? ifd_fnrt->fnv : 0.f;    // numeric value, 0 if error
@@ -262,13 +247,8 @@ RC FC ImpFldDcdr::axscanFnr(int _fnr)	// access and scan field by number, set .f
 
 	this->fnr = _fnr;			// store field #. scanNextField has alloc'd .fnrt[] this big. used eg in decNum.
 	ifd_fnrt = &(impf->im_fnrt[ _fnr]);		// store pointer to field names info entry
-#if defined( IMPORT_REWORK)
 	if (!ifd_fnrt->fnrt_fieldName.empty())            // for NULL (eg no header), leave "" stored by c'tor
 		imf_fieldName = ifd_fnrt->fnrt_fieldName.c_str();    // retrieve field name for number -- set at open if file had header
-#else
-	if (ifd_fnrt->fnrt_fieldName)            // for NULL (eg no header), leave "" stored by c'tor
-		imf_fieldName = ifd_fnrt->fnrt_fieldName;    // retrieve field name for number -- set at open if file had header
-#endif
 
 	rc2 = RCOK;				// say field accessed and scanned successfully
 	return RCOK;
@@ -391,7 +371,7 @@ RC impFcn( 		// compile support for Import() of named field
 	int inputLineNo,	// line number in srcFile ...  so errors can show location of first use.
 	IVLCH* imFreq,		// receives frequency (hour-day-month-year) of import file, or safe assumption if fwd reference.
 	const char* fieldName, 	// requested field name: saved here in table in IFFNM record for resolution at file open
-	SI *fnmi ) 			// receives find name index for use in pseudo-code
+	SI* fnmi ) 			// receives find name index for use in pseudo-code
 
 // called from cuparse.cpp. May be declared in impf.h not cncult.h.
 {
@@ -750,7 +730,7 @@ RC impFldNmS(	  	// import string value of named field
 
 	int iffnmi,		// which IMPORTFILE: 1-based IffnmB subscript, from pseudo-code
 	int fnmi, 		// field name index: 1-based IffnmB.fnmt[] subscript
-	char **pv, 		// receives pointer to string value in heap
+	const char** pv, 		// receives pointer to string value in heap
 	int fileIx,		// CSE input file name index for use in error messages
 	int inputLineNo,		// CSE input source file line number for use in error messages
 	MSGORHANDLE* pms ) 	// receives transitory submessage string pointer (Tmpstr) if error occurs
@@ -765,7 +745,7 @@ RC impFldNmS(	  	// import string value of named field
 RC impFldNrN( 		// import numeric value of field by number
 	int iffnmi,		// which IMPORTFILE: 1-based IffnmB subscript, from pseudo-code
 	int fnr, 		// 1-based field number
-	float *pv, 		// receives float value
+	float* pv, 		// receives float value
 	int fileIx,		// CSE input file name index for use in error messages
 	int inputLineNo,	// CSE input source file line number for use in error messages
 	MSGORHANDLE* pms ) 	// receives transitory submessage string pointer (Tmpstr) if error occurs
@@ -782,7 +762,7 @@ RC impFldNrS( 		// import string value of field by number
 
 	int iffnmi,		// which IMPORTFILE: 1-based IffnmB subscript, from pseudo-code
 	int fnr, 		// 1-based field number
-	char **pv, 		// receives ptr to string value in heap
+	const char** pv, 		// receives ptr to string value in heap
 	int fileIx,		// CSE input file name index for use in error messages
 	int inputLineNo,	// CSE input source file line number for use in error messages
 	MSGORHANDLE* pms ) 	// receives transitory submessage string pointer (Tmpstr) if error occurs
@@ -854,22 +834,7 @@ IMPF::~IMPF()		// IMPORTFILE destructor
 	dmfree( DMPP( buf));	// (decr ref count or) free heap block & NULL ptr
 	bufSz = 0;				// say no buffer: insurance: beleived unnecessary but harmless at destruction
 
-#if defined( IMPORT_REWORK)
-	// im_fnrt.clear();
-#else
-		for (int fnr = 1; fnr < fnrtNAl; fnr++)		// loop over table entries
-		{
-			dmfree(DMPP(fnrt[fnr].fnrt_fieldName));		// decref/free string member
-			// note member fp points into buf, not to own heap block.
-		}
-		dmfree(DMPP(fnrt));			// free the table block if allocated, and NULL pointer. dmpak.cpp.
-
-		fnrtNAl = 0;				// say none allocated
-#endif
-	FNRT* pFnrt = im_fnrt.data();
-	size_t curSize = im_fnrt.size();
-
-	//record::~record() (call supplied by compiler) zeroes .r_status to mark space unused.
+	// record::~record() (call supplied by compiler) zeroes .r_status to mark space unused.
 }			// IMPF::~IMPF
 //-----------------------------------------------------------------------------
 /*virtual*/ void IMPF::Copy( const record* pSrc, int options/*=0*/)	// overrides record::Copy. declaration must be same.
@@ -882,17 +847,21 @@ IMPF::~IMPF()		// IMPORTFILE destructor
 	im_fileName.Release();
 	im_title.Release();
 
-	// field numbers table .fnrt[] not handled: if non-NULL, must dmfree .fieldNames. before dmfree'ing table pointer.
-	// buffer .buf not handled. if non-NULL, must free.
+	// buffer .buf not handled. if non-NULL, must free in destination
+	// im_fnrt not copied
+
+	// destroy vector< FNRT> in destination
+	im_fnrt.vector::~vector<FNRT>();
 
 // use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED.
-	record::Copy( pSrc, options);				// verfies that src and this are same record type. lib\ancrec.cpp.
+	record::Copy( pSrc, options);				// verfies that src and this are same record type. ancrec.cpp.
 
 	im_fileName.FixAfterCopy();
-	im_title.FixAfterCopy(); 
+	im_title.FixAfterCopy();
 
-	// field numbers table .fnrt[] not handled: if non-NULL, must copy and incref .fieldNames.
-	// buffer .buf not handled. if non-NULL, must copy.
+	// recreate empty vector (placement new)
+	new(&im_fnrt) std::vector<FNRT>(((const IMPF*)pSrc)->im_fnrt);
+		
 }			// IMPF::Copy
 //-----------------------------------------------------------------------------
 RC IMPF::if_CkF()
@@ -1004,12 +973,7 @@ bad:
 		while (scanNextField())   		// scan field in place in record buffer. ++'s nFieldsScanned.
 		{	const char* nm = im_fnrt[nFieldsScanned].fp;	// point to scanned field text: this is name of field in this position
 			fnrtAl(nFieldsScanned);    			// (re)allocate field numbers table if necessary
-#if defined( IMPORT_REWORK)
 			im_fnrt[nFieldsScanned].fnrt_fieldName = nm;	// save field name for use in error msgs. string class makes copy in setter.
-#else
-			dmfree(DMPP(fnrt[nFieldsScanned].fnrt_fieldName));
-			fnrt[nFieldsScanned].fnrt_fieldName = strsave(nm);	// save field name for use in error msgs
-#endif
 		}
 #if 0
 x only report duplicates if referenced (see below)
@@ -1045,11 +1009,7 @@ x		}
 		{	for (fnmi = 1; fnmi <= iffnm->fnmiN; fnmi++)	// search names table for this name
 			{	for (int ifn=1; ifn<=nFieldsScanned; ifn++)
 				{
-#if defined( IMPORT_REWORK)
 					const char* nm = im_fnrt[ ifn].fnrt_fieldName.c_str();
-#else
-					const char* nm = im_fnrt[ifn].fnrt_fieldName;
-#endif
 					if (!_stricmp( nm, fnmt[fnmi].fnmt_fieldName))	// if this entry matches
 					{	if (fnmt[ fnmi].fnmt_fnr == 0)	// if name previously seen
 						{	fnmt[fnmi].fnmt_fnr = ifn;  		// store field number with name for use during run
@@ -1108,23 +1068,12 @@ bool FC IMPF::readRec()	 // get next import file record in buffer and init to sc
 {
 // init (clear) stuff re scanned fields in record
 
-#if defined( IMPORT_REWORK)
 	for (auto& tFnrt : im_fnrt)
 	{
 		tFnrt.fp = nullptr;			// say no field text yet for new record
 		tFnrt.nDecoded = false; 	// say numeric value not decoded
 		tFnrt.fnv = 0.f;			// field numeric value 0 if accessed by accident or after decode failed
-
 	}
-#else
-	if (fnrt)				// insurance
-		for (int i = 0; i < fnrtNAl; i++)		// loop fields-by-number info for file
-		{
-			im_fnrt[i].fp = NULL;			// say no field text yet for new record
-			im_fnrt[i].nDecoded = false; 	// say numeric value not decoded
-			im_fnrt[i].fnv = 0.f;			// field numeric value 0 if accessed by accident or after decode failed
-		}
-#endif
 
 // clear record stuff
 
@@ -1135,6 +1084,12 @@ bool FC IMPF::readRec()	 // get next import file record in buffer and init to sc
 
 	ASSERT( bufI1 <= bufI2);	// bufI1 is for field scan, bufI2 points after end prior record
 	lineNo++;			// advance line count at entry for correct value during record scan.
+
+#if 0 && defined( _DEBUG)
+	if (Top.isBegDay)
+		printf("\nDay %s line %d", Top.dateStr.CStr(), lineNo);
+#endif
+
 	// corresponds to \n at end record, passed below at end prior call. 1st time makes 1-based.
 	for ( ; ; )			// loop to pass whitespace and blank lines between records
 	{
@@ -1381,25 +1336,12 @@ void FC IMPF::close()		// close import file & free buffer
 //---------------------------------------------------------------------------
 void FC IMPF::fnrtAl(int nNfnr)		// (re)allocate IMPF.im_fnrt for given # fields or larger
 {
-#if defined( IMPORT_REWORK)
-	static constexpr size_t capIncr = 2;
-	size_t newCap = max( im_fnrt.capacity() + capIncr) ??
-	while (static_cast< size_t>(nNfnr) >= im_fnrt.capacity())
-		im_fnrt.resize(im_fnrt.capacity() + capIncr);
-
-
-#else
-#define CHUNK 32		// number of fields to allocate at a time
-	if (nNfnr >= fnrtNAl 	// if needs to be bigger (>= like +1 for 1-based field numbers)
-		|| !fnrt)		// or not allocated yet (insurance)
+	static constexpr size_t capIncr = 10;
+	if (static_cast<size_t>(nNfnr) >= im_fnrt.capacity())
 	{
-		int toAl = fnrtNAl + CHUNK;		// # slots to allocate
-		if (!dmral( DMPP( fnrt), 		// (re) allocate, dmpak.cpp. RCOK (0) if successful.
-					toAl * sizeof(FNRT),
-					ABT|DMZERO ) )		// abort program (no return) if fails.
-			fnrtNAl = toAl;			// [if ok], store # elements now allocated
+		size_t newCap = nNfnr + capIncr;
+		im_fnrt.resize( newCap);
 	}
-#endif
 }		// IMPF::fnrtAl
 //---------------------------------------------------------------------------
 

@@ -761,9 +761,9 @@ ZONE   "Unit1-zn"
    znFloorZ = 0                         // Nominal zone floor height relative to arbitrary 0 level, ft
    znCAir = 2500                        // Zone 'air' heat capacity: represents heat capacity of air, furniture, 'light' walls, and everything in zone except nonQUICK surfaces
    znSC = select( $radDiff >1., 0.5, default 0.8 )    // Expression representing zone shade closure
-   znTH = select( $dsDay==1, 70, $dsDay==2, 60, ISSEASONCOOLING, 60, default hourval(65,65,65,65,65,65,66.5,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,68,65))     // Expression representing heating setpoint, �F
-   znTC = select( $dsDay==1, 83, $dsDay==2, 75, default 78)    // Expression representing cooling setpoint, �F
-   znTD = select( $dsDay==1, 77, $dsDay==2, 99, ISSEASONCOOLING, 68, default 77 )    // Expression representing desired setpoint, �F
+   znTC = 75;
+   znTH = 70;
+   znTD = 72;
    znHIRatio = 10                       // Zone hygric inertia ratio
    infAC = 0                            // Zone infiltration air changes per hour, 1/hr
    infELA = 0                           // Zone effective leakage area (ELA), in2
@@ -1512,11 +1512,6 @@ BATTERY   "battery 1"
    btMaxDschgPwr = 3.57143              // The maximum rate at which the BATTERY can be discharged in kilowatts (i.e., energy flowing out of the BATTERY), kW
    btMeter = "MtrElec"                  // Electric meter to log charge/discharge to
 
-ALTER ZONE "Unit1-zn";
-    znTC = 75;
-    znTH = 70;
-    znTD = 72;
-
 ALTER PVARRAY "pvarray 1";
     pvDCSysSize = 5;
 
@@ -1527,7 +1522,7 @@ ALTER BATTERY "battery 1";
     btMaxDschgPwr = 5.67;
     // btChgReq = import(btCR, "btChgReq_custom");
     btChgReq = select(
-       import(btCR, "btChgReq_custom")!=0, import(btCR, "btChgReq_custom")
+       import(btCR, 4)!=0, import(btCR, "btChgReq_custom")  // import numeric value by col # and col name
        default -@BATTERY[ 1].loadSeen)
 
 #define kw_to_btuh 3412.142
@@ -1545,6 +1540,8 @@ REPORT  rpType = UDT rpFreq = HOUR rpTitle = "Battery/PV Output"
     ReportCol colhead="Grid kW" colVal=@METER["MtrElec"].H.tot / kw_to_btuh colDec=3 colWid=8
     ReportCol colhead="Bat kWh" colGap=3 colVal=@BATTERY["Battery 1"].energy colDec=3 colWid=8
     ReportCol colhead="LS kW" colVal=@BATTERY["Battery 1"].loadseen colDec=3 colWid=8
+    // import string value by col name and col #
+    ReportCol colhead="Note"  colVal=concat( importStr( btCR, "Note"), importStr( btCr, 5)) colWid=20
 
 
  RUN

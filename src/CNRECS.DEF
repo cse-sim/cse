@@ -1853,9 +1853,7 @@ RECORD DVRI "dvri" *RAT *hideall	// Date-dependent Virtual Report Info -- at run
     					//  (list headed by Top.drviY, -M, D, H, HS, S updated daily so don't need to search subHourly)
 *END		// DVRI
 //=============================================================================
-
-#if defined( IMPORT_REWORK)
-RECORD FNRT "fnrt" *SUBSTRUCT   // IMPORTFILE substructure
+RECORD FNRT "fnrt" *SUBSTRUCT   // IMPORTFILE substructure -- fields-by-number table
    *excon
    *exdes
    *declare "std::string fnrt_fieldName;"	// field name (in heap) per file header, for error messages
@@ -1864,7 +1862,6 @@ RECORD FNRT "fnrt" *SUBSTRUCT   // IMPORTFILE substructure
    *declare "bool nDecoded;"			// true if numeric value of field in current record has been decoded
    *declare "FLOAT fnv;"				// if nDecoded, this is the numeric value -- don't decode twice
 *END
-#endif
 //=============================================================================
 RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) records
     *prefix im_
@@ -1906,16 +1903,11 @@ RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) reco
     *h *e SI nFieldsScanned	// 0 or number of fields already scanned in current record
     *declare "bool eorScanned;"	// true iff all fields in record have been scanned
     //fields-by-number info. IFFNM.fnmt[] used to get #'s of named fields at runtime.
-#if defined( IMPORT_REWORK)
     *declare "std::vector<FNRT> im_fnrt;"    // info subscripted by 1-based field number
-                                                    //  [ 0] unused
-#else
-	*declare "struct FNRT* fnrt;" // ptr to heap array of info subscripted by 1-based field number.
-    *r *hide INT fnrtNAl 	// allocated size of .fnrt[]. Max subscript fnrtNAl-1; [0] unused.
-#endif
+                                             //  [ 0] unused
 *END		// IMPF
 //=============================================================================
-RECORD IFFNM "impFileFldNames" *RAT	// IMPORT FILE FIELD NAMES TABLE (IffnmB) records
+RECORD IFFNM "impFileFldNames" *RAT *hideall // IMPORT FILE FIELD NAMES TABLE (IffnmB) records
 		/* Made when Import() fcn for file is seen.
 		   When file with header is opened, field numbers for in names table are set,
 		   then table is used during run to translate fnmi's to fnr's.
