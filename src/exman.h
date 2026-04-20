@@ -31,25 +31,25 @@
 
 
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
-void FC exClean(CLEANCASE cs);
-RC FC exPile( SI toprec, USI wanTy, USI choiDt, USI fdTy, USI _evfOk, USI useCl,
+void exClean(CLEANCASE cs);
+RC exPile( SI toprec, USI wanTy, USI choiDt, USI fdTy, USI _evfOk, USI useCl,
 	const char* ermTx, SI isType, BP b, TI i, SI fn,
 	NANDAT *pDest, USI *pGotTy, USI *pGotEvf );
-RC FC uniLimCt( USI fdTy, SI ty, const char* ermTx, void *p );
-void FC extAdj( BP b, TI minI, TI delta);
-void FC extMove( record *nuE, record *e);
-void FC extDup( record *nuE, record *e);
-void FC extDel( record *e);
-void FC extDelFn( BP b, TI i, int fn);
-void FC extClr( void);
-RC FC exClrExUses( BOO jfc);	// arg added 10-95
-RC FC exWalkRecs( void);
-// RC FC exReg( USI ancN, TI i, USI o); 		if wanted: restore when needed
+RC uniLimCt( USI fdTy, SI ty, const char* ermTx, void *p );
+void extAdj( BP b, TI minI, TI delta);
+void extMove( record *nuE, record *e);
+void extDup( record *nuE, record *e);
+void extDel( record *e);
+void extDelFn( BP b, TI i, int fn);
+void extClr( void);
+RC exClrExUses( BOO jfc);	// arg added 10-95
+RC exWalkRecs( void);
+// RC exReg( USI ancN, TI i, USI o); 		if wanted: restore when needed
 RC addChafIf ( NANDAT *pv, USI ancN, TI i, USI o);
-RC FC exEvEvf( USI evf, USI useCl);
-RC FC exInfo( USI h, USI *pEvf, USI *pTy, NANDAT *pv );
-const char* FC whatEx( USI h);
-const char* FC whatNio( USI ratN, TI i, USI off);
+RC exEvEvf( USI evf, USI useCl);
+RC exInfo( int h, USI *pEvf, USI *pTy, NANDAT *pv );
+const char* whatEx( int h);
+const char* whatNio( USI ratN, TI i, USI off);
 RC CDEC rer( MSGORHANDLE msg, ...);
 RC CDEC rerErOp( int erOp, MSGORHANDLE msg, ...);
 RC CDEC rWarn( MSGORHANDLE msg, ...);
