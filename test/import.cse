@@ -1350,14 +1350,19 @@ BATTERY   "battery 1"
 ALTER PVARRAY "pvarray 1";
     pvDCSysSize = 5;
 
-IMPORTFILE other imFileName="importfile_test.dat" imFreq=Hour imTitle="?"
-IMPORTFILE btCR imFileName="importfile_test.dat" imFreq=Hour imTitle="x-ZoneTStat"
+// deliberately unused importfile (generates warning)
+IMPORTFILE Unused imFileName="importfile_test.dat" imFreq=Hour
+
+IMPORTFILE testData imFileName="testdata.tdv" imFreq=Hour imTitle="Test TDV data"
+
+IMPORTFILE batteryControl imFileName="importfile_test.dat" imFreq=Hour imTitle="x-ZoneTStat"
+
 ALTER BATTERY "battery 1";
     btMaxCap = 13.5;
     btMaxChgPwr = 5.67;
     btMaxDschgPwr = 5.67;
     btChgReq = select(
-       import(btCR, 4)!=0, import(btCR, "btChgReq_custom")  // import numeric value by col # and col name
+       import(batteryControl, 4)!=0, import(batteryControl, "btChgReq_custom")  // import numeric value by col # and col name
        default -@BATTERY[ 1].loadSeen)
 
 #define kw_to_btuh 3412.142
@@ -1375,8 +1380,10 @@ REPORT  rpType = UDT rpFreq = HOUR rpTitle = "Battery/PV Output"
     ReportCol colhead="Grid kW" colVal=@METER["MtrElec"].H.tot / kw_to_btuh colDec=3 colWid=8
     ReportCol colhead="Bat kWh" colGap=3 colVal=@BATTERY["Battery 1"].energy colDec=3 colWid=8
     ReportCol colhead="LS kW" colVal=@BATTERY["Battery 1"].loadseen colDec=3 colWid=8
+    ReportCol colhead="TDV Fuel" colVal=import( testdata, tdvFuel) colDec=3 colWid=8 colGap=5
     // import string value by col name and col #
-    ReportCol colhead="Note"  colVal=concat( importStr( btCR, "Note"), importStr( btCr, 5)) colWid=20
+    ReportCol colhead="Note" colWid=20 colGap=5
+        colVal=concat( importStr( batteryControl, "Note"), importStr( batteryControl, 5), importStr( testdata, 1))
 
 
  RUN
