@@ -78,13 +78,8 @@ TODO 11-2016 (when documentation written)
 ///////////////////////////////////////////////////////////////////////////////
 // local classes
 ///////////////////////////////////////////////////////////////////////////////
+// struct FNMT: field names table struct for IFFNM (see cnrecs.def)
 // struct FNRT: fields-by-number table for IMPF.im_fnrt (see cnrecs.def)
-//=============================================================================
-struct FNMT		// field names table struct for IFFNM.fnmt[] in heap
-{  const char* fnmt_fieldName;	// field name used in Import() (no entry for fields not used by name in Import()s)
-   int fnmt_fnr;					// field NUMBER established when file opened
-   FNMT::~FNMT();
-};
 //=============================================================================
 class ImpFldDcdr
 {
@@ -186,27 +181,22 @@ RC FC ImpFldDcdr::axscanFnm(int fnmi)		// access field by name: set fieldName, f
 	if (rc1)						// if file not accessed ok, don't attempt to access field
 		return IMPERR(( MH_R1910 ));		/* "Internal error: ImpfldDcdr::axscanFnm():\n"
 							   "    called w/o preceding successful file access" */
-	if (!iffnm->fnmt)					// prevent GP fault
-		return IMPERR(( MH_R1911, 		/* "%s(%d): Internal error:\n"
-												   "    no IFFNM.fnmt pointer for Import file %s" */
-						srcFile, inputLineNo, impf->Name() ));
 
 // fetch and check field number for given field name index
 
-	if (fnmi < 1 || fnmi > iffnm->fnmiN)			// should be 1 to max value seen during compile
+	if (fnmi < 1 || size_t( fnmi) >= iffnm->ifn_fnmt.size())			// should be 1 to max value seen during compile
 		return IMPERR(( MH_R1912, 			/* "%s(%d): Internal error: in IMPORT() from file %s\n"
 												       "    field name index %d out of range 1 to %d." */
-						srcFile, inputLineNo, impfName, fnmi, iffnm->fnmiN ));
-	if (iffnm->fnmt[fnmi].fnmt_fieldName)					// insurance: for NULL leave "" stored by c'tor
-		imf_fieldName = iffnm->fnmt[fnmi].fnmt_fieldName;		// field name text, for error messages, eg in decNum
-	int tfnr =   iffnm->fnmt[fnmi].fnmt_fnr;			// 1-based field number for this field name index, to local til validated.
+						srcFile, inputLineNo, impfName, fnmi, iffnm->ifn_fnmt.size()));
+	if (!iffnm->ifn_fnmt[fnmi].fnmt_fieldName.empty())					// insurance: for empty leave "" stored by c'tor
+		imf_fieldName = iffnm->ifn_fnmt[fnmi].fnmt_fieldName.c_str();		// field name text, for error messages, eg in decNum
+	int tfnr =   iffnm->ifn_fnmt[fnmi].fnmt_fnr;			// 1-based field number for this field name index, to local til validated.
 	if (tfnr <= 0 || tfnr > FNRMAX)			// FNRMAX: impf.h
-		return IMPERR(( MH_R1913,	/* "%s(%d): Internal error:\n"
+		return IMPERR((MH_R1913,	/* "%s(%d): Internal error:\n"
 											   "    in IMPORT() from file %s field %s (name index %d),\n"
 											   "    field number %d out of range 1 to %d." */
 						srcFile, inputLineNo,
-						impfName, iffnm->fnmt[fnmi].fnmt_fieldName, fnmi,
-						tfnr, FNRMAX ));
+						impfName, imf_fieldName, fnmi, tfnr, FNRMAX ));
 
 // scan record thru requested field if not already done
 	while (impf->nFieldsScanned < tfnr)			// until enough fields scanned in current record, if not already done
@@ -280,7 +270,6 @@ x    							// (if error, later calls get 0 without repeating message)
 		SUBERR(MH_R1919)				// go to end fcn and issue err msg "non-numeric value"
 		//else
 	{
-		// { }: 'v' scope, 12-94
 		char *endptr;
 		double v = strtod( start, &endptr);  		// convert string to double, return end pointer. C library fcn.
 		// returns +- HUGE_VAL on overflow.
@@ -377,41 +366,29 @@ RC impFcn( 		// compile support for Import() of named field
 {
 // find or add IFFNM record for this IMPORTFILE object name. (IMPORTFILE record created only when IMPORTFILE seen.)
 
-	IFFNM *iffnm;
+	IFFNM* iffnm{ nullptr };
 	if (impFcnFile( impfName, pIffnmi, fileIx, inputLineNo, imFreq, &iffnm) != RCOK)	// find or add IFFNM record
 		return RCBAD;								// if failure retured (ABT expected)
 
 // find or add entry in field names table
 
 	// Names in table will be resolved to field number at open; runtime accesses get fnr from table by fnmi.
-	SI tfnmi = 0;
-	bool found = false;
-	if (iffnm->fnmt)		// insurance
-		for (tfnmi = 1;  tfnmi <= iffnm->fnmiN;  tfnmi++)		// 1-based subscript
-			if (!_stricmp( fieldName, iffnm->fnmt[tfnmi].fnmt_fieldName))
-			{
-				found = true;
-				break;
-			}
+	SI tfnmi;
+	bool found{ false };
+	for (tfnmi=1; size_t( tfnmi)<iffnm->ifn_fnmt.size(); tfnmi++)
+	{
+		if (!_stricmp(fieldName, iffnm->ifn_fnmt[ tfnmi].fnmt_fieldName.c_str()))
+		{
+			found = true;
+			break;
+		}
+	}
+
 	if (!found)			// if must add
 	{
-		// assign table position === field name index
-		tfnmi = ++iffnm->fnmiN;		// assign next 1-based field name index
-
-		// allocate or enlarge table if necessary
-		if ( tfnmi >= iffnm->fnmtNAl  	// if table needs to be bigger (>= like +1 for 1-based field numbers)
-				||  !iffnm->fnmt )		// or table not allocated yet (insurance)
-		{
-#define CHUNK 32			// number of field names to allocate at a time
-			SI toAl = iffnm->fnmtNAl + CHUNK;				// # slots to allocate
-			if (dmral( DMPP( iffnm->fnmt), toAl * sizeof(FNMT), ABT|DMZERO))	// (re)alloc, dmpak.cpp. abort (no return) if fails.
-				return RCBAD;						// if failure returned (not expected)
-			iffnm->fnmtNAl = toAl;    		// ok, store new size
-		}
-
-		// fill new IFFNM.fnmt[] entry
-		iffnm->fnmt[tfnmi].fnmt_fieldName = strsave(fieldName);
-		iffnm->fnmt[tfnmi].fnmt_fnr = 0;			// believed redundant
+		if (iffnm->ifn_fnmt.size() == 0)
+			iffnm->ifn_fnmt.resize(1);		// [ 0] unused
+		iffnm->ifn_fnmt.emplace_back(fieldName);
 	}
 	*fnmi = tfnmi;			// return field name index from local variable
 	return RCOK;
@@ -534,7 +511,7 @@ RC topImpf()		// check/process ImportFiles at end of input
 		{
 			iffnm = IffnmB.p + iimpf->iffnmi;
 			if (iimpf->hasHeader != C_NOYESCH_YES)	// if user said no header on file
-				if (iffnm->fnmiN)				// if have name table entries --> IMPORT()s by name seen
+				if (iffnm->ifn_fnmt.size() > 1)				// if have name table entries --> IMPORT()s by name seen
 				{
 					iimpf->oer( MH_S0576);		// "imHeader=NO but IMPORT()s by field name (not number) used"
 					continue;
@@ -778,37 +755,21 @@ RC impFldNrS( 		// import string value of field by number
 ///////////////////////////////////////////////////////////////////////////////
 // class IFFNM: IMPORTFILE field names table
 ///////////////////////////////////////////////////////////////////////////////
+FNMT::FNMT()
+{ }
+FNMT::~FNMT()
+{ }
+//----------------------------------------------------------------------------
 IFFNM::~IFFNM()		// record destructor
 {
-// free (or decrement reference count of) derived class heap pointers in record being destroyed.
-
-	// fields names table
-	if (fnmt)					// if table allocated
-		for (int fnmi = 1; fnmi < fnmtNAl; fnmi++)	// loop over table entries. Entry 0 unused.
-			dmfree( DMPP( fnmt[fnmi].fnmt_fieldName));		// decref/free string member
-
-	dmfree( DMPP( fnmt));			// free the table block if allocated, and NULL pointer. dmpak.cpp.
-	fnmtNAl = 0;				// say none allocated
-
-	//record::~record() (call supplied by compiler) zeroes .r_status to mark space unused.
+// record::~record() (call supplied by compiler) zeroes .r_status to mark space unused.
 }			// IFFNM::~IFFNM
 //---------------------------------------------------------------------------------------------------------------------------
 /*virtual*/ void IFFNM::Copy( const record* pSrc, int options/*=0*/)	// overrides record::Copy. declaration must be same.
-// IFFNM = believed unused 2-94, but should be defined for link as is virtual fcn in base class.
+// IFFNM = unused but should be defined for link as is virtual fcn in base class.
 {
 	err( PWRN, MH_S0578);	// "Unexpected call to IFFNM::Copy". if occurs, add code to do .fnmt or verify NULL.
 
-// free (or decr ref count for) derived class heap pointer(s) in record about to be overwritten. dmfree: lib\dmpak.cpp.
-	//#define THIS ((IFFNM *)this)
-	//cupfree( DMPP( THIS->..));		// dmfree unless NANDLE or constant inline in pseudocode, cueval.cpp.
-	// .fnmt not handled -- must dmfree .fieldNames before dmfree'ing table.
-
-// use base class Copy.  Copies derived class members too, per record type (.rt): RECORD MUST BE CONSTRUCTED.
-	record::Copy( pSrc, options);	// verfies that src and this are same record type. lib\ancrec.cpp.
-
-// increment reference count for pointer(s) just copied. dmIncRec: lib\dmpak.cpp.
-	//cupIncRef( DMPP( THIS->..));   		// dmIncRef unless NANDLE or constant inline in pseudocode, cueval.cpp.
-	// .fnmt not handled -- if non-NULL must copy block and incref .fieldNames.
 }				// IFFNM::Copy
 //---------------------------------------------------------------------------
 
@@ -827,8 +788,6 @@ IMPF::~IMPF()		// IMPORTFILE destructor
 {
 // close file if open -- might be possible during error cleanup
 	close();				// member function in impf.cpp.
-
-// free (or decrement reference count of) derived class heap pointers in record being destroyed. dmfree:lib\dmpak.cpp.
 
 	// buffer
 	dmfree( DMPP( buf));	// (decr ref count or) free heap block & NULL ptr
@@ -1003,25 +962,24 @@ x		}
 		// find / bind refs from IMPORT()s
 		int fnmi;  				// for field name index (fnmt[] subscript)
 		IFFNM* iffnm = IffnmB.p + iffnmi;	// point to file's field names table record (or to record 0 if none)
-		FNMT* fnmt = iffnm->fnmt;		// fetch pointer to field names table in heap (or a NULL from record 0)
-		if (iffnmi   		// if file has field names table record -- else skip
-		 && fnmt)   		// and names table record has allocated heap names table -- insurance
-		{	for (fnmi = 1; fnmi <= iffnm->fnmiN; fnmi++)	// search names table for this name
-			{	for (int ifn=1; ifn<=nFieldsScanned; ifn++)
+		if (iffnmi)   		// if file has field names table record -- else skip
+		{	for (fnmi = 1; size_t( fnmi) < iffnm->ifn_fnmt.size(); fnmi++)	// search names table for this name
+			{	FNMT& fnmt = iffnm->ifn_fnmt[fnmi];
+				for (int ifn=1; ifn<=nFieldsScanned; ifn++)
 				{
 					const char* nm = im_fnrt[ ifn].fnrt_fieldName.c_str();
-					if (!_stricmp( nm, fnmt[fnmi].fnmt_fieldName))	// if this entry matches
-					{	if (fnmt[ fnmi].fnmt_fnr == 0)	// if name previously seen
-						{	fnmt[fnmi].fnmt_fnr = ifn;  		// store field number with name for use during run
+					if (!_stricmp(nm, fnmt.fnmt_fieldName.c_str()))	// if this entry matches
+					{	if (fnmt.fnmt_fnr == 0)	// if name previously seen
+						{	fnmt.fnmt_fnr = ifn;  		// store field number with name for use during run
 							// break -- NO, check all to detect duplicate names
 						}
-						else if (fnmt[ fnmi].fnmt_fnr != ifn)	// if different column already found
+						else if (fnmt.fnmt_fnr != ifn)	// if different column already found
 						{	// note: duplicate header scans occur if autosize or multiple RUNs
 							//       so re-find of same column is OK
 							rc = err( ERR, "Import file %s:"
 								"\n    IMPORT()s refer to ambiguous (non-unique) field '%s'"
 								"\n    found in columns %d and %d.",
-								im_fileName.CStr(), nm, fnmt[ fnmi].fnmt_fnr, ifn);
+								im_fileName.CStr(), nm, fnmt.fnmt_fnr, ifn);
 						}
 					}
 				}
@@ -1029,14 +987,15 @@ x		}
 		}
 
 		// issue errors for fields used in program but not found in file
-		if (iffnmi && fnmt) 		// if have field names record & it has names table (else no field names used in program)
+		if (iffnmi) 		// if have field names record & it has names table (else no field names used in program)
 		{	int nBads = 0;
 			const char* bads[5];
 			for (int i = 0; i < 5; i++)  bads[i] = "";
-			for (fnmi = 1; fnmi <= iffnm->fnmiN; fnmi++)  	// search names table for names without field numbers
-				if (!fnmt[fnmi].fnmt_fnr)
-				{	if (nBads < 5)
-						bads[nBads++] = fnmt[fnmi].fnmt_fieldName;	// save pointers to first 5 names not found
+			for (fnmi = 1; size_t(fnmi) < iffnm->ifn_fnmt.size(); fnmi++)  	// search names table for names without field numbers
+				if (!iffnm->ifn_fnmt[fnmi].fnmt_fnr)
+				{
+					if (nBads < 5)
+						bads[nBads++] = iffnm->ifn_fnmt[fnmi].fnmt_fieldName.c_str();	// save pointers to first 5 names not found
 					else
 					{	bads[5-1] = ". . .";    // at 6th name change 5th to elipses and stop
 						break;

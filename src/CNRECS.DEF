@@ -1907,6 +1907,14 @@ RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) reco
                                              //  [ 0] unused
 *END		// IMPF
 //=============================================================================
+RECORD FNMT "fnmt" *SUBSTRUCT   // IFFNM substructure
+   *excon
+   *exdes
+   *declare "FNMT( const char* fieldName) : fnmt_fieldName( fieldName), fnmt_fnr( 0) {}"
+   *declare "std::string fnmt_fieldName;"	// field name (in heap) per file header, for error messages
+    INT fnmt_fnr;					// field NUMBER established when file opened
+*END
+//-----------------------------------------------------------------------------
 RECORD IFFNM "impFileFldNames" *RAT *hideall // IMPORT FILE FIELD NAMES TABLE (IffnmB) records
 		/* Made when Import() fcn for file is seen.
 		   When file with header is opened, field numbers for in names table are set,
@@ -1919,9 +1927,8 @@ RECORD IFFNM "impFileFldNames" *RAT *hideall // IMPORT FILE FIELD NAMES TABLE (I
     *i TI impfi			// 0 or subscript of IMPF record for file in ImpfiB/ImpfB
     //fnmt[]: array of info on fields ref'd by name, in order seen (before numbers known).
     // used at runtime to get fnr's to access fields. subscript: "fnmi", "field name index"
-    *i SI fnmiN			// number of named fields seen for this file / max fnmi (+ 1 if 0-based)
-	*declare "struct FNMT* fnmt;"	// pointer to field names info array in heap
-    *i *hide SI fnmtNAl		// allocated size of fnmt. Max subscript fnmtNAl-1. [0] unused.
+    //  [0] unused.
+    *declare "std::vector<FNMT> ifn_fnmt;"    // info subscripted by 1-based field number
 *END		// IFFNM
 //===========================================================================================================
 RECORD AUSZ "autoSizing sub" *SUBSTRUCT	// AUTOSIZING VARIABLES substructure for one autoSized member

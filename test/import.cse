@@ -587,171 +587,6 @@ DESCOND   "ClgDC_0p4pct_Jul"
 METER   "MtrElec"
 
 
-IZXFER   "Unit1ToAtticCeiling-BypassxA"  
-   izNVType = "NONE"                    // Choice determining interzone ventilation
-   izZn1 = "Unit1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
-   izZn2 = "Attic-atc"                  // Name of secondary zone
-   izHConst = 0.015 * 1250 * select(@znRes["Unit1-zn"].prior.H.tAir - @znRes["Attic-atc"].prior.H.tAir > 0., 1., default 0.)    // expression describing Conductance between zones, Btu/�F
-
-IZXFER   "Unit1-InfLU"  
-   izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
-   izZn1 = "Unit1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
-   izALo = 0.025157                     // Area of low or only vent (typically VentOff), ft2
-   izHD = 2.25                          // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
-   izNVEff = 1                          // Vent discharge coefficient coefficient
-   izCpr = 0.6                          // Wind pressure coefficient (for AIRNETEXT)
-   izExp = 0.65                         // Opening exponent
-
-IZXFER   "Unit1-InfLS"  
-   izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
-   izZn1 = "Unit1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
-   izALo = 0.050314                     // Area of low or only vent (typically VentOff), ft2
-   izHD = 2.25                          // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
-   izNVEff = 1                          // Vent discharge coefficient coefficient
-   izCpr = -0.65                        // Wind pressure coefficient (for AIRNETEXT)
-   izExp = 0.65                         // Opening exponent
-
-IZXFER   "Unit1-InfLD"  
-   izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
-   izZn1 = "Unit1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
-   izALo = 0.025157                     // Area of low or only vent (typically VentOff), ft2
-   izHD = 2.25                          // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
-   izNVEff = 1                          // Vent discharge coefficient coefficient
-   izCpr = -0.3                         // Wind pressure coefficient (for AIRNETEXT)
-   izExp = 0.65                         // Opening exponent
-
-IZXFER   "Unit1-InfHU"  
-   izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
-   izZn1 = "Unit1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
-   izALo = 0.025157                     // Area of low or only vent (typically VentOff), ft2
-   izHD = 6.75                          // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
-   izNVEff = 1                          // Vent discharge coefficient coefficient
-   izCpr = 0.6                          // Wind pressure coefficient (for AIRNETEXT)
-   izExp = 0.65                         // Opening exponent
-
-IZXFER   "Unit1-InfHS"  
-   izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
-   izZn1 = "Unit1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
-   izALo = 0.050314                     // Area of low or only vent (typically VentOff), ft2
-   izHD = 6.75                          // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
-   izNVEff = 1                          // Vent discharge coefficient coefficient
-   izCpr = -0.65                        // Wind pressure coefficient (for AIRNETEXT)
-   izExp = 0.65                         // Opening exponent
-
-IZXFER   "Unit1-InfHD"  
-   izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
-   izZn1 = "Unit1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
-   izALo = 0.025157                     // Area of low or only vent (typically VentOff), ft2
-   izHD = 6.75                          // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
-   izNVEff = 1                          // Vent discharge coefficient coefficient
-   izCpr = -0.3                         // Wind pressure coefficient (for AIRNETEXT)
-   izExp = 0.65                         // Opening exponent
-
-IZXFER   "Unit1-NVLU"  
-   izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
-   izZn1 = "Unit1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
-   izALo = 0                            // Area of low or only vent (typically VentOff), ft2
-   izAHi = 1.069 * WINDOWVENTAVAIL      // Additional vent area (high vent or VentOn)  (expression/formula), ft2
-   izHD = 4                             // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
-   izNVEff = 0.5                        // Vent discharge coefficient coefficient
-   izCpr = 0.6                          // Wind pressure coefficient (for AIRNETEXT)
-   izAFCat = "VentEx"                   // Air flow (infiltration) reporting category
-
-IZXFER   "Unit1-NVLS"  
-   izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
-   izZn1 = "Unit1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
-   izALo = 0                            // Area of low or only vent (typically VentOff), ft2
-   izAHi = 2.138 * WINDOWVENTAVAIL      // Additional vent area (high vent or VentOn)  (expression/formula), ft2
-   izHD = 4                             // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
-   izNVEff = 0.5                        // Vent discharge coefficient coefficient
-   izCpr = -0.65                        // Wind pressure coefficient (for AIRNETEXT)
-   izAFCat = "VentEx"                   // Air flow (infiltration) reporting category
-
-IZXFER   "Unit1-NVLD"  
-   izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
-   izZn1 = "Unit1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
-   izALo = 0                            // Area of low or only vent (typically VentOff), ft2
-   izAHi = 1.069 * WINDOWVENTAVAIL      // Additional vent area (high vent or VentOn)  (expression/formula), ft2
-   izHD = 4                             // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
-   izNVEff = 0.5                        // Vent discharge coefficient coefficient
-   izCpr = -0.3                         // Wind pressure coefficient (for AIRNETEXT)
-   izAFCat = "VentEx"                   // Air flow (infiltration) reporting category
-
-IZXFER   "Unit1-NVHU"  
-   izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
-   izZn1 = "Unit1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
-   izALo = 0                            // Area of low or only vent (typically VentOff), ft2
-   izAHi = 1.069 * WINDOWVENTAVAIL      // Additional vent area (high vent or VentOn)  (expression/formula), ft2
-   izHD = 6                             // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
-   izNVEff = 0.5                        // Vent discharge coefficient coefficient
-   izCpr = 0.6                          // Wind pressure coefficient (for AIRNETEXT)
-   izAFCat = "VentEx"                   // Air flow (infiltration) reporting category
-
-IZXFER   "Unit1-NVHS"  
-   izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
-   izZn1 = "Unit1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
-   izALo = 0                            // Area of low or only vent (typically VentOff), ft2
-   izAHi = 2.138 * WINDOWVENTAVAIL      // Additional vent area (high vent or VentOn)  (expression/formula), ft2
-   izHD = 6                             // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
-   izNVEff = 0.5                        // Vent discharge coefficient coefficient
-   izCpr = -0.65                        // Wind pressure coefficient (for AIRNETEXT)
-   izAFCat = "VentEx"                   // Air flow (infiltration) reporting category
-
-IZXFER   "Unit1-NVHD"  
-   izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
-   izZn1 = "Unit1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
-   izALo = 0                            // Area of low or only vent (typically VentOff), ft2
-   izAHi = 1.069 * WINDOWVENTAVAIL      // Additional vent area (high vent or VentOn)  (expression/formula), ft2
-   izHD = 6                             // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
-   izNVEff = 0.5                        // Vent discharge coefficient coefficient
-   izCpr = -0.3                         // Wind pressure coefficient (for AIRNETEXT)
-   izAFCat = "VentEx"                   // Air flow (infiltration) reporting category
-
-IZXFER   "Unit1ToAtticCeiling-xAttic"  
-   izNVType = "AIRNETIZ"                // Choice determining interzone ventilation
-   izZn1 = "Unit1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
-   izZn2 = "Attic-atc"                  // Name of secondary zone
-   izALo = 0.257906                     // Area of low or only vent (typically VentOff), ft2
-   izHD = 9                             // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
-   izNVEff = 1                          // Vent discharge coefficient coefficient
-   izExp = 0.65                         // Opening exponent
-
-IZXFER   "Attic-SU"  
-   izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
-   izZn1 = "Attic-atc"                  // Name of primary zone (flow rates > 0 are into the primary zone)
-   izALo = 0.520833                     // Area of low or only vent (typically VentOff), ft2
-   izHD = 9                             // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
-   izNVEff = 0.6                        // Vent discharge coefficient coefficient
-   izCpr = 0.6                          // Wind pressure coefficient (for AIRNETEXT)
-   izExp = 0.65                         // Opening exponent
-
-IZXFER   "Attic-SS"  
-   izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
-   izZn1 = "Attic-atc"                  // Name of primary zone (flow rates > 0 are into the primary zone)
-   izALo = 1.041667                     // Area of low or only vent (typically VentOff), ft2
-   izHD = 9                             // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
-   izNVEff = 0.6                        // Vent discharge coefficient coefficient
-   izCpr = -0.65                        // Wind pressure coefficient (for AIRNETEXT)
-   izExp = 0.65                         // Opening exponent
-
-IZXFER   "Attic-SD"  
-   izNVType = "AIRNETEXT"               // Choice determining interzone ventilation
-   izZn1 = "Attic-atc"                  // Name of primary zone (flow rates > 0 are into the primary zone)
-   izALo = 0.520833                     // Area of low or only vent (typically VentOff), ft2
-   izHD = 9                             // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
-   izNVEff = 0.6                        // Vent discharge coefficient coefficient
-   izCpr = -0.3                         // Wind pressure coefficient (for AIRNETEXT)
-   izExp = 0.65                         // Opening exponent
-
-IZXFER   "Unit1ToCrawlFloorxGarage"  
-   izNVType = "AIRNETIZ"                // Choice determining interzone ventilation
-   izZn1 = "Unit1-zn"                   // Name of primary zone (flow rates > 0 are into the primary zone)
-   izZn2 = "Crawlspace-zn"              // Name of secondary zone
-   izALo = 0.051581                     // Area of low or only vent (typically VentOff), ft2
-   izHD = 0                             // Vent center-to-center height difference (for TWOWAY) or vent height above nominal 0 level (for AirNet types), ft
-   izNVEff = 1                          // Vent discharge coefficient coefficient
-   izExp = 0.65                         // Opening exponent
-
 ZONE   "Unit1-zn"  
    znModel = "CZM"                      // Zone model (CNE, CSE, CZM, UZM)
    znArea = 1250                        // Zone area, ft2
@@ -766,7 +601,7 @@ ZONE   "Unit1-zn"
    znTD = 72;
    znHIRatio = 10                       // Zone hygric inertia ratio
    infAC = 0                            // Zone infiltration air changes per hour, 1/hr
-   infELA = 0                           // Zone effective leakage area (ELA), in2
+   infELA = 30                           // Zone effective leakage area (ELA), in2
    infShld = 4                          // Zone local shielding class, used in ELA model
    znRSys = "rsys-HVAC System"          // RSYS component conditioning this ZONE
 
@@ -1295,7 +1130,7 @@ ZONE   "Attic-atc"
    znEaveZ = 9                          // Height of top of the wall in this zone above the ground, ft
    znCAir = 0.01                        // Zone 'air' heat capacity: represents heat capacity of air, furniture, 'light' walls, and everything in zone except nonQUICK surfaces
    znHIRatio = 10                       // Zone hygric inertia ratio
-   infAC = 0                            // Zone infiltration air changes per hour, 1/hr
+   infAC = .7                            // Zone infiltration air changes per hour, 1/hr
    infELA = 0                           // Zone effective leakage area (ELA), in2
    infShld = 4                          // Zone local shielding class, used in ELA model
 
@@ -1515,12 +1350,12 @@ BATTERY   "battery 1"
 ALTER PVARRAY "pvarray 1";
     pvDCSysSize = 5;
 
+IMPORTFILE other imFileName="importfile_test.dat" imFreq=Hour imTitle="?"
 IMPORTFILE btCR imFileName="importfile_test.dat" imFreq=Hour imTitle="x-ZoneTStat"
 ALTER BATTERY "battery 1";
     btMaxCap = 13.5;
     btMaxChgPwr = 5.67;
     btMaxDschgPwr = 5.67;
-    // btChgReq = import(btCR, "btChgReq_custom");
     btChgReq = select(
        import(btCR, 4)!=0, import(btCR, "btChgReq_custom")  // import numeric value by col # and col name
        default -@BATTERY[ 1].loadSeen)
