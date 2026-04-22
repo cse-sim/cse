@@ -51,6 +51,12 @@ namespace filesys = std::experimental::filesystem;
 //   Functionality replaced with C lib calls and caller local path searches
 //   Also deleted file directry.cpp containing functions used only by deleted xf functions
 
+#if CSE_OS == CSE_OS_WINDOWS
+static constexpr char PATH_DELIMITER = ';';
+#else
+static constexpr char PATH_DELIMITER = ':';
+#endif
+
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL SEC FC xioerr( XFILE *xf);
@@ -641,7 +647,7 @@ int fileFind1(			// check existence of a single file
 bool findFile( 	// non-member function to find file on given path
 
 	const char* fName, 		// file to find. Partial path ok; no path search if contains dir path beginning with '\'.
-	const char* path, 		// path to search; NULL for DOS environment PATH; current dir always searched first.
+	const char* path, 		// path to search; NULL for environment PATH; current dir always searched first.
 	char* buf )				// receives full pathName if found; altered even if not found. array size CSE_MAX_PATH
 
 // returns TRUE if found (either file or directory)
@@ -660,10 +666,11 @@ bool findFile( 	// non-member function to find file on given path
 			if (!path)						// if NULL given
 				path = getenv("PATH");		//   search environment path
 			char* p = strTrim( NULL, path);	// working copy
-			const char* pToks[ 100];
-			int n = strTokSplit( p, ";", pToks, 100);
+			static constexpr unsigned int nToks = 200;
+			const char* pToks[ nToks];
+			int n = strTokSplit( p, &PATH_DELIMITER, pToks, nToks);
 			if (n < 0)
-				n = 100;
+				n = nToks;
 			for (int i=0; !found && i<n; i++)
 				found = fileFind1( pToks[ i], fName, fNameFound);
 		}
@@ -683,9 +690,9 @@ bool findFile( 	// non-member function to find file on given path
 //---------------------------------------------------------------------------
 // class Path
 //---------------------------------------------------------------------------
-void Path::add( 		// add ;-delimited paths to Path object
+void Path::add( 		// add PATH_DELIMITER-delimited paths to Path object
 
-	const char *s )	// path;path;path, or NULL to add DOS path paths
+	const char *s )	// path;path;path, or NULL to add PATH paths
 {
 	if (!s)
 		s = getenv("PATH");			// NULL means use DOS environment PATH variable
@@ -694,7 +701,7 @@ void Path::add( 		// add ;-delimited paths to Path object
 
 // determine size
 	size_t lenNow = p ? strlen(p) : 0;			// 0 or length of existing path(s) string
-	size_t sneed = (lenNow + strlen(s) + 2) | 32;  	// space needed: old, new, ';', '\0', | 32 for less reallocation
+	size_t sneed = (lenNow + strlen(s) + 2) | 32;  	// space needed: old, new, PATH_DELIMITER, '\0', | 32 for less reallocation
 	size_t snow = (lenNow+1) | 32;			// now big it must be now (if p != NULL)
 
 // allocate
@@ -719,8 +726,8 @@ void Path::add( 		// add ;-delimited paths to Path object
 // update
 	char *q = nup + lenNow;		// pointer to end of current paths
 	if (lenNow)				// if there were already any paths
-		if (*(q-1) != ';' && *s != ';')	// unless there already is a ';'
-			*q++ = ';';			// supply separating ;
+		if (*(q-1) != PATH_DELIMITER && *s != PATH_DELIMITER)	// unless there already is a PATH_DELIMITER
+			*q++ = PATH_DELIMITER;			// supply separating PATH_DELIMITER
 	strcpy( q, s);			// append new path(s)
 	_strupr(q);				/* upper-case user-entered paths for uniform appearance 2-95
           				   (paths from system are upper case; most filenames get uppercased eg by strffix). */
