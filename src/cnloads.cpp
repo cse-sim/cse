@@ -462,6 +462,7 @@ RC ZNR::zn_BegSubhr2()			// zone start of subhour, part 2
 	//  initialization done later for CZM zone model
 	// zn_qsHvac = 0.;
 	// zn_qlHvac = 0.;
+	zn_qsUnMet = 0.;
 
 	zn_fVentPrf = zn_fVent = 0.f;	// vent fraction
 									//  = actual / possible vent flow
@@ -1477,6 +1478,14 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 			zn_qsHvac = mCp*(tSup - tz);
 			// zn_qsHvac = zn_QAirCR(tzls); experiment, same results 11-21
 			zn_sysAirI.af_AccumDry( zn_rsAmfSup, rs->rs_asSup);
+			if (1)
+			{
+				if (abs(tz - zn_tzsp) > .001)
+				{
+					zn_qsUnMet = zn_QAirCR(zn_tzsp) - zn_qsHvac;
+					tz = zn_tzsp;
+				}
+			}
 			if (zn_hcMode == RSYS::rsmOAV)
 				zn_OAVRlfO.af_AccumDry( -zn_rsAmfSup, tz, wzls);	// w not used
 			else
