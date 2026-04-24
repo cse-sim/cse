@@ -1091,6 +1091,7 @@ int ZNR::zn_FVentCR()			// find zone's preferred vent fraction
 	}
 	return ret;
 }	// ZNR::zn_FVentCR
+#define DOHOLD
 //-----------------------------------------------------------------------------
 RC ZNR::zn_CondixCR(		// zone conditions part 1, convective/radiant model
 	int ventAvail)		// vent availability
@@ -1140,6 +1141,11 @@ x	}
 
 	zn_anAmfCpVent = 0.;		// full vent heat rate, Btuh/F
 	zn_anAmfCpTVent = 0.;		// full vent heat addition, Btuh
+#endif
+
+#if 0 && defined( _DEBUG)
+	if (Top.jDay == 256 && Top.iHr == 23 && Top.iSubhr > 10)
+		printf("\nHit");
 #endif
 
 	bool bUZ = zn_IsUZ();
@@ -1408,7 +1414,6 @@ void ZNR::zn_MapTerminalResults()	// transfer terminal model outcomes to working
 	}
 
 }		// ZNR::zn_MapTerminalResults
-#define DOHOLD
 //-----------------------------------------------------------------------------
 RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 {
@@ -1474,7 +1479,7 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 #if defined( DOHOLD)
 	if (zn_hcMode == RSYS::rsmOAV)
 		zn_OAVRlfO.af_AccumDry(-zn_rsAmfSup, tz, wzls);	// w not used
-	else
+	else if (zn_fVent == 0.f)
 	{	zn_IdealHVAC();
 		if (rs)
 			zn_sysAirO.af_AccumDry(-zn_rsAmfRet, tz, wzls);	// w finalized in zn_AirXMoistureBal
@@ -1563,7 +1568,7 @@ void ZNR::zn_IdealHVAC()		// idealized space conditioning
 			// mode?
 		else
 		{
-			zn_qsHvac = qsTot;
+			zn_qsIdeal = zn_qsHvac = qsTot;
 			zn_hcMode = hcMode;
 		}
 	}
