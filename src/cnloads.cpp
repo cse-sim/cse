@@ -1253,14 +1253,11 @@ x						printf( "1B\n");
 		}
 		else
 		{	// non-RSYS zone ("magic" heating and cooling)
+#if !defined( DOHOLD)
 			zn_IdealHVAC();
+#endif
 		}
 	}
-
-#if defined( _DEBUG)
-	if (tz < -100.f || tz > 200.f)
-		warn( "Zone '%s': unreasonable air temp %0.2f\n", Name(), tz);
-#endif
 
 	return rc;
 }		// ZNR::zn_CondixCR
@@ -1352,51 +1349,7 @@ void ZNR::zn_SetRSYSAmfFromTSup()	// set RSYS-to-zone air flow given tSup
 	// else zn_rsAmfxxx = 0
 }		// ZNR::zn_SetRSYSAmfFromTSup
 //-----------------------------------------------------------------------------
-void ZNR::zn_IdealHVAC()		// idealized space conditioning
-// applies "magic" heating or cooling
-{
-	if (tz > zn_tzspC && i.znQMxC < 0.f)
-	{
-		zn_hcMode = RSYS::rsmCOOL;
-		tz = zn_tzsp = zn_tzspC;
-	#if defined( ZNHVACFCONV)
-		zn_fConv = zn_fConvC;
-		zn_qsHvac = zn_QsHvacCR(tz, zn_fConv);
-	#else
-		zn_qsHvac = zn_QAirCR(tz);
-	#endif
-		if (fabs(zn_qsHvac) > fabs(i.znQMxC))
-		{	zn_qsHvac = i.znQMxC;
-	#if defined( ZNHVACFCONV)
-			tz = zn_TAirCR(zn_qsHvac * zn_fConv, 0., zn_qsHvac * (1.f - zn_fConv));
-	#else
-			tz = zn_TAirCR(zn_qsHvac, 0.);
-	#endif
-		}
-		// else capacity sufficient
-	}
-	else if (tz < zn_tzspH && i.znQMxH > 0.f)
-	{	// tz < TH: air needs heating
-		zn_hcMode = RSYS::rsmHEAT;
-		tz = zn_tzsp = zn_tzspH;
-#if defined( ZNHVACFCONV)
-		zn_fConv = zn_fConvH;
-		zn_qsHvac = zn_QsHvacCR(tz, zn_fConv);
-#else
-		zn_qsHvac = zn_QAirCR(tz);
-#endif
-		if (zn_qsHvac > i.znQMxH)
-		{	// heat at heating capacity, find resulting tz.
-			zn_qsHvac = i.znQMxH;
-#if defined( ZNHVACFCONV)
-			tz = zn_TAirCR(zn_qsHvac * zn_fConv, 0., zn_qsHvac * (1.f - zn_fConv));
-#else
-			tz = zn_TAirCR(zn_qsHvac, 0.);
-#endif
-		}
-		// else capacity sufficient
-	}
-}		// ZNR::zn_IdealHVAC
+
 //-----------------------------------------------------------------------------
 void ZNR::zn_MapTerminalResults()	// transfer terminal model outcomes to working mbrs
 {
@@ -1457,6 +1410,7 @@ void ZNR::zn_MapTerminalResults()	// transfer terminal model outcomes to working
 	}
 
 }		// ZNR::zn_MapTerminalResults
+#define DOHOLD
 //-----------------------------------------------------------------------------
 RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 {
@@ -1478,7 +1432,7 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 			zn_qsHvac = mCp*(tSup - tz);
 			// zn_qsHvac = zn_QAirCR(tzls); experiment, same results 11-21
 			zn_sysAirI.af_AccumDry( zn_rsAmfSup, rs->rs_asSup);
-			if (1)
+#if 0 && defined( DOHOLD)
 			{
 				if (abs(tz - zn_tzsp) > .001)
 				{
@@ -1486,14 +1440,14 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 					tz = zn_tzsp;
 				}
 			}
+#endif
+#if !defined( DOHOLD)
 			if (zn_hcMode == RSYS::rsmOAV)
 				zn_OAVRlfO.af_AccumDry( -zn_rsAmfSup, tz, wzls);	// w not used
 			else
 				zn_sysAirO.af_AccumDry( -zn_rsAmfRet, tz, wzls);	// w finalized in zn_AirXMoistureBal
-#if defined( _DEBUG)
-			if (tz < -100.f || tz > 200.f)
-				warn( "Zone '%s': unreasonable air temp %0.2f\n", Name(), tz);
 #endif
+
 		}
 
 #if defined( _DEBUG)
@@ -1518,7 +1472,24 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 
 	}
 #endif
-	// else all known
+
+#if defined( DOHOLD)
+	if (zn_hcMode == RSYS::rsmOAV)
+		zn_OAVRlfO.af_AccumDry(-zn_rsAmfSup, tz, wzls);	// w not used
+	else
+	{	zn_IdealHVAC();
+		if (rs)
+			zn_sysAirO.af_AccumDry(-zn_rsAmfRet, tz, wzls);	// w finalized in zn_AirXMoistureBal
+	}
+#endif
+
+
+#if defined( _DEBUG)
+	if (tz < -100.f || tz > 200.f)
+		warn("Zone '%s': unreasonable air temp %0.2f\n", Name(), tz);
+#endif
+
+	// how all known
 #if defined( ZNHVACFCONV)
 	zn_tr = zn_TRadCR( tz, zn_qsHvac*(1.-zn_fConv));
 #else
@@ -1532,6 +1503,122 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 	return RCOK;
 
 }		// ZNR::zn_CondixCR2
+//-----------------------------------------------------------------------------
+#if defined( DOHOLD)
+void ZNR::zn_IdealHVAC()		// idealized space conditioning
+// applies "magic" heating or cooling
+{
+	double qsTot{ 0 };	// sensible power required to hold set point (or max available), Btuh
+	int hcMode = RSYS::rsmOFF;
+	if (tz > zn_tzspC && i.znQMxC < 0.f)
+	{
+		hcMode = RSYS::rsmCOOL;
+		tz = zn_tzsp = zn_tzspC;
+#if defined( ZNHVACFCONV)
+		zn_fConv = zn_fConvC;
+		qsTot = zn_QsHvacCR(tz, zn_fConv);
+#else
+		qsTot = zn_QAirCR(tz);
+#endif
+		if (fabs(qsTot) > fabs(i.znQMxC))
+		{
+			qsTot = i.znQMxC;
+#if defined( ZNHVACFCONV)
+			tz = zn_TAirCR(qsTot * zn_fConv, 0., qsTot * (1.f - zn_fConv));
+#else
+			tz = zn_TAirCR(qsTot, 0.);
+#endif
+		}
+		// else capacity sufficient
+	}
+	else if (tz < zn_tzspH && i.znQMxH > 0.f)
+	{	// tz < TH: air needs heating
+		hcMode = RSYS::rsmHEAT;
+		tz = zn_tzsp = zn_tzspH;
+#if defined( ZNHVACFCONV)
+		zn_fConv = zn_fConvH;
+		qsTot = zn_QsHvacCR(tz, zn_fConv);
+#else
+		qsTot = zn_QAirCR(tz);
+#endif
+		if (qsTot > i.znQMxH)
+		{	// heat at heating capacity, find resulting tz.
+			qsTot = i.znQMxH;
+#if defined( ZNHVACFCONV)
+			tz = zn_TAirCR(qsTot * zn_fConv, 0., qsTot * (1.f - zn_fConv));
+#else
+			tz = zn_TAirCR(qsTot, 0.);
+#endif
+		}
+		// else capacity sufficient
+	}
+	if (hcMode == RSYS::rsmOFF)
+	{
+		if (qsTot != 0.)
+			printf("\nNZ");
+	}
+	else
+	{	// accounting
+		RSYS* rs = zn_GetRSYS();
+		if (rs)		// what about terminal?
+			zn_qsUnMet = qsTot - zn_qsHvac;
+		else
+		{
+			zn_qsHvac = qsTot;
+			zn_hcMode = hcMode;
+		}
+	}
+
+}		// ZNR::zn_IdealHVAC
+
+#else
+void ZNR::zn_IdealHVAC()		// idealized space conditioning
+// applies "magic" heating or cooling
+{
+	if (tz > zn_tzspC && i.znQMxC < 0.f)
+	{
+		zn_hcMode = RSYS::rsmCOOL;
+		tz = zn_tzsp = zn_tzspC;
+#if defined( ZNHVACFCONV)
+		zn_fConv = zn_fConvC;
+		zn_qsHvac = zn_QsHvacCR(tz, zn_fConv);
+#else
+		zn_qsHvac = zn_QAirCR(tz);
+#endif
+		if (fabs(zn_qsHvac) > fabs(i.znQMxC))
+		{
+			zn_qsHvac = i.znQMxC;
+#if defined( ZNHVACFCONV)
+			tz = zn_TAirCR(zn_qsHvac * zn_fConv, 0., zn_qsHvac * (1.f - zn_fConv));
+#else
+			tz = zn_TAirCR(zn_qsHvac, 0.);
+#endif
+		}
+		// else capacity sufficient
+	}
+	else if (tz < zn_tzspH && i.znQMxH > 0.f)
+	{	// tz < TH: air needs heating
+		zn_hcMode = RSYS::rsmHEAT;
+		tz = zn_tzsp = zn_tzspH;
+#if defined( ZNHVACFCONV)
+		zn_fConv = zn_fConvH;
+		zn_qsHvac = zn_QsHvacCR(tz, zn_fConv);
+#else
+		zn_qsHvac = zn_QAirCR(tz);
+#endif
+		if (zn_qsHvac > i.znQMxH)
+		{	// heat at heating capacity, find resulting tz.
+			zn_qsHvac = i.znQMxH;
+#if defined( ZNHVACFCONV)
+			tz = zn_TAirCR(zn_qsHvac * zn_fConv, 0., zn_qsHvac * (1.f - zn_fConv));
+#else
+			tz = zn_TAirCR(zn_qsHvac, 0.);
+#endif
+		}
+		// else capacity sufficient
+	}
+}		// ZNR::zn_IdealHVAC
+#endif
 //----------------------------------------------------------------------------
 #if defined(_DEBUG)
 RC ZNR::zn_AirFlowVsTsup()

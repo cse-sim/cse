@@ -1482,12 +1482,12 @@ RC ZNR::zn_CheckHVACConfig()		// check HVAC <-> zone consistency
 	}
 	else
 	{
-		int sysCount = zn_HasRSYS() + zn_HasTerminal() + zn_HasMagicHVAC();
+		int sysCount = zn_HasRSYS() + zn_HasTerminal();
 
 		if (sysCount > 1)
 			rc |= oer(
 				"Conflicting HVAC sources. A zone cannot be conditioned\n"
-				"    by more than 1 of TERMINAL(s), RSYS, and znQMxH/znQMxC.");
+				"    by more than 1 of TERMINAL(s) and RSYS.");
 
 		if (zn_UsesZoneSetpoints())
 		{
