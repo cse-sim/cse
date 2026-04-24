@@ -84,10 +84,10 @@ SI runtrace = 0;		// settable as sys var $runtrace (cuparse.cpp)
 
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
-LOCAL RC FC cuEval( void *ip, const char** pmsg, USI *pBadH);
-LOCAL RC FC cuEvalI( const char** pmsg, USI *pBadH);
-LOCAL RC FC cuRmGet( NANDAT& vRet, MSGORHANDLE* pms, USI *pBadH);
-LOCAL RC FC cuRm2Get( SI *pi, MSGORHANDLE* pms, USI *pBadH);
+LOCAL RC FC cuEval( void *ip, const char** pmsg, int* pBadH);
+LOCAL RC FC cuEvalI( const char** pmsg, int* pBadH);
+LOCAL RC FC cuRmGet( NANDAT& vRet, MSGORHANDLE* pms, int* pBadH);
+LOCAL RC FC cuRm2Get( SI *pi, MSGORHANDLE* pms, int* pBadH);
 LOCAL const char * FC ivlTx( IVLCH ivl);
 
 /*lint -e124 "Pointer to void not allowed" when comparing void ptrs */
@@ -327,7 +327,7 @@ RC FC cuEvalR( 		// evaluate pseudocode & return ptr to value
 				// For TYSTR, value may be ptr to text INLINE IN CODE.
 	const char** pmsg,	// NULL or receives ptr to un-issued Tmpstr error msg.
 						// CAUTION: msg is in transitory temp string storage: use or strsave promptly.
-	USI *pBadH )	// NULL or receives 0 or expr # of uneval'd expr when RCUNSET is returned.
+	int* pBadH )	// NULL or receives 0 or expr # of uneval'd expr when RCUNSET is returned.
 
 // purpose of this level is to keep eval stack local to cueval.cpp.
 
@@ -367,7 +367,7 @@ LOCAL RC FC cuEval(	// evaluate, leave any result in stack
 	void *ip,	// pseudocode to evaluate
 
 	const char** pmsg,	// NULL or receives ptr to un-issued Tmpstr error msg
-	USI *pBadH )		// NULL or receives 0 (for UNSET, or SI expr)
+	int* pBadH )		// NULL or receives 0 (for UNSET, or SI expr)
 						//  or unevaluated expr # if RCUNSET returned
 
 /* returns RCOK if all ok.
@@ -392,7 +392,7 @@ LOCAL RC FC cuEvalI(
 
 	const char* *pmsg,	// NULL or receives ptr to un-issued Tmpstr error msg.
     					// CAUTION: msg is in transitory temp string storage: use or strsave promptly.
-	USI* pBadH )		// NULL or receives 0 (for UNSET, or SI expr) or unevaluated expr # if RCUNSET returned
+	int* pBadH )		// NULL or receives 0 (for UNSET, or SI expr) or unevaluated expr # if RCUNSET returned
 // and uses: evIp, evSp,
 
 /* returns RCOK if all ok.
@@ -1268,7 +1268,7 @@ breakbreak:
 LOCAL RC FC cuRmGet(	// access 4-byte record member, for cuEvalI, with unset check and expr fix.
 	NANDAT& vRet,		// value returned (non-NAN if success)
 	MSGORHANDLE* pms,	// returned: unissued error message if any
-	USI *pBadH)
+	int* pBadH)
 
 // pops record pointer from eval stack (evSp); fetches inline field number from instruction stream (evIp).
 
@@ -1339,7 +1339,7 @@ LOCAL RC FC cuRmGet(	// access 4-byte record member, for cuEvalI, with unset che
 		}
 		else					// other nandles are expression handles
 		{
-			USI h = EXN(v);						// extract expression number, exman.h macro.
+			int h = EXN(v);						// extract expression number, exman.h macro.
 			if (exInfo( h, NULL, NULL, &v))				// get value / if not valid expr #
 			{
 				*pms = strtprintf( MH_R0227,			// "Internal error: bad expression number %d found in %s"
@@ -1366,7 +1366,7 @@ LOCAL RC FC cuRmGet(	// access 4-byte record member, for cuEvalI, with unset che
 }			// cuRmGet
 //============================================================================
 // is it time to put cuEvalI ms and pBadH in file-globals?
-LOCAL RC FC cuRm2Get( SI *pi, MSGORHANDLE* pms, USI *pBadH)
+LOCAL RC FC cuRm2Get( SI *pi, MSGORHANDLE* pms, int* pBadH)
 
 // access 2-byte record member, for cuEvalI, with partial unset check
 
