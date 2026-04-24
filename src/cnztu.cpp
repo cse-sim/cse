@@ -1363,9 +1363,8 @@ RC ZNR::ztuEndSubhr()	// end-subhour (after iterations) hvac checks/computations
 	zrs->pz0 = zn_pz0;			// substep zone pressure
 
 // subhour results: hvac output
-	double qsHvac = zn_qsHvac * Top.tp_subhrDur;		// subhour sensible hvac energy, Btu
-	double qsUnMet = zn_qsUnMet * Top.tp_subhrDur;
-	zrs->qsMech = qsHvac + qsUnMet + zn_qHPWH * Top.tp_subhrDur;	// subhour sensible mechanical energy, Btu
+	double qsHvac = zn_qsHvac * Top.tp_subhrDur;		// subhour sensible hvac energy, Btu (includes zn_qsIdeal)
+	zrs->qsMech = qsHvac + zn_qHPWH * Top.tp_subhrDur;	// subhour sensible mechanical energy, Btu
 														//   (includes HPWH heat extraction)
 
 	zrs->qlMech = zn_qlHvac * Top.tp_subhrDur;	// subhour latent hvac energy (power * time = energy)
@@ -1377,8 +1376,9 @@ RC ZNR::ztuEndSubhr()	// end-subhour (after iterations) hvac checks/computations
 		zrs->qvMech = qTotMech;
 	else
 	{	(qTotMech < 0. ? zrs->qcMech : zrs->qhMech) = qTotMech;
-		(qsHvac < 0.f ? zrs->qscHvac : zrs->qshHvac) = qsHvac;
-		zrs->unMetQsen[qsUnMet < 0.] += qsUnMet;
+		(qsHvac < 0. ? zrs->qscHvac : zrs->qshHvac) = qsHvac;
+		double qsIdeal = zn_qsIdeal * Top.tp_subhrDur;
+		(qsIdeal < 0.? zrs->qscIdeal : zrs->qshIdeal) = qsIdeal;
 
 		if (i.zn_loadMtri)
 		{

@@ -2679,9 +2679,9 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     //bStA  			.. b.
     *s *e *hide DBL/*CFLOW*/ cM	// 0 if floating or or active-zhx heat cap flow to zone (after leaks) for current mode (Btuh/F)
     *s *e *hide DBL qM   	// 0 if floating or power of active zhx: q to yeild setpoint (Btuh).
-    *s *e DBL zn_qsHvac 	// subhour total (sensible) power of all hvac, Btuh
+    *s *e DBL zn_qsHvac 	// subhour total (sensible) power of all hvac (including ideal), Btuh
 							//   NB: power (Btuh) q is *subhrDur'd to yield energy (Btu) q's for results.
-    *s *e DBL zn_qsUnMet
+    *s *e DBL zn_qsIdeal    // subhour sensible power of ideal heating/cooling, Btuh (>0 = heating, <0 = cooling)
     *s *e DBL zn_qlHvac		// subhour total latent power (Btuh) (moisture * 1061) likewise
     *s *e DBL zn_qlIz		// latent gain from IZXFER sources (infil, vent, and duct leakage), Btuh
 							//   does NOT include HVAC
@@ -2852,8 +2852,10 @@ RECORD ZNRES_IVL_SUB "zone interval results sub" *SUBSTRUCT	// zone interval res
     *array 2 float unMetQsen    // additional sensible energy require to hold setpoint
                                 //  [ 0]=heating (>0)  [ 1]=cooling (<0)
 
-    float qscHvac   // zone accumulated HVAC sensible cooling, Btu (<=0) (OAV not included)
+    float qscHvac   // zone accumulated HVAC sensible cooling, Btu (<=0) (ideal included, OAV not included)
     float qshHvac   // zone accumulated HVAC sensible heating, Btu (>=0)
+    float qscIdeal  // zone accumulated ideal sensible cooling, Btu (<=0) (ideal included, OAV not included)
+    float qshIdeal  // zone accumulated ideal sensible heating, Btu (>=0)
     float qcMech	// zone accumulated total mechanical (sensible + latent) cooling (including HPWH heat extraction), Btu (< 0)
     float qhMech	// zone accumulated total mechanical (sensible + latent) heating (including HPWH heat extraction), Btu (>0)
     float qvMech	// zone accumulated mechanical (OAV) total (sensible + latent) heat gains, Btu (< 0)

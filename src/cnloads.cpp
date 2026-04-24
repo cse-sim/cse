@@ -458,11 +458,11 @@ RC ZNR::zn_BegSubhr2()			// zone start of subhour, part 2
 	zn_OAVRlfO.af_Init();
 	zn_rsAmfSup = zn_rsAmfRet = 0.;
 
-	// NO! CNE zone model can skip step calc and use prior result
+	// NO! CNE airhandler/terminal zone model can skip step calc and use prior results
 	//  initialization done later for CZM zone model
 	// zn_qsHvac = 0.;
 	// zn_qlHvac = 0.;
-	zn_qsUnMet = 0.;
+	zn_qsIdeal = 0.;
 
 	zn_fVentPrf = zn_fVent = 0.f;	// vent fraction
 									//  = actual / possible vent flow
@@ -1349,8 +1349,6 @@ void ZNR::zn_SetRSYSAmfFromTSup()	// set RSYS-to-zone air flow given tSup
 	// else zn_rsAmfxxx = 0
 }		// ZNR::zn_SetRSYSAmfFromTSup
 //-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
 void ZNR::zn_MapTerminalResults()	// transfer terminal model outcomes to working mbrs
 {
 
@@ -1561,7 +1559,8 @@ void ZNR::zn_IdealHVAC()		// idealized space conditioning
 	{	// accounting
 		RSYS* rs = zn_GetRSYS();
 		if (rs)		// what about terminal?
-			zn_qsUnMet = qsTot - zn_qsHvac;
+			zn_qsIdeal = qsTot - zn_qsHvac;
+			// mode?
 		else
 		{
 			zn_qsHvac = qsTot;
