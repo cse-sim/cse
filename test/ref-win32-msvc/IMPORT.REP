@@ -1,0 +1,1549 @@
+
+
+Error Messages for Run 001: Import test with autosizing
+
+---------------
+IMPORT.CSE(1354): Warning: 
+  importFile 'Unused': S0575: Unused IMPORTFILE: no IMPORT()s from it found.
+---------------
+IMPORT.CSE(1354): Warning: 
+  importFile 'Unused': S0575: Unused IMPORTFILE: no IMPORT()s from it found.
+---------------
+Warning: Zone 'Attic-atc': Condensation occurred in 1308 subhours of run.
+    Total condensation heat = 135.343 kBtu.
+---------------
+
+
+
+Monthly Energy Use, meter "MtrElec"
+
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+--- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+Jan 306.90      0 243.49 10.026      0      0      0      0 42.476      0      0  1.706      0 32.530 159.28  7.529 40.047      0      0      0 36.150      0      0 19.850 -286.2
+Feb 15.837      0 189.20  8.354      0      0      0      0 32.725      0      0  1.305      0 27.407 132.60  6.343 36.177      0      0      0 31.786      0      0 29.813 -479.9
+Mar -292.4      0 52.147      0      0      0      0      0  8.753      0      0  1.121      0 27.869 140.77  6.444 40.404      0      0      0 35.486      0      0 14.350 -619.7
+Apr -431.5      0 57.141  0.989      0      0      0      0  9.641      0      0  1.356      0 24.603 133.72  5.694 38.995      0      0      0 28.429      0      0 24.587 -756.6
+May -618.2 23.161 0.0635      0      0      0      0  7.480 .00906      0      0  0.989      0 22.962 129.57  5.315 42.485      0      0      0 29.442      0      0 13.234 -892.9
+Jun -497.0 85.437      0      0      0      0      0 27.417      0      0      0      0      0 21.164 120.35  4.898 42.178      0      0      0 29.900      0      0  6.700 -835.0
+Jul -501.9 109.74      0      0      0      0      0 37.720      0      0      0      0      0 22.416 129.66  5.188 43.763      0      0      0 32.813      0      0 27.438 -910.6
+Aug -461.3 114.53      0      0      0      0      0 38.261      0      0      0      0      0 24.056 134.42  5.568 43.811      0      0      0 30.401      0      0 19.379 -871.7
+Sep -435.5 56.807      0      0      0      0      0 19.790      0      0      0  0.240      0 25.925 137.12  6.001 42.181      0      0      0 29.516      0      0 18.335 -771.4
+Oct -317.0 22.086  0.282      0      0      0      0  7.964 0.0405      0      0  0.330      0 29.250 150.57  6.770 42.636      0      0      0 30.401      0      0 17.116 -624.4
+Nov -74.74      0 82.688  2.908      0      0      0      0 14.127      0      0  3.087      0 30.702 151.91  7.113 39.154      0      0      0 36.075      0      0 13.887 -456.4
+Dec 282.14      0 236.57 17.865      0      0      0      0 41.010      0      0  1.506      0 32.803 160.90  7.593 39.971      0      0      0 38.596      0      0 21.488 -316.2
+
+Yr   -3025 411.76 861.58 40.143      0      0      0 138.63 148.78      0      0 11.640      0 321.69 1680.9 74.457 491.80      0      0      0 388.99      0      0 226.18  -7821
+
+
+
+Battery/PV Output for Mon 29-Jun
+
+ Hr  Load kW    PV kW   Bat kW  Grid kW    Bat kWh    LS kW     TDV Fuel     Note
+ -- -------- -------- -------- --------   -------- --------     --------     --------------------
+  0    0.363        0   -0.363        0      7.122    0.363      164.605     8.75676
+  1    0.300        0   -0.300        0      6.807    0.300      164.605     8.6515
+  2    0.258        0   -0.258 -0.00000      6.535    0.258      164.605     8.6515
+  3    0.237        0   -0.237 -0.00000      6.286    0.237      164.605     8.74769
+  4    0.218        0   -0.218        0      6.057    0.218      164.605     8.74769
+  5    0.246        0   -0.246        0      5.798    0.246      164.605     8.74769
+  6    0.310   -0.155   -0.155        0      5.635    0.155      164.605     8.74769
+  7    0.363   -0.871    0.508        0      6.117   -0.508      164.605     7.38864
+  8    0.394   -1.739    1.344 -0.00000      7.394   -1.344      164.605     5.29335
+  9    0.465   -2.485    2.019 -0.00000      9.313   -2.019      164.605     5.41612
+ 10    0.605   -3.082    2.477 -0.00000     11.666   -2.477      164.605     5.40417
+ 11    0.747   -3.469    1.930   -0.791     13.500   -2.722      164.605     5.41607
+ 12    0.884   -3.628        0   -2.744     13.500   -2.744      164.605     5.34449
+ 13    1.007   -3.553        0   -2.546     13.500   -2.546      164.605     5.40417
+ 14    1.140   -3.260        0   -2.121     13.500   -2.121      164.605     5.40417
+ 15    1.270   -2.785        0   -1.516     13.500   -1.516      164.605     5.41607
+ 16    1.441   -2.116        0   -0.675     13.500   -0.675      164.605     5.46306
+ 17    1.623   -1.293   -0.330        0     13.152    0.330      164.605     4.49102
+ 18    1.694   -0.449   -1.245        0     11.842    1.245      164.605     8.04377
+ 19    1.596   -0.111   -1.485 -0.00000     10.278    1.485      164.605     8.40027
+ 20    1.277  -0.0157   -1.261 -0.00000      8.951    1.261      164.605     8.40027
+ 21    0.984        0   -0.984        0      7.915    0.984      164.605     8.40027
+ 22    0.745        0   -0.745        0      7.131    0.745      164.605     8.40027
+ 23    0.562        0   -0.562 -0.00000      6.540    0.562      164.605     8.40027
+
+
+Battery/PV Output for Tue 30-Jun
+
+ Hr  Load kW    PV kW   Bat kW  Grid kW    Bat kWh    LS kW     TDV Fuel     Note
+ -- -------- -------- -------- --------   -------- --------     --------     --------------------
+  0    0.406        0   -0.406        0      6.112    0.406      164.605     8.40027
+  1    0.328        0   -0.328        0      5.766    0.328      164.605     8.41322
+  2    0.281        0   -0.281        0      5.471    0.281      164.605     8.41322
+  3    0.256        0   -0.256        0      5.202    0.256      164.605     8.41322
+  4    0.228        0   -0.228        0      4.961    0.228      164.605     8.41322
+  5    0.249        0   -0.249 -0.00000      4.699    0.249      164.605     8.41322
+  6    0.305   -0.159   -0.146        0      4.545    0.146      164.605     8.41322
+  7    0.349   -0.845    0.496        0      5.017   -0.496      164.605     7.18988
+  8    0.363   -1.708    1.344 -0.00000      6.294   -1.344      164.605     4.18711
+  9    0.401   -2.425    2.024  0.00000      8.217   -2.024      164.605     4.187
+ 10    0.532   -2.946    2.415 -0.00000     10.511   -2.415      164.605     4.187
+ 11    0.719   -3.340    2.621 -0.00000     13.000   -2.621      164.605     4.187
+ 12    0.897   -3.509    0.526   -2.087     13.500   -2.613      164.605     4.187
+ 13    1.060   -3.415        0   -2.355     13.500   -2.355      164.605     4.187
+ 14    1.219   -3.173        0   -1.954     13.500   -1.954      164.605     4.187
+ 15    1.320   -2.722   -2.000   -3.402     11.395   -1.402      164.605     Discharge 24.187
+ 16    1.445   -2.058   -2.100   -2.714      9.184   -0.614      164.605     Discharge 2.14.187
+ 17    1.581   -1.285   -1.900   -1.604      7.184    0.296      164.605   Discharge 1.9 ??4.4077
+ 18    1.585   -0.525   -1.060 -0.00000      6.069    1.060      164.605     4.91788
+ 19    1.411   -0.171   -1.241 -0.00000      4.762    1.241      164.605     15.1629
+ 20    1.112 -0.00861   -1.103 -0.00000      3.601    1.103      164.605     12.5894
+ 21    0.849        0   -0.849        0      2.707    0.849      164.605     8.06656
+ 22    0.622        0   -0.622        0      2.053    0.622      164.605     7.97037
+ 23    0.442        0   -0.442 -0.00000      1.588    0.442      164.605     8.06656
+
+
+Battery/PV Output for Wed 01-Jul
+
+ Hr  Load kW    PV kW   Bat kW  Grid kW    Bat kWh    LS kW     TDV Fuel     Note
+ -- -------- -------- -------- --------   -------- --------     --------     --------------------
+  0    0.324        0   -0.324        0      1.247    0.324      164.605     7.97037
+  1    0.266        0   -0.266        0      0.967    0.266      164.305     8.10478
+  2    0.232        0   -0.232        0      0.722    0.232      164.305     8.00859
+  3    0.214        0   -0.214        0      0.497    0.214      164.305     8.10478
+  4    0.206        0   -0.206        0      0.281    0.206      164.305     8.10478
+  5    0.234        0   -0.234 -0.00000     0.0347    0.234      164.305     8.00859
+  6    0.269   -0.154  -0.0330   0.0825          0    0.115      164.305     7.99657
+  7    0.311   -0.877    0.566        0      0.538   -0.566      164.305     4.18711
+  8    0.317   -1.789    5.000    3.528      5.288   -1.472      164.305     Charge 54.187
+  9    0.325   -2.547    5.000    2.778     10.038   -2.222      164.305     Charge 54.187
+ 10    0.376   -3.131    3.645    0.889     13.500   -2.755      164.305     Charge 54.187
+ 11    0.475   -3.492   -1.000   -4.017     12.447   -3.017      164.305     Discharge 14.187
+ 12    0.614   -3.676   -1.200   -4.262     11.184   -3.062      164.305     Discharge 1.24.187
+ 13    0.700   -3.660   -0.900   -3.861     10.237   -2.961      164.305     Discharge 0.9!4.187
+ 14    0.789   -3.355   -1.100   -3.666      9.079   -2.566      164.305     Discharge 1.14.187
+ 15    0.894   -2.858    1.964  0.00000     10.945   -1.964      164.305     4.187
+ 16    1.052   -2.173    1.121        0     12.010   -1.121      164.305     4.187
+ 17    1.224   -1.331    0.107        0     12.112   -0.107      164.305     4.187
+ 18    1.269   -0.464   -0.805 -0.00000     11.264    0.805      164.305     TDV=4.43957
+ 19    1.178   -0.126   -1.052 -0.00000     10.157    1.052      164.305     6.81562
+ 20    0.965  -0.0168   -0.949 -0.00000      9.159    0.949      164.305     7.98132
+ 21    0.772        0   -0.772        0      8.346    0.772      164.305     7.98132
+ 22    0.580        0   -0.580        0      7.735    0.580      164.305     7.98132
+ 23    0.423        0   -0.423 -0.00000      7.290    0.423      164.305     7.98132
+
+
+
+! Log for Run 001: Import test with autosizing
+
+! CSE 0.927.0+import-fix.40c90865.177.dirty for Win32 console
+
+
+
+Input for Run 001:
+
+#        #define  DD1  Jul 02
+#        #define  CD1  Jul 05
+#        #define  HD1  Jan 10
+#        #define  SEASONCHANGESETPT  60
+#        #define  FANVENTLOCKOUTTEMP  68
+#        #define  ISSEASONCOOLING  (@weather.taDbAvg07 > SEASONCHANGESETPT)
+#        #define  FANVENTAVAIL  (@weather.taDbAvg07 > FANVENTLOCKOUTTEMP)
+#        #define  WINDOWVENTAVAIL  (!@Top.autoSizing && ($hour < 24 && ($hour > 12 || $radDiff+$radbeam > .01)))
+#        #define  HWUSEF_WD  hourval( 0.014, 0.008, 0.009, 0.011, 0.020, 0.044, 0.089, 0.107, 0.089, 0.066, 0.052, 0.038, 0.036, 0.033, 0.032, 0.026, 0.042, 0.048, 0.052, 0.047, 0.042, 0.039, 0.036, 0.022 )
+#        #define  HWUSEF_WE  hourval( 0.018, 0.010, 0.009, 0.008, 0.015, 0.023, 0.026, 0.047, 0.077, 0.083, 0.074, 0.061, 0.051, 0.043, 0.039, 0.039, 0.052, 0.058, 0.056, 0.052, 0.047, 0.044, 0.040, 0.028 )
+#        #define  ShwrFLOWF  1
+#        #define  ShwrDRAINHREFF  0
+#        #define  CwshHOTF  0.22
+#        #define  CwshUSEF  2.03
+#        #define  FaucHOTF  0.5
+#        #define  FaucFlowF  1
+#        #define  BathFLOWF  1
+#        #define  BathDRAINHREFF  0
+#        #define  DwshFLOWF  1
+#        #define  Cook_WD       hourval( .005,.004,.004,.004,.004,.014,.019,.025,.026,.022,.021,.029,.035,.032,.034,.052,.115,.193,.180,.098,.042,.020,.012,.010)
+#        #define  Cook_WEH      hourval( .005,.004,.003,.003,.003,.005,.010,.027,.048,.048,.046,.055,.063,.059,.062,.068,.091,.139,.129,.072,.032,.014,.009,.005)
+#        #define  TV_WD         hourval( .035,.026,.023,.022,.021,.021,.025,.032,.038,.040,.038,.038,.041,.042,.042,.041,.044,.049,.056,.064,.070,.074,.067,.051)
+#        #define  TV_WEH        hourval( .035,.027,.022,.021,.020,.020,.022,.029,.037,.043,.042,.039,.040,.042,.045,.048,.051,.052,.056,.061,.065,.069,.064,.050)
+#        #define  STB_WD        hourval( .040,.040,.040,.040,.040,.040,.040,.041,.040,.040,.040,.040,.040,.040,.041,.041,.042,.043,.044,.045,.046,.047,.045,.045)
+#        #define  STB_WEH       hourval( .041,.041,.040,.041,.040,.040,.040,.040,.041,.042,.042,.041,.041,.041,.041,.042,.042,.043,.044,.044,.045,.045,.044,.039)
+#        #define  Comp_WD       hourval( .036,.033,.032,.032,.031,.032,.034,.036,.039,.043,.045,.045,.046,.046,.046,.047,.048,.049,.049,.049,.049,.048,.044,.041)
+#        #define  Comp_WEH      hourval( .036,.034,.033,.033,.032,.033,.033,.035,.038,.042,.044,.045,.046,.047,.047,.048,.049,.049,.048,.048,.048,.047,.044,.041)
+#        #define  RMEL_WD       hourval( .037,.035,.034,.034,.032,.036,.042,.044,.037,.032,.033,.033,.032,.033,.035,.037,.044,.053,.058,.060,.062,.060,.052,.045)
+#        #define  RMEL_WEH      hourval( .037,.035,.034,.034,.032,.036,.042,.044,.037,.032,.033,.033,.032,.033,.035,.037,.044,.053,.058,.060,.062,.060,.052,.045)
+#        #define  IntLight_WD   hourval( .023,.019,.015,.017,.021,.031,.042,.041,.034,.029,.027,.025,.021,.021,.021,.026,.031,.044,.084,.117,.113,.096,.063,.039)
+#        #define  IntLight_WEH  hourval( .023,.019,.015,.017,.021,.031,.042,.041,.034,.029,.027,.025,.021,.021,.021,.026,.031,.044,.084,.117,.113,.096,.063,.039)
+#        #define  ExtLight_WD   hourval( .046,.046,.046,.046,.046,.037,.035,.034,.033,.028,.022,.015,.012,.011,.011,.012,.019,.037,.049,.065,.091,.105,.091,.063)
+#        #define  ExtLight_WEH  hourval( .046,.046,.045,.045,.046,.045,.044,.041,.036,.030,.024,.016,.012,.011,.011,.012,.019,.038,.048,.060,.083,.098,.085,.059)
+#        #define  Cook_SM    choose1( $month, 1.094,1.065,1.074,0.889,0.891,0.935,0.993,0.92,0.923,0.92,1.128,1.168)
+#        #define  TV_SM      choose1( $month, 1.032,.991,.986,.99,.971,.971,1.002,1.013,1.008,1.008,1.02,1.008)
+#        #define  STB_SM     choose1( $month, 1.02,.84,.92,.98,.91,.94,1.05,1.06,1.06,1.14,1.03,1.050)
+#        #define  Comp_SM    choose1( $month, 0.98,0.87,0.89,1.11,1.14,0.99,1.05,1.01,0.96,0.97,0.99,1.04)
+#        #define  Other_SM   choose1( $month,  1.19,1.11,1.02,.93,.84,.8,.82,.88,.98,1.07,1.16,1.2)
+#        #define  RefrConst_WD   hourval( -0.5436,-0.3646,-0.4044,-0.3871,-0.5341,-0.7521,-0.3747,0.0041,-0.1293,-0.4644,-0.4800,-0.4351,-0.2195,-0.3301,-0.0919,-0.1686,-0.4819,-0.4731,-0.2223,0.0604,-0.1466,-0.3214,-0.4113,-0.7701)
+#        #define  RefrConst_WEH  hourval( -0.3467,-0.2779,-0.2844,-0.2954,-0.4680,-0.5127,-0.7110,-0.5662,0.0463,-0.2995,-0.2388,-0.2646,-0.2905,-0.2730,-0.3306,-0.0031,-0.4356,-0.2580,0.2384,0.1176,-0.0458,-0.0596,-0.5300,0.0197 )
+#        #define  RefrTemp_WD    hourval( 0.0195,0.0167,0.0169,0.0165,0.0183,0.0218,0.0178,0.0136,0.0151,0.0189,0.0188,0.0183,0.0156,0.0169,0.0137,0.0149,0.0197,0.0208,0.0184,0.0144,0.0166,0.0184,0.0188,0.0229)
+#        #define  RefrTemp_WEH   hourval( 0.0171,0.0156,0.0155,0.0154,0.0175,0.0181,0.0212,0.0201,0.0130,0.0176,0.0165,0.0171,0.0177,0.0176,0.0182,0.0139,0.0197,0.0180,0.0121,0.0135,0.0154,0.0150,0.0205,0.0129)
+#        #define  FVCHPC  0.95		// VCHP cooling input energy factor
+#        #define  FVCHPH  0.88		// VCHP heating input energy factor
+#        #define  NumCntrlWHtrs( s)  tofloat( 1+fix(@DHWSYS[ s].loadMax / (15400. * @DHWSYS[ s].loadMaxDur)))
+#        #define  RunFileName  SF1250_NoYear - User
+#        #define  FAWHPC  0.92		// AWHP cooling input energy factor
+#        #define  FAWHPH  0.98		// AWHP heating input energy factor
+#        #define  FAWHPD  0.98		// DWHEATER whFAdjElec electricity use adjustment multiplier (default 1)
+        
+           runTitle = "Import test with autosizing"
+           wfName = "CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
+           ebTolHour = 0.001
+           ebTolDay = 0.001
+           ebTolMon = 0.001
+           ebTolSubHr = 0.001
+           jan1DOW = "THU"
+           skyModel = "anisotropic"
+           bldgAzm = 0
+           dt = "YES"
+           heatDsTDbO = 31.5                    // �F
+           coolDsCond = "ClgDC_0p4pct_Jul"      // Cool design condition(s)
+           nSubSteps = 10
+           wuDays = 30
+           awTrigSlr = 0.1
+           anTolAbs = 0.005
+           anTolRel = 0.0005
+           auszTol = 0.01
+           awTrigT = 3
+           awTrigH = 0.3
+        
+        CONSTRUCTION   "cc-Res_Ext_Floor - p1975"  
+        
+           LAYER   "cl1-Res_Ext_Floor - p1975"  
+              lrMat = "m-Carpet"                // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+           LAYER   "cl2-Res_Ext_Floor - p1975"  
+              lrMat = "m-Wood layer"            // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+           LAYER   "cl4-Res_Ext_Floor - p1975"  
+              lrMat = "m-Insul-R6.74-D1.5-SH0.35-C0.01236"    // Layer material
+              lrThk = 0.083333                  // Thickness (feet), ft
+        
+        CONSTRUCTION   "fc-Res_Ext_Floor - p1975"  
+        
+           LAYER   "fl1-Res_Ext_Floor - p1975"  
+              lrMat = "m-Carpet"                // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+           LAYER   "fl2-Res_Ext_Floor - p1975"  
+              lrMat = "m-Wood layer"            // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+           LAYER   "fl3-Res_Ext_Floor - p1975"  
+              lrMat = "m-SoftWood"              // Layer material
+              lrThk = 0.291667                  // Thickness (feet), ft
+        
+           LAYER   "fl4-Res_Ext_Floor - p1975"  
+              lrMat = "m-Insul-R6.74-D1.5-SH0.35-C0.01236"    // Layer material
+              lrThk = 0.083333                  // Thickness (feet), ft
+        
+        CONSTRUCTION   "cc-Res_Ext_Floor - new2022"  
+        
+           LAYER   "cl1-Res_Ext_Floor - new2022"  
+              lrMat = "m-Carpet"                // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+           LAYER   "cl2-Res_Ext_Floor - new2022"  
+              lrMat = "m-Wood layer"            // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+           LAYER   "cl4-Res_Ext_Floor - new2022"  
+              lrMat = "m-Insul-R17.23-D1.5-SH0.35-C0.00484"    // Layer material
+              lrThk = 0.083333                  // Thickness (feet), ft
+        
+        CONSTRUCTION   "fc-Res_Ext_Floor - new2022"  
+        
+           LAYER   "fl1-Res_Ext_Floor - new2022"  
+              lrMat = "m-Carpet"                // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+           LAYER   "fl2-Res_Ext_Floor - new2022"  
+              lrMat = "m-Wood layer"            // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+           LAYER   "fl3-Res_Ext_Floor - new2022"  
+              lrMat = "m-SoftWood"              // Layer material
+              lrThk = 0.291667                  // Thickness (feet), ft
+        
+           LAYER   "fl4-Res_Ext_Floor - new2022"  
+              lrMat = "m-Insul-R17.23-D1.5-SH0.35-C0.00484"    // Layer material
+              lrThk = 0.083333                  // Thickness (feet), ft
+        
+        CONSTRUCTION   "cc-Res_Ext_Roof - const"      // Cavity R-val: 0
+        
+           LAYER   "cl2-Res_Ext_Roof - const"  
+              lrMat = "m-Wood layer"            // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+           LAYER   "cl3-Res_Ext_Roof - const"  
+              lrMat = "m-Light Roof"            // Layer material
+              lrThk = 0.016667                  // Thickness (feet), ft
+        
+        CONSTRUCTION   "fc-Res_Ext_Roof - const"  
+        
+           LAYER   "fl1-Res_Ext_Roof - const"  
+              lrMat = "m-SoftWood"              // Layer material
+              lrThk = 0.291667                  // Thickness (feet), ft
+        
+           LAYER   "fl2-Res_Ext_Roof - const"  
+              lrMat = "m-Wood layer"            // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+           LAYER   "fl3-Res_Ext_Roof - const"  
+              lrMat = "m-Light Roof"            // Layer material
+              lrThk = 0.016667                  // Thickness (feet), ft
+        
+        CONSTRUCTION   "cc-Crawl_UndgWall - const"  
+        
+           LAYER   "cl1-Crawl_UndgWall - const"  
+              lrMat = "m-Concrete"              // Layer material
+              lrThk = 0.333333                  // Thickness (feet), ft
+        
+        CONSTRUCTION   "cc-Crawl_ExtWall - const"  
+        
+           LAYER   "cl1-Crawl_ExtWall - const"  
+              lrMat = "m-Concrete"              // Layer material
+              lrThk = 0.333333                  // Thickness (feet), ft
+        
+        CONSTRUCTION   "cc-Res_Ext_Wall - p1975"      // Cavity R-val: 0
+        
+           LAYER   "cl1-Res_Ext_Wall - p1975"  
+              lrMat = "m-Gypsum Board"          // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+           LAYER   "cl2-Res_Ext_Wall - p1975"  
+              lrMat = "m-VertWallCavity"        // Layer material
+              lrThk = 0.291667                  // Thickness (feet), ft
+        
+           LAYER   "cl3-Res_Ext_Wall - p1975"  
+              lrMat = "m-Insul-R6.74-D1.5-SH0.35-C0.01236"    // Layer material
+              lrThk = 0.083333                  // Thickness (feet), ft
+        
+           LAYER   "cl4-Res_Ext_Wall - p1975"  
+              lrMat = "m-Synthetic Stucco"      // Layer material
+              lrThk = 0.03125                   // Thickness (feet), ft
+        
+        CONSTRUCTION   "fc-Res_Ext_Wall - p1975"  
+        
+           LAYER   "fl1-Res_Ext_Wall - p1975"  
+              lrMat = "m-Gypsum Board"          // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+           LAYER   "fl2-Res_Ext_Wall - p1975"  
+              lrMat = "m-SoftWood"              // Layer material
+              lrThk = 0.291667                  // Thickness (feet), ft
+        
+           LAYER   "fl3-Res_Ext_Wall - p1975"  
+              lrMat = "m-Insul-R6.74-D1.5-SH0.35-C0.01236"    // Layer material
+              lrThk = 0.083333                  // Thickness (feet), ft
+        
+           LAYER   "fl4-Res_Ext_Wall - p1975"  
+              lrMat = "m-Synthetic Stucco"      // Layer material
+              lrThk = 0.03125                   // Thickness (feet), ft
+        
+        CONSTRUCTION   "cc-Res_Ext_Wall - new2022"      // Cavity R-val: 0
+        
+           LAYER   "cl1-Res_Ext_Wall - new2022"  
+              lrMat = "m-Gypsum Board"          // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+           LAYER   "cl2-Res_Ext_Wall - new2022"  
+              lrMat = "m-VertWallCavity"        // Layer material
+              lrThk = 0.291667                  // Thickness (feet), ft
+        
+           LAYER   "cl3-Res_Ext_Wall - new2022"  
+              lrMat = "m-Insul-R17.23-D1.5-SH0.35-C0.00484"    // Layer material
+              lrThk = 0.083333                  // Thickness (feet), ft
+        
+           LAYER   "cl4-Res_Ext_Wall - new2022"  
+              lrMat = "m-Synthetic Stucco"      // Layer material
+              lrThk = 0.03125                   // Thickness (feet), ft
+        
+        CONSTRUCTION   "fc-Res_Ext_Wall - new2022"  
+        
+           LAYER   "fl1-Res_Ext_Wall - new2022"  
+              lrMat = "m-Gypsum Board"          // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+           LAYER   "fl2-Res_Ext_Wall - new2022"  
+              lrMat = "m-SoftWood"              // Layer material
+              lrThk = 0.291667                  // Thickness (feet), ft
+        
+           LAYER   "fl3-Res_Ext_Wall - new2022"  
+              lrMat = "m-Insul-R17.23-D1.5-SH0.35-C0.00484"    // Layer material
+              lrThk = 0.083333                  // Thickness (feet), ft
+        
+           LAYER   "fl4-Res_Ext_Wall - new2022"  
+              lrMat = "m-Synthetic Stucco"      // Layer material
+              lrThk = 0.03125                   // Thickness (feet), ft
+        
+        CONSTRUCTION   "cc-Res_Ext_Ceiling - p1975"      // Cavity R-val: 0
+        
+           LAYER   "cl1-Res_Ext_Ceiling - p1975"  
+              lrMat = "m-Gypsum Board"          // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+           LAYER   "cl2-Res_Ext_Ceiling - p1975"  
+              lrMat = "m-Insul-R18.04-D1.5-SH0.35-C0.00462"    // Layer material
+              lrThk = 0.083333                  // Thickness (feet), ft
+        
+           LAYER   "cl4-Res_Ext_Ceiling - p1975"  
+              lrMat = "m-Wood layer"            // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+        CONSTRUCTION   "fc-Res_Ext_Ceiling - p1975"  
+        
+           LAYER   "fl1-Res_Ext_Ceiling - p1975"  
+              lrMat = "m-Gypsum Board"          // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+           LAYER   "fl2-Res_Ext_Ceiling - p1975"  
+              lrMat = "m-Insul-R18.04-D1.5-SH0.35-C0.00462"    // Layer material
+              lrThk = 0.083333                  // Thickness (feet), ft
+        
+           LAYER   "fl3-Res_Ext_Ceiling - p1975"  
+              lrMat = "m-SoftWood"              // Layer material
+              lrThk = 0.291667                  // Thickness (feet), ft
+        
+           LAYER   "fl4-Res_Ext_Ceiling - p1975"  
+              lrMat = "m-Wood layer"            // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+        CONSTRUCTION   "cc-Res_Ext_Ceiling - new2022"      // Cavity R-val: 0
+        
+           LAYER   "cl1-Res_Ext_Ceiling - new2022"  
+              lrMat = "m-Gypsum Board"          // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+           LAYER   "cl2-Res_Ext_Ceiling - new2022"  
+              lrMat = "m-Insul-R27.94-D1.5-SH0.35-C0.00298"    // Layer material
+              lrThk = 0.083333                  // Thickness (feet), ft
+        
+           LAYER   "cl4-Res_Ext_Ceiling - new2022"  
+              lrMat = "m-Wood layer"            // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+        CONSTRUCTION   "fc-Res_Ext_Ceiling - new2022"  
+        
+           LAYER   "fl1-Res_Ext_Ceiling - new2022"  
+              lrMat = "m-Gypsum Board"          // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+           LAYER   "fl2-Res_Ext_Ceiling - new2022"  
+              lrMat = "m-Insul-R27.94-D1.5-SH0.35-C0.00298"    // Layer material
+              lrThk = 0.083333                  // Thickness (feet), ft
+        
+           LAYER   "fl3-Res_Ext_Ceiling - new2022"  
+              lrMat = "m-SoftWood"              // Layer material
+              lrThk = 0.291667                  // Thickness (feet), ft
+        
+           LAYER   "fl4-Res_Ext_Ceiling - new2022"  
+              lrMat = "m-Wood layer"            // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+        CONSTRUCTION   "scn-SlabConsCarpet"  
+        
+           LAYER   "cl1-SNEICCCarpet"  
+              lrMat = "m-SNEICCarpet"           // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+           LAYER   "cl2-SNEICCConcrete"  
+              lrMat = "m-SNEICConcrete"         // Layer material
+              lrThk = 0.291667                  // Thickness (feet), ft
+        
+           LAYER   "cl3-SNEICCEarth"  
+              lrMat = "m-SNEICEarth"            // Layer material
+              lrThk = 2                         // Thickness (feet), ft
+        
+        CONSTRUCTION   "scn-SlabConsExposed"  
+        
+           LAYER   "cl1-SNEIXCConcrete"  
+              lrMat = "m-SNEICConcrete"         // Layer material
+              lrThk = 0.291667                  // Thickness (feet), ft
+        
+           LAYER   "cl2-SNEIXCEarth"  
+              lrMat = "m-SNEICEarth"            // Layer material
+              lrThk = 2                         // Thickness (feet), ft
+        
+        CONSTRUCTION   "scn-UFlrConsExposed"  
+        
+           LAYER   "cl1-UFlrXCConcrete"  
+              lrMat = "m-UFlrCConcrete"         // Layer material
+              lrThk = 0.291667                  // Thickness (feet), ft
+        
+        CONSTRUCTION   "c-Unit1DoorFront-dr"      // Door Ufactor 0.300 Btuh/ft2-�F
+        
+           LAYER   "l-Unit1DoorFront-dr"  
+              lrMat = "m-Unit1DoorFront-dr"     // Layer material, Door Ufactor 0.300 Btuh/ft2-�F
+        
+        CONSTRUCTION   "con-AtticTruss"  
+        
+           LAYER   "lyr-AtticTruss"  
+              lrMat = "m-AtticTruss"            // Layer material
+              lrThk = 0.0625                    // Thickness (feet), ft
+        
+        CONSTRUCTION   "con-FurnIMass"  
+        
+           LAYER   "cl1-FurnIMass"  
+              lrMat = "IntMassMat-SoftWood"     // Layer material
+              lrThk = 0.208333                  // Thickness (feet), ft
+        
+        CONSTRUCTION   "con-WallFrmIMass"  
+        
+           LAYER   "cl1-WallFrmIMass"  
+              lrMat = "IntMassMat-Gypsum"       // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+           LAYER   "cl2-WallFrmIMass"  
+              lrMat = "IntMassMat-SoftWood"     // Layer material
+              lrThk = 0.291667                  // Thickness (feet), ft
+        
+           LAYER   "cl3-WallFrmIMass"  
+              lrMat = "IntMassMat-Gypsum"       // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+        CONSTRUCTION   "con-WallCavIMass"  
+        
+           LAYER   "cl1-WallCavIMass"  
+              lrMat = "IntMassMat-Gypsum"       // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+           LAYER   "cl2-WallCavIMass"  
+              lrMat = "IntMassMat-Gypsum"       // Layer material
+              lrThk = 0.041667                  // Thickness (feet), ft
+        
+        MATERIAL   "m-SoftWood"  
+           matDens = 35                         // Density, lb/ft3
+           matSpHt = 0.39                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+           matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+        
+        MATERIAL   "m-Steel"  
+           matDens = 489                        // Density, lb/ft3
+           matSpHt = 0.12                       // Specific heat of material, Btu/lb-�F
+           matCond = 26.2                       // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+        
+        MATERIAL   "m-SIPSskin"  
+           matDens = 41                         // Density, lb/ft3
+           matSpHt = 0.45                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.06127                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+           matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+        
+        MATERIAL   "m-Wood layer"  
+           matDens = 41                         // Density, lb/ft3
+           matSpHt = 0.45                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.06127                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+           matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+        
+        MATERIAL   "m-TileGap"  
+           matDens = 0.075                      // Density, lb/ft3
+           matSpHt = 0.24                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.07353                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+        
+        MATERIAL   "m-10 PSF Roof"  
+           matDens = 120                        // Density, lb/ft3
+           matSpHt = 0.2                        // Specific heat of material, Btu/lb-�F
+           matCond = 1                          // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+        
+        MATERIAL   "m-Carpet"  
+           matDens = 12.3                       // Density, lb/ft3
+           matSpHt = 0.34                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.02                       // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+        
+        MATERIAL   "m-Gypsum Board"  
+           matDens = 40                         // Density, lb/ft3
+           matSpHt = 0.27                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.09167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+           matCondCT = 0.000122                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+        
+        MATERIAL   "m-Insul-R2.37-D1.5-SH0.35-C0.03516"  
+           matDens = 1.5                        // Density, lb/ft3
+           matSpHt = 0.35                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.03516                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+           matCondCT = 0.00175                  // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+        
+        MATERIAL   "m-Insul-R11.24-D1.5-SH0.35-C0.00741"  
+           matDens = 1.5                        // Density, lb/ft3
+           matSpHt = 0.35                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.007414                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+           matCondCT = 0.00175                  // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+        
+        MATERIAL   "m-Insul-R17.24-D1.5-SH0.35-C0.00483"  
+           matDens = 1.5                        // Density, lb/ft3
+           matSpHt = 0.35                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.004834                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+           matCondCT = 0.00175                  // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+        
+        MATERIAL   "m-Light Roof"  
+           matDens = 120                        // Density, lb/ft3
+           matSpHt = 0.2                        // Specific heat of material, Btu/lb-�F
+           matCond = 1                          // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+        
+        MATERIAL   "m-Concrete"  
+           matDens = 144                        // Density, lb/ft3
+           matSpHt = 0.2                        // Specific heat of material, Btu/lb-�F
+           matCond = 1                          // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+        
+        MATERIAL   "m-VertWallCavity"  
+           matDens = 0.075                      // Density, lb/ft3
+           matSpHt = 0.24                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.314                      // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+           matCondCT = 0.00397                  // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+        
+        MATERIAL   "m-3 Coat Stucco"  
+           matDens = 116                        // Density, lb/ft3
+           matSpHt = 0.2                        // Specific heat of material, Btu/lb-�F
+           matCond = 0.4167                     // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+        
+        MATERIAL   "m-Insul-R2.224-D1.5-SH0.35-C0.03747"  
+           matDens = 1.5                        // Density, lb/ft3
+           matSpHt = 0.35                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.037469                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+           matCondCT = 0.00175                  // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+        
+        MATERIAL   "m-Insul-R2.24-D1.5-SH0.35-C0.0372"  
+           matDens = 1.5                        // Density, lb/ft3
+           matSpHt = 0.35                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.037201                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+           matCondCT = 0.00175                  // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+        
+        MATERIAL   "m-Insul-R11.22-D1.5-SH0.35-C0.00743"  
+           matDens = 1.5                        // Density, lb/ft3
+           matSpHt = 0.35                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.007427                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+           matCondCT = 0.00175                  // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+        
+        MATERIAL   "m-Insul-R16.22-D1.5-SH0.35-C0.00514"  
+           matDens = 1.5                        // Density, lb/ft3
+           matSpHt = 0.35                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.005137                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+           matCondCT = 0.00175                  // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+        
+        MATERIAL   "m-Insul-R25.23-D1.5-SH0.35-C0.0033"  
+           matDens = 1.5                        // Density, lb/ft3
+           matSpHt = 0.35                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.003303                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+           matCondCT = 0.00175                  // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+        
+        MATERIAL   "m-Insul-R27.92-D1.5-SH0.35-C0.00298"  
+           matDens = 1.5                        // Density, lb/ft3
+           matSpHt = 0.35                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.002985                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+           matCondCT = 0.00175                  // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+        
+        MATERIAL   "m-Insul-R6.74-D1.5-SH0.35-C0.01236"  
+           matDens = 1.5                        // Density, lb/ft3
+           matSpHt = 0.35                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.012363                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+           matCondCT = 0.00175                  // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+        
+        MATERIAL   "m-Insul-R17.23-D1.5-SH0.35-C0.00484"  
+           matDens = 1.5                        // Density, lb/ft3
+           matSpHt = 0.35                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.004836                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+           matCondCT = 0.00175                  // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+        
+        MATERIAL   "m-Insul-R27.94-D1.5-SH0.35-C0.00298"  
+           matDens = 1.5                        // Density, lb/ft3
+           matSpHt = 0.35                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.002982                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+           matCondCT = 0.00175                  // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+        
+        MATERIAL   "m-Insul-R18.04-D1.5-SH0.35-C0.00462"  
+           matDens = 1.5                        // Density, lb/ft3
+           matSpHt = 0.35                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.004619                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+           matCondCT = 0.00175                  // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+        
+        MATERIAL   "m-Insul-R1-D1.5-SH0.35-C0.08333"  
+           matDens = 1.5                        // Density, lb/ft3
+           matSpHt = 0.35                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.08333                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+           matCondCT = 0.00175                  // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+        
+        MATERIAL   "m-Synthetic Stucco"  
+           matDens = 58                         // Density, lb/ft3
+           matSpHt = 0.2                        // Specific heat of material, Btu/lb-�F
+           matCond = 0.2                        // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+        
+        MATERIAL   "m-SNEICConcrete"  
+           matDens = 144                        // Density, lb/ft3
+           matSpHt = 0.2                        // Specific heat of material, Btu/lb-�F
+           matCond = 1                          // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+        
+        MATERIAL   "m-SNEICEarth"  
+           matDens = 115                        // Density, lb/ft3
+           matSpHt = 0.2                        // Specific heat of material, Btu/lb-�F
+           matCond = 1                          // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+        
+        MATERIAL   "m-SNEICCarpet"  
+           matDens = 12.3                       // Density, lb/ft3
+           matSpHt = 0.34                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.02                       // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+        
+        MATERIAL   "m-UFlrCConcrete"  
+           matDens = 144                        // Density, lb/ft3
+           matSpHt = 0.2                        // Specific heat of material, Btu/lb-�F
+           matCond = 1                          // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+        
+        MATERIAL   "m-Unit1DoorFront-dr"        // Door Ufactor 0.300 Btuh/ft2-�F
+           matThk = 0.041667                    // Thickness (feet), ft
+           matDens = 41                         // Density, lb/ft3
+           matSpHt = 0.39                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.016779                   // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+        
+        MATERIAL   "m-AtticTruss"  
+           matDens = 35                         // Density, lb/ft3
+           matSpHt = 0.39                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+           matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+        
+        MATERIAL   "IntMassMat-SoftWood"  
+           matDens = 35                         // Density, lb/ft3
+           matSpHt = 0.39                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.08167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+           matCondCT = 0.0012                   // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+        
+        MATERIAL   "IntMassMat-Gypsum"  
+           matDens = 40                         // Density, lb/ft3
+           matSpHt = 0.27                       // Specific heat of material, Btu/lb-�F
+           matCond = 0.09167                    // Conductivity (always per foot of thickness), Btuh-ft/ft2-�F
+           matCondCT = 0.000122                 // Coefficient for temperature adjustment of matCond in the forward difference surface conduction model, F(-1)
+        
+        DESCOND   "ClgDC_0p4pct_Jul"  
+           dcDB = 104.2                         // Cooling design dry-bulb temperature, �F
+           dcDay = Jul 21                       // Calendar date for this design cooling conditions
+           dcMCDBR = 36.4                       // Coincident daily dry-bulb range, �F
+           dcMCWB = 71.6                        // Coincident wet-bulb temperature, �F
+           dcMCWBR = 13.1                       // Coincident daily wet-bulb range, �F
+           dcTauB = 0.363                       // ASHRAE beam 'pseudo optical depth'
+           dcTauD = 2.407                       // ASHRAE diffuse 'pseudo optical depth'
+           dcWindSpeed = 7.1                    // Wind speed for design conditions, mph
+        
+        METER   "MtrElec"
+        
+        
+        ZONE   "Unit1-zn"  
+           znModel = "CZM"                      // Zone model (CNE, CSE, CZM, UZM)
+           znArea = 1250                        // Zone area, ft2
+           znVol = 11250                        // Zone volume, ft3
+           znEaveZ = 9                          // Height of top of the wall in this zone above the ground, ft
+           znCeilingHt = 9                      // Nominal zone ceiling height relative to zone floor (typically 8-10 ft), ft
+           znFloorZ = 0                         // Nominal zone floor height relative to arbitrary 0 level, ft
+           znCAir = 2500                        // Zone 'air' heat capacity: represents heat capacity of air, furniture, 'light' walls, and everything in zone except nonQUICK surfaces
+           znSC = select( $radDiff >1., 0.5, default 0.8 )    // Expression representing zone shade closure
+           znTC = 75;
+           znTH = 70;
+           znTD = 72;
+           znHIRatio = 10                       // Zone hygric inertia ratio
+           infAC = 0                            // Zone infiltration air changes per hour, 1/hr
+           infELA = 30                           // Zone effective leakage area (ELA), in2
+           infShld = 4                          // Zone local shielding class, used in ELA model
+           znRSys = "rsys-HVAC System"          // RSYS component conditioning this ZONE
+        
+           GAIN   "Unit1-znLtg"  
+              gnMeter = "MtrElec"               // Meter that tracks internal gain
+              gnEndUse = "Lit"                  // Internal gain enduse
+              gnPower = 2.4071 * 1250 * select( $dsDay==1, 0., $ISWEHOL, IntLight_WEH, Default IntLight_WD) * Other_SM    // Expression representing internal gain power, Btuh
+              gnFrRad = 0.2                     // Fraction of internal gain to Zone that is Radiant (single value or hourly profile)
+        
+           GAIN   "Unit1-znPpl"  
+              gnPower = 16.3351 * 1250 * select( $dsDay==1, 0., default hourval(0.035,0.035,0.035,0.035,0.035,0.059,0.082,0.055,0.027,0.014,0.014,0.014,0.014,0.014,0.019,0.027,0.041,0.055,0.068,0.082,0.082,0.07,0.053,0.035)  * choose1($month, 1.19,1.11,1.02,0.93,0.84,0.8,0.82,0.88,0.98,1.07,1.16,1.21))    // Expression representing internal gain power, Btuh
+              gnFrRad = 0.3                     // Fraction of internal gain to Zone that is Radiant (single value or hourly profile)
+              gnFrLat = 0.427                   // Fraction of internal gain to Zone that is Latent (single value or hourly profile)
+        
+           GAIN   "Unit1-znTV"  
+              gnMeter = "MtrElec"               // Meter that tracks internal gain
+              gnEndUse = "Rcp"                  // Internal gain enduse
+              gnPower = ((265 + (31.8 * 2)) * 3412/365) * 1 * select( $dsDay==1, 0., $ISWEHOL, TV_WEH, Default TV_WD) * TV_SM    // Expression representing internal gain power, Btuh
+              gnFrRad = 0.4                     // Fraction of internal gain to Zone that is Radiant (single value or hourly profile)
+        
+           GAIN   "Unit1-znSTB"  
+              gnMeter = "MtrElec"               // Meter that tracks internal gain
+              gnEndUse = "Rcp"                  // Internal gain enduse
+              gnPower = ((76 + (59.4 * 2)) * 3412/365) * 1 * select( $dsDay==1, 0., $ISWEHOL, STB_WEH, Default STB_WD) * STB_SM    // Expression representing internal gain power, Btuh
+              gnFrRad = 0.2                     // Fraction of internal gain to Zone that is Radiant (single value or hourly profile)
+        
+           GAIN   "Unit1-znComp"  
+              gnMeter = "MtrElec"               // Meter that tracks internal gain
+              gnEndUse = "Rcp"                  // Internal gain enduse
+              gnPower = ((79 + (55.4 * 2)) * 3412/365) * 1 * select( $dsDay==1, 0., $ISWEHOL, Comp_WEH, Default Comp_WD) * Comp_SM    // Expression representing internal gain power, Btuh
+              gnFrRad = 0.2                     // Fraction of internal gain to Zone that is Radiant (single value or hourly profile)
+        
+           GAIN   "Unit1-znMEL"  
+              gnMeter = "MtrElec"               // Meter that tracks internal gain
+              gnEndUse = "Rcp"                  // Internal gain enduse
+              gnPower = ((570 + (198.9 * 2)) * 3412/365) * 1 * select( $dsDay==1, 0., $ISWEHOL, RMEL_WEH, Default RMEL_WD) * Other_SM    // Expression representing internal gain power, Btuh
+              gnFrRad = 0.3                     // Fraction of internal gain to Zone that is Radiant (single value or hourly profile)
+              gnFrLat = 0.03                    // Fraction of internal gain to Zone that is Latent (single value or hourly profile)
+        
+           GAIN   "Unit1-znRfrg"  
+              gnMeter = "MtrElec"               // Meter that tracks internal gain
+              gnEndUse = "Refr"                 // Internal gain enduse
+              gnPower = (1.44658 * 3412 / 24) * ( select( $isWeHol, RefrConst_WEH, default RefrConst_WD ) + select( $isWeHol, RefrTemp_WEH, default RefrTemp_WD ) * @znRes["Unit1-zn"].prior.H.tAir)    // Expression representing internal gain power, Btuh
+              gnFrRad = 0                       // Fraction of internal gain to Zone that is Radiant (single value or hourly profile)
+        
+           GAIN   "Unit1-znCkE"  
+              gnMeter = "MtrElec"               // Meter that tracks internal gain
+              gnEndUse = "Cook"                 // Internal gain enduse
+              gnPower = 185.089 * select( $dsDay==1, 0., $ISWEHOL, Cook_WEH, Default Cook_WD) * Cook_SM    // Expression representing internal gain power, Btuh
+              gnFrZn = 0.9                      // Fraction of internal gain to Zone (single value or hourly profile)
+              gnFrRad = 0                       // Fraction of internal gain to Zone that is Radiant (single value or hourly profile)
+              gnFrLat = 0.67                    // Fraction of internal gain to Zone that is Latent (single value or hourly profile)
+        
+           GAIN   "Unit1-znCkG"  
+              gnMeter = "MtrElec"             // Meter that tracks internal gain
+              gnEndUse = "Cook"                 // Internal gain enduse
+              gnPower = 3452.05 * select( $dsDay==1, 0., $ISWEHOL, Cook_WEH, Default Cook_WD) * Cook_SM    // Expression representing internal gain power, Btuh
+              gnFrZn = 0.9                      // Fraction of internal gain to Zone (single value or hourly profile)
+              gnFrRad = 0                       // Fraction of internal gain to Zone that is Radiant (single value or hourly profile)
+              gnFrLat = 0.67                    // Fraction of internal gain to Zone that is Latent (single value or hourly profile)
+        
+           GAIN   "Unit1-znExtLtg"  
+              gnMeter = "MtrElec"               // Meter that tracks internal gain
+              gnEndUse = "Ext"                  // Internal gain enduse
+              gnPower = (((8 * 1) + (.0532 * 1250)) * 3412/365) * 1 * select( $dsDay==1, 0., $ISWEHOL, ExtLight_WEH, Default ExtLight_WD) * Other_SM    // Expression representing internal gain power, Btuh
+              gnFrZn = 0                        // Fraction of internal gain to Zone (single value or hourly profile)
+        
+           SURFACE   "Unit1ToAtticCeiling-Frm"  
+              sfType = "Ceiling"                // Type of opaque surface
+              sfCon = "fc-Res_Ext_Ceiling - new2022"    // Surface construction
+              sfArea = 125                      // Wall area, ft2
+              sfModel = "Forward_Difference"    // Modeling option
+              sfExCnd = "AdjZn"                 // Exterior condition description
+              sfAdjZn = "Attic-atc"             // Zone that lies on the other side of this surface
+        
+           SURFACE   "Unit1ToAtticCeiling-Cav"  
+              sfType = "Ceiling"                // Type of opaque surface
+              sfCon = "cc-Res_Ext_Ceiling - new2022"    // Surface construction, Cavity R-val: 0
+              sfArea = 1125                     // Wall area, ft2
+              sfModel = "Forward_Difference"    // Modeling option
+              sfExCnd = "AdjZn"                 // Exterior condition description
+              sfAdjZn = "Attic-atc"             // Zone that lies on the other side of this surface
+        
+           SURFACE   "Unit1WallFront-Frm"  
+              sfType = "Wall"                   // Type of opaque surface
+              sfCon = "fc-Res_Ext_Wall - new2022"    // Surface construction
+              sfArea = 88.25                    // Wall area, ft2
+              sfTilt = 90                       // Surface tilt, deg
+              sfAzm = 0                         // Surface azimuth, deg
+              sfExAbs = 0.5                     // Surface exterior solar absorptivity
+              sfModel = "Forward_Difference"    // Modeling option
+        
+           SURFACE   "Unit1WallLeft-Frm"  
+              sfType = "Wall"                   // Type of opaque surface
+              sfCon = "fc-Res_Ext_Wall - new2022"    // Surface construction
+              sfArea = 49.125                   // Wall area, ft2
+              sfTilt = 90                       // Surface tilt, deg
+              sfAzm = 90                        // Surface azimuth, deg
+              sfExAbs = 0.5                     // Surface exterior solar absorptivity
+              sfModel = "Forward_Difference"    // Modeling option
+        
+           SURFACE   "Unit1WallBack-Frm"  
+              sfType = "Wall"                   // Type of opaque surface
+              sfCon = "fc-Res_Ext_Wall - new2022"    // Surface construction
+              sfArea = 98.25                    // Wall area, ft2
+              sfTilt = 90                       // Surface tilt, deg
+              sfAzm = 180                       // Surface azimuth, deg
+              sfExAbs = 0.5                     // Surface exterior solar absorptivity
+              sfModel = "Forward_Difference"    // Modeling option
+        
+           SURFACE   "Unit1WallRight-Frm"  
+              sfType = "Wall"                   // Type of opaque surface
+              sfCon = "fc-Res_Ext_Wall - new2022"    // Surface construction
+              sfArea = 49.125                   // Wall area, ft2
+              sfTilt = 90                       // Surface tilt, deg
+              sfAzm = 270                       // Surface azimuth, deg
+              sfExAbs = 0.5                     // Surface exterior solar absorptivity
+              sfModel = "Forward_Difference"    // Modeling option
+        
+           SURFACE   "Unit1WallFront-Cav"  
+              sfType = "Wall"                   // Type of opaque surface
+              sfCon = "cc-Res_Ext_Wall - new2022"    // Surface construction, Cavity R-val: 0
+              sfArea = 361.75                   // Wall area, ft2
+              sfTilt = 90                       // Surface tilt, deg
+              sfAzm = 0                         // Surface azimuth, deg
+              sfExAbs = 0.5                     // Surface exterior solar absorptivity
+              sfModel = "Forward_Difference"    // Modeling option
+        
+              WINDOW   "Unit1WinFront-NoScrn"  
+                 wnArea = 28.5                  // Area, ft2
+                 wnHeight = 5                   // Height, ft
+                 wnWidth = 11.4                 // Width, ft
+                 wnMult = 1                     // Multiplier
+                 wnModel = "ASHWAT"             // Window model
+                 wnFMult = 0.85                 // F? multiplier
+                 wnNGlz = 2                     // Number of glazing layers
+                 wnUnfrc = 0.3                  // NFRC U-factor, Btuh/ft2-�F
+                 wnSHGC = 0.1978                // NFRC solar heat gain coefficient
+                 wnDirtLoss = 0.1               // Dirt loss factor
+                 wnExShd = "None"               // Exterior shade type
+                 wnInShd = "DrapeMed"           // Interior shade type
+                 wnVfSkyDf = 0.309017           // View factor from window to sky for diffuse rad., frac
+        
+                 SHADE   "Unit1WinFront-NoScrn-Shd"  
+                    ohDepth = 2.5               // Overhang Depth, ft
+        
+              WINDOW   "Unit1WinFront-Scrn"  
+                 wnArea = 28.5                  // Area, ft2
+                 wnHeight = 5                   // Height, ft
+                 wnWidth = 11.4                 // Width, ft
+                 wnMult = 1                     // Multiplier
+                 wnModel = "ASHWAT"             // Window model
+                 wnFMult = 0.85                 // F? multiplier
+                 wnNGlz = 2                     // Number of glazing layers
+                 wnUnfrc = 0.3                  // NFRC U-factor, Btuh/ft2-�F
+                 wnSHGC = 0.1978                // NFRC solar heat gain coefficient
+                 wnDirtLoss = 0.1               // Dirt loss factor
+                 wnExShd = "Inscrn"             // Exterior shade type
+                 wnInShd = "DrapeMed"           // Interior shade type
+                 wnVfSkyDf = 0.309017           // View factor from window to sky for diffuse rad., frac
+        
+                 SHADE   "Unit1WinFront-Scrn-Shd"  
+                    ohDepth = 2.5               // Overhang Depth, ft
+        
+              DOOR   "Unit1DoorFront-Sim"  
+                 drArea = 40                    // Area, ft2
+                 drModel = "Forward_Difference"    // Modeling option
+                 drCon = "c-Unit1DoorFront-dr"    // Door construction, Door Ufactor 0.300 Btuh/ft2-�F
+        
+           SURFACE   "Unit1WallLeft-Cav"  
+              sfType = "Wall"                   // Type of opaque surface
+              sfCon = "cc-Res_Ext_Wall - new2022"    // Surface construction, Cavity R-val: 0
+              sfArea = 175.875                  // Wall area, ft2
+              sfTilt = 90                       // Surface tilt, deg
+              sfAzm = 90                        // Surface azimuth, deg
+              sfExAbs = 0.5                     // Surface exterior solar absorptivity
+              sfModel = "Forward_Difference"    // Modeling option
+        
+              WINDOW   "Unit1WinLeft-NoScrn"  
+                 wnArea = 14.25                 // Area, ft2
+                 wnHeight = 5                   // Height, ft
+                 wnWidth = 5.7                  // Width, ft
+                 wnMult = 1                     // Multiplier
+                 wnModel = "ASHWAT"             // Window model
+                 wnFMult = 0.85                 // F? multiplier
+                 wnNGlz = 2                     // Number of glazing layers
+                 wnUnfrc = 0.3                  // NFRC U-factor, Btuh/ft2-�F
+                 wnSHGC = 0.1978                // NFRC solar heat gain coefficient
+                 wnDirtLoss = 0.1               // Dirt loss factor
+                 wnExShd = "None"               // Exterior shade type
+                 wnInShd = "DrapeMed"           // Interior shade type
+                 wnVfSkyDf = 0.309017           // View factor from window to sky for diffuse rad., frac
+        
+                 SHADE   "Unit1WinLeft-NoScrn-Shd"  
+                    ohDepth = 2.5               // Overhang Depth, ft
+        
+              WINDOW   "Unit1WinLeft-Scrn"  
+                 wnArea = 14.25                 // Area, ft2
+                 wnHeight = 5                   // Height, ft
+                 wnWidth = 5.7                  // Width, ft
+                 wnMult = 1                     // Multiplier
+                 wnModel = "ASHWAT"             // Window model
+                 wnFMult = 0.85                 // F? multiplier
+                 wnNGlz = 2                     // Number of glazing layers
+                 wnUnfrc = 0.3                  // NFRC U-factor, Btuh/ft2-�F
+                 wnSHGC = 0.1978                // NFRC solar heat gain coefficient
+                 wnDirtLoss = 0.1               // Dirt loss factor
+                 wnExShd = "Inscrn"             // Exterior shade type
+                 wnInShd = "DrapeMed"           // Interior shade type
+                 wnVfSkyDf = 0.309017           // View factor from window to sky for diffuse rad., frac
+        
+                 SHADE   "Unit1WinLeft-Scrn-Shd"  
+                    ohDepth = 2.5               // Overhang Depth, ft
+        
+           SURFACE   "Unit1WallBack-Cav"  
+              sfType = "Wall"                   // Type of opaque surface
+              sfCon = "cc-Res_Ext_Wall - new2022"    // Surface construction, Cavity R-val: 0
+              sfArea = 351.75                   // Wall area, ft2
+              sfTilt = 90                       // Surface tilt, deg
+              sfAzm = 180                       // Surface azimuth, deg
+              sfExAbs = 0.5                     // Surface exterior solar absorptivity
+              sfModel = "Forward_Difference"    // Modeling option
+        
+              WINDOW   "Unit1WinBack-NoScrn"  
+                 wnArea = 28.5                  // Area, ft2
+                 wnHeight = 5                   // Height, ft
+                 wnWidth = 11.4                 // Width, ft
+                 wnMult = 1                     // Multiplier
+                 wnModel = "ASHWAT"             // Window model
+                 wnFMult = 0.85                 // F? multiplier
+                 wnNGlz = 2                     // Number of glazing layers
+                 wnUnfrc = 0.3                  // NFRC U-factor, Btuh/ft2-�F
+                 wnSHGC = 0.1978                // NFRC solar heat gain coefficient
+                 wnDirtLoss = 0.1               // Dirt loss factor
+                 wnExShd = "None"               // Exterior shade type
+                 wnInShd = "DrapeMed"           // Interior shade type
+                 wnVfSkyDf = 0.309017           // View factor from window to sky for diffuse rad., frac
+        
+                 SHADE   "Unit1WinBack-NoScrn-Shd"  
+                    ohDepth = 2.5               // Overhang Depth, ft
+        
+              WINDOW   "Unit1WinBack-Scrn"  
+                 wnArea = 28.5                  // Area, ft2
+                 wnHeight = 5                   // Height, ft
+                 wnWidth = 11.4                 // Width, ft
+                 wnMult = 1                     // Multiplier
+                 wnModel = "ASHWAT"             // Window model
+                 wnFMult = 0.85                 // F? multiplier
+                 wnNGlz = 2                     // Number of glazing layers
+                 wnUnfrc = 0.3                  // NFRC U-factor, Btuh/ft2-�F
+                 wnSHGC = 0.1978                // NFRC solar heat gain coefficient
+                 wnDirtLoss = 0.1               // Dirt loss factor
+                 wnExShd = "Inscrn"             // Exterior shade type
+                 wnInShd = "DrapeMed"           // Interior shade type
+                 wnVfSkyDf = 0.309017           // View factor from window to sky for diffuse rad., frac
+        
+                 SHADE   "Unit1WinBack-Scrn-Shd"  
+                    ohDepth = 2.5               // Overhang Depth, ft
+        
+           SURFACE   "Unit1WallRight-Cav"  
+              sfType = "Wall"                   // Type of opaque surface
+              sfCon = "cc-Res_Ext_Wall - new2022"    // Surface construction, Cavity R-val: 0
+              sfArea = 175.875                  // Wall area, ft2
+              sfTilt = 90                       // Surface tilt, deg
+              sfAzm = 270                       // Surface azimuth, deg
+              sfExAbs = 0.5                     // Surface exterior solar absorptivity
+              sfModel = "Forward_Difference"    // Modeling option
+        
+              WINDOW   "Unit1WinRight-NoScrn"  
+                 wnArea = 14.25                 // Area, ft2
+                 wnHeight = 5                   // Height, ft
+                 wnWidth = 5.7                  // Width, ft
+                 wnMult = 1                     // Multiplier
+                 wnModel = "ASHWAT"             // Window model
+                 wnFMult = 0.85                 // F? multiplier
+                 wnNGlz = 2                     // Number of glazing layers
+                 wnUnfrc = 0.3                  // NFRC U-factor, Btuh/ft2-�F
+                 wnSHGC = 0.1978                // NFRC solar heat gain coefficient
+                 wnDirtLoss = 0.1               // Dirt loss factor
+                 wnExShd = "None"               // Exterior shade type
+                 wnInShd = "DrapeMed"           // Interior shade type
+                 wnVfSkyDf = 0.309017           // View factor from window to sky for diffuse rad., frac
+        
+                 SHADE   "Unit1WinRight-NoScrn-Shd"  
+                    ohDepth = 2.5               // Overhang Depth, ft
+        
+              WINDOW   "Unit1WinRight-Scrn"  
+                 wnArea = 14.25                 // Area, ft2
+                 wnHeight = 5                   // Height, ft
+                 wnWidth = 5.7                  // Width, ft
+                 wnMult = 1                     // Multiplier
+                 wnModel = "ASHWAT"             // Window model
+                 wnFMult = 0.85                 // F? multiplier
+                 wnNGlz = 2                     // Number of glazing layers
+                 wnUnfrc = 0.3                  // NFRC U-factor, Btuh/ft2-�F
+                 wnSHGC = 0.1978                // NFRC solar heat gain coefficient
+                 wnDirtLoss = 0.1               // Dirt loss factor
+                 wnExShd = "Inscrn"             // Exterior shade type
+                 wnInShd = "DrapeMed"           // Interior shade type
+                 wnVfSkyDf = 0.309017           // View factor from window to sky for diffuse rad., frac
+        
+                 SHADE   "Unit1WinRight-Scrn-Shd"  
+                    ohDepth = 2.5               // Overhang Depth, ft
+        
+           SURFACE   "Unit1ToCrawlFloor-Frm"  
+              sfType = "Floor"                  // Type of opaque surface
+              sfCon = "fc-Res_Ext_Floor - new2022"    // Surface construction
+              sfArea = 42.5                     // Wall area, ft2
+              sfTilt = 180                      // Surface tilt, deg
+              sfModel = "Forward_Difference"    // Modeling option
+              sfExCnd = "AdjZn"                 // Exterior condition description
+              sfAdjZn = "Crawlspace-zn"         // Zone that lies on the other side of this surface
+        
+           SURFACE   "Unit1ToCrawlFloor-Cav"  
+              sfType = "Floor"                  // Type of opaque surface
+              sfCon = "cc-Res_Ext_Floor - new2022"    // Surface construction
+              sfArea = 382.5                    // Wall area, ft2
+              sfTilt = 180                      // Surface tilt, deg
+              sfModel = "Forward_Difference"    // Modeling option
+              sfExCnd = "AdjZn"                 // Exterior condition description
+              sfAdjZn = "Crawlspace-zn"         // Zone that lies on the other side of this surface
+        
+           SURFACE   "Unit1Slab-Prm"  
+              sfType = "Floor"                  // Type of opaque surface
+              sfCon = "scn-SlabConsCarpet"      // Surface construction
+              sfArea = 185.6                    // Wall area, ft2
+              sfTilt = 180                      // Surface tilt, deg
+              sfModel = "Forward_Difference"    // Modeling option
+              sfExCnd = "Ground"                // Exterior condition description
+              sfExCTGrnd = 0.0551               // Surface ???
+              sfExCTaDbAvgYr = 0.0028           // Surface ???
+              sfExCTaDbAvg14 = 0.0852           // Surface ???
+              sfExRConGrnd = 5.267              // Surface ???
+              sfInHcModel = "Unified"           // Surface ???
+        
+           SURFACE   "Unit1Slab-Int"  
+              sfType = "Floor"                  // Type of opaque surface
+              sfCon = "scn-SlabConsCarpet"      // Surface construction
+              sfArea = 474.4                    // Wall area, ft2
+              sfTilt = 180                      // Surface tilt, deg
+              sfModel = "Forward_Difference"    // Modeling option
+              sfExCnd = "Ground"                // Exterior condition description
+              sfExCTGrnd = 0.0446               // Surface ???
+              sfExCTaDbAvgYr = 0.0238           // Surface ???
+              sfExRConGrnd = 5.267              // Surface ???
+              sfInHcModel = "Unified"           // Surface ???
+        
+           SURFACE   "Unit1Slab-Prm 20"  
+              sfType = "Floor"                  // Type of opaque surface
+              sfCon = "scn-SlabConsExposed"     // Surface construction
+              sfArea = 46.4                     // Wall area, ft2
+              sfTilt = 180                      // Surface tilt, deg
+              sfModel = "Forward_Difference"    // Modeling option
+              sfExCnd = "Ground"                // Exterior condition description
+              sfExCTGrnd = 0.0737               // Surface ???
+              sfExCTaDbAvgYr = 0.0014           // Surface ???
+              sfExCTaDbAvg14 = 0.1692           // Surface ???
+              sfExRConGrnd = 3.187              // Surface ???
+              sfInHcModel = "Unified"           // Surface ???
+        
+           SURFACE   "Unit1Slab-Int 21"  
+              sfType = "Floor"                  // Type of opaque surface
+              sfCon = "scn-SlabConsExposed"     // Surface construction
+              sfArea = 118.6                    // Wall area, ft2
+              sfTilt = 180                      // Surface tilt, deg
+              sfModel = "Forward_Difference"    // Modeling option
+              sfExCnd = "Ground"                // Exterior condition description
+              sfExCTGrnd = 0.0521               // Surface ???
+              sfExCTaDbAvgYr = 0.0251           // Surface ???
+              sfExRConGrnd = 3.187              // Surface ???
+              sfInHcModel = "Unified"           // Surface ???
+        
+           SURFACE   "Furniture-imass"  
+              sfType = "Wall"                   // Type of opaque surface
+              sfCon = "con-FurnIMass"           // Surface construction
+              sfArea = 2500                     // Wall area, ft2
+              sfAzm = 0                         // Surface azimuth, deg
+              sfModel = "Forward_Difference"    // Modeling option
+              sfExCnd = "AdjZn"                 // Exterior condition description
+              sfAdjZn = "Unit1-zn"              // Zone that lies on the other side of this surface
+        
+           SURFACE   "WallFrm-imass"  
+              sfType = "Wall"                   // Type of opaque surface
+              sfCon = "con-WallFrmIMass"        // Surface construction
+              sfArea = 312.5                    // Wall area, ft2
+              sfAzm = 0                         // Surface azimuth, deg
+              sfModel = "Forward_Difference"    // Modeling option
+              sfExCnd = "AdjZn"                 // Exterior condition description
+              sfAdjZn = "Unit1-zn"              // Zone that lies on the other side of this surface
+        
+           SURFACE   "WallCav-imass"  
+              sfType = "Wall"                   // Type of opaque surface
+              sfCon = "con-WallCavIMass"        // Surface construction
+              sfArea = 937.5                    // Wall area, ft2
+              sfAzm = 0                         // Surface azimuth, deg
+              sfModel = "Forward_Difference"    // Modeling option
+              sfExCnd = "AdjZn"                 // Exterior condition description
+              sfAdjZn = "Unit1-zn"              // Zone that lies on the other side of this surface
+        
+        ZONE   "Crawlspace-zn"  
+           znModel = "UZM"                      // Zone model (CNE, CSE, CZM, UZM)
+           znArea = 425                         // Zone area, ft2
+           znVol = 850                          // Zone volume, ft3
+           znCeilingHt = 2                      // Nominal zone ceiling height relative to zone floor (typically 8-10 ft), ft
+           znFloorZ = -3                        // Nominal zone floor height relative to arbitrary 0 level, ft
+           znHIRatio = 10                       // Zone hygric inertia ratio
+           infAC = 0                            // Zone infiltration air changes per hour, 1/hr
+           infELA = 0                           // Zone effective leakage area (ELA), in2
+           infShld = 4                          // Zone local shielding class, used in ELA model
+        
+           GAIN   "Crawlspace-znLtg"  
+              gnMeter = "MtrElec"               // Meter that tracks internal gain
+              gnEndUse = "Lit"                  // Internal gain enduse
+              gnPower = 2.4071 * 0 * select( $dsDay==1, 0., $ISWEHOL, IntLight_WEH, Default IntLight_WD) * Other_SM    // Expression representing internal gain power, Btuh
+              gnFrRad = 0.2                     // Fraction of internal gain to Zone that is Radiant (single value or hourly profile)
+        
+           GAIN   "Crawlspace-znPpl"  
+              gnPower = 16.3351 * 0 * select( $dsDay==1, 0., default hourval(0.035,0.035,0.035,0.035,0.035,0.059,0.082,0.055,0.027,0.014,0.014,0.014,0.014,0.014,0.019,0.027,0.041,0.055,0.068,0.082,0.082,0.07,0.053,0.035)  * choose1($month, 1.19,1.11,1.02,0.93,0.84,0.8,0.82,0.88,0.98,1.07,1.16,1.21))    // Expression representing internal gain power, Btuh
+              gnFrRad = 0.3                     // Fraction of internal gain to Zone that is Radiant (single value or hourly profile)
+              gnFrLat = 0.427                   // Fraction of internal gain to Zone that is Latent (single value or hourly profile)
+        
+           GAIN   "Crawlspace-znTV"  
+              gnMeter = "MtrElec"               // Meter that tracks internal gain
+              gnEndUse = "Rcp"                  // Internal gain enduse
+              gnPower = ((265 + (31.8 * 2)) * 3412/365) * 0 * select( $dsDay==1, 0., $ISWEHOL, TV_WEH, Default TV_WD) * TV_SM    // Expression representing internal gain power, Btuh
+              gnFrRad = 0.4                     // Fraction of internal gain to Zone that is Radiant (single value or hourly profile)
+        
+           GAIN   "Crawlspace-znSTB"  
+              gnMeter = "MtrElec"               // Meter that tracks internal gain
+              gnEndUse = "Rcp"                  // Internal gain enduse
+              gnPower = ((76 + (59.4 * 2)) * 3412/365) * 0 * select( $dsDay==1, 0., $ISWEHOL, STB_WEH, Default STB_WD) * STB_SM    // Expression representing internal gain power, Btuh
+              gnFrRad = 0.2                     // Fraction of internal gain to Zone that is Radiant (single value or hourly profile)
+        
+           GAIN   "Crawlspace-znComp"  
+              gnMeter = "MtrElec"               // Meter that tracks internal gain
+              gnEndUse = "Rcp"                  // Internal gain enduse
+              gnPower = ((79 + (55.4 * 2)) * 3412/365) * 0 * select( $dsDay==1, 0., $ISWEHOL, Comp_WEH, Default Comp_WD) * Comp_SM    // Expression representing internal gain power, Btuh
+              gnFrRad = 0.2                     // Fraction of internal gain to Zone that is Radiant (single value or hourly profile)
+        
+           GAIN   "Crawlspace-znMEL"  
+              gnMeter = "MtrElec"               // Meter that tracks internal gain
+              gnEndUse = "Rcp"                  // Internal gain enduse
+              gnPower = ((570 + (198.9 * 2)) * 3412/365) * 0 * select( $dsDay==1, 0., $ISWEHOL, RMEL_WEH, Default RMEL_WD) * Other_SM    // Expression representing internal gain power, Btuh
+              gnFrRad = 0.3                     // Fraction of internal gain to Zone that is Radiant (single value or hourly profile)
+              gnFrLat = 0.03                    // Fraction of internal gain to Zone that is Latent (single value or hourly profile)
+        
+           GAIN   "Crawlspace-znExtLtg"  
+              gnMeter = "MtrElec"               // Meter that tracks internal gain
+              gnEndUse = "Ext"                  // Internal gain enduse
+              gnPower = (((8 * 1) + (.0532 * 1250)) * 3412/365) * 0 * select( $dsDay==1, 0., $ISWEHOL, ExtLight_WEH, Default ExtLight_WD) * Other_SM    // Expression representing internal gain power, Btuh
+              gnFrZn = 0                        // Fraction of internal gain to Zone (single value or hourly profile)
+        
+           SURFACE   "CrawlUndgWallFront-Cav"  
+              sfType = "Wall"                   // Type of opaque surface
+              sfCon = "cc-Crawl_UndgWall - const"    // Surface construction
+              sfArea = 34                       // Wall area, ft2
+              sfDepthBG = 2                     // Depth of bottom of wall or floor slab below grade, ft
+              sfModel = "Forward_Difference"    // Modeling option
+              sfExCnd = "Ground"                // Exterior condition description
+        
+           SURFACE   "CrawlUndgWallLeft-Cav"  
+              sfType = "Wall"                   // Type of opaque surface
+              sfCon = "cc-Crawl_UndgWall - const"    // Surface construction
+              sfArea = 50                       // Wall area, ft2
+              sfDepthBG = 2                     // Depth of bottom of wall or floor slab below grade, ft
+              sfModel = "Forward_Difference"    // Modeling option
+              sfExCnd = "Ground"                // Exterior condition description
+        
+           SURFACE   "CrawlUndgWallRight-Cav"  
+              sfType = "Wall"                   // Type of opaque surface
+              sfCon = "cc-Crawl_UndgWall - const"    // Surface construction
+              sfArea = 50                       // Wall area, ft2
+              sfDepthBG = 2                     // Depth of bottom of wall or floor slab below grade, ft
+              sfModel = "Forward_Difference"    // Modeling option
+              sfExCnd = "Ground"                // Exterior condition description
+        
+           SURFACE   "CrawlWallBack-Cav"  
+              sfType = "Wall"                   // Type of opaque surface
+              sfCon = "cc-Crawl_ExtWall - const"    // Surface construction
+              sfArea = 34                       // Wall area, ft2
+              sfTilt = 90                       // Surface tilt, deg
+              sfAzm = 180                       // Surface azimuth, deg
+              sfExAbs = 0.5                     // Surface exterior solar absorptivity
+              sfModel = "Forward_Difference"    // Modeling option
+        
+           SURFACE   "CrawlUndgFloor-Exp"  
+              sfType = "Floor"                  // Type of opaque surface
+              sfCon = "scn-UFlrConsExposed"     // Surface construction
+              sfArea = 425                      // Wall area, ft2
+              sfDepthBG = 3                     // Depth of bottom of wall or floor slab below grade, ft
+              sfTilt = 180                      // Surface tilt, deg
+              sfModel = "Forward_Difference"    // Modeling option
+              sfExCnd = "Ground"                // Exterior condition description
+        
+           SURFACE   "Furniture-imass 34"  
+              sfType = "Wall"                   // Type of opaque surface
+              sfCon = "con-FurnIMass"           // Surface construction
+              sfArea = 850                      // Wall area, ft2
+              sfAzm = 0                         // Surface azimuth, deg
+              sfModel = "Forward_Difference"    // Modeling option
+              sfExCnd = "AdjZn"                 // Exterior condition description
+              sfAdjZn = "Crawlspace-zn"         // Zone that lies on the other side of this surface
+        
+           SURFACE   "WallFrm-imass 37"  
+              sfType = "Wall"                   // Type of opaque surface
+              sfCon = "con-WallFrmIMass"        // Surface construction
+              sfArea = 106.25                   // Wall area, ft2
+              sfAzm = 0                         // Surface azimuth, deg
+              sfModel = "Forward_Difference"    // Modeling option
+              sfExCnd = "AdjZn"                 // Exterior condition description
+              sfAdjZn = "Crawlspace-zn"         // Zone that lies on the other side of this surface
+        
+           SURFACE   "WallCav-imass 38"  
+              sfType = "Wall"                   // Type of opaque surface
+              sfCon = "con-WallCavIMass"        // Surface construction
+              sfArea = 318.75                   // Wall area, ft2
+              sfAzm = 0                         // Surface azimuth, deg
+              sfModel = "Forward_Difference"    // Modeling option
+              sfExCnd = "AdjZn"                 // Exterior condition description
+              sfAdjZn = "Crawlspace-zn"         // Zone that lies on the other side of this surface
+        
+        ZONE   "Attic-atc"  
+           znModel = "UZX"                      // Zone model (CNE, CSE, CZM, UZM)
+           znArea = 1250                        // Zone area, ft2
+           znVol = 2455.231879                  // Zone volume, ft3
+           znEaveZ = 9                          // Height of top of the wall in this zone above the ground, ft
+           znCAir = 0.01                        // Zone 'air' heat capacity: represents heat capacity of air, furniture, 'light' walls, and everything in zone except nonQUICK surfaces
+           znHIRatio = 10                       // Zone hygric inertia ratio
+           infAC = .7                            // Zone infiltration air changes per hour, 1/hr
+           infELA = 0                           // Zone effective leakage area (ELA), in2
+           infShld = 4                          // Zone local shielding class, used in ELA model
+        
+           SURFACE   "Attic-atc-rfNF"  
+              sfType = "Ceiling"                // Type of opaque surface
+              sfCon = "fc-Res_Ext_Roof - const"    // Surface construction
+              sfArea = 32.940392                // Wall area, ft2
+              sfTilt = 18.434949                // Surface tilt, deg
+              sfAzm = 0                         // Surface azimuth, deg
+              sfExAbs = 0.9                     // Surface exterior solar absorptivity
+              sfExEpsLW = 0.85                  // Surface exterior long wave (thermal) emittance
+              sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
+              sfModel = "Forward_Difference"    // Modeling option
+        
+           SURFACE   "Attic-atc-rfNC"  
+              sfType = "Ceiling"                // Type of opaque surface
+              sfCon = "cc-Res_Ext_Roof - const"    // Surface construction, Cavity R-val: 0
+              sfArea = 296.463531               // Wall area, ft2
+              sfTilt = 18.434949                // Surface tilt, deg
+              sfAzm = 0                         // Surface azimuth, deg
+              sfExAbs = 0.9                     // Surface exterior solar absorptivity
+              sfExEpsLW = 0.85                  // Surface exterior long wave (thermal) emittance
+              sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
+              sfModel = "Forward_Difference"    // Modeling option
+        
+           SURFACE   "Attic-atc-rfEF"  
+              sfType = "Ceiling"                // Type of opaque surface
+              sfCon = "fc-Res_Ext_Roof - const"    // Surface construction
+              sfArea = 32.940392                // Wall area, ft2
+              sfTilt = 18.434949                // Surface tilt, deg
+              sfAzm = 90                        // Surface azimuth, deg
+              sfExAbs = 0.9                     // Surface exterior solar absorptivity
+              sfExEpsLW = 0.85                  // Surface exterior long wave (thermal) emittance
+              sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
+              sfModel = "Forward_Difference"    // Modeling option
+        
+           SURFACE   "Attic-atc-rfEC"  
+              sfType = "Ceiling"                // Type of opaque surface
+              sfCon = "cc-Res_Ext_Roof - const"    // Surface construction, Cavity R-val: 0
+              sfArea = 296.463531               // Wall area, ft2
+              sfTilt = 18.434949                // Surface tilt, deg
+              sfAzm = 90                        // Surface azimuth, deg
+              sfExAbs = 0.9                     // Surface exterior solar absorptivity
+              sfExEpsLW = 0.85                  // Surface exterior long wave (thermal) emittance
+              sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
+              sfModel = "Forward_Difference"    // Modeling option
+        
+           SURFACE   "Attic-atc-rfSF"  
+              sfType = "Ceiling"                // Type of opaque surface
+              sfCon = "fc-Res_Ext_Roof - const"    // Surface construction
+              sfArea = 32.940392                // Wall area, ft2
+              sfTilt = 18.434949                // Surface tilt, deg
+              sfAzm = 180                       // Surface azimuth, deg
+              sfExAbs = 0.9                     // Surface exterior solar absorptivity
+              sfExEpsLW = 0.85                  // Surface exterior long wave (thermal) emittance
+              sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
+              sfModel = "Forward_Difference"    // Modeling option
+        
+           SURFACE   "Attic-atc-rfSC"  
+              sfType = "Ceiling"                // Type of opaque surface
+              sfCon = "cc-Res_Ext_Roof - const"    // Surface construction, Cavity R-val: 0
+              sfArea = 296.463531               // Wall area, ft2
+              sfTilt = 18.434949                // Surface tilt, deg
+              sfAzm = 180                       // Surface azimuth, deg
+              sfExAbs = 0.9                     // Surface exterior solar absorptivity
+              sfExEpsLW = 0.85                  // Surface exterior long wave (thermal) emittance
+              sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
+              sfModel = "Forward_Difference"    // Modeling option
+        
+           SURFACE   "Attic-atc-rfWF"  
+              sfType = "Ceiling"                // Type of opaque surface
+              sfCon = "fc-Res_Ext_Roof - const"    // Surface construction
+              sfArea = 32.940392                // Wall area, ft2
+              sfTilt = 18.434949                // Surface tilt, deg
+              sfAzm = 270                       // Surface azimuth, deg
+              sfExAbs = 0.9                     // Surface exterior solar absorptivity
+              sfExEpsLW = 0.85                  // Surface exterior long wave (thermal) emittance
+              sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
+              sfModel = "Forward_Difference"    // Modeling option
+        
+           SURFACE   "Attic-atc-rfWC"  
+              sfType = "Ceiling"                // Type of opaque surface
+              sfCon = "cc-Res_Ext_Roof - const"    // Surface construction, Cavity R-val: 0
+              sfArea = 296.463531               // Wall area, ft2
+              sfTilt = 18.434949                // Surface tilt, deg
+              sfAzm = 270                       // Surface azimuth, deg
+              sfExAbs = 0.9                     // Surface exterior solar absorptivity
+              sfExEpsLW = 0.85                  // Surface exterior long wave (thermal) emittance
+              sfInEpsLW = 0.9                   // Surface interior long wave (thermal) emittance
+              sfModel = "Forward_Difference"    // Modeling option
+        
+           SURFACE   "Attic-atc-rfT1"  
+              sfType = "Wall"                   // Type of opaque surface
+              sfCon = "con-AtticTruss"          // Surface construction
+              sfArea = 833.333333               // Wall area, ft2
+              sfAzm = 0                         // Surface azimuth, deg
+              sfModel = "Forward_Difference"    // Modeling option
+              sfExCnd = "Adiabatic"             // Exterior condition description
+        
+           SURFACE   "Attic-atc-rfT2"  
+              sfType = "Wall"                   // Type of opaque surface
+              sfCon = "con-AtticTruss"          // Surface construction
+              sfArea = 833.333333               // Wall area, ft2
+              sfAzm = 0                         // Surface azimuth, deg
+              sfModel = "Forward_Difference"    // Modeling option
+              sfExCnd = "Adiabatic"             // Exterior condition description
+        
+           SURFACE   "Attic-atc-rfT3"  
+              sfType = "Wall"                   // Type of opaque surface
+              sfCon = "con-AtticTruss"          // Surface construction
+              sfArea = 833.333333               // Wall area, ft2
+              sfAzm = 0                         // Surface azimuth, deg
+              sfModel = "Forward_Difference"    // Modeling option
+              sfExCnd = "Adiabatic"             // Exterior condition description
+        
+        PERFORMANCEMAP "PMHtg"
+        
+            PMGRIDAXIS "HtgDBT" pmGXType = "DBT"  pmGXValues = -5, 5, 17, 47, 60 pmGXRefValue = 47
+            PMGRIDAXIS "HtgSpeed" pmGXType = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
+        
+            // Capacity ratio = net total capacity / net rated total capacity
+            PMLOOKUPDATA LUHtgCapRat pmLUType = "CapRat" pmLUValues =
+              0.15, 0.58, 0.59,   // -5F at min, mid, max speed
+              0.19, 0.73, 0.75,   // 5F
+              0.22, 0.68, 0.83,   // 17F
+              0.31, 1.00, 1.18,   // 47F
+              0.31, 1.00, 1.18    // 60F
+        
+            // COP = net total COP
+            PMLOOKUPDATA LUHtgCOP pmLUType = "COP" pmLUValues =
+              1.73, 1.69, 1.69,   // -5F at min, mid, max speed
+              2.00, 1.92, 1.91,   // 5F
+              2.82, 2.70, 2.38,   // 17F
+              4.52, 3.69, 3.33,   // 47F
+              4.52, 3.69, 3.33    // 60F
+        
+        endPERFORMANCEMAP
+        
+        
+        PERFORMANCEMAP "PMClg"
+        
+            PMGRIDAXIS "ClgDBT" pmGXType = "DBT" pmGXValues = 60, 82, 95, 115 pmGXRefValue = 95
+            PMGRIDAXIS "ClgSpeed" pmGXType = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
+        
+            // Capacity ratio = net total capacity / net rated total capacity
+            PMLOOKUPDATA LUClgCapRat pmLUType = "CapRat" pmLUValues =
+              0.48, 1.13, 1.26,   // 60F at min, mid, max speed
+              0.42, 1.05, 1.17,   // 82F
+              0.39, 1.00, 1.12,   // 95F
+              0.34, 0.92, 1.04    // 115F
+        
+            // COP = net total COP
+            PMLOOKUPDATA LUClgCOP pmLUType = "COP" pmLUValues =
+              14.22, 16.44, 15.00,   // 60F at min, mid, max speed
+               7.93,  7.59,  6.71,   // 82F
+               6.01,  5.58,  4.91,   // 95F
+               4.12,  3.82,  3.34    // 115F
+        
+        endPERFORMANCEMAP
+        
+        RSYS   "rsys-HVAC System"  
+           rsType = "ASHPPM"               // System type
+           AUTOSIZE rsCapC
+           AUTOSIZE rsCap47
+           rsCapAuxH = 30000
+           rsFxCapC = 1.2                       // Cooling sizing factor
+           rsFChgC = 0.96                       // Refrigerant charge adjustment factor (for cooling)
+           rsSEER = 15.052632                   // Cooling SEER
+           rsHSPF = 9
+           rsVfPerTon = 350                     // CFM per Ton (default = 350)
+           rsFanMotTy = "PSC"                   // Fan motor type
+           rsFanPwrH = 0.45                     // Heating fan power.  Heating air flow is estimated based on a 50 ?F temperature rise.
+           rsFanPwrC = 0.45                     // Cooling fan power.
+           rsParElec = ($tdboHrAv < 50.) * (1.-@RSYSRes["rsys-HVAC System"].prior.H.hrsOn) * max( 36000, @RSYS["rsys-HVAC System"].capNomC ) * 10./12000.    // Parasitic electric use, W
+           rsFxCapH = 1.2                       // Heating sizing factor
+           rsCdC = 0.08                         // Cooling cyclic degradation coefficient, ratio
+           rsOAVType = "None"                   // OAV system type
+           rsElecMtr = "MtrElec"                // Electric use meter
+           rsPerfMapHtg = "PMHtg"
+           rsPerfMapClg = "PMClg"
+        
+           DUCTSEG   "SupplyDuct-rsys-HVAC System"  
+              dsTy = "SUPPLY"
+              dsInArea = 337.5                  // Duct segment inside surface area (at duct wall, duct wall thickness assumed negligible) for round shaped duct., ft2
+              dsDiameter = 0.666667             // Duct segment round duct diameter (duct wall thickness assumed negligible), ft
+              dsAdjZn = "Attic-atc"
+              dsInsulR = 7.627143
+              dsLeakF = 0.0351
+        
+           DUCTSEG   "ReturnDuct-rsys-HVAC System"  
+              dsTy = "RETURN"
+              dsInArea = 62.5                   // Duct segment inside surface area (at duct wall, duct wall thickness assumed negligible) for round shaped duct., ft2
+              dsDiameter = 1.333333             // Duct segment round duct diameter (duct wall thickness assumed negligible), ft
+              dsAdjZn = "Attic-atc"
+              dsInsulR = 7.627143
+              dsLeakF = 0.0249
+        
+        PVARRAY   "pvarray 1"  
+           pvDCSysSize = 10                     // Rated array output, kW
+           pvModuleType = "Standard"
+           pvArrayType = "FixedOpenRack"
+           pvTilt = 22.619884                   // Array tilt (0=H, 90=V), deg
+           pvAzm = 170                          // Array azimuth (0=N, 90=E, ...), deg
+           pvInverterEff = 0.96                 // Inverter efficiency at full load, frac
+           pvSIF = 2                            // Shading impact factor - ratio of relative power output to fraction shaded: PwrOut = PwrSys*(1-SIF*FracShaded), ratio
+           pvSysLosses = 0.1744                 // Total system losses, frac
+           pvElecMtr = "MtrElec"                // Electric meter to report results to
+        
+        BATTERY   "battery 1"  
+           btChgEff = 0.95                      // The charging efficiency of storing electricity into the BATTERY system
+           btDschgEff = 0.95                    // The discharge efficiency for when the BATTERY system is discharging power
+           btMaxCap = 8.5                       // The maximum amount of energy that can be stored in the BATTERY system, kWh
+           btMaxChgPwr = 3.57143                // The maximum rate at which the BATTERY can be charged in kilowatts (i.e., energy flowing into the BATTERY), kW
+           btMaxDschgPwr = 3.57143              // The maximum rate at which the BATTERY can be discharged in kilowatts (i.e., energy flowing out of the BATTERY), kW
+           btMeter = "MtrElec"                  // Electric meter to log charge/discharge to
+        
+        ALTER PVARRAY "pvarray 1";
+            pvDCSysSize = 5;
+        
+        // deliberately unused importfile (generates warning)
+        IMPORTFILE Unused imFileName="importfile_test.dat" imFreq=Hour
+        
+        IMPORTFILE testData imFileName="testdata.tdv" imFreq=Hour imTitle="Test TDV data"
+        
+        IMPORTFILE batteryControl imFileName="importfile_test.dat" imFreq=Hour imTitle="x-ZoneTStat"
+        
+        ALTER BATTERY "battery 1";
+            btMaxCap = 13.5;
+            btMaxChgPwr = 5.67;
+            btMaxDschgPwr = 5.67;
+            btChgReq = select(
+               import(batteryControl, 4)!=0, import(batteryControl, "btChgReq_custom")  // import numeric value by col # and col name
+               default -@BATTERY[ 1].loadSeen)
+        
+#       #define kw_to_btuh 3412.142
+        
+        DELETE Report "eb"
+        
+        REPORT rpType=MTR rpMeter=MtrElec rpFreq=MONTH rpBtuSf=kw_to_btuh
+        
+        REPORT  rpType = UDT rpFreq = HOUR rpTitle = "Battery/PV Output"
+            rpDayBeg = jun 29 rpDayEnd = jul 1
+            ReportCol colhead="Hr" colVal=@Top.iHr colWid=2
+            ReportCol colhead="Load kW" colVal=@METER["MtrElec"].H.allEU / kw_to_btuh colDec=3 colWid=8
+            ReportCol colhead="PV kW" colVal=@METER["MtrElec"].H.pv / kw_to_btuh colDec=3 colWid=8
+            ReportCol colhead="Bat kW" colVal=@METER["MtrElec"].H.bt / kw_to_btuh colDec=3 colWid=8
+            ReportCol colhead="Grid kW" colVal=@METER["MtrElec"].H.tot / kw_to_btuh colDec=3 colWid=8
+            ReportCol colhead="Bat kWh" colGap=3 colVal=@BATTERY["Battery 1"].energy colDec=3 colWid=8
+            ReportCol colhead="LS kW" colVal=@BATTERY["Battery 1"].loadseen colDec=3 colWid=8
+            ReportCol colhead="TDV Fuel" colVal=import( testdata, tdvFuel) colDec=3 colWid=8 colGap=5
+            // import string value by col name and col #
+            ReportCol colhead="Note" colWid=20 colGap=5
+                colVal=concat( importStr( batteryControl, "Note"), importStr( batteryControl, 5), importStr( testdata, 1))
+        
+        
+         RUN
+         $EOF
+-----------------------
+???     IMPORT.CSE(1354): Warning: 
+???       importFile 'Unused': S0575: Unused IMPORTFILE: no IMPORT()s from it found.
+-----------------------
+
+
+
+! CSE 0.927.0+import-fix.40c90865.177.dirty for Win32 console run(s) done: Tue 21-Apr-26   4:51:12 pm
+
+! Executable:   d:\cse\builds\cse.exe
+!               21-Apr-26   4:38 pm   (VS 14.29    4474368 bytes)  (HPWH 1.26.0+HEAD.11240a73.553)
+! Command line: -x!  -t1 import
+! Input file:   D:\cse\test\import.cse
+! Report file:  D:\CSE\TEST\IMPORT.REP
+
+! Timing info --
+
+!                Input:  Time = 0.06     Calls = 2         T/C = 0.0290
+!           AutoSizing:  Time = 0.21     Calls = 1         T/C = 0.2080
+!           Simulation:  Time = 2.76     Calls = 1         T/C = 2.7580
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0040
+!                Total:  Time = 3.03     Calls = 1         T/C = 3.0310
