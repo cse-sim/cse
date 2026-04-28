@@ -6,7 +6,7 @@
  #define  StandardsVersion  2026   // Compliance 2026
  #define  DesignRatingBase     0   // - none -
  #define  ClimateZone         12   // CZ12  (Sacramento)
- #define  DD1  Jul 02
+ #define  DD1  Jul 10
  #define  CD1  Jul 05
  #define  HD1  Jan 10
  #define  SEASONCHANGESETPT  60
@@ -1505,6 +1505,8 @@ ZONE   "1st Floor-zn"
    infELA = 0                           // Zone effective leakage area (ELA), in2
    infShld = 4                          // Zone local shielding class, used in ELA model
    znRSys = "rsys-HVAC System 1"        // RSYS component conditioning this ZONE
+   znQMxH = 20000
+   znQMxC = -20000
 
    GAIN   "1st Floor-znLtg"  
       gnMeter = "MtrElec"               // Meter that tracks internal gain
@@ -2838,7 +2840,7 @@ PERFORMANCEMAP   "Heat Pump System 1-clgperfmap"      // Variable speed: Cap95 2
 RSYS   "rsys-HVAC System 1"  
    rsType = "ASHPPM"                    // System type
    rsFChgC = 0.96                       // Refrigerant charge adjustment factor (for cooling)
-   rsCapC = 22265                       // Cooling capacity
+   rsCapC = 15000                       // Cooling capacity
    rsSEER = 18.947368                   // Cooling SEER
    rsVfPerTon = 350                     // CFM per Ton (default = 350)
    rsFanMotTy = "BPM"                   // Fan motor type
@@ -2848,7 +2850,7 @@ RSYS   "rsys-HVAC System 1"
    rsDefrostModel = "RevCycle"          // Modeling options for ASHP outdoor coil defrosting when 17°F < TDbO < 45°F
    rsFChgH = 0.96                       // Refrigerant charge adjustment factor (for heating)
    rsHSPF = 10.352941                   // ratio of BTU heat output over the heating season to watt-hours of electricity used, ratio
-   rsCap47 = 22000                      // Total rated heating capacity (@ 47°F), Btuh
+   rsCap47 = 15000                      // Total rated heating capacity (@ 47°F), Btuh
    rsTypeAuxH = "Resistance"            // type of aux heating equipment
    rsCtrlAuxH = "Cycle"                 // aux heating equipment control
    rsCapAuxH = 65000                    // Auxiliary (backup) heating capacity, Btuh
@@ -2933,7 +2935,7 @@ SYSINFHEAT( 1)
 REPORT   "elec mtr rpt"  
    rpType = MTR  rpMeter="MtrElec"  rpFreq=Month  rpBtuSf=1000
 
- // report columns: RSYS heating subhour details
+ // report columns: RSYS subhour details
 #define SYSCOLSH( RXCOL, rs, z1, z2, zat, dctTot) \
     RXCOL colHead="mon" colVal=$Month colWid=3 \
     RXCOL colHead="day" colVal=$Dayofmonth colWid=3 \
@@ -2962,7 +2964,9 @@ REPORT   "elec mtr rpt"
     RXCOL colHead="CFM1" colVal=@Zone[ z1].rsAmfSup/4.5  colWid=5 colDec=1 \
     RXCOL colHead="CFM2" colVal=@Zone[ z2].rsAmfSup/4.5  colWid=5 colDec=1 \
     RXCOL colHead="qZ1"  colVal=@Zone[z1].qsHVAC colWid=6 colDec=0 \
+    RXCOL colHead="qIZ1"  colVal=@Zone[z1].qsIdeal colWid=6 colDec=0 \
     RXCOL colHead="qZ2"  colVal=@Zone[z2].qsHVAC colWid=6 colDec=0 \
+    RXCOL colHead="qIZ2"  colVal=@Zone[z2].qsIdeal colWid=6 colDec=0 \
     RXCOL colHead="qComp" colVal=@RSYS[ rs].outSen colWid=6 colDec=0 \
     RXCOL colHead="qAux" colVal=@RSYS[ rs].outAux colWid=6 colDec=0 \
     RXCOL colHead="qDef" colVal=@RSYS[ rs].outDefrost colWid=5 colDec=0 \
@@ -2979,7 +2983,7 @@ REPORT   "elec mtr rpt"
 REPORT rpType=UDT rpFreq=subhour rpDayBeg=(HD1) rpTitle="RSYS Heating subhour details"
 SYSCOLSH( Reportcol, 1, "1st Floor-zn", "2nd Floor-zn", "Attic-atc", 3)
 
-REPORT rpType=UDT rpFreq=subhour rpDayBeg=(CD1) rpTitle="RSYS cooling subhour details"
+REPORT rpType=UDT rpFreq=subhour rpDayBeg=(DD1) rpTitle="RSYS cooling subhour details"
 SYSCOLSH( Reportcol, 1, "1st Floor-zn", "2nd Floor-zn", "Attic-atc", 3)
 
 REPORT   "1st Floor-zebcd"  

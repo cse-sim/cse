@@ -1555,12 +1555,7 @@ void ZNR::zn_IdealHVAC()		// idealized space conditioning
 		}
 		// else capacity sufficient
 	}
-	if (hcMode == RSYS::rsmOFF)
-	{
-		if (qsTot != 0.)
-			printf("\nNZ");
-	}
-	else
+	if (hcMode != RSYS::rsmOFF)
 	{	// accounting
 		RSYS* rs = zn_GetRSYS();
 		if (rs)		// what about terminal?

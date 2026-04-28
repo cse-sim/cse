@@ -2849,8 +2849,6 @@ RECORD ZNRES_IVL_SUB "zone interval results sub" *SUBSTRUCT	// zone interval res
                                 //  [ 0]=heating  [ 1]=cooling
     *array 2 float unMetHrsTol 	// unmet hours (accumulated subhourly, tz excursion > tp_unMetTzTol)
                                 //  [ 0]=heating  [ 1]=cooling
-    *array 2 float unMetQsen    // additional sensible energy require to hold setpoint
-                                //  [ 0]=heating (>0)  [ 1]=cooling (<0)
 
     float qscHvac   // zone accumulated HVAC sensible cooling, Btu (<=0) (ideal included, OAV not included)
     float qshHvac   // zone accumulated HVAC sensible heating, Btu (>=0)
