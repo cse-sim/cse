@@ -1364,8 +1364,11 @@ RC ZNR::ztuEndSubhr()	// end-subhour (after iterations) hvac checks/computations
 
 // subhour results: hvac output
 	double qsHvac = zn_qsHvac * Top.tp_subhrDur;		// subhour sensible hvac energy, Btu
+	double qsIdeal = zn_qsIdeal * Top.tp_subhrDur;
 	zrs->qsMech = qsHvac + zn_qHPWH * Top.tp_subhrDur;	// subhour sensible mechanical energy, Btu
 														//   (includes HPWH heat extraction)
+	if (zn_HasRSYS())
+		zrs->qsMech += qsIdeal;		// zn_qsHvac includes zn_qsIdeal if no RSYS
 
 	zrs->qlMech = zn_qlHvac * Top.tp_subhrDur;	// subhour latent hvac energy (power * time = energy)
 
@@ -1376,7 +1379,10 @@ RC ZNR::ztuEndSubhr()	// end-subhour (after iterations) hvac checks/computations
 		zrs->qvMech = qTotMech;
 	else
 	{	(qTotMech < 0. ? zrs->qcMech : zrs->qhMech) = qTotMech;
-		(qsHvac < 0.f ? zrs->qscHvac : zrs->qshHvac) = qsHvac;
+		(qsHvac < 0. ? zrs->qscHvac : zrs->qshHvac) = qsHvac;
+		
+		(qsIdeal < 0.? zrs->qscIdeal : zrs->qshIdeal) = qsIdeal;
+
 		if (i.zn_loadMtri)
 		{
 			LOADMTR_IVL& lm = LdMtrR[i.zn_loadMtri].S;
@@ -1558,6 +1564,10 @@ bool ZNR::zn_TrackUnmetLoads() const	// unmet load statistics
 		zrs.unMetMaxTD[iHC] = tzErr;	// min/max tracking done in accumZr()
 		if (Top.isEndHour)
 			zrs.unMetHrDH[iHC] = tzErr /* * 1.f */;
+
+		// calc energy to hold setpoint
+		double q = zn_QAirCR(zn_tzsp);
+		zrs.unMetQsen[ iHC] = q * Top.tp_subhrDur - zrs.qsMech;
 	}
 
 	return bUnMet;
