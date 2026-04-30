@@ -1,0 +1,9 @@
+title: Input Structure
+nav:
+  - index.md
+  - The Preprocessor: the-preprocessor.md
+  - CSE Input Language Statements: cse-input-language-statements.md
+  - Expressions: expressions.md
+  - User-defined Functions: user-defined-functions.md 
+  - Probes: probes.md
+  - Variation Frequencies Revisited: variation-frequencies-revisited.md 
