@@ -224,7 +224,7 @@ endif()
 macro(addMSVCPrecompiledHeader PrecompiledHeader PrecompiledSourceVar SourcesVar)
   if(MSVC)
     get_filename_component(PrecompiledBasename ${PrecompiledHeader} NAME_WE)
-    set(PrecompiledBinary "$(IntDir)/${PrecompiledBasename}.pch")
+    set(PrecompiledBinary "${CMAKE_CURRENT_BINARY_DIR}/${PrecompiledBasename}.pch")
     set(Sources ${${SourcesVar}})
     set(PrecompiledSource ${${PrecompiledSourceVar}})
 

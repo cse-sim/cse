@@ -82,6 +82,7 @@
 
 #include <penumbra/penumbra.h>	// penumbraInit penumbraTerminate for GPU calculations
 
+#include <nlohmann/json.hpp>
 
 // configuration defined on compiler command line (or inferred, see cnglob.h)
 #include "cseface.h"
@@ -597,7 +598,12 @@ LOCAL int cse2( int argc, const char* argv[])
 	{
 		errlvl = exitCode;
 	}
-	catch (std::exception e)
+    catch (nlohmann::json::exception e)
+    {
+        err(PROGERR, "Unhandled json exception '%s'\nTerminating", e.what());
+        errlvl = 2;
+    }
+    catch (std::exception e)
 	{
 		err(PROGERR, "Unhandled exception '%s'\nTerminating", e.what());
 		errlvl = 2;
