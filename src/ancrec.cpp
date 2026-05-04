@@ -1008,7 +1008,7 @@ RC FC basAnc::reAl( TI _n, int erOp/*=ABT*/)		// allocate space for n (0=default
 		if (!ptrWas)				// do 1st time only to avoid compensating for bugs
 		{
 			ptr()->rt = rt;  			//   ... (rec(0) is not add'd, and anyway validate error would foil add.)
-			ptr()->b = (BP)this;		// .ss is already 0.  .gud is left 0.
+			ptr()->b = (BP)this;		// .ss is already 0.  .r_status is left 0.
 		}
 
 		// loop all pre-reAl gud records

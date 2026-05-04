@@ -1144,7 +1144,7 @@ unsExprH:
 			i = *IPI++;			// fetch inline 1-based field number
 			fileIx = *IPU++;  	// fetch inline CSE input fileName index for error msgs
 			line = *IPI++;		// fetch inline line number
-			rc = impFldNrN( n, i, &fv, fileIx, line, &ms); 	// import number by field #, app\impf.cpp
+			rc = impFldNrN( n, i, &fv, fileIx, line, &ms); 	// import number by field #, impf.cpp
 			if (rc != RCOK)
 				goto breakbreak;		// on error, ms is set to sub-message ptr.
 			*--SPF = fv;				// store returned float
@@ -1154,7 +1154,7 @@ unsExprH:
 			i = *IPI++;			// fetch inline 1-based field number
 			fileIx = *IPU++;  		// fetch inline CSE input fileName index for error msgs
 			line = *IPI++;					// fetch inline line number
-			rc = impFldNrS( n, i, (char **)&p, fileIx, line, &ms);	// import string by field #, app\impf.cpp
+			rc = impFldNrS( n, i, (const char **)&p, fileIx, line, &ms);	// import string by field #, impf.cpp
 			if (rc != RCOK)
 				goto breakbreak;			// on error, ms is set to sub-message ptr.
 			*--SPP = p;				// store returned heap pointer
@@ -1164,7 +1164,7 @@ unsExprH:
 			i = *IPI++;			// fetch inline 1-based field name index (a table subscript)
 			fileIx = *IPU++;  		// fetch inline CSE input fileName index for error msgs
 			line = *IPI++;				// fetch inline line number
-			rc = impFldNmN( n, i, &fv, fileIx, line, &ms);	// import number from named field, app\impf.cpp
+			rc = impFldNmN( n, i, &fv, fileIx, line, &ms);	// import number from named field, impf.cpp
 			if (rc != RCOK)
 				goto breakbreak;				// on error, ms is set to sub-message ptr.
 			*--SPF = fv;				// store returned float
@@ -1174,7 +1174,7 @@ unsExprH:
 			i = *IPI++;			// fetch inline 1-based field name index (a table subscript)
 			fileIx = *IPU++;  		// fetch inline CSE input fileName index for error msgs
 			line = *IPI++;					// fetch inline line number
-			rc = impFldNmS( n, i, (char **)&p, fileIx, line, &ms);	// import string from named field, app\impf.cpp
+			rc = impFldNmS( n, i, (const char **)&p, fileIx, line, &ms);	// import string from named field, impf.cpp
 			if (rc != RCOK)
 				goto breakbreak;			// on error, ms is set to sub-message ptr.
 			*--SPP = p;				// store returned heap pointer

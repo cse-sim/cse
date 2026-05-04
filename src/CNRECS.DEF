@@ -1853,18 +1853,29 @@ RECORD DVRI "dvri" *RAT *hideall	// Date-dependent Virtual Report Info -- at run
     					//  (list headed by Top.drviY, -M, D, H, HS, S updated daily so don't need to search subHourly)
 *END		// DVRI
 //=============================================================================
-RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) records
+RECORD FNRT "fnrt" *SUBSTRUCT   // IMPORTFILE substructure -- fields-by-number table
+                                //   info about each field found in import file
+   *excon
+   *exdes
+   *declare "std::string fnrt_fieldName;"	// field name (from file header), for error messages
+   INT fnmi;					// 0 or field name info subscript for IFFNM.p[iffnmi].fnm[]
+   *declare "const char* fp;"			// NULL or pointer to field's null-terminated text in current record in .buf (do not free here)
+   *declare "bool nDecoded;"			// true if numeric value of field in current record has been decoded
+   *declare "FLOAT fnv;"				// if nDecoded, this is the numeric value -- don't decode twice
+*END
+//=============================================================================
+RECORD IMPF "importFile" *RAT	// IMPORTFILE input (ImpfiB) and run (ImpfB) records
     *prefix im_
-    *exdes					// destructor (cncult4.cpp) frees heap items
+    *exdes					// destructor frees heap items
     *ovrcopy
     *declare "RC if_CkF();"
-    *declare "RC FC scanHdr();"		// impf.ccp member fcns
-    *declare "bool FC readRec();"
-    *declare "bool FC scanNextField();"
-    *declare "bool    scanField( char *&p, char *&start);"
-    *declare "bool FC readBuf();"
-    *declare "void FC close();"
-    *declare "void FC fnrtAl(SI nNfnr);"
+    *declare "RC scanHdr();"		// impf.cpp member fcns
+    *declare "bool readRec();"
+    *declare "bool scanNextField();"
+    *declare "bool scanField( char *&p, const char *&start);"
+    *declare "bool readBuf();"
+    *declare "void close();"
+    *declare "void fnrtAl(int nNfnr);"
  //input. name is required.
     *f CULSTR im_fileName	// file name, path optional, in heap or pseudocode. *i cuz VEOI in cncult. RQD.
     *f CULSTR im_title		// title string. If given, file's must match.
@@ -1893,25 +1904,35 @@ RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) reco
     *h *e SI nFieldsScanned	// 0 or number of fields already scanned in current record
     *declare "bool eorScanned;"	// true iff all fields in record have been scanned
     //fields-by-number info. IFFNM.fnmt[] used to get #'s of named fields at runtime.
-	*declare "struct FNRT* fnrt;" // ptr to heap array of info subscripted by 1-based field number.
-    *r *hide USI fnrtNAl 	// allocated size of .fnrt[]. Max subscript fnrtNAl-1; [0] unused.
+    *declare "std::vector<FNRT> im_fnrt;"    // info subscripted by 1-based field number
+                                             //  [ 0] unused
 *END		// IMPF
 //=============================================================================
-RECORD IFFNM "impFileFldNames" *RAT	// IMPORT FILE FIELD NAMES TABLE (IffnmB) records
-		/* Made when Import() fcn for file is seen.
-		   When file with header is opened, field numbers for in names table are set,
-		   then table is used during run to translate fnmi's to fnr's.
-		   .fnmiN used during run to access IMPORTFILEs from IMPORT pseudo-code to handle forward references. */
+RECORD FNMT "fnmt" *SUBSTRUCT   // IFFNM substructure
+//  associate field name to file field number once known (after file opened/header read)
+   *excon
+   *exdes
+   *declare "FNMT( const char* fieldName) : fnmt_fieldName( fieldName), fnmt_fnr( 0) {}"
+   *declare "std::string fnmt_fieldName;"	// field name per file header, for error messages
+    INT fnmt_fnr;					// field NUMBER established when file opened
+*END
+//-----------------------------------------------------------------------------
+RECORD IFFNM "impFileFldNames" *RAT *hideall // IMPORT FILE FIELD NAMES TABLE (IffnmB) records
+// Made when Import()/ImportStr fcn for file is seen.
+// When file with header is opened, field numbers for in names table are set,
+// then table is used during run to translate fnmi's to fnr's.
+// IFFNM records remember field names in each file used in import[Str]()
+//  functions til file opened and field position in file determined from file header.
+
     *exdes   						// free strings, also fnmt.
     *ovrcopy
     // name (base class) is set to that seen in import()s and used to match with IMPF record.
  //derived
     *i TI impfi			// 0 or subscript of IMPF record for file in ImpfiB/ImpfB
-    //fnmt[]: array of info on fields ref'd by name, in order seen (before numbers known).
+    // ifn_fnmt[]: array of info on fields ref'd by name, in order seen (before numbers known).
     // used at runtime to get fnr's to access fields. subscript: "fnmi", "field name index"
-    *i SI fnmiN			// number of named fields seen for this file / max fnmi (+ 1 if 0-based)
-	*declare "struct FNMT* fnmt;"	// pointer to field names info array in heap
-    *i *hide SI fnmtNAl		// allocated size of fnmt. Max subscript fnmtNAl-1. [0] unused.
+    //  [0] unused.
+    *declare "std::vector<FNMT> ifn_fnmt;"    // info subscripted by 1-based field number
 *END		// IFFNM
 //===========================================================================================================
 RECORD AUSZ "autoSizing sub" *SUBSTRUCT	// AUTOSIZING VARIABLES substructure for one autoSized member
