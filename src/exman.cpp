@@ -716,8 +716,10 @@ RC exPile(		// compile an expression from current input
 			*pCS = std::move(AsCULSTR(&v));
 			// CULSTR move Release()s v, d'tor not needed
 			pCS->IsValid();		// message if malformed
+#if defined( TRAPMUNGEDWFNAME)
 			if (!WFX2(strtprintf("exPile store '%s'", AsCULSTR(&v).CStr())))
 				throw 99;
+#endif
 		}
 		else
 		{

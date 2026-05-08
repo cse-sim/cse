@@ -60,6 +60,7 @@ void FC cgWthrClean( 		// cgwthr overall init/cleanup routine
 
 }		// cgWthrClean
 //---------------------------------------------------------------------------
+#if defined( TRAPMUNGEDWFNAME)
 bool WfCheck(const char* where)
 {
 	extern TOPRAT Topi;
@@ -80,6 +81,7 @@ bool WfCheck(const char* wfName, const char* where)
 	return bRet;
 
 }	// ::WfCheck
+#endif
 //---------------------------------------------------------------------------
 RC TOPRAT::tp_WthrBegDay()
 {
