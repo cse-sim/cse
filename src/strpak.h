@@ -191,9 +191,9 @@ private:
 							//  = idx into CULSTRCONTAINER.us_vectCULSTREL
 
 public:
-	CULSTR::CULSTR() : us_hCulStr(0)
+	CULSTR() : us_hCulStr(0)
 	{ }
-	CULSTR::CULSTR(const char* str) : us_hCulStr(0)
+	CULSTR(const char* str) : us_hCulStr(0)
 	{	Set(str);	}
 	CULSTR(const CULSTR& culStr) : us_hCulStr(0)
 	{	Set(culStr);	}
