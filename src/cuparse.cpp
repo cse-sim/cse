@@ -1017,9 +1017,14 @@ RC FC exOrk(	// compile expression from current input file, return constant valu
 		// fetch from konstize's storage, condition value
 		if (gotTy == TYSTR)				// pv points to ptr to text
 		{
+#if 1
+			AsCULSTR(&v) = *(const char**)pv;	// convert to CULSTR (copies)
+			AsCULSTR(&v).IsValid();					// msg if invalid
+#else
 			CULSTR sv = *(const char**)pv;	// convert to CULSTR (copies)
 			sv.IsValid();					// msg if invalid
 			v = AsNANDAT(sv);
+#endif
 		}
 		else if (gotTy==TYSI		// SI (short int)
 		  || (gotTy==TYCH && (choiDt & DTBCHOICB) && !ISNCHOICE(*(void**)pv)))	// choice, 2-byte ch req'd, didn't get 4-byte ch

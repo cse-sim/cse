@@ -177,26 +177,36 @@ using HCULSTR = uint32_t;	// CULSTR handle: 32 bit index into CULSTRCONTAINER::u
 struct CULSTRCONTAINER
 {
 	CULSTRCONTAINER();
+	~CULSTRCONTAINER();
 	std::vector<struct CULSTREL> us_vectCULSTREL;	// vector of string elements
 													// [ 0] always "" (see c'tor)
 	HCULSTR us_freeChainHead;		// 1st free element (0 = none)
+	bool us_IsAllocated() const;
 };	// struct CULSTRCONTAINER
 
 struct CULSTR
 {
-	CULSTR();
-	CULSTR(const CULSTR& culStr);
-	CULSTR(const char* s);
-	~CULSTR() { Set(nullptr); };
+private:
+	HCULSTR us_hCulStr;		// 4 byte handle for this CULSTR
+							//  = idx into CULSTRCONTAINER.us_vectCULSTREL
 
-	HCULSTR us_hCulStr;
-
+public:
+	CULSTR::CULSTR() : us_hCulStr(0)
+	{ }
+	CULSTR::CULSTR(const char* str) : us_hCulStr(0)
+	{	Set(str);	}
+	CULSTR(const CULSTR& culStr) : us_hCulStr(0)
+	{	Set(culStr);	}
+	~CULSTR()
+	{	Release();	};
 	operator char* () = delete;  // not modifiable via pointer
 	operator const char* () { return CStr(); }
 	operator const char* () const { return CStr(); }
 	CULSTR& operator =(const char* s) { Set(s); return *this; }
 	CULSTR& operator =(const std::string& s) { Set(s); return *this; }
 	CULSTR& operator =(const CULSTR& s) { Set(s); return *this; }
+	CULSTR& operator =(CULSTR&& s) noexcept;
+
 	char* CStrModifiable() const;
 	const char* CStr() const { return CStrModifiable(); }
 	const char* CStrIfSet(const char* sDflt) const
@@ -223,6 +233,10 @@ struct CULSTR
 		const char* s = CStr();
 		return s == nullptr || *s == '\0';
 	}
+
+	// Getter / Setter for unit test
+	HCULSTR GetHandle() const { return us_hCulStr; }
+	void SetHandle(HCULSTR h) { us_hCulStr = h; }
 
 private:
 	static CULSTRCONTAINER us_csc;

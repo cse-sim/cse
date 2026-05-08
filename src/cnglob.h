@@ -285,6 +285,10 @@ extern UINT doControlFP();
 #define FPCHECK ;
 #endif
 
+extern bool WfCheck(const char*, const char*);
+extern bool WfCheck(const char*);
+#define WFX2( where) WfCheck( where)
+
 // floating point compare
 const double ABOUT0 = 0.001;
 template< typename T> inline int fAboutEqual(T a, T b) { return fabs(a-b) < ABOUT0; }

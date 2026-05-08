@@ -92,27 +92,24 @@ char* CULSTREL::usl_Set(		// set CULSTR
 
 CULSTRCONTAINER::CULSTRCONTAINER() : us_freeChainHead{ 0 }
 {
-	us_vectCULSTREL.push_back("");
+	us_vectCULSTREL.push_back("");	// [0] is always empty string
 }
-
-
-/*static */  CULSTRCONTAINER CULSTR::us_csc;
-
-
-
 //-----------------------------------------------------------------------------
-CULSTR::CULSTR() : us_hCulStr(0) {}
+CULSTRCONTAINER::~CULSTRCONTAINER()
+{ }
 //-----------------------------------------------------------------------------
-CULSTR::CULSTR(const CULSTR& culStr) : us_hCulStr( 0)
+bool CULSTRCONTAINER::us_IsAllocated() const
+{ return us_vectCULSTREL.size() > 0; }
+//=============================================================================
+/*static */  CULSTRCONTAINER CULSTR::us_csc;	// container for pointers to strings
+//=============================================================================
+CULSTR& CULSTR::operator=(CULSTR&& src) noexcept	// move assignment
 {
-	Set(culStr.CStr());
-}
-//-----------------------------------------------------------------------------
-CULSTR::CULSTR(const char* str) : us_hCulStr( 0)
-{
-	Set(str);
-
-}
+	Release();
+	us_hCulStr = src.us_hCulStr;
+	src.us_hCulStr = 0;
+	return *this;
+}	// CULSTR operator= (move)
 //-----------------------------------------------------------------------------
 char* CULSTR::CStrModifiable() const	// pointer to string
 // CAUTION non-const; generally should use CStr()
@@ -136,13 +133,11 @@ void CULSTR::Set(			// set from const char*
 						// if nullptr, release
 {
 	if (!str)
-	{
-		Release();
+	{	Release();
 		// us_hCulStr = 0 in us_Release
 	}
 	else
-	{
-		if (!us_HasCULSTREL())
+	{	if (!us_HasCULSTREL())
 		{	// this CULSTR does not have an allocated slot
 			if (us_AllocMightMove())
 				str = strtmp(str);		// str may be pointing into string vector
@@ -209,7 +204,10 @@ void CULSTR::us_Alloc()		// allocate
 void CULSTR::Release()		// release string
 // revert CULSTR to empty state
 {
-	if (us_hCulStr != 0 && !IsNANDLE())
+// issue: destruction order of static objects indeternimate
+// us_IsAllocated() ensures static container still exists
+	if (us_hCulStr != 0 && !IsNANDLE()
+	 && us_csc.us_IsAllocated())
 	{	CULSTREL& el = us_GetCULSTREL();
 
 		// string pointer: do not free (memory will be reused)

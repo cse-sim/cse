@@ -60,6 +60,27 @@ void FC cgWthrClean( 		// cgwthr overall init/cleanup routine
 
 }		// cgWthrClean
 //---------------------------------------------------------------------------
+bool WfCheck(const char* where)
+{
+	extern TOPRAT Topi;
+	bool bRet = true;
+	if (!Topi.tp_wfName.IsNANDLE())
+		bRet = WfCheck(Topi.tp_wfName, where);
+	return bRet;
+}	// ::WfCheck
+//--------------------------------------------------------------------------
+bool WfCheck(const char* wfName, const char* where)
+{
+	bool bRet = wfName[0] == 'C' && wfName[1] == ':';
+	if (!bRet)
+	{
+		int wflen = strlenInt(wfName);
+		warn("WFX munge '%s': '%s' len=%d", where, wfName, wflen);
+	}
+	return bRet;
+
+}	// ::WfCheck
+//---------------------------------------------------------------------------
 RC TOPRAT::tp_WthrBegDay()
 {
 	RC rc = RCOK;
