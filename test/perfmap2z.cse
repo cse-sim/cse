@@ -2898,7 +2898,7 @@ PVARRAY   "pvarray 1"
  DELETE Report "eb"
 
  #define SYSINFCOOL( s) REPORT rpType = UDT  rpFreq=Year  rpTitle="HVAC Cooling Info"  rpCPL=-1 \
-   REPORTCOL colVal = s  colHead="Sys #" colDec=0 colWid=5 \
+   REPORTCOL colVal = s  colHead="Sys" colDec=0 colWid=5 \
    REPORTCOL colVal = @Rsys[s].name colHead="System" colDec=0 colWid=24 \
    REPORTCOL colVal = @Rsys[s].Cap95 colHead="Cap95" colDec=0 colWid=6  \
    REPORTCOL colVal = @Rsys[s].SEER colHead="SEER" colDec=2 colWid=6   \
@@ -2912,7 +2912,7 @@ PVARRAY   "pvarray 1"
 SYSINFCOOL( 1)
 
 #define SYSINFHEAT( s) REPORT rpType = UDT  rpFreq=Year  rpTitle="HVAC Heating Info"  rpCPL=-1 \
-   REPORTCOL colVal = s  colHead="Sys #" colDec=0 colWid=5 \
+   REPORTCOL colVal = s  colHead="Sys" colDec=0 colWid=5 \
    REPORTCOL colVal = @Rsys[s].name colHead="System" colDec=0 colWid=24 \
    REPORTCOL colVal = @Rsys[s].CapH colHead="CapH" colDec=0 colWid=6   \
    REPORTCOL colVal = @Rsys[s].fanSFPH colHead="fanSFPH" colDec=3 colWid=7  \
