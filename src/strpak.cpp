@@ -205,8 +205,8 @@ void CULSTR::us_Alloc()		// allocate
 	}
 	else
 	{	// no free slot, enlarge vector
-		if (us_csc.us_vectCULSTREL.size() == 0)
-			us_csc.us_vectCULSTREL.emplace_back("");
+		//  [0] always allocated for null CULSTR
+		assert(us_csc.us_vectCULSTREL.size() >= 1);
 		us_csc.us_vectCULSTREL.emplace_back();
 		us_hCulStr = HCULSTR( us_csc.us_vectCULSTREL.size()) - 1;
 	}
