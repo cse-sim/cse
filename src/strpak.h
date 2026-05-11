@@ -169,34 +169,37 @@ char* _strlwr(char* stringMod);
 
 // == CULSTR ==
 // Persistent string type that can be manipulated in the CUL realm.
+//    (e.g. user input data and expressions, probes etc.)
+//    Implemented as indicies into vector that points to strings in heap.
+//    Important motivation is 4-byte size (same as float and NANDLE).
+//    Cannot use char * due to 8-byte size on 64 bit.
 
 using HCULSTR = uint32_t;	// CULSTR handle: 32 bit index into CULSTRCONTAINER::us_vectCULSTREL
 							//   same size as NANDLE re support of string expressions
 
-// container for strings = vector of CULSTREL (char * to text + management)
-struct CULSTRCONTAINER
-{
-	CULSTRCONTAINER();
-	std::vector<struct CULSTREL> us_vectCULSTREL;	// vector of string elements
-													// [ 0] always "" (see c'tor)
-	HCULSTR us_freeChainHead;		// 1st free element (0 = none)
-};	// struct CULSTRCONTAINER
-
 struct CULSTR
 {
-	CULSTR();
-	CULSTR(const CULSTR& culStr);
-	CULSTR(const char* s);
-	~CULSTR() { Set(nullptr); };
+private:
+	HCULSTR us_hCulStr;		// 4 byte handle for this CULSTR
+							//  = idx into CULSTRCONTAINER.us_vectCULSTREL
 
-	HCULSTR us_hCulStr;
-
+public:
+	CULSTR() : us_hCulStr(0)
+	{ }
+	CULSTR(const char* str) : us_hCulStr(0)
+	{	Set(str);	}
+	CULSTR(const CULSTR& culStr) : us_hCulStr(0)
+	{	Set(culStr);	}
+	~CULSTR()
+	{	Release();	};
 	operator char* () = delete;  // not modifiable via pointer
 	operator const char* () { return CStr(); }
 	operator const char* () const { return CStr(); }
 	CULSTR& operator =(const char* s) { Set(s); return *this; }
 	CULSTR& operator =(const std::string& s) { Set(s); return *this; }
 	CULSTR& operator =(const CULSTR& s) { Set(s); return *this; }
+	CULSTR& operator =(CULSTR&& s) noexcept;
+
 	char* CStrModifiable() const;
 	const char* CStr() const { return CStrModifiable(); }
 	const char* CStrIfSet(const char* sDflt) const
@@ -209,8 +212,6 @@ struct CULSTR
 	void Set(const std::string& s) { Set(s.c_str()); }
 	void Set(const CULSTR& cs) { Set(cs.CStr()); }
 
-	char* Strsave() const { return strsave(CStr()); }
-
 	void Release();
 	void FixAfterCopy();
 
@@ -219,30 +220,31 @@ struct CULSTR
 	bool IsNull() const { return us_hCulStr == 0; }
 	bool IsSet() const { return us_hCulStr != 0; }
 	bool IsBlank() const
-	{
-		const char* s = CStr();
+	{	const char* s = CStr();
 		return s == nullptr || *s == '\0';
 	}
 
-private:
-	static CULSTRCONTAINER us_csc;
-#if 0
-	static std::vector<struct CULSTREL> us_vectCULSTREL;
-	static HCULSTR us_freeChainHead;
-#endif
+	// Getter / Setter for unit test
+	//  NOT for general use!
+	HCULSTR GetHandle() const { return us_hCulStr; }
+	void SetHandle(HCULSTR h) { us_hCulStr = h; }
 
+private:
 	void us_Alloc();
-	bool us_AllocMightMove() const;
-	CULSTREL& us_GetCULSTREL() const;
+#if 0
+0 Not needed, 5-26.  See strpak.cpp
+0	bool us_AllocMightMove() const;
+#endif
+	struct CULSTREL& us_GetCULSTREL() const;
 	bool us_HasCULSTREL() const;
 
 };	// struct CULSTR
-
+//-----------------------------------------------------------------------------
 inline CULSTR& AsCULSTR(void* p)
 {
 	return *(reinterpret_cast<CULSTR*>(p));
 }	// ::AsCULSTR
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 inline const CULSTR& AsCULSTR(const void* p)
 {
 	return *(reinterpret_cast<const CULSTR*>(p));

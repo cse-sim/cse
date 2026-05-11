@@ -285,6 +285,15 @@ extern UINT doControlFP();
 #define FPCHECK ;
 #endif
 
+// debug aid: traps corrupted Topi.tp_wfName
+//  code out when fix known OK  20260508
+#undef TRAPMUNGEDWFNAME
+#if defined( TRAPMUNGEDWFNAME)
+extern bool WfCheck(const char*, const char*);
+extern bool WfCheck(const char*);
+#define WFX2( where) WfCheck( where)
+#endif
+
 // floating point compare
 const double ABOUT0 = 0.001;
 template< typename T> inline int fAboutEqual(T a, T b) { return fabs(a-b) < ABOUT0; }
