@@ -285,7 +285,7 @@ extern UINT doControlFP();
 #define FPCHECK ;
 #endif
 
-// debug aid: traps corrupted Topi.tp_wfName
+// debug aid: traps corrupted Topi.tp_wfName (issue #619)
 //  code out when fix known OK  20260508
 #undef TRAPMUNGEDWFNAME
 #if defined( TRAPMUNGEDWFNAME)
