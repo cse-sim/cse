@@ -577,11 +577,26 @@ int xfWriteable(			// check whether file is writeable
 	return ret;
 }	// xfWriteable
 ////////////////////////////////////////////////////////////////////////
-// path notes, 4-2016
+// Pre- std::filesystem notes (4-2016)
 //   Windows extended paths \\?\ not supported
 //   Only \ separator is supported (not /)
-//   consider stdlib filesystem, Boost filesystem, or POCO for more generality
 ////////////////////////////////////////////////////////////////////////
+#if 0
+// idea: validate path re syntactical correctness
+// see issue #629
+bool xfIsValidPathSyntax(
+	const char* fPath)
+{
+	// 1st try -- just use xfExist
+	//   Does not return -1 for at least some bad paths
+	//   TODO: debug/refine xfExist
+	int xfExistRet = xfExist(fPath);
+
+	return xfExistRet >= 0;
+
+}	// xfIsValidPathSyntax
+#endif
+//------------------------------------------------------------------------
 int xfExist(	// determine file existence
 	const char* fPath,				// pathname
 	char* fPathChecked /*=NULL*/)	// ptr to optional buf[ CSE_MAX_PATH]
@@ -633,7 +648,7 @@ int fileFind1(			// check existence of a single file
 	int i = 0;
 	if (drvDir && drvDir[ 0])
 	{  	strTrim( tPath, drvDir);
-		i = static_cast<int>(strlen(tPath));
+		i = strlenInt(tPath);
 		if (tPath[ i-1] != ':' && tPath[ i-1] != '\\')
 			tPath[ i++] = '\\';		// add \ to dir if needed
 	}
@@ -654,7 +669,7 @@ bool findFile( 	// non-member function to find file on given path
 {
 	buf[ 0] = '\0';
 	if (!fName)
-		return FALSE;					// insurance: NULL pathname ptr is never found
+		return false;					// insurance: NULL pathname ptr is never found
 
 	char fNameFound[ CSE_MAX_PATH];		// Holds a fullpath
 	// lookup name as provided (no path)

@@ -711,7 +711,17 @@ RC exPile(		// compile an expression from current input
 			// "    4-byte choice value returned by exOrk for 2-byte type".  devel aid
 		}
 		else if (gotTy == TYSTR)
-			*reinterpret_cast<CULSTR*>(pDest) = AsCULSTR(&v);
+		{
+			CULSTR* pCS = reinterpret_cast<CULSTR*>(pDest);
+			*pCS = std::move(AsCULSTR(&v));
+			// CULSTR move Release()s v, d'tor not needed
+			pCS->IsValid();		// message if malformed
+#if defined( TRAPMUNGEDWFNAME)
+			// trap re issue #619
+			if (!WFX2(strtprintf("exPile store '%s'", AsCULSTR(&v).CStr())))
+				throw 99;
+#endif
+		}
 		else
 		{
 			*pDest = v;				// all other types return 32 bits

@@ -19,9 +19,6 @@ bool ppClargIf( const char* s, RC& rc);
 void FC ppClean( CLEANCASE cs);				// init/cleanup
 void ppAddPath( const char* paths);			// add path(s) to search for input/include files
 bool ppFindFile( const char *fname, char *fullPath);	// search pp paths, return full file path
-#if 0
-bool ppFindFile( char* &fname);	// ditto, update fname to path found
-#endif
 bool ppFindFile(CULSTR& fname);	// ditto, update fname to path found
 RC FC ppOpen( const char* fname, const char* defex);		// open file
 void FC ppClose();						// close file(s)

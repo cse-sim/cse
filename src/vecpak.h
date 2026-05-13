@@ -497,7 +497,7 @@ template< typename T> class VMovingSum
 	size_t iNew;	// idx of newest value in vals[]
 	size_t nCur;	// # of vals[] currently set
 public:
-	VMovingSum(size_t _nSiz = 0) : vals(nullptr), nSiz(0), vSum(0), iOld(0), nCur(0)
+	VMovingSum(size_t _nSiz = 0) : vals(nullptr), nSiz(0), vSum(0), iOld(0), iNew(0), nCur(0)
 	{	if (_nSiz > 0)
 			vm_Init(_nSiz);
 	}
