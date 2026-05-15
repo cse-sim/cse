@@ -11,6 +11,13 @@
 #include <unistd.h>
 #endif
 
+#if CSE_OS == CSE_OS_LINUX
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <elf.h>
+#endif
+
 #include <signal.h> 	// signal SIGINT
 #include <float.h>	// FPE_UNDERFLOW FPE_INVALID etc
 #include <sys/timeb.h>	// timeb structure
@@ -171,6 +178,54 @@ WStr enExeInfo(		// retrieve build date/time, linker version, etc from exe
 		}
 		CloseHandle( hFile);
 	}
+
+#elif CSE_OS == CSE_OS_LINUX
+    // POSIX: use stat() for mtime (no embedded timestamp in ELF),
+    // and parse the ELF header for executable code size.
+    do
+    {
+        struct stat st;
+        if (stat(exePath.c_str(), &st) != 0)
+            break;
+        timeDateStamp = st.st_mtime;
+
+        int fd = open(exePath.c_str(), O_RDONLY);
+        if (fd < 0)
+            break;
+
+        void *mapped = mmap(nullptr, static_cast<size_t>(st.st_size),
+                            PROT_READ, MAP_PRIVATE, fd, 0);
+        close(fd);
+        if (mapped == MAP_FAILED)
+            break;
+
+        const uint8_t *base = static_cast<const uint8_t *>(mapped);
+        size_t mapSize = static_cast<size_t>(st.st_size);
+
+        // ELF: sum filesz of all PT_LOAD segments that are executable (PF_X).
+        if (mapSize > sizeof(Elf64_Ehdr))
+        {
+            const Elf64_Ehdr *ehdr = reinterpret_cast<const Elf64_Ehdr *>(base);
+            if (ehdr->e_ident[0] == ELFMAG0 && ehdr->e_ident[1] == ELFMAG1 && ehdr->e_ident[2] == ELFMAG2 && ehdr->e_ident[3] == ELFMAG3 && ehdr->e_ident[EI_CLASS] == ELFCLASS64)
+            {
+                size_t phOff = ehdr->e_phoff;
+                uint16_t phNum = ehdr->e_phnum;
+                uint16_t phEntSize = ehdr->e_phentsize;
+                for (uint16_t i = 0; i < phNum; ++i)
+                {
+                    size_t entOff = phOff + i * phEntSize;
+                    if (entOff + sizeof(Elf64_Phdr) > mapSize)
+                        break;
+                    const Elf64_Phdr *phdr =
+                        reinterpret_cast<const Elf64_Phdr *>(base + entOff);
+                    if (phdr->p_type == PT_LOAD && (phdr->p_flags & PF_X))
+                        codeSize += static_cast<int>(phdr->p_filesz);
+                }
+            }
+        }
+        linkerVersion = "ld"; // ELF has no standard linker version field
+		munmap(mapped, mapSize);
+	} while (false);
 #endif
 	WStr exeInfo;
 	if (timeDateStamp == 0)
@@ -182,7 +237,7 @@ WStr enExeInfo(		// retrieve build date/time, linker version, etc from exe
 						codeSize);
 	return exeInfo;
 }		// enExeInfo
-//=====================================================================
+	//=====================================================================
 void FC ensystd(		// Return the system date and time as IDATETIME
 
 	IDATETIME *dt )	// Pointer to structure to receive date and time
