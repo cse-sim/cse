@@ -536,7 +536,11 @@ RC FC ppOpI( const char* fname, const char* defex)		// inner pp file opener: add
 	RC rc = RCOK;
 
 // standardize name (upper case) and conditionally use default extension
+#if CSE_OS != CSE_OS_LINUX
 	fname = strffix( fname, defex);		// to tmpstr
+#else
+	fname = strffix2( fname, defex);		// to tmpstr
+#endif
 
 // find file using paths given to ppAddPath
 	char buf[CSE_MAX_PATH];			// receives full pathname

@@ -1179,8 +1179,11 @@ RC RFI::rf_CkF(			// REPORTFILE / EXPORTFILE check
 	if (IsVal( RFI_FILENAME))		// if rf_fileName value stored (not an uneval'd expression)
 	{
 		// standardize rf_fileName and default extension
-
+#if CSE_OS != CSE_OS_LINUX
 		const char* s = strffix( rf_fileName, fileExt);	// uppercase, deblank, append ext if none
+#else
+		const char* s = strffix2( rf_fileName, fileExt); // don't change case, deblank, append ext if none
+#endif
 		if (!xfisabsolutepath(s))				// if path is not absolute
 			s = strtPathCat( InputDirPath, s);	// default to INPUT FILE path (rundata.cpp variable) 2-95
 

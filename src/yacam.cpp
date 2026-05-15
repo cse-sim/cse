@@ -22,6 +22,66 @@
 
 #include "yacam.h"		// header for this file
 
+#include <filesystem>
+
+#if CSE_OS == CSE_OS_WINDOWS
+static constexpr char PATH_SEPARATOR = '\\';
+#elif CSE_OS == CSE_OS_LINUX || CSE_OS == CSE_OS_MACOS
+static constexpr char PATH_SEPARATOR = '/';
+#endif
+
+bool iequals(const std::string left,const std::string right) 
+{
+	if (left.length() != right.length()) return false;
+
+	for (size_t i=0; i < left.length(); i++) 
+	{
+		char leftChar = std::tolower(static_cast<unsigned char>(left[i]));
+		char rightChar = std::tolower(static_cast<unsigned char>(right[i]));
+		if (leftChar != rightChar) return false;
+	}
+
+	return true;
+}
+
+std::filesystem::path FindPath(const std::string pathName) 
+{
+	std::filesystem::path pPath(pathName);
+	std::filesystem::path result;
+
+	std::vector<std::filesystem::path> components(pPath.begin(), pPath.end());
+
+	for (size_t idx =0; idx < components.size(); idx++)
+	{
+		std::string target = components[idx].string();
+		// bool isLast = (idx +1 == components.size());
+
+		if ((target.size() == 1 && target[0] == PATH_SEPARATOR) || target == "." || target == ".." || (!target.empty() && target.back() == PATH_SEPARATOR))
+		{
+			result /= components[idx];
+			continue;
+		}
+		std::filesystem::path base = result.empty() ? std::filesystem::current_path() : result;
+
+		bool found = false;
+		std::error_code ec;
+		for (const auto& entry: std::filesystem::directory_iterator(base, ec))
+		{
+			std::string entryName = entry.path().filename().string();
+			if (iequals(entryName, target))
+			{
+				result = entry.path();
+				found = true;
+				break;
+			}
+		}
+		if (!found)
+		 return std::filesystem::path();
+	}
+
+	return result;
+}
+
 //===========================================================================
 //  YACAM constructor & destructor
 //---------------------------------------------------------------------------
@@ -82,6 +142,17 @@ RC YACAM::open( 	// open file for reading, return RCOK if ok
 	mLineNo = 1;
 	mFilO = -1L;
 	mFilSz = -1L;			// file size "unkown": only used when writing 10-94
+
+#if CSE_OS == CSE_OS_LINUX
+	std::filesystem::path pPath = FindPath(mPathName);
+	if(!pPath.empty())
+	{
+		std::string sPath = pPath.string();
+		delete[] mPathName;
+		mPathName = new char[sPath.length() + 1];
+		strcpy(mPathName, sPath.c_str());
+	}
+#endif
 
 // open file, conditionally report error
 	mFh = fopen( mPathName, 			 		// C library function

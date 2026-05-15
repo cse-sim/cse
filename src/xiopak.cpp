@@ -29,6 +29,8 @@ namespace filesys = std::experimental::filesystem;
 #error "no filesystem support"
 #endif
 
+
+
 /*-------------------------------- OPTIONS --------------------------------*/
 // #define TEST		 // define to include main() which includes test code for many fcns.  See #ifs below. Ancient, 2-95
 
@@ -55,6 +57,12 @@ namespace filesys = std::experimental::filesystem;
 static constexpr char PATH_DELIMITER = ';';
 #else
 static constexpr char PATH_DELIMITER = ':';
+#endif
+
+#if CSE_OS == CSE_OS_WINDOWS
+static constexpr char PATH_SEPARATOR = '\\';
+#elif CSE_OS == CSE_OS_LINUX || CSE_OS == CSE_OS_MACOS
+static constexpr char PATH_SEPARATOR = '/';
 #endif
 
 
@@ -610,7 +618,8 @@ int xfExist(	// determine file existence
 	int ret = 0;
 	// trim whitespace from beg and ws + \ from end (insurance)
 	// return to caller or use tmpstr
-	const char* tPath = strTrimEX( fPathChecked, strTrimB( fPath), "\\");
+	char sepStr[] = { PATH_SEPARATOR, '\0' };
+	const char* tPath = strTrimEX( fPathChecked, strTrimB( fPath), sepStr);
 	if (!IsBlank( tPath))
 	{
 		std::error_code ec;
@@ -649,8 +658,8 @@ int fileFind1(			// check existence of a single file
 	if (drvDir && drvDir[ 0])
 	{  	strTrim( tPath, drvDir);
 		i = strlenInt(tPath);
-		if (tPath[ i-1] != ':' && tPath[ i-1] != '\\')
-			tPath[ i++] = '\\';		// add \ to dir if needed
+		if (tPath[ i-1] != ':' && tPath[ i-1] != PATH_SEPARATOR)
+			tPath[ i++] = PATH_SEPARATOR;		// add \ to dir if needed
 	}
 	strcpy( tPath+i, strTrim( NULL, fName));
 
@@ -744,8 +753,10 @@ void Path::add( 		// add PATH_DELIMITER-delimited paths to Path object
 		if (*(q-1) != PATH_DELIMITER && *s != PATH_DELIMITER)	// unless there already is a PATH_DELIMITER
 			*q++ = PATH_DELIMITER;			// supply separating PATH_DELIMITER
 	strcpy( q, s);			// append new path(s)
+#if CSE_OS != CSE_OS_LINUX
 	_strupr(q);				/* upper-case user-entered paths for uniform appearance 2-95
-          				   (paths from system are upper case; most filenames get uppercased eg by strffix). */
+							(paths from system are upper case; most filenames get uppercased eg by strffix). */
+#endif
 	p = nup;				// store new pointer
 }		// Path::add
 //---------------------------------------------------------------------------
