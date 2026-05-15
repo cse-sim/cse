@@ -5,6 +5,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // cnglob.h: Global definitions for CSE: include first in all files.
 ///////////////////////////////////////////////////////////////////////////////
+#pragma once
 
 #define GLOB	// ifndef GLOB may be used to prevent duplicate compilation
 
@@ -39,6 +40,7 @@ typedef unsigned long long ULLI;
 #define CSE_MAX_FILE_EXT _MAX_EXT
 #else
 #if CSE_OS == CSE_OS_LINUX
+#include <stdint.h>
 #include <limits.h> // Use to define PATH_MAX and NAME_MAX
 #endif
 #define CSE_MAX_PATH PATH_MAX
