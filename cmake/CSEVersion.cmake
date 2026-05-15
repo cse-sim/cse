@@ -27,6 +27,7 @@ if (NOT ${git_sha_exit_status} MATCHES "0")
     message(FATAL_ERROR "GIT_SHA is not accessible." )
 endif()
 
+set(GIT_TAG_FALLBACK FALSE)
 execute_process(
   COMMAND ${GIT_EXECUTABLE} describe --tags --abbrev=0
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
@@ -36,7 +37,9 @@ execute_process(
 )
 
 if (NOT ${git_tag_exit_status} MATCHES "0")
-  message(FATAL_ERROR "GIT_TAG is not accessible." )
+  set(GIT_TAG "v0.0.0")
+  set(GIT_TAG_FALLBACK TRUE)
+  message(WARNING "GIT_TAG is not accessible; using fallback ${GIT_TAG}.")
 endif()
 
 if (GIT_TAG MATCHES "^v[0-9]+\\.[0-9]+\\.[0-9]+(\\-[0-9A-Za-z-]+)?$")
@@ -55,13 +58,23 @@ else()
   message(FATAL_ERROR "GIT_TAG ${GIT_TAG} must have format 'v<major>.<minor>.<patch>' or 'v<major>.<minor>.<patch>-<prerelease>'." )
 endif()
 
-execute_process(
-  COMMAND ${GIT_EXECUTABLE} rev-list --count HEAD ^${GIT_TAG}
-  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-  RESULT_VARIABLE git_build_exit_status
-  OUTPUT_VARIABLE GIT_BUILD
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-)
+if (GIT_TAG_FALLBACK)
+  execute_process(
+    COMMAND ${GIT_EXECUTABLE} rev-list --count HEAD
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    RESULT_VARIABLE git_build_exit_status
+    OUTPUT_VARIABLE GIT_BUILD
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+else()
+  execute_process(
+    COMMAND ${GIT_EXECUTABLE} rev-list --count HEAD ^${GIT_TAG}
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    RESULT_VARIABLE git_build_exit_status
+    OUTPUT_VARIABLE GIT_BUILD
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+endif()
 
 if (NOT ${git_build_exit_status} MATCHES "0")
   message(FATAL_ERROR "GIT_BUILD value ${GIT_BUILD} is not accessible." )
