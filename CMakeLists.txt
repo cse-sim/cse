@@ -63,6 +63,16 @@ include(BuildFlags)
 
 target_link_libraries(cse_common_interface INTERFACE fmt)
 
+# Auto-enable OSMesa for headless Linux builds
+if(UNIX AND NOT APPLE AND NOT WIN32)
+  if(NOT DEFINED DISPLAY AND NOT DEFINED ENV{DISPLAY})
+    if(NOT DEFINED GLFW_USE_OSMESA)
+      message(STATUS "Headless Linux system detected. Enabling GLFW_USE_OSMESA for offscreen rendering.")
+      set(GLFW_USE_OSMESA ON CACHE BOOL "Use OSMesa for offscreen context creation" FORCE)
+    endif()
+  endif()
+endif()
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 find_package(Git QUIET)
