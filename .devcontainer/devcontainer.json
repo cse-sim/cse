@@ -1,0 +1,19 @@
+{
+  "name": "CSE Dev Container",
+  "context": "..",
+  "dockerFile": "Dockerfile",
+  "workspaceFolder": "/workspace",
+  "runArgs": ["--init"],
+  "settings": {
+    "terminal.integrated.defaultProfile.linux": "bash",
+    "cmake.configureOnOpen": true,
+    "cmake.generator": "Ninja"
+  },
+  "extensions": [
+    "ms-vscode.cpptools",
+    "ms-vscode.cmake-tools",
+    "twxs.cmake"
+  ],
+  "postCreateCommand": "chmod +x ./build.sh && ./build.sh",
+  "remoteUser": "root"
+}

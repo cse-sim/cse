@@ -1,0 +1,13 @@
+**/.venv
+.venv
+.venv/**
+vendor/**/.venv
+vendor/**/.venv/**
+.gitignore
+.github
+.vscode
+builds
+Testing
+*.pyc
+__pycache__
+*.log
