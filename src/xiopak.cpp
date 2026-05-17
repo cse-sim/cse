@@ -70,23 +70,6 @@ static constexpr char PATH_SEPARATOR = '/';
 LOCAL SEC FC xioerr( XFILE *xf);
 static bool iequals( const std::string left, const std::string right);  // case-insensitive string compare
 
-static bool iequals( const std::string left, const std::string right);  // case-insensitive string compare
-
-//=============================================================================
-static bool iequals( const std::string left, const std::string right)
-// Case-insensitive string comparison
-{
-	if (left.length() != right.length()) return false;
-
-	for (size_t i = 0; i < left.length(); i++)
-	{
-		char leftChar = std::tolower(static_cast<unsigned char>(left[i]));
-		char rightChar = std::tolower(static_cast<unsigned char>(right[i]));
-		if (leftChar != rightChar) return false;
-	}
-
-	return true;
-}		// iequals
 
 //=============================================================================
 static bool iequals( const std::string left, const std::string right)
