@@ -68,8 +68,24 @@ static constexpr char PATH_SEPARATOR = '/';
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL SEC FC xioerr( XFILE *xf);
+static bool iequals( const std::string left, const std::string right);  // case-insensitive string compare
 
 
+//=============================================================================
+static bool iequals( const std::string left, const std::string right)
+// Case-insensitive string comparison
+{
+	if (left.length() != right.length()) return false;
+
+	for (size_t i = 0; i < left.length(); i++)
+	{
+		char leftChar = std::tolower(static_cast<unsigned char>(left[i]));
+		char rightChar = std::tolower(static_cast<unsigned char>(right[i]));
+		if (leftChar != rightChar) return false;
+	}
+
+	return true;
+}		// iequals
 //=============================================================================
 void FC xfClean()	// cleanup routine
 // added for DLL version which should free every byte of allocated heap space, rob, 12-93.
@@ -662,6 +678,61 @@ int fileFind1(			// check existence of a single file
 			tPath[ i++] = PATH_SEPARATOR;		// add \ to dir if needed
 	}
 	strcpy( tPath+i, strTrim( NULL, fName));
+
+#if CSE_OS == CSE_OS_LINUX || CSE_OS == CSE_OS_MACOS
+	// On case-sensitive POSIX systems, search for matching case
+	std::error_code ec;
+	std::filesystem::path checkPath(tPath);
+	std::filesystem::path resolvedPath;
+	std::filesystem::path currentBase;
+	bool found = true;
+
+	// Iterate through path components
+	for (const auto& component : checkPath)
+	{
+		std::string compStr = component.string();
+		
+		// Handle absolute path, current dir, parent dir, and path separators
+		if (component == "/" || compStr == "." || compStr == "..")
+		{
+			resolvedPath /= component;
+			continue;
+		}
+
+		// Determine search base directory
+		if (resolvedPath.empty())
+			currentBase = std::filesystem::current_path();
+		else
+			currentBase = resolvedPath;
+
+		// Search for case-insensitive match in directory
+		bool componentFound = false;
+		for (const auto& entry : std::filesystem::directory_iterator(currentBase, ec))
+		{
+			std::string entryName = entry.path().filename().string();
+			
+			// Case-insensitive compare using iequals
+			if (iequals(entryName, compStr))
+			{
+				resolvedPath = entry.path();
+				componentFound = true;
+				break;
+			}
+		}
+		
+		if (!componentFound)
+		{
+			found = false;
+			break;
+		}
+	}
+
+	// Use resolved path if found all components
+	if (found && !resolvedPath.empty())
+	{
+		strcpy(tPath, resolvedPath.string().c_str());
+	}
+#endif
 
 	int ret = xfExist( tPath, fPath);	// check file
 										// return exact name checked
