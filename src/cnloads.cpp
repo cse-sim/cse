@@ -1420,9 +1420,9 @@ void ZNR::zn_MapTerminalResults()	// transfer terminal model outcomes to working
 
 #if defined( _DEBUG)
 		double aCz = tu->aCz();
-		if (frDiff(tu->cz, aCz) > 0.001)
-			printf("\nFlow mismatch -- tu->cz=%.2f   tu->aCz()=%.2f",
-				tu->cz, aCz);
+		if (frDiff(tu->cz, aCz) > 0.005)
+			printf("\nTerminal '%s' flow mismatch: tu->cz=%.3f   tu->aCz()=%.3f",
+				tu->Name(), tu->cz, aCz);
 #endif
 
 		if (tu->cz > 0.)

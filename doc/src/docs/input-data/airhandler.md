@@ -167,6 +167,13 @@ Minimum supply temperature. Also used as cooling supply temperature setpoint val
 
 <!-- P to permit page break after frame -->
 
+
+### ahTsMx
+
+Type: _float_
+
+Maximum supply temperature. Also used as heating supply temperature setpoint value under _ahTsSp_ = ZN.
+
 {{
   member_table({
     "units": "°F",
@@ -176,12 +183,6 @@ Minimum supply temperature. Also used as cooling supply temperature setpoint val
     "variability": "hourly" 
   })
 }}
-
-### ahTsMx
-
-Type: _float_
-
-Maximum supply temperature. Also used as heating supply temperature setpoint value under _ahTsSp_ = ZN.
 
 <!-- P to permit page break after frame -->
 
