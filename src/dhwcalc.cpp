@@ -3161,6 +3161,11 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
     { C_WHASHPTYCH_AOSMITH_CAHP1CO6_SP,     hwatLARGE | hpwh_presets::MODELS::AOSmith_CAHP1CO6_SP },
     { C_WHASHPTYCH_AOSMITH_CAHP2CO6_SP,     hwatLARGE | hpwh_presets::MODELS::AOSmith_CAHP2CO6_SP },
     { C_WHASHPTYCH_AOSMITH_CAHP3CO6_SP,     hwatLARGE | hpwh_presets::MODELS::AOSmith_CAHP3CO6_SP },
+
+    { C_WHASHPTYCH_LAARS_ECHV0325_SP,     hwatLARGE | hpwh_presets::MODELS::Laars_ECHV0325_SP },
+    { C_WHASHPTYCH_NYLE_E360_SP,     hwatLARGE | hpwh_presets::MODELS::Nyle_e360_SP },
+    { C_WHASHPTYCH_WATTS_AEGIS_500A_SP,     hwatLARGE | hpwh_presets::MODELS::Watts_Aegis_500A_HPL_90_70_HIT },
+
     { 32767,                         hpwh_presets::MODELS::unknown }  };
 
 	SI tableVal = presetTbl->lookup(ashpTy);
