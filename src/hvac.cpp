@@ -12,6 +12,7 @@
 #include "vecpak.h"
 #include <btwxt/btwxt.h>
 #include "hvac.h"
+#include <array>
 
 #if defined( _DEBUG)
 //-----------------------------------------------------------------------------
@@ -380,28 +381,51 @@ void ASHPConsistentCaps(   // make air source heat pump heating/cooling capaciti
 // Data + class CHDHW
 ///////////////////////////////////////////////////////////////////////////////
 CHDHW::CHDHW( record* pParent)
-	: hvt_pParent( pParent),
-	  hvt_capHtgNetMin( 0.f), hvt_capHtgNetMaxFT( 0.f), hvt_tRiseMax( 0.f)
+	: chw_pParent( pParent),
+	  chw_capHtgNetMin( 0.f), chw_capHtgNetMaxFT( 0.f), chw_tRiseMax( 0.f),
+	  chw_mult( 1.f), chw_AVFRated( 0.f)
 {}
 //-----------------------------------------------------------------------------
 CHDHW::~CHDHW()
 {
 }
 //-----------------------------------------------------------------------------
-void CHDHW::hvt_Clear()	// clear all non-static members
+void CHDHW::chw_Clear()	// clear all non-static members
 {
-	hvt_capHtgNetMin = 0.f;
-	hvt_capHtgNetMaxFT = 0.f;
-	hvt_tRiseMax = 0.f;
+	chw_capHtgNetMin = 0.f;
+	chw_capHtgNetMaxFT = 0.f;
+	chw_tRiseMax = 0.f;
+	chw_AVFRated = 0.f;
+	chw_mult = 1.f;
 
-	hvt_pAVFPwrRGI.reset(nullptr);
-	hvt_pWVFRGI.reset(nullptr);
-	hvt_pCapMaxRGI.reset(nullptr);
+	chw_pAVFPwrRGI.reset(nullptr);
+	chw_pWVFRGI.reset(nullptr);
+	chw_pCapMaxRGI.reset(nullptr);
 
-}	// CHDHW::hvt_Clear
+}	// CHDHW::chw_Clear
 //-----------------------------------------------------------------------------
-RC CHDHW::hvt_Init(		// one-time init
-	float operatingSFP)		// full speed operating specific fan power, W/cfm
+// base data from Harvest Thermal memos
+// nominal gross capacity steps, Btuh
+static constexpr std::array chw_grossCaps{ 6000., 12000., 18000., 24000., 30000., 36000. };
+// blower air flow, cfm
+static constexpr std::array chw_AVFNom{ 400.f, 600.f, 750.f, 900.f, 1050.f, 1200.f };
+// blower power, W at nominal 0.20 in WC static
+static constexpr std::array chw_blowerPwr{ 29., 60., 96., 149., 216., 328. };
+// entering water temp, F
+static std::vector chw_tCoilEW{ 120., 130., 140., 150. };
+// coil water volume flow rate, gpm
+static std::vector< std::vector< double>> chw_WVF{ {
+		/* 120 F*/ 0.27, 0.56, 0.87, 1.22, 1.59, 1.57,
+		/* 130 F*/ 0.22, 0.45, 0.70, 0.87, 1.26, 1.57,
+		/* 140 F*/ 0.18, 0.38, 0.59, 0.81, 1.04, 1.29,
+		/* 150 F*/ 0.16, 0.33, 0.50, 0.69, 0.89, 1.09 } };
+//-----------------------------------------------------------------------------
+RC CHDHW::chw_Init(		// one-time init
+	float operatingSFP,		// full speed operating specific fan power, W/cfm
+	float capHRtd)			// rated maximum net heating capacity, Btuh
+							//   user input
+							//   used to init chw_mult
+							//   if <0, set chw_mult=1
 // returns RCOK iff success
 {
 	using namespace Btwxt;
@@ -409,10 +433,20 @@ RC CHDHW::hvt_Init(		// one-time init
 	using VVD = std::vector< std::vector< double>>;
 
 	RC rc = RCOK;
-	hvt_Clear();
+	chw_Clear();
+
+	// capacity multiplier
+	if (capHRtd > 0.f)
+	{
+		float blowerPwrNominal = chw_blowerPwr.back();	// full speed nominal blower power, W
+		float capHNetRtdNominal = chw_grossCaps.back() + blowerPwrNominal * BtuperWh;
+		chw_mult = capHRtd / capHNetRtdNominal;
+	}
+	else
+		chw_mult = 1.f;		// insurance, s/b 1 per c'tor
 
 	// derive running fan power
-	double ratedSFP = hvt_GetRatedSpecificFanPower();
+	double ratedSFP = chw_GetRatedSpecificFanPower();
 	double blowerPwrF = operatingSFP / ratedSFP;	// blower power factor
 	// nominal full speed blower power = 0.2733 W/cfm at full speed
 
@@ -420,100 +454,104 @@ RC CHDHW::hvt_Init(		// one-time init
 	std::vector< double> netCaps;		// net capacities (coil + blower), Btuh
 	std::vector< double> blowerPwrOpr;	// operating blower power, W
 
-	assert(hvt_blowerPwr.size() == hvt_grossCaps.size());
+	assert(chw_blowerPwr.size() == chw_grossCaps.size());
 
-	auto bpIt = hvt_blowerPwr.begin();		// iterate blower power in parallel
-	for (double& grossCap : hvt_grossCaps)
+	auto bpIt = chw_blowerPwr.begin();		// iterate blower power in parallel
+	for (const double& grossCap : chw_grossCaps)
 	{
 		double bp = *bpIt++;	// rated blower power, W
-		double bpX = bp * blowerPwrF;	// blower power at operating static, W
+		double bpX = bp * blowerPwrF * chw_mult;	// blower power at operating static, W
 		blowerPwrOpr.push_back(bpX);
-		double netCap = grossCap + bpX * BtuperWh;
+		double netCap = grossCap * chw_mult + bpX * BtuperWh;
 		netCaps.push_back(netCap);
 	}
 
 	// message handler
-	auto cmhCHDHW = std::make_shared< CSERecordCourier>(hvt_pParent);
+	auto cmhCHDHW = std::make_shared< CSERecordCourier>(chw_pParent);
 
 	// 1D grid: capacity
 	GridAxis netCapAxis(netCaps,
 		InterpolationMethod::linear, ExtrapolationMethod::constant,
 		{ 0., DBL_MAX }, "Net cap", cmhCHDHW);
 
-	hvt_pAVFPwrRGI.reset(new RGI(
+	std::vector<double> chw_AVF;
+	for (const float& avfNom : chw_AVFNom)
+		chw_AVF.push_back(avfNom*chw_mult);
+
+	chw_pAVFPwrRGI.reset(new RGI(
 		GridAxes{ netCapAxis},
-		VVD{ hvt_AVF, blowerPwrOpr },	// lookup vars: avf and power for each net capacity
+		VVD{ chw_AVF, blowerPwrOpr },	// lookup vars: avf and power for each net capacity
 		"AVF/power", cmhCHDHW));
 
-	GridAxis ewtAxis(hvt_tCoilEW,
+	GridAxis ewtAxis(chw_tCoilEW,
 		InterpolationMethod::linear, ExtrapolationMethod::constant,
 		{ 0., DBL_MAX }, "EWT", cmhCHDHW);
 
-	hvt_pWVFRGI.reset(new RGI( GridAxes{ ewtAxis, netCapAxis},
-		hvt_WVF, "Water flow", cmhCHDHW));
+	chw_pWVFRGI.reset(new RGI( GridAxes{ ewtAxis, netCapAxis},
+		chw_WVF, "Water flow", cmhCHDHW));
 
 	// min/max capacities
-	hvt_capHtgNetMin = netCaps[0];	// min is independent of ewt
-	hvt_capHtgNetMaxFT = netCaps.back();
-	std::vector< double> capHtgNetMax(hvt_tCoilEW.size(), hvt_capHtgNetMaxFT);
+	chw_capHtgNetMin = netCaps[0];	// min is independent of ewt
+	chw_capHtgNetMaxFT = netCaps.back();
+	std::vector< double> capHtgNetMax(chw_tCoilEW.size(), chw_capHtgNetMaxFT);
 	capHtgNetMax[0] = netCaps[netCaps.size() - 2];
 
-	hvt_pCapMaxRGI.reset(new RGI(
+	chw_pCapMaxRGI.reset(new RGI(
 		GridAxes{ ewtAxis},
 		VVD{ capHtgNetMax },
 		"Min/max capacities", cmhCHDHW));
 
-	float avfMax = hvt_AVF.back();
-	float amfMax = AVFtoAMF(avfMax);	// elevation?
-	hvt_tRiseMax = hvt_capHtgNetMaxFT / (amfMax * Top.tp_airSH);
+	chw_AVFRated = chw_AVF.back();
+	float amfMax = AVFtoAMF(chw_AVFRated);	// elevation?
+	chw_tRiseMax = chw_capHtgNetMaxFT / (amfMax * Top.tp_airSH);
 
 	return rc;
-}		// CHDHW::hvt_Init
+}		// CHDHW::chw_Init
 //-----------------------------------------------------------------------------
-float CHDHW::hvt_GetTRise(
+float CHDHW::chw_GetTRise(
 	float tCoilEW /*=-1.f*/) const
 {
 	// if (tCoilEW < 0.f)
-		return hvt_tRiseMax;
+		return chw_tRiseMax;
 
 	// TODO 
 
-}		// CHDHW::hvt_GetTRise
+}		// CHDHW::chw_GetTRise
 //-----------------------------------------------------------------------------
-float CHDHW::hvt_GetRatedCap(		// full-speed net heating capacity
+float CHDHW::chw_GetRatedCap(		// full-speed net heating capacity
 	float tCoilEW /*=-1.f*/) const
 {
 	// if (tCoilEW < 0.f)
-	return hvt_capHtgNetMaxFT;
-}	// CHDHW::hvt_GetRatedCap
+	return chw_capHtgNetMaxFT;
+}	// CHDHW::chw_GetRatedCap
 //-----------------------------------------------------------------------------
-double CHDHW::hvt_GetRatedBlowerAVF() const
+double CHDHW::chw_GetRatedBlowerAVF() const
 {
-	return hvt_AVF.back();
-}		// CHDHW::hvt_GetRatedBlowerAVF
+	return chw_AVFRated;
+}		// CHDHW::chw_GetRatedBlowerAVF
 //-----------------------------------------------------------------------------
-double CHDHW::hvt_GetRatedSpecificFanPower() const	// rated SFP
+double CHDHW::chw_GetRatedSpecificFanPower() const	// rated SFP
 // returns rated specific fan power (SFP), W/cfm
 {
-	return hvt_blowerPwr.back() / hvt_GetRatedBlowerAVF();
+	return 0.2733; //  chw_blowerPwr.back() / chw_GetRatedBlowerAVF();
 
-}	// CHDHW::hvt_GetRatedSpecificFanPower
+}	// CHDHW::chw_GetRatedSpecificFanPower
 //-----------------------------------------------------------------------------
-void CHDHW::hvt_CapHtgMinMax(	// min/max available net heating capacity
+void CHDHW::chw_CapHtgMinMax(	// min/max available net heating capacity
 	float tCoilEW,				// coil entering water temp, F
 	float& capHtgNetMin,		// returned: min speed net heating cap, Btuh
 	float& capHtgNetMax) const	// returned: max speed net heating cap, Btuh
 {
 	std::vector< double> tCoilEWTarg{ tCoilEW };
 
-	std::vector< double> qhMax = hvt_pCapMaxRGI->get_values_at_target(tCoilEWTarg);
+	std::vector< double> qhMax = chw_pCapMaxRGI->get_values_at_target(tCoilEWTarg);
 
-	capHtgNetMin = hvt_capHtgNetMin;		// min cap does not depend on tCoilEW
+	capHtgNetMin = chw_capHtgNetMin;		// min cap does not depend on tCoilEW
 	capHtgNetMax = qhMax[0];
 
-}		// CHDHW::hvt_CapHtgMax
+}		// CHDHW::chw_CapHtgMax
 //-----------------------------------------------------------------------------
-float CHDHW::hvt_WaterVolFlow(
+float CHDHW::chw_WaterVolFlow(
 	float qhNet,	// net heating output, Btuh
 	float tCoilEW)	// coil entering water temp, F
 // returns required volume flow, gpm
@@ -521,25 +559,25 @@ float CHDHW::hvt_WaterVolFlow(
 
 	std::vector< double> wvfTarg{ tCoilEW, qhNet };
 
-	std::vector< double> wvf = hvt_pWVFRGI->get_values_at_target(wvfTarg);
+	std::vector< double> wvf = chw_pWVFRGI->get_values_at_target(wvfTarg);
 
 	return wvf[0];
 
-}		// CHDHW::hvt_WaterVolFlow
+}		// CHDHW::chw_WaterVolFlow
 //-----------------------------------------------------------------------------
-void CHDHW::hvt_BlowerAVFandPower(
+void CHDHW::chw_BlowerAVFandPower(
 	float qhNet,	// net heating output, Btuh
 	float& avf,		// returned: blower volumetric air flow, cfm
 	float& pwr)		// returned: blower power, W
 {
 	std::vector< double> qOutTarg{ qhNet };
 
-	std::vector< double> res = hvt_pAVFPwrRGI->get_values_at_target(qOutTarg);
+	std::vector< double> res = chw_pAVFPwrRGI->get_values_at_target(qOutTarg);
 
 	avf = res[0];
 	pwr = res[1];
 
-}	// CHDHW::hvt_BlowerAVFandPower
+}	// CHDHW::chw_BlowerAVFandPower
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////

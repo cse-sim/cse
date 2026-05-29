@@ -2048,9 +2048,6 @@ bool ZNR::zn_IsAirHVACActive() const		// determine air motion
 /*virtual*/ RSYS::~RSYS()
 {
 	rs_DeleteWorkingSubObjects();
-	delete rs_pCHDHW;
-	rs_pCHDHW = nullptr;
-
 }	// RSYS::~RSYS
 //----------------------------------------------------------------------------
 void RSYS::rs_DeleteWorkingSubObjects()	// delete runtime subobjects
@@ -2240,10 +2237,10 @@ RC RSYS::rs_CkFHeating()
 	{	// combined heat and DHW
 		rc |= requireX(whenTy, RSYS_CHDHWSYSI);
 		rc |= disallowX(whenTy, RSYS_TDDESH);
+#if 0
 		if (IsAusz( RSYS_CAPH))
 			rc |= oer("rsCapH cannot be AUTOSIZE %s", whenTy);
-		else
-			rc |= ignoreX(whenTy, RSYS_CAPH);
+#endif
 		// rs_CdH?
 		rc |= disallowX("when rsType is CombinedHeatDHW or ACCombinedHeatDHW",
 				ASHP_HtgFNs, ASHPPM_HtgFNs);
@@ -2975,7 +2972,7 @@ float RSYS::rs_AMFOperating(
 		rs_capHt = rs_CurCapHtCHDHW( speedF);
 		float avf;
 		float fanPwr;	// unused
-		rs_pCHDHW->hvt_BlowerAVFandPower(rs_capHt, avf, fanPwr);
+		rs_pCHDHW->chw_BlowerAVFandPower(rs_capHt, avf, fanPwr);
 		amf = AVFtoAMF(avf);
 	}
 	else
@@ -4900,16 +4897,17 @@ RC RSYS::rs_SetupCHDHW()		// check/set up combined heat / DWH
 	if (!rc)
 	{
 		rs_pCHDHW = new CHDHW( this);
-		float ratedSFP = float(rs_pCHDHW->hvt_GetRatedSpecificFanPower());
+		float ratedSFP = float(rs_pCHDHW->chw_GetRatedSpecificFanPower());
 		if (!IsSet(RSYS_FANSFPH))
 			rs_fanSFPH = ratedSFP;
-		rc |= rs_pCHDHW->hvt_Init(rs_fanSFPH);
+		float capHRtd = IsSet(RSYS_CAPH) ? rs_capH : -1.f;
+		rc |= rs_pCHDHW->chw_Init(rs_fanSFPH, capHRtd);
 
-		rs_tdDesH = rs_pCHDHW->hvt_GetTRise();
-		rs_capH = rs_pCHDHW->hvt_GetRatedCap();
+		rs_tdDesH = rs_pCHDHW->chw_GetTRise();
+		rs_capH = rs_pCHDHW->chw_GetRatedCap();  // ???
 
 		// rated fan heat (unused?)
-		rs_fanHRtdH = ratedSFP * rs_pCHDHW->hvt_GetRatedBlowerAVF() * BtuperWh;
+		rs_fanHRtdH = ratedSFP * rs_pCHDHW->chw_GetRatedBlowerAVF() * BtuperWh;
 	}
 
 	return rc;
@@ -4926,7 +4924,7 @@ float RSYS::rs_CurCapHtCHDHW(		// current CHDHW heating cap etc
 		DHWSYS* pWS = rs_GetCHDHWSYS();
 		rs_tCoilEW = pWS->ws_GetCHDHWTSupply();
 		float capHtMin;
-		rs_pCHDHW->hvt_CapHtgMinMax(rs_tCoilEW, capHtMin, rs_capHtFS);
+		rs_pCHDHW->chw_CapHtgMinMax(rs_tCoilEW, capHtMin, rs_capHtFS);
 		rs_speedFMin = capHtMin / rs_capHtFS;
 	}
 	return rs_capHtFS * speedF;
@@ -6575,7 +6573,7 @@ RC RSYS::rs_FinalizeSh()
 			rs_outSenTot = rs_runF * rs_capHt;
 			float avf;		// AVF, cfm
 			float fanPwr;	// fan power, W
-			rs_pCHDHW->hvt_BlowerAVFandPower(rs_outSenTot, avf, fanPwr);
+			rs_pCHDHW->chw_BlowerAVFandPower(rs_outSenTot, avf, fanPwr);
 			// if (rs_runF < 1.) cycle?
 
 #if 1	// CHDHW fan power fix, 2/2026
@@ -6587,7 +6585,7 @@ x			rs_outFan = rs_runF * fanPwr * Top.tp_subhrDur * BtuperWh;	// WRONG fan heat
 			runFFan = rs_runF;
 
 			// flow (gpm) needed for gross output
-			float waterVolFlow = rs_pCHDHW->hvt_WaterVolFlow(rs_outSen, rs_tCoilEW);
+			float waterVolFlow = rs_pCHDHW->chw_WaterVolFlow(rs_outSen, rs_tCoilEW);
 			float vol = rs_runF * waterVolFlow * Top.tp_subhrDur * 60.f;
 
 			// return temp based on gross (coil) output

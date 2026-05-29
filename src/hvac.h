@@ -95,53 +95,41 @@ public:
 	CHDHW( class record* pParent);
 	virtual ~CHDHW();
 
-	void hvt_Clear();
-	RC hvt_Init( float operatingSFP);
-	float hvt_GetTRise(float tCoilEW = -1.f) const;
-	float hvt_GetRatedCap(float tCoilEW = -1.f) const;
-	double hvt_GetRatedBlowerAVF() const;
-	double hvt_GetRatedSpecificFanPower() const;
-	void hvt_CapHtgMinMax(float tCoilEW, float& capHtgNetMin, float& capHtgNetMax) const;
+	void chw_Clear();
+	RC chw_Init( float operatingSFP, float capHRated);
+	float chw_GetTRise(float tCoilEW = -1.f) const;
+	float chw_GetRatedCap(float tCoilEW = -1.f) const;
+	double chw_GetRatedBlowerAVF() const;
+	double chw_GetRatedSpecificFanPower() const;
+	void chw_CapHtgMinMax(float tCoilEW, float& capHtgNetMin, float& capHtgNetMax) const;
 
-	float hvt_WaterVolFlow(float qhNet, float tCoilEW);
+	float chw_WaterVolFlow(float qhNet, float tCoilEW);
 
-	void hvt_BlowerAVFandPower(float qhNet, float& avf, float& pwr);
+	void chw_BlowerAVFandPower(float qhNet, float& avf, float& pwr);
 
-	class record* hvt_pParent;	// parent (typically RSYS)
+	class record* chw_pParent;	// parent (typically RSYS)
 
 private:
-	// base data from Harvest Thermal memos
-	// gross capacity steps, Btuh
-	static inline std::vector<double>hvt_grossCaps{ 6000., 12000., 18000., 24000., 30000., 36000. };
-	// blower air flow, cfm
-	static inline std::vector<double>hvt_AVF{ 400., 600., 750., 900., 1050., 1200. };
-	// blower power, W at nominal 0.20 in WC static
-	static inline std::vector<double>hvt_blowerPwr{ 29., 60., 96., 149., 216., 328. };
-	// entering water temp, F
-	static inline std::vector< double> hvt_tCoilEW{ 120., 130., 140., 150. };
-	// coil water volume flow rate, gpm
-	static inline std::vector< std::vector< double>> hvt_WVF{ {
-			/* 120 F*/ 0.27, 0.56, 0.87, 1.22, 1.59, 1.57,
-			/* 130 F*/ 0.22, 0.45, 0.70, 0.87, 1.26, 1.57,
-			/* 140 F*/ 0.18, 0.38, 0.59, 0.81, 1.04, 1.29,
-			/* 150 F*/ 0.16, 0.33, 0.50, 0.69, 0.89, 1.09 } };
-
-	// runtime values filled in hvt_Init()
+	// runtime values filled in chw_Init()
 	//   values are derived from above re
 	//     actual pressure (operating) fan power
 	//     gross->net conversion
 
 	using RGI = class Btwxt::RegularGridInterpolator;
 
-	std::unique_ptr< RGI> hvt_pAVFPwrRGI;
-	std::unique_ptr< RGI> hvt_pWVFRGI;
-	std::unique_ptr< RGI> hvt_pCapMaxRGI;
+	std::unique_ptr< RGI> chw_pAVFPwrRGI;
+	std::unique_ptr< RGI> chw_pWVFRGI;
+	std::unique_ptr< RGI> chw_pCapMaxRGI;
 
-	float hvt_capHtgNetMin;		// minimum net continuous heating capacity, Btuh
+	float chw_capHtgNetMin;		// minimum net continuous heating capacity, Btuh
 								//   (cycles when smaller load)
-	float hvt_capHtgNetMaxFT;	// maximum net heating capacity, Btuh
+	float chw_capHtgNetMaxFT;	// maximum net heating capacity, Btuh
 								//   at max coil entering water temp
-	float hvt_tRiseMax;			// full speed coil+fan temp rise, F
+	float chw_tRiseMax;			// full speed coil+fan temp rise, F
+	float chw_AVFRated;			// full speed air flow, cfm
+	float chw_mult;				// multiplier (scales capacity, fan power, water flow, )
+								//   derived from rs_capH / chw_grossCaps[ 5] (= 36000.)
+								//   default = 1
 
 };	// class CHDHW
 //=============================================================================
