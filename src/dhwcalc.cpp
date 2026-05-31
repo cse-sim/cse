@@ -2334,33 +2334,34 @@ RC DHWSYS::ws_CheckCHDHWConfig(	// assess combined heat / DHW suitablity
 {
 	RC rc = RCOK;
 
-	// Harvest Thermal data is for tCoilEW 120 - 150 F
-	//  XBU will always maintain ws_tUse, enforce min ws_tUse = 120 F
-	if (ws_tUse < 120.f)
-		rc |= oer("wsTUse (%0.1f F) must be >= 120 F when DHWSYS is used for space heating.",
-			ws_tUse);
-
 	// there must be available DHWHEATER(s)
 	if (ws_whCount == 0.f)
 		rc |= oer("no DHWHEATER(s), cannot be used for space heating.");
+	else if (ws_CHDHWCount == 0)	// if first CHDHW use of this DHWSYS
+	{	// Harvest Thermal data is for tCoilEW 120 - 150 F
+		//  XBU will always maintain ws_tUse, enforce min ws_tUse = 120 F
+		if (ws_tUse < 120.f)
+			rc |= oer("wsTUse (%0.1f F) must be >= 120 F when DHWSYS is used for space heating.",
+				ws_tUse);
 
-	// all DHWHEATERs must be suitable
-	DHWHEATER* pWH;
-	RLUPC(WhR, pWH, pWH->ownTi == ss)
-	{	// check/setup all DHWHEATERs altho they must identical
-		rc |= pWH->wh_SetupAsCHDHWSource();
-		if (ws_pCHDHWDHWHEATER)
-			rc |= pWH->oer("Unexpected DHWHEATER.  To represent multiple DHWHEATERs in a DHWSYS\n"
-						   "    used for space heating, specify a single DHWHEATER with whMult > 1.");
-		else
-		{
-			ws_pCHDHWDHWHEATER = pWH;	// pointer to 1st/only heater
-										// used to access e.g. supply water temp
+		// all DHWHEATERs must be suitable
+		DHWHEATER* pWH;
+		RLUPC(WhR, pWH, pWH->ownTi == ss)
+		{	// check/setup all DHWHEATERs altho they must identical
+			rc |= pWH->wh_SetupAsCHDHWSource();
+			if (ws_pCHDHWDHWHEATER)
+				rc |= pWH->oer("Unexpected DHWHEATER.  To represent multiple DHWHEATERs in a DHWSYS\n"
+							   "    used for space heating, specify a single DHWHEATER with whMult > 1.");
+			else
+			{
+				ws_pCHDHWDHWHEATER = pWH;	// pointer to 1st/only heater
+				// used to access e.g. supply water temp
 
-			// moving sums used to maintain history of total and CHDHW output
-			// see ws_CHDHWDeriveHtgFractions()
-			ws_CHDHWOutTot.vm_Init( ws_CHDHWHistoryHours * Top.tp_nSubSteps);
-			ws_CHDHWOutHtg.vm_Init( ws_CHDHWHistoryHours * Top.tp_nSubSteps);
+				// moving sums used to maintain history of total and CHDHW output
+				// see ws_CHDHWDeriveHtgFractions()
+				ws_CHDHWOutTot.vm_Init(ws_CHDHWHistoryHours * Top.tp_nSubSteps);
+				ws_CHDHWOutHtg.vm_Init(ws_CHDHWHistoryHours * Top.tp_nSubSteps);
+			}
 		}
 	}
 
