@@ -2237,10 +2237,12 @@ RC RSYS::rs_CkFHeating()
 	{	// combined heat and DHW
 		rc |= requireX(whenTy, RSYS_CHDHWSYSI);
 		rc |= disallowX(whenTy, RSYS_TDDESH);
-#if 0
+
 		if (IsAusz( RSYS_CAPH))
 			rc |= oer("rsCapH cannot be AUTOSIZE %s", whenTy);
-#endif
+		else
+			rc |= ignoreX(whenTy, RSYS_CAPH);
+
 		// rs_CdH?
 		rc |= disallowX("when rsType is CombinedHeatDHW or ACCombinedHeatDHW",
 				ASHP_HtgFNs, ASHPPM_HtgFNs);

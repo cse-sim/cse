@@ -419,20 +419,6 @@ static constexpr std::array< std::array<float,6>,4> chw_WVF{ {
 		/* 130 F*/ 0.22f, 0.45f, 0.70f, 0.87f, 1.26f, 1.57f,
 		/* 140 F*/ 0.18f, 0.38f, 0.59f, 0.81f, 1.04f, 1.29f,
 		/* 150 F*/ 0.16f, 0.33f, 0.50f, 0.69f, 0.89f, 1.09f } };
-
-#if 0
-static std::vector< std::vector<double>> chw_WVFx{ {
-		/* 120 F*/ 0.27, 0.56, 0.87, 1.22, 1.59, 1.57,
-		/* 130 F*/ 0.22, 0.45, 0.70, 0.87, 1.26, 1.57,
-		/* 140 F*/ 0.18, 0.38, 0.59, 0.81, 1.04, 1.29,
-		/* 150 F*/ 0.16, 0.33, 0.50, 0.69, 0.89, 1.09 } };
-
-static std::vector< std::vector<double>> chw_WVFy{
-		/* 120 F*/ { 0.27, 0.56, 0.87, 1.22, 1.59, 1.57 },
-		/* 130 F*/ { 0.22, 0.45, 0.70, 0.87, 1.26, 1.57 },
-		/* 140 F*/ { 0.18, 0.38, 0.59, 0.81, 1.04, 1.29 },
-		/* 150 F*/ { 0.16, 0.33, 0.50, 0.69, 0.89, 1.09 } };
-#endif
 //-----------------------------------------------------------------------------
 RC CHDHW::chw_Init(		// one-time init
 	float operatingSFP,		// full speed operating specific fan power, W/cfm
@@ -510,10 +496,13 @@ RC CHDHW::chw_Init(		// one-time init
 
 	// water flow
 	std::vector<std::vector <double>> scaledWVF(1);
-	// scaledWVF.resize(1);
 	for (size_t iRow = 0; iRow<4; iRow++)
-	{	for (size_t iCol = 0; iCol<6; iCol++)
-			scaledWVF[0].push_back(chw_mult*chw_WVF[iRow][iCol]);
+	{
+		for (size_t iCol = 0; iCol<6; iCol++)
+		{
+			double tWVF = chw_mult*chw_WVF[iRow][iCol];
+			scaledWVF[ 0].push_back(tWVF);
+		}
 	}
 	chw_pWVFRGI.reset(new RGI( GridAxes{ ewtAxis, netCapAxis},
 		scaledWVF, "Water flow", cmhCHDHW));
