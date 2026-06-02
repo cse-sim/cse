@@ -2466,6 +2466,8 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 {
 	RC rc = RCOK;
 
+	rs_SetWorkingPtrs();
+
 	if (!IsSet(RSYS_TDDESH))
 		rs_tdDesH = rs_IsHP()    ? 30.f	// lower default temp rise for ASHP
 		                         : 50.f;	// (changed later for CHDHW)
@@ -2599,8 +2601,6 @@ RC RSYS::rs_TopRSys2()		// final set up for run
 {
 	RC rc = RCOK;
 
-	rs_SetWorkingPtrs();		// MTR and other inter-object pointers
-
 	// Initialize DUCTSEGs / check for consistency with rs_DSEH/rs_DSEC
 	// link DUCTSEGs to this RSYS
 	DUCTSEG* ds;
@@ -2635,8 +2635,10 @@ RC RSYS::rs_TopRSys2()		// final set up for run
 	}
 	
 	// combined heat / DHW
+	// Note: rs_SetupCHDHW1() must be called for ALL RSYSs before rs_SetupCHDHW2()
+	//  (done by caller)
 	if (rs_IsCHDHW())
-		rc |= rs_SetupCHDHW();
+		rc |= rs_SetupCHDHW2();
 
 	if (rc == RCOK)
 		rs_SetRunConstants();
@@ -3244,7 +3246,7 @@ void RSYS::rs_SetWorkingPtrs()		// set runtime pointers to meters etc.
 	rs_pSrcSideLoadMtr[ 0] = LdMtrR.GetAtSafe(rs_srcSideLoadMtri);
 	rs_pSrcSideLoadMtr[ 1] = LdMtrR.GetAtSafe(rs_htgSrcSideLoadMtri);
 	rs_pSrcSideLoadMtr[ 2] = LdMtrR.GetAtSafe(rs_clgSrcSideLoadMtri);
-	rs_pCHDHWSYS = WsR.GetAtSafe(rs_CHDHWSYSi);
+	// rs_pCHDHWSYS = WsR.GetAtSafe( rs_CHDHWSYSi)  set in rs_SetupCHDHW1()
 }		// RSYS::rs_SetMTRPtrs
 //-----------------------------------------------------------------------------
 RC RSYS::rs_SetupSizes(		// derive capacity-dependent values
@@ -4878,8 +4880,31 @@ RC RSYS::rs_SetupWSHP()		// set WSHP defaults and derived parameters
 	return rc;
 }		// RSYS::rs_SetupWSHP
 //-----------------------------------------------------------------------------
-RC RSYS::rs_SetupCHDHW()		// check/set up combined heat / DWH
+RC RSYS::rs_SetupCHDHW1()	// initial check/setup of CHDHW configuration
+// calls DHWSYS::ws_CheckCHDHWConfig()
+// MUST be done for all RSYSs before any rs_SetupCHDHW2()
+// 
+// returns RCOK iff no errors
+{
+	RC rc = RCOK;
+
+	rs_pCHDHWSYS = WsR.GetAtSafe(rs_CHDHWSYSi);
+
+	if (rs_IsCHDHW())
+	{
+		if (!rs_pCHDHWSYS)
+			rc |= oer("Missing rsCHDHWSYS");	// impossible? due to prior checks
+		else
+			rc |= rs_pCHDHWSYS->ws_CheckCHDHWConfig(this);
+	}
+
+	return rc;
+
+}	// RSYS::rs_SetupCHDHW1
+//-----------------------------------------------------------------------------
+RC RSYS::rs_SetupCHDHW2()		// check/set up combined heat / DWH
 // call from rs_TopRSys2()
+//    *after* rs_SetupCHDHW1() for ALL RSYSs
 //    *after* rs_SetWorkingPtrs()
 //    *after* topDHW() -- DHWSYS, DHWHEATER, etc must exist
 
@@ -4889,10 +4914,12 @@ RC RSYS::rs_SetupCHDHW()		// check/set up combined heat / DWH
 
 	DHWSYS* pWS = rs_GetCHDHWSYS();
 
+#if 0
 	if (!pWS)
 		rc |= oer("Missing rsCHDHWSYS");	// impossible? due to prior checks
 	else
 		rc |= pWS->ws_CheckCHDHWConfig(	this);
+#endif
 
 	if (!rc)
 	{
@@ -4900,8 +4927,9 @@ RC RSYS::rs_SetupCHDHW()		// check/set up combined heat / DWH
 		float ratedSFP = float(rs_pCHDHW->chw_GetRatedSpecificFanPower());
 		if (!IsSet(RSYS_FANSFPH))
 			rs_fanSFPH = ratedSFP;
-		float capHRtd = IsSet(RSYS_CAPH) ? rs_capH : -1.f;
-		rc |= rs_pCHDHW->chw_Init(rs_fanSFPH, capHRtd);
+		float mult = pWS->ws_GetCHDHWCapMult();
+		float capHRtd = -1.f; //TODO IsSet(RSYS_CAPH) ? rs_capH : -1.f;
+		rc |= rs_pCHDHW->chw_Init(rs_fanSFPH, mult, capHRtd);
 
 		rs_tdDesH = rs_pCHDHW->chw_GetTRise();
 		rs_capH = rs_pCHDHW->chw_GetRatedCap();  // ???
@@ -4911,7 +4939,7 @@ RC RSYS::rs_SetupCHDHW()		// check/set up combined heat / DWH
 	}
 
 	return rc;
-}		// RSYS::rs_SetupCHDHW
+}		// RSYS::rs_SetupCHDHW2
 //----------------------------------------------------------------------------
 float RSYS::rs_CurCapHtCHDHW(		// current CHDHW heating cap etc
 	float speedF)		// current speed, 0 - 1

@@ -2327,7 +2327,7 @@ RC DHWSYS::ws_ApplySizingResults(		// store sizing results
 /*static*/ const int DHWSYS::ws_CHDHWHistoryHours = 12;
 //----------------------------------------------------------------------------
 RC DHWSYS::ws_CheckCHDHWConfig(	// assess combined heat / DHW suitablity
-	RSYS* pRS)		// referencing RSYS
+	const RSYS* pRS)		// referencing RSYS
 // returns RCOK iff this DHWSYS can supply combined heat coil
 //         msg(s) issued per erOp
 
@@ -2372,6 +2372,13 @@ RC DHWSYS::ws_CheckCHDHWConfig(	// assess combined heat / DHW suitablity
 	return rc;
 
 }	// DHWSYS::ws_CheckCHDHWConfig
+//----------------------------------------------------------------------------
+float DHWSYS::ws_GetCHDHWCapMult() const
+// returns CHDHW heating capacity multiplier applied to each referencing RSYS
+//       or 0 if this DHWSYS not used for CHDHW heating
+{
+	return ws_CHDHWCount > 0 ? ws_whCount / ws_CHDHWCount : 0.f;
+}	// DHWSYS::ws_GetCHDHWCapMult
 //----------------------------------------------------------------------------
 void DHWSYS::ws_CHDHWDeriveHtgFractions()	// subhour and heating fraction
 // maintains recent load history

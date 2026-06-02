@@ -406,7 +406,7 @@ void CHDHW::chw_Clear()	// clear all non-static members
 //-----------------------------------------------------------------------------
 // base data from Harvest Thermal memos
 // nominal gross capacity steps, Btuh
-static constexpr std::array chw_grossCaps{ 6000., 12000., 18000., 24000., 30000., 36000. };
+static constexpr std::array chw_grossCaps{ 6000.f, 12000.f, 18000.f, 24000.f, 30000.f, 36000.f };
 // blower air flow, cfm
 static constexpr std::array chw_AVFNom{ 400.f, 600.f, 750.f, 900.f, 1050.f, 1200.f };
 // blower power, W at nominal 0.20 in WC static
@@ -420,18 +420,29 @@ static constexpr std::array< std::array<float,6>,4> chw_WVF{ {
 		/* 140 F*/ 0.18f, 0.38f, 0.59f, 0.81f, 1.04f, 1.29f,
 		/* 150 F*/ 0.16f, 0.33f, 0.50f, 0.69f, 0.89f, 1.09f } };
 
+#if 0
 static std::vector< std::vector<double>> chw_WVFx{ {
 		/* 120 F*/ 0.27, 0.56, 0.87, 1.22, 1.59, 1.57,
 		/* 130 F*/ 0.22, 0.45, 0.70, 0.87, 1.26, 1.57,
 		/* 140 F*/ 0.18, 0.38, 0.59, 0.81, 1.04, 1.29,
 		/* 150 F*/ 0.16, 0.33, 0.50, 0.69, 0.89, 1.09 } };
+
+static std::vector< std::vector<double>> chw_WVFy{
+		/* 120 F*/ { 0.27, 0.56, 0.87, 1.22, 1.59, 1.57 },
+		/* 130 F*/ { 0.22, 0.45, 0.70, 0.87, 1.26, 1.57 },
+		/* 140 F*/ { 0.18, 0.38, 0.59, 0.81, 1.04, 1.29 },
+		/* 150 F*/ { 0.16, 0.33, 0.50, 0.69, 0.89, 1.09 } };
+#endif
 //-----------------------------------------------------------------------------
 RC CHDHW::chw_Init(		// one-time init
 	float operatingSFP,		// full speed operating specific fan power, W/cfm
-	float capHRtd)			// rated maximum net heating capacity, Btuh
-							//   user input
-							//   used to init chw_mult
-							//   if <0, set chw_mult=1
+	float mult /*=-1.f*/,	// multiplier = air handler scaling factor
+							//   can be non-integral
+							//   if <0, derive from capHRtd
+	float capHRtd /*=-1.f*/)	// rated maximum net heating capacity, Btuh
+								//   user input INCOMPLETE
+								//   used to init chw_mult
+								//   if <0, set chw_mult=1
 // returns RCOK iff success
 {
 	using namespace Btwxt;
@@ -442,14 +453,18 @@ RC CHDHW::chw_Init(		// one-time init
 	chw_Clear();
 
 	// capacity multiplier
-	if (capHRtd > 0.f)
+	if (mult > 0.f)
+		chw_mult = mult;
+	else if (capHRtd > 0.f)
 	{
 		float blowerPwrNominal = chw_blowerPwr.back();	// full speed nominal blower power, W
 		float capHNetRtdNominal = chw_grossCaps.back() + blowerPwrNominal * BtuperWh;
 		chw_mult = capHRtd / capHNetRtdNominal;
 	}
 	else
-		chw_mult = 1.f;		// insurance, s/b 1 per c'tor
+	{
+		chw_mult = 1.f;
+	}
 
 	// derive running fan power
 	double ratedSFP = chw_GetRatedSpecificFanPower();
@@ -494,13 +509,14 @@ RC CHDHW::chw_Init(		// one-time init
 		{ 0., DBL_MAX }, "EWT", cmhCHDHW);
 
 	// water flow
-	std::vector<std::vector <double>> scaledWVF(chw_WVF.size());
+	std::vector<std::vector <double>> scaledWVF(1);
+	// scaledWVF.resize(1);
 	for (size_t iRow = 0; iRow<4; iRow++)
 	{	for (size_t iCol = 0; iCol<6; iCol++)
-			scaledWVF[iRow].push_back(chw_mult*chw_WVF[iRow][iCol]);
+			scaledWVF[0].push_back(chw_mult*chw_WVF[iRow][iCol]);
 	}
 	chw_pWVFRGI.reset(new RGI( GridAxes{ ewtAxis, netCapAxis},
-		chw_WVFx, "Water flow", cmhCHDHW));
+		scaledWVF, "Water flow", cmhCHDHW));
 
 	// min/max capacities
 	chw_capHtgNetMin = netCaps[0];	// min is independent of ewt
@@ -517,8 +533,27 @@ RC CHDHW::chw_Init(		// one-time init
 	float amfMax = AVFtoAMF(chw_AVFRated);	// elevation?
 	chw_tRiseMax = chw_capHtgNetMaxFT / (amfMax * Top.tp_airSH);
 
+#if defined( CHDHW_TEST)
+	chw_Test();
+#endif
+
 	return rc;
 }		// CHDHW::chw_Init
+//-----------------------------------------------------------------------------
+#if defined( CHDHW_TEST)
+void CHDHW::chw_Test()
+{
+	static constexpr std::array testCaps{ 6000.f, 12000.f, 18000.f, 24000.f, 30000.f, 36000.f };
+	static constexpr std::array testEWTs{ 120.f, 130.f, 140.f, 150.f };
+
+	for (auto EWT: testEWTs)
+	{
+		printf("\n%4.1f  ", EWT);
+		for (auto cap : testCaps)
+			printf("  %5.2f", chw_WaterVolFlow(cap, EWT));
+	}
+}		// CHDHW::chw_Test
+#endif
 //-----------------------------------------------------------------------------
 float CHDHW::chw_GetTRise(
 	float tCoilEW /*=-1.f*/) const

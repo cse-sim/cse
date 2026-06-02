@@ -89,6 +89,7 @@ private:
 // class CHDHW: data and models for Combined Heat and DHW system
 //              (initial version based on Harvest Thermal info)
 ///////////////////////////////////////////////////////////////////////////////
+#define CHDHW_TEST		// define to enable internal tests
 class CHDHW
 {
 public:
@@ -96,7 +97,7 @@ public:
 	virtual ~CHDHW();
 
 	void chw_Clear();
-	RC chw_Init( float operatingSFP, float capHRated);
+	RC chw_Init( float operatingSFP, float mult=-1.f, float capHRated=-1.f);
 	float chw_GetTRise(float tCoilEW = -1.f) const;
 	float chw_GetRatedCap(float tCoilEW = -1.f) const;
 	double chw_GetRatedBlowerAVF() const;
@@ -130,6 +131,10 @@ private:
 	float chw_mult;				// multiplier (scales capacity, fan power, water flow, )
 								//   derived from rs_capH / chw_grossCaps[ 5] (= 36000.)
 								//   default = 1
+
+#if defined( CHDHW_TEST)
+	void chw_Test();
+#endif
 
 };	// class CHDHW
 //=============================================================================
