@@ -541,6 +541,7 @@ void CHDHW::chw_Test()
 		for (auto cap : testCaps)
 			printf("  %5.2f", chw_WaterVolFlow(cap, EWT));
 	}
+	printf("\n");
 }		// CHDHW::chw_Test
 #endif
 //-----------------------------------------------------------------------------
