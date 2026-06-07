@@ -54,14 +54,14 @@ jobs:
           fetch-depth: 0
           submodules: recursive
       - name: Get number of CPU cores # Can replace when CMake is upgraded to 3.29
-        uses: SimenB/github-actions-cpu-cores@v2
+        uses: SimenB/github-actions-cpu-cores@v3
         id: cpu-cores
       # - name: Setup Mesa3D
       #   uses: bigladder/github-actions/setup-mesa3d@main
       #   with:
       #     install-directory: msvc
       - name: Install uv and set the python version
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v8
         with:
           python-version: "3.13"
       - name: Build CSE
