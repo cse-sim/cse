@@ -16,7 +16,7 @@
 //
 // Returns non-0 if errors occurred; details in error message file.
 //
-// See manual.
+// See documentation.
 
 // TODO list, some old / unverified
 // * DONE. Idea: add top-level "vent available" flag.  Do only 1 airnet if vent not available
