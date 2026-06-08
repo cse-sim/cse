@@ -237,7 +237,7 @@ extern SI runtrace;	// non-0 to display debugging info during execution
 #ifdef wanted
 RC FC cuEvalTop( void *ip);
 #endif
-RC FC cuEvalR( void *ip, void **ppv, const char **pmsg, USI *pBadH);
+RC FC cuEvalR( void *ip, void **ppv, const char **pmsg, int* pBadH);
 RC FC cupfree( DMP *p);
 char * FC cuStrsaveIf( char *s);
 void cupFixAfterCopy(CULSTR& culStr);

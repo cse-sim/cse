@@ -49,6 +49,7 @@ Notes
  In the example above, "Tdb" could be replaced by 3.
  * Column names should be case-insensitive unique.  CSE issues a warning for each non-unique name found. Reference to a non-unique name in import()/importStr() is treated as an error (no run).
  * Heading or data string values generally do not need to be quoted except for values that include comma(s).
+ * File reading restarts for each simulation or autosizing day.  This means that synchronization can often be incorrect.  For example, if a run that includes hourly imports requires two design days (for autosizing) plus a full year simulation, CSE will read data records 1-24, 1-24, and 1-8760. Improved file positioning will be implemented at some point.  Until that is available, be aware of these limitations.
 
 
 

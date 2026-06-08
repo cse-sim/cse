@@ -1255,6 +1255,7 @@ RSYS RSYS1
 #if 1
    AUTOSIZE rsCap47
    AUTOSIZE rsCapAuxH
+   rsCapAuxHFactor = brkt(0, (68 - @Zone[ 1].tzls)/2., 1)
    rsFxCapAuxH = 2
    rsFxCapH = 1.5
 #else
@@ -1332,9 +1333,52 @@ SYSINFHEAT( 1)
 Report rpType=MTR rpMeter=MtrElec rpFreq=MONTH rpBtuSf=1000
 Report rpType=MTR rpMeter=MtrNatGas rpFreq=MONTH rpBtuSf=1000
 
-Report rpType=MTR rpMeter=MtrElec rpFreq=Hour rpBtuSf=1000 rpDayBeg= HD1; rpDayEnd=HD1
-Report rpType=MTR rpMeter=MtrElec rpFreq=Hour rpBtuSf=1000 rpDayBeg= DD1; rpDayEnd=DD1
-Report rpType=MTR rpMeter=MtrElec rpFreq=Hour rpBtuSf=1000 rpDayBeg= CD1; rpDayEnd=CD1
+Report rpType=MTR rpMeter=MtrElec rpFreq=Hour rpBtuSf=1000 rpDayBeg= HD1 rpDayEnd=HD1
+Report rpType=MTR rpMeter=MtrElec rpFreq=Hour rpBtuSf=1000 rpDayBeg= DD1 rpDayEnd=DD1
+Report rpType=MTR rpMeter=MtrElec rpFreq=Hour rpBtuSf=1000 rpDayBeg= CD1 rpDayEnd=CD1
+
+ // report columns: RSYS heating subhour details
+#define SYSCOLSH( RXCOL, rs, zn, zat) \
+    RXCOL colHead="mon" colVal=$Month colWid=3 \
+    RXCOL colHead="day" colVal=$Dayofmonth colWid=3 \
+    RXCOL colHead="Hr" colVal=@Top.iHr colWid=2  \
+    RXCOL colHead="Sh" colVal=@Top.iSubHr colWid=2 \
+    RXCOL colHead="ToDb" colVal=@Top.tDbOSh colWid=5 colDec=2 \
+    RXCOL colHead="Tatt"  colVal=@Zone[zat].tz colWid=5 colDec=2 \
+    RXCOL colHead="Tzn"  colVal=@Zone[zn].tz colWid=5 colDec=2 \
+    RXCOL colHead="Tent"  colVal=@RSYS[ rs].asIn.tDb  colWid=6 colDec=2 \
+    RXCOL colHead="Tlv"  colVal=@RSYS[ rs].asOut.tDb  colWid=6 colDec=2 \
+    RXCOL colHead="Tsup"  colVal=@RSYS[ rs].asSup.tDb  colWid=6 colDec=2 \
+    RXCOL colHead="capHt" colVal=@RSYS[ rs].capHt colWid=5 colDec=0 \
+    RXCOL colHead="capHtFS" colVal=@RSYS[ rs].capHtFS colWid=7 colDec=0 \
+    RXCOL colHead="capSenNetFS" colVal=@RSYS[ rs].capSenNetFS colWid=11 colDec=0 \
+    RXCOL colHead="capAuxHAvail" colVal=@RSYS[ rs].capAuxHAvail colWid=12 colDec=0 \
+    RXCOL colHead="znLd" colVal=@RSYS[ rs].znLoad[ 0] colWid=5 colDec=0 \
+    RXCOL colHead="capF" colVal=@RSYS[ rs].fCondCap colWid=5  colDec=3 \
+    RXCOL colHead="inpF" colVal=@RSYS[ rs].fCondInp colWid=5  colDec=3 \
+    RXCOL colHead="PLR" colVal=@RSYS[ rs].PLR colWid=5  colDec=3 \
+    RXCOL colHead="spdF" colVal=@RSYS[ rs].speedF colWid=5  colDec=3 \
+    RXCOL colHead="runF" colVal=@RSYS[ rs].runF colWid=5  colDec=3 \
+    RXCOL colHead="PLF"   colVal=@RSYS[ rs].plf  colWid=5  colDec=3 \
+    RXCOL colHead="runFAux" colVal=@RSYS[ rs].runFAux colWid=7  colDec=3 \
+    RXCOL colHead="CFMav" colVal=@Zone[ zn].rsAmfSup/4.5  colWid=5 colDec=1 \
+    RXCOL colHead="qComp" colVal=@RSYS[ rs].outSen colWid=6 colDec=0 \
+    RXCOL colHead="qAux" colVal=@RSYS[ rs].outAux colWid=6 colDec=0 \
+    RXCOL colHead="qDef" colVal=@RSYS[ rs].outDefrost colWid=5 colDec=0 \
+    RXCOL colHead="qFan" colVal=@RSYS[ rs].outFan colWid=5 colDec=0 \
+    RXCOL colHead="qNet" colVal=@RSYS[ rs].outSenTot colWid=6 colDec=0 \
+    RXCOL colHead="qZn"  colVal=@Zone[zn].qsHVAC colWid=6 colDec=0 \
+    RXCOL colHead="qBal1" colVal=@RSYS[ rs].outSenTot-@Zone[zn].qsHVAC colWid=5 colDec=0 \
+    RXCOL colHead="qBal2"  colVal=(@RSYSRES[ rs].S.qhNet-@ZNRES[ zn].S.qshHvac)/@Top.subhrDur colWid=6 colDec=0 \
+    RXCOL colHead="eComp"  colVal=@RSYS[rs].inPrimary colWid=5 colDec=0 \
+    RXCOL colHead="eTot"   colVal=@RSYSRES[rs].S.ehTot / @Top.subhrDur colWid=6 colDec = 0 \
+    RXCOL colHead="COPfs" colVal=@RSYS[ rs].effHt colWid=5 colDec=3 \
+    RXCOL colHead="COPpl" colVal=@RSYS[ rs].COPHtAdj  colWid=5  colDec=3 \
+    RXCOL colHead="COPov"  colVal=abs( @Zone[zn].qsHVAC)/max( 1, @RSYS[rs].inPrimary+@RSYS[rs].inAux+@RSYS[rs].inDefrost+@RSYS[rs].inFan) colWid=5 colDec=3
+
+REPORT rpType=UDT rpFreq=subhour rpDayBeg=(HD1) rpDayEnd=(HD1)  rpTitle="RSYS Heating subhour details"
+SYSCOLSH( Reportcol, 1, 1, "Attic-atc")
+
 
 
 // CSE Format Conditioned Zone sensible Energy Balance. Modified by BW 110812

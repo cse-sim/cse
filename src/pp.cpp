@@ -477,9 +477,9 @@ void FC ppClean( 		// preprocessor overall init/cleanup routine
 	ppTokClean(cs);
 }			// ppClean
 //==========================================================================
-void ppAddPath( const char* paths)	// add ;-separated path(s) to be searched for input and include files
+void ppAddPath( const char* paths)	// add PATH_DELIMITER-separated path(s) to be searched for input and include files
 
-// if caller wants DOS PATH to be searched, he should do:  ppAddPath(NULL); .
+// if caller wants PATH to be searched, he should do:  ppAddPath(NULL); .
 {
 	ppPath.add(paths);
 }			// ppAddPath
@@ -491,22 +491,6 @@ bool ppFindFile( 		// find file using paths specified with ppAddPaths. Issues no
 {
 	return ppPath.find( fname, fullPath);
 }						// ppFindFile
-//==========================================================================
-#if 0
-bool ppFindFile( 	// find file using paths specified with ppAddPaths. Issues no message.
-	char* &fname)	//  file to find
-					//    returned updated to full path iff found
-// returns TRUE iff found
-{
-	char fullPath[CSE_MAX_PATH];
-	BOO bFound = ppPath.find( fname, fullPath);
-	if (bFound && _stricmp( fname, fullPath))		// if found path different (else don't save for less fragmentation)
-	{	cupfree( DMPP( fname));		// if not a pointer to "text" embedded in pseudocode, dmfree name
-		fname = strsave( fullPath);		// replace name with full pathname
-	}
-	return bFound;
-}						// ppFindFile
-#endif
 //==========================================================================
 bool ppFindFile( 	// find file using paths specified with ppAddPaths. Issues no message.
 	CULSTR& fname)	//  file to find

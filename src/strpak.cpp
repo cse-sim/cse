@@ -34,10 +34,10 @@ static int TmpstrNx = 0;	// Next available byte in Tmpstr[].
 // == CULSTR ==
 // Persistent string type that can be manipulated in the CUL realm.
 //    (e.g. user input data and expressions, probes etc.)
-//    Implemented as indicies into a vector of std::string.
+//    Implemented as indicies into a vector that points to string in heap.
 //    Important motivation is 4-byte size (same as float and NANDLE).
 //    Cannot use char * due to 8-byte size on 64 bit.
-
+//--------------------------------------------------------------------
 // CULSTREL: one element in vector of strings
 //   = string in dynamic memory plus integer that chains free elements.
 struct CULSTREL
@@ -69,7 +69,7 @@ struct CULSTREL
 		usl_status = uslEMPTY;
 	}
 
-	char* usl_str;				// string data
+	char* usl_str;				// string data (generally in DM heap)
 	int usl_status;				// uslEMPTY: empty (usl_str may or may not be nullptr)
 								// uslDM: in use, usl_str points to heap
 								// uslOTHER: in use, usl_str points elsewhere (do not dmfree)
@@ -89,30 +89,32 @@ char* CULSTREL::usl_Set(		// set CULSTR
 	return strcpy(usl_str, s);
 }	// CULSTREL::usl_Set
 //=============================================================================
-
-CULSTRCONTAINER::CULSTRCONTAINER() : us_freeChainHead{ 0 }
+// container for strings = vector of CULSTREL (char * to text + management)
+struct CULSTRCONTAINER
 {
-	us_vectCULSTREL.push_back("");
-}
-
-
-/*static */  CULSTRCONTAINER CULSTR::us_csc;
-
-
-
-//-----------------------------------------------------------------------------
-CULSTR::CULSTR() : us_hCulStr(0) {}
-//-----------------------------------------------------------------------------
-CULSTR::CULSTR(const CULSTR& culStr) : us_hCulStr( 0)
+	CULSTRCONTAINER() : us_freeChainHead{ 0 }
+	{	us_vectCULSTREL.push_back("");	// [0] is always empty string
+	}
+	~CULSTRCONTAINER() {}
+	std::vector<struct CULSTREL> us_vectCULSTREL;	// vector of string elements
+	// [ 0] always "" (see c'tor)
+	HCULSTR us_freeChainHead;		// 1st free element (0 = none)
+	bool us_IsAllocated() const
+	{   return us_vectCULSTREL.size() > 0;
+	}
+};	// struct CULSTRCONTAINER
+//=============================================================================
+static CULSTRCONTAINER us_csc;	// container for pointers to strings
+								// could be static mbr of CULSTR
+								//   but the requires exposing defns in strpak.h
+//=============================================================================
+CULSTR& CULSTR::operator=(CULSTR&& src) noexcept	// move assignment
 {
-	Set(culStr.CStr());
-}
-//-----------------------------------------------------------------------------
-CULSTR::CULSTR(const char* str) : us_hCulStr( 0)
-{
-	Set(str);
-
-}
+	Release();
+	us_hCulStr = src.us_hCulStr;
+	src.us_hCulStr = 0;
+	return *this;
+}	// CULSTR operator= (move)
 //-----------------------------------------------------------------------------
 char* CULSTR::CStrModifiable() const	// pointer to string
 // CAUTION non-const; generally should use CStr()
@@ -136,16 +138,20 @@ void CULSTR::Set(			// set from const char*
 						// if nullptr, release
 {
 	if (!str)
-	{
-		Release();
+	{	Release();
 		// us_hCulStr = 0 in us_Release
 	}
 	else
-	{
-		if (!us_HasCULSTREL())
+	{	if (!us_HasCULSTREL())
 		{	// this CULSTR does not have an allocated slot
-			if (us_AllocMightMove())
-				str = strtmp(str);		// str may be pointing into string vector
+#if 0
+0 str move not possible with current implementation, 5-26
+0 strings are in fixed heap locations
+0 Save for possible future use
+0
+0			if (us_AllocMightMove())
+0				str = strtmp(str);		// str may be pointing into string vector
+#endif
 			us_Alloc();					// can move!
 		}
 
@@ -199,8 +205,8 @@ void CULSTR::us_Alloc()		// allocate
 	}
 	else
 	{	// no free slot, enlarge vector
-		if (us_csc.us_vectCULSTREL.size() == 0)
-			us_csc.us_vectCULSTREL.emplace_back("");
+		//  [0] always allocated for null CULSTR
+		assert(us_csc.us_vectCULSTREL.size() >= 1);
 		us_csc.us_vectCULSTREL.emplace_back();
 		us_hCulStr = HCULSTR( us_csc.us_vectCULSTREL.size()) - 1;
 	}
@@ -209,7 +215,10 @@ void CULSTR::us_Alloc()		// allocate
 void CULSTR::Release()		// release string
 // revert CULSTR to empty state
 {
-	if (us_hCulStr != 0 && !IsNANDLE())
+// issue: destruction order of static objects indeternimate
+// us_IsAllocated() ensures static container still exists
+	if (us_hCulStr != 0 && !IsNANDLE()
+	 && us_csc.us_IsAllocated())
 	{	CULSTREL& el = us_GetCULSTREL();
 
 		// string pointer: do not free (memory will be reused)
@@ -224,12 +233,16 @@ void CULSTR::Release()		// release string
 
 }	// CULSTR::Release
 //-----------------------------------------------------------------------------
-bool CULSTR::us_AllocMightMove() const	// check if reallocation is possible
-// returns true iff next us_Alloc might trigger us_vectCULSTR reallocation
-{
-	return us_csc.us_freeChainHead == 0
-		&& us_csc.us_vectCULSTREL.size() == us_csc.us_vectCULSTREL.capacity();
-}		// CULSTR::us_AllocMightMove
+#if 0	// 5-26
+0 In current implementation, vector reallocation does move strings in heap
+0 Save re possible implementation change
+0 bool CULSTR::us_AllocMightMove() const	// check if reallocation is possible
+0 // returns true iff next us_Alloc might trigger us_vectCULSTR reallocation
+0 {
+0	return us_csc.us_freeChainHead == 0
+0		&& us_csc.us_vectCULSTREL.size() == us_csc.us_vectCULSTREL.capacity();
+0 }		// CULSTR::us_AllocMightMove
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 
 //-----------------------------------------------------------------------------
