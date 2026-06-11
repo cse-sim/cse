@@ -1,8 +1,5 @@
 name: Release
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 on:
   release:
     types:
@@ -22,7 +19,7 @@ jobs:
           fetch-depth: 0
           submodules: recursive
       - name: Install uv and set the python version
-        uses: astral-sh/setup-uv@v8.0.0
+        uses: astral-sh/setup-uv@v8.2.0
         with:
           python-version: "3.13"
       - name: Build CSE
