@@ -60,10 +60,10 @@ Name of IMPORTFILE object (for reference from Import()).
 {{
   member_table({
     "units": "",
-    "legal_range": "*63 characters*", 
+    "legal_range": "*63 characters*",
     "default": "*none*",
     "required": "No",
-    "variability": "constant" 
+    "variability": "constant"
   })
 }}
 
@@ -76,10 +76,10 @@ Gives path name of file to be read. If directory is specified, CSE first looks f
 {{
   member_table({
     "units": "",
-    "legal_range": "*file name, path optional*", 
+    "legal_range": "*file name, path optional*",
     "default": "*none*",
     "required": "Yes",
-    "variability": "constant" 
+    "variability": "constant"
   })
 }}
 
@@ -92,10 +92,10 @@ Title expected to be found on line 3 of the import file.  A warning is issued if
 {{
   member_table({
     "units": "",
-    "legal_range": "Text string", 
+    "legal_range": "Text string",
     "default": "*none*",
     "required": "No",
-    "variability": "constant" 
+    "variability": "constant"
   })
 }}
 
@@ -108,10 +108,10 @@ Specifies the interval at which CSE reads from the import file.  Data is read at
 {{
   member_table({
     "units": "",
-    "legal_range": "YEAR, MONTH, DAY, HOUR, or SUBHOUR", 
+    "legal_range": "YEAR, MONTH, DAY, HOUR, or SUBHOUR",
     "default": "*none*",
     "required": "Yes",
-    "variability": "constant" 
+    "variability": "constant"
   })
 }}
 
@@ -125,10 +125,10 @@ should contain only comma-separated data rows and data items can be referenced o
 {{
   member_table({
     "units": "",
-    "legal_range": "YES NO", 
+    "legal_range": "YES NO",
     "default": "YES",
     "required": "No",
-    "variability": "constant" 
+    "variability": "constant"
   })
 }}
 
@@ -141,10 +141,10 @@ Adds the possibility to output the file as a binary option.
 {{
   member_table({
     "units": "",
-    "legal_range": "YES NO", 
+    "legal_range": "YES NO",
     "default": "No",
     "required": "No",
-    "variability": "constant" 
+    "variability": "constant"
   })
 }}
 
@@ -155,14 +155,13 @@ Optionally indicates the end of the import file definition. Alternatively, the e
 {{
   member_table({
     "units": "",
-    "legal_range": "", 
+    "legal_range": "",
     "default": "*none*",
     "required": "No",
-    "variability": "constant" 
+    "variability": "constant"
   })
 }}
 
 **Related Probes:**
 
 - @[importFile][p_importfile]
-- @[impFileFldNames][p_impfilefldnames]
