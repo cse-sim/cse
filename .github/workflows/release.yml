@@ -14,22 +14,22 @@ jobs:
         shell: bash
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           submodules: recursive
       - name: Install uv and set the python version
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v8.2.0
         with:
           python-version: "3.13"
       - name: Build CSE
         run: cmake -DBUILD_ARCHITECTURE=32 -DCOMPILER_ID=msvc -DCONFIGURATION=Release -DBUILD_DIRECTORY=build -DBUILD_DOCS_WITH_ALL=ON -P cmake/configure-and-build.cmake
       - name: Upload executable to release assets
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: build/CSE.exe
       - name: Update gh-pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: doc/build
