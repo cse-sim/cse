@@ -4,6 +4,7 @@
 import copy
 import logging
 import re
+import shutil
 from pathlib import Path
 from typing import List, Optional, TypedDict
 
@@ -504,8 +505,30 @@ class ProbeWriter:
 
 
 def on_config(config, **kwargs):
-    docs_dir = Path(__file__).parent / "docs"
+    docs_dir = Path(config["docs_dir"])
     probes_out_dir = docs_dir / "probe-definitions"
+
+    probes_out_dir_rel_path = probes_out_dir.relative_to(Path.cwd())
+
+    # Clean probe-defintions folder.
+    # This ensures that changes to CNRECS (e.g., *hideall) are reflected
+    # when docs are rebuilt with mkdocs build or serve.
+    if not probes_out_dir.exists():
+        root_logger.warning(f"{probes_out_dir_rel_path} does not exist.")
+    else:
+        root_logger.info(f"Cleaning {probes_out_dir_rel_path}")
+
+        for item in probes_out_dir.iterdir():
+            if item.name in {".nav.yml", "index.md"}:
+                continue
+
+            try:
+                if item.is_file() or item.is_symlink():
+                    item.unlink()
+                elif item.is_dir():
+                    shutil.rmtree(item)
+            except Exception as e:
+                root_logger.error(f"Failed to delete {item}: {e}")
 
     writer = ProbeWriter(
         {

@@ -555,7 +555,7 @@ RC PROBEOBJECT::po_TryImInProbe()
 	||  ISASING(v)						// or value is being determined by autosize
 	||  ISUNSET(v) )					// or is plain unset (required) data (bug here)
 		return RCCANNOT;    				// we can't do immediate access.
-	USI h = EXN(v); 					// get expr's expression number
+	int h = EXN(v); 					// get expr's expression number
 	USI exEvf, exTy;
 	if (exInfo( h, &exEvf, &exTy, NULL))    		// get expr's type and variability / if h bad (no msg done)(exman.cpp)
 	{

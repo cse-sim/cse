@@ -131,7 +131,7 @@ Hourly Energy Balance, zone "Z2", Wed 10-Jul
 
 ! Log for Run 001:
 
-! CSE 0.927.0-rc2+64bit-fixes.92bd2d87.9.dirty for Win32 console
+! CSE 0.927.0+init-presets-from-cbor-hpwh.83907440.97 for Win32 console
 
 
 
@@ -507,7 +507,7 @@ Hourly Energy Balance, zone "Z2", Wed 10-Jul
 
 ! Log for Run 002:
 
-! CSE 0.927.0-rc2+64bit-fixes.92bd2d87.9.dirty for Win32 console
+! CSE 0.927.0+init-presets-from-cbor-hpwh.83907440.97 for Win32 console
 
 
 
@@ -816,7 +816,7 @@ Hourly Energy Balance, zone "Z2", Wed 10-Jul
 
 ! Log for Run 003:
 
-! CSE 0.927.0-rc2+64bit-fixes.92bd2d87.9.dirty for Win32 console
+! CSE 0.927.0+init-presets-from-cbor-hpwh.83907440.97 for Win32 console
 
 
 
@@ -964,7 +964,7 @@ Hourly Energy Balance, zone "Z3", Wed 10-Jul
 
 ! Log for Run 004:
 
-! CSE 0.927.0-rc2+64bit-fixes.92bd2d87.9.dirty for Win32 console
+! CSE 0.927.0+init-presets-from-cbor-hpwh.83907440.97 for Win32 console
 
 
 
@@ -985,20 +985,20 @@ Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan  0.661      0      0      0  0.554  0.107      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Feb  0.547      0      0      0  0.497 0.0496      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Mar  0.552      0      0      0  0.507 0.0442      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Apr  0.543      0      0      0  0.455 0.0875      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jan  0.661      0      0      0  0.555  0.106      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Feb  0.547      0      0      0  0.497 0.0495      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Mar  0.551      0      0      0  0.507 0.0441      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Apr  0.542      0      0      0  0.455 0.0874      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 May  0.478      0      0      0  0.429 0.0493      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Jun  0.456      0      0      0  0.400 0.0567      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Jul  0.427      0      0      0  0.383 0.0436      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jun  0.456      0      0      0  0.399 0.0567      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jul  0.426      0      0      0  0.383 0.0436      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Aug  0.407      0      0      0  0.375 0.0325      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Sep  0.421      0      0      0  0.389 0.0319      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Sep  0.420      0      0      0  0.388 0.0319      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Oct  0.427      0      0      0  0.396 0.0312      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Nov  0.525      0      0      0  0.481 0.0437      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Nov  0.525      0      0      0  0.481 0.0435      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Dec  0.623      0      0      0  0.508  0.114      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
-Yr   6.066      0      0      0  5.375  0.691      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Yr   6.063      0      0      0  5.373  0.690      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
 
 
@@ -1434,7 +1434,7 @@ Day   Total Unknown  Faucet  Shower    Bath  CWashr  DWashr
 
 ! Log for Run 005:
 
-! CSE 0.927.0-rc2+64bit-fixes.92bd2d87.9.dirty for Win32 console
+! CSE 0.927.0+init-presets-from-cbor-hpwh.83907440.97 for Win32 console
 
 
 
@@ -2596,20 +2596,20 @@ Monthly Energy Use, meter "MtrElec"
 
 Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
 --- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
-Jan  1.021      0      0      0  0.528  0.493      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jan  1.021      0      0      0  0.528  0.492      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Feb  0.871      0      0      0  0.474  0.397      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Mar  0.833      0      0      0  0.593  0.240      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Apr  0.826      0      0      0  0.555  0.271      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-May  0.597      0      0      0  0.505 0.0926      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Jun  0.511      0      0      0  0.468 0.0432      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Mar  0.833      0      0      0  0.593  0.239      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Apr  0.826      0      0      0  0.556  0.270      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+May  0.597      0      0      0  0.505 0.0923      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jun  0.511      0      0      0  0.467 0.0432      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Jul  0.477      0      0      0  0.430 0.0469      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Aug  0.446      0      0      0  0.403 0.0438      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Sep  0.461      0      0      0  0.427 0.0333      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Oct  0.531      0      0      0  0.441 0.0901      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Aug  0.447      0      0      0  0.403 0.0438      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Sep  0.460      0      0      0  0.427 0.0333      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Oct  0.531      0      0      0  0.440 0.0901      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 Nov  0.740      0      0      0  0.498  0.242      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
-Dec  0.851      0      0      0  0.499  0.353      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec  0.851      0      0      0  0.499  0.352      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
-Yr   8.167      0      0      0  5.821  2.345      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Yr   8.163      0      0      0  5.821  2.343      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
 
 
 
@@ -3045,7 +3045,7 @@ Day   Total Unknown  Faucet  Shower    Bath  CWashr  DWashr
 
 ! Log for Run 006:
 
-! CSE 0.927.0-rc2+64bit-fixes.92bd2d87.9.dirty for Win32 console
+! CSE 0.927.0+init-presets-from-cbor-hpwh.83907440.97 for Win32 console
 
 
 
@@ -3066,18 +3066,18 @@ Input for Run 006:
 
 
 
-! CSE 0.927.0-rc2+64bit-fixes.92bd2d87.9.dirty for Win32 console run(s) done: Wed 22-Oct-25   1:4 pm
+! CSE 0.927.0+init-presets-from-cbor-hpwh.83907440.97 for Win32 console run(s) done: Mon 09-Feb-26   3:19:13 pm
 
-! Executable:   d:\cse\builds\cse.exe
-!               22-Oct-25   1:2 pm   (VS 14.29    3423744 bytes)  (HPWH 1.26.0)
-! Command line: -x!  -t1 commands
-! Input file:   D:\cse\test\commands.cse
-! Report file:  D:\CSE\TEST\COMMANDS.REP
+! Executable:   c:\users\tanaya mankad\source\repos\cse\builds\cse.exe
+!               09-Feb-26   3:12 pm   (VS 14.29    3595776 bytes)  (HPWH 1.24.1+add-commercial-models-phase-1.0334ee49.1089)
+! Command line: -x!  -b -t1 commands
+! Input file:   C:\Users\Tanaya Mankad\source\repos\cse\test\commands.cse
+! Report file:  C:\USERS\TANAYA MANKAD\SOURCE\REPOS\CSE\TEST\COMMANDS.REP
 
 ! Timing info --
 
-!                Input:  Time = 0.29     Calls = 6         T/C = 0.0487
+!                Input:  Time = 0.40     Calls = 6         T/C = 0.0658
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 4.29     Calls = 6         T/C = 0.7142
-!              Reports:  Time = 0.01     Calls = 6         T/C = 0.0012
-!                Total:  Time = 4.61     Calls = 1         T/C = 4.6070
+!           Simulation:  Time = 7.05     Calls = 6         T/C = 1.1755
+!              Reports:  Time = 0.01     Calls = 6         T/C = 0.0013
+!                Total:  Time = 7.46     Calls = 1         T/C = 7.4570

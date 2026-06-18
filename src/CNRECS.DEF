@@ -1853,18 +1853,29 @@ RECORD DVRI "dvri" *RAT *hideall	// Date-dependent Virtual Report Info -- at run
     					//  (list headed by Top.drviY, -M, D, H, HS, S updated daily so don't need to search subHourly)
 *END		// DVRI
 //=============================================================================
-RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) records
+RECORD FNRT "fnrt" *SUBSTRUCT   // IMPORTFILE substructure -- fields-by-number table
+                                //   info about each field found in import file
+   *excon
+   *exdes
+   *declare "std::string fnrt_fieldName;"	// field name (from file header), for error messages
+   INT fnmi;					// 0 or field name info subscript for IFFNM.p[iffnmi].fnm[]
+   *declare "const char* fp;"			// NULL or pointer to field's null-terminated text in current record in .buf (do not free here)
+   *declare "bool nDecoded;"			// true if numeric value of field in current record has been decoded
+   *declare "FLOAT fnv;"				// if nDecoded, this is the numeric value -- don't decode twice
+*END
+//=============================================================================
+RECORD IMPF "importFile" *RAT	// IMPORTFILE input (ImpfiB) and run (ImpfB) records
     *prefix im_
-    *exdes					// destructor (cncult4.cpp) frees heap items
+    *exdes					// destructor frees heap items
     *ovrcopy
     *declare "RC if_CkF();"
-    *declare "RC FC scanHdr();"		// impf.ccp member fcns
-    *declare "bool FC readRec();"
-    *declare "bool FC scanNextField();"
-    *declare "bool    scanField( char *&p, char *&start);"
-    *declare "bool FC readBuf();"
-    *declare "void FC close();"
-    *declare "void FC fnrtAl(SI nNfnr);"
+    *declare "RC scanHdr();"		// impf.cpp member fcns
+    *declare "bool readRec();"
+    *declare "bool scanNextField();"
+    *declare "bool scanField( char *&p, const char *&start);"
+    *declare "bool readBuf();"
+    *declare "void close();"
+    *declare "void fnrtAl(int nNfnr);"
  //input. name is required.
     *f CULSTR im_fileName	// file name, path optional, in heap or pseudocode. *i cuz VEOI in cncult. RQD.
     *f CULSTR im_title		// title string. If given, file's must match.
@@ -1893,25 +1904,35 @@ RECORD IMPF "importFile" *RAT	// IMPORTFILE input (Impfib) and run (ImpfiB) reco
     *h *e SI nFieldsScanned	// 0 or number of fields already scanned in current record
     *declare "bool eorScanned;"	// true iff all fields in record have been scanned
     //fields-by-number info. IFFNM.fnmt[] used to get #'s of named fields at runtime.
-	*declare "struct FNRT* fnrt;" // ptr to heap array of info subscripted by 1-based field number.
-    *r *hide USI fnrtNAl 	// allocated size of .fnrt[]. Max subscript fnrtNAl-1; [0] unused.
+    *declare "std::vector<FNRT> im_fnrt;"    // info subscripted by 1-based field number
+                                             //  [ 0] unused
 *END		// IMPF
 //=============================================================================
-RECORD IFFNM "impFileFldNames" *RAT	// IMPORT FILE FIELD NAMES TABLE (IffnmB) records
-		/* Made when Import() fcn for file is seen.
-		   When file with header is opened, field numbers for in names table are set,
-		   then table is used during run to translate fnmi's to fnr's.
-		   .fnmiN used during run to access IMPORTFILEs from IMPORT pseudo-code to handle forward references. */
+RECORD FNMT "fnmt" *SUBSTRUCT   // IFFNM substructure
+//  associate field name to file field number once known (after file opened/header read)
+   *excon
+   *exdes
+   *declare "FNMT( const char* fieldName) : fnmt_fieldName( fieldName), fnmt_fnr( 0) {}"
+   *declare "std::string fnmt_fieldName;"	// field name per file header, for error messages
+    INT fnmt_fnr;					// field NUMBER established when file opened
+*END
+//-----------------------------------------------------------------------------
+RECORD IFFNM "impFileFldNames" *RAT *hideall // IMPORT FILE FIELD NAMES TABLE (IffnmB) records
+// Made when Import()/ImportStr fcn for file is seen.
+// When file with header is opened, field numbers for in names table are set,
+// then table is used during run to translate fnmi's to fnr's.
+// IFFNM records remember field names in each file used in import[Str]()
+//  functions til file opened and field position in file determined from file header.
+
     *exdes   						// free strings, also fnmt.
     *ovrcopy
     // name (base class) is set to that seen in import()s and used to match with IMPF record.
  //derived
     *i TI impfi			// 0 or subscript of IMPF record for file in ImpfiB/ImpfB
-    //fnmt[]: array of info on fields ref'd by name, in order seen (before numbers known).
+    // ifn_fnmt[]: array of info on fields ref'd by name, in order seen (before numbers known).
     // used at runtime to get fnr's to access fields. subscript: "fnmi", "field name index"
-    *i SI fnmiN			// number of named fields seen for this file / max fnmi (+ 1 if 0-based)
-	*declare "struct FNMT* fnmt;"	// pointer to field names info array in heap
-    *i *hide SI fnmtNAl		// allocated size of fnmt. Max subscript fnmtNAl-1. [0] unused.
+    //  [0] unused.
+    *declare "std::vector<FNMT> ifn_fnmt;"    // info subscripted by 1-based field number
 *END		// IFFNM
 //===========================================================================================================
 RECORD AUSZ "autoSizing sub" *SUBSTRUCT	// AUTOSIZING VARIABLES substructure for one autoSized member
@@ -2724,8 +2745,8 @@ RECORD ZNR "zone" *RAT	// zone runtime info RAT.  Set mainly from separate ZNI
     *s DBL /*TEMP*/ tzls    	// zone temp, end last subhour, F
     *s DBL /*HUMRAT*/ wzls  	// zone hum rat, end last subhour (same as wz in 1st iteration of subhr)
     *h DBL /*TEMP*/ tzlh    	// zone temp, end last hour
-    DBL /*TEMPDIFF*/ tzlsDelta	// zone temp change during last subhour: tzls - tz at end subhour
-    DBL /*HUMRAT*/ wzlsDelta	// zone hum rat change during last subhour: wzls - wz at end subhour
+    *s DBL /*TEMPDIFF*/ tzlsDelta	// zone temp change during last subhour: tz - tzls at end subhour
+    *s DBL /*HUMRAT*/ wzlsDelta	// zone hum rat change during last subhour: wz - wzls at end subhour
 	*declare "DBL zn_Rho0() const;"
 
 							// re radiant/convective model
@@ -3432,9 +3453,13 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "RC rs_FinalizeSh();"
 *declare "float rs_FanSpecificFanPowerRated( int iHC) const;"
 *declare "float rs_FanPwrRatedFullSpeed( int iHC, float capFS) const;"
+*declare "float rs_FanFlowRatedFullSpeed( int iHC, float capFS) const;"
+*declare "float rs_FanFlowRatedFullSpeedRatio( int iHC, float capModeFS, float capClgFS) const;"
 *declare "float rs_FanPwrRated( int iHC, float capFS, PMSPEED speedWhich) const;"
-*declare "float rs_FanPwrRatedAtSpeedF( int iHC, float capFS, float speedF) const;"
-*declare "float rs_FanPwrAtSpeedF( int iHC, float fanHeatFS, float speedF) const;"
+*declare "float rs_FanPwrRatedHtgAtSpeedF( float capHtgFS, float speedF) const;"
+*declare "float rs_FanPwrRatedClgAtSpeedF( float capClgFS, float speedF) const;"
+*declare "float rs_FanPwrRatedAtSpeedF( int iHC, float capFS, float flowRatioFS, float speedF) const;"
+*declare "float rs_FanPwrAtSpeedF( int iHC, float fanHeatFS, float ratedFlowRat, float speedF) const;"
 *declare "float rs_FanPwrOperating( int iHC, float capFS, PMSPEED speedWhich) const;"
 *declare "float rs_FanPwrOperatingAtSpeedF( int iHC, float capFS, float speedF) const;"
 *declare "float rs_FanPwrOperatingAtSpeedF( int iHC, float speedF) const;"
@@ -3496,6 +3521,8 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "float rs_CapRat1747() const;"
 *declare "float rs_Cap35Default( float cap47, float cap17) const;"
 *declare "float rs_Inp35Default( float inp47, float inp17) const;"
+*declare "float rs_ASHPCap95FromCap47( float cap47) const;"
+*declare "float rs_ASHPCap47FromCap95( float cap95) const;"
 *declare "float rs_CapHtCurSpeedF() const;"
 *declare "float rs_CapDfHtCurSpeedF() const;"
 *declare "float rs_InpHtCurSpeedF() const;"
@@ -3628,7 +3655,7 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
                             //   re consistent htg/clg size iff both autosized
                             //   (else inconsistency ignored)
                             //   default=correlation per A. Conant
-                            //   see ashpCap95FromCap47() and ashpCap47FromCap95()
+                            //   see rs_ASHPCap95FromCap47() and rs_ASHPCap47FromCap95()
 
 *f *e FLOAT_GZ rs_COPMin47	// Rated net COP at ODB=47 F, min speed (for reporting only)
 *f *e FLOAT_GZ rs_COPMin35	// Rated net COP at ODB=35 F, min speed (for reporting only)
@@ -3660,10 +3687,12 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 							//   *always* 0 if !rs_IsHP()
 *f *e FLOAT rs_capAuxHInp	// rs_capAuxH as input (may be AUTOSIZE)
 							// allows use of estimated rs_capAuxH during ASHP autosize
+*f *s FLOAT_GEZ rs_capAuxHFactor   // auxiliary heating capacity factor, default 1
+                                //  allows runtime modification of available aux capacity
+*f *s *e FLOAT_GEZ rs_capAuxHAvail  // current step available auxiliary heating capacity
+                                //   = rs_capAuxH * rs_capAuxHFactor
 *f FLOAT_GZ rs_AFUEAuxH		// auxiliary furnace heating AFUE (assumed constant), default 0.9
 *f FLOAT_GZ rs_effAuxH		// aux heat efficiency (= rs_AFUEAuxH or 1)
-*r *e INT rs_underSizedAuxCount // # of subhours having aux heat capacity < compressor capacity
-                                //   iff rs_ctrlAuxH != C_AUXHEATCTRL_CYCLE and rs_capAuxH > 0
 *h FLOAT rs_ASHPLockOutT	// air source heat pump compressor lockout temp, F
 							//   compressor capacity assumed 0 if outdoor tdb < tLockOut
 							//   default is -999 (no lockout)

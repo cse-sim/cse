@@ -23,6 +23,8 @@ public:
     RC pa_GetCapInpRatios(float tdb, float speedF, double& capRat, double& inpRat);
     RC pa_GetRatedCapCOP(float tdb, float& cap, float& COP, PMSPEED whichSpeed = PMSPEED::RATED);
     double pa_GetRatedFanFlowFactor(float speedF);
+    double pa_GetRatedFanFlowFactor(float ratedFlowRat, float speedF);
+
 
     record* pa_pParent;     // owner 
     const class PERFORMANCEMAP* pa_pPERFORMANCEMAP;     // source PERFORMANCEMAP
@@ -40,7 +42,6 @@ public:
     double pa_speedFRated;  // speed fraction for rated values
 
 };      // class PMACCESS
-
 
 #endif	// _CURVEMAP_H
 

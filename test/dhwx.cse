@@ -30,6 +30,7 @@ DHWMETER DHWMtrFXMix
 DHWMETER DHWMtrWH
 
    
+
    // ACM AppE table 1 hourly use schedules
 //  should be written to cse file for use in wsUse input
 #define HWUSEF_WD hourval( \
@@ -1392,6 +1393,16 @@ ALTER DHWSYS "DS1"
     ALTER DHWHEATER HPWH
         whASHPType = AWHSTier4Generic50
         whUEF = 5.0
+
+RUN
+
+UNSET runTitle
+runTitle = "BradfordWhiteAeroThermRE2HP50"
+
+ALTER DHWSYS "DS1"
+    ALTER DHWHEATER HPWH
+        whASHPType = BradfordWhiteAeroThermRE2HP50
+        UNSET whUEF
 
 RUN
 
