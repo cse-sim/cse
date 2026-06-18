@@ -1,54 +1,34 @@
-# Introduction
+![Text](assets/images/logo-cse-white.svg)
 
-## Greetings
+## About
 
-CSE is a general purpose building simulation model developed primarily to perform the required calculations for the California Building Energy Code Compliance for Residential buildings ([CBECC-Res](http://www.bwilcox.com/BEES/BEES.html)) software. CSE is an hourly building and HVAC simulation program which calculates annual energy requirements for building space conditioning and lighting. CSE is specifically tailored for use as internal calculation machinery for compliance with the California building standards.
+CSE began as the **C**alifornia **S**imulation **E**ngine, built primarily for residential energy code compliance in California. The "C" has since outgrown its origins — call it **C**ommon, **C**omprehensive, **C**apable, or simply CSE — as the engine has evolved into a general-purpose building simulation platform used by researchers, standards developers, and software integrators well beyond California.
 
-CSE is a batch driven program which reads its input from a text file. It is not intended for direct use by people seeking to demonstrate compliance. Instead, it will be used within a shell program or by technically oriented users. As a result, this manual is aimed at several audiences:
-
-1.  People testing CSE during its development.
-
-2.  Developers of the CSE shell program.
-
-3.  Researchers and standards developers who will use the program to explore possible conservation opportunities.
-
-Each of these groups is highly sophisticated. Therefore this manual generally uses an exhaustive, one-pass approach: while a given topic is being treated, *everything* about that topic is presented with the emphasis on completeness and accuracy over ease of learning.
-
-Please note that CSE is under development and will be for many more months. Things will change and from time to time this manual may be inconsistent with the program.
-
-## Manual Organization
-
-This Introduction covers general matters, including program installation.
-
-<!--
-
-Next, [About CSE][about-cse] will describe the program and the calculation techniques used in it.
-
--->
-
-[Operation][operation] documents the operational aspects of CSE, such as command line switches, file naming conventions, and how CSE finds files it needs.
-
-[Input Structure][input-structure] documents the CSE input language in general.
-
-[Input Data][input-data] describes all of the specific input language statements.
-
-[Output Reports][output-reports] will describe the output reports.
-
-Lastly, [Probe Definitions][probe-definitions] lists all available probes.
+CSE models annual building energy use for heating, cooling, ventilation, and lighting. It is driven by plain-text input files, making it well-suited for scripted workflows, parametric studies, and integration into larger compliance or analysis tools such as [CBECC](https://github.com/california-energy-commission/CBECC).
 
 
-!!! info "Single-Page Option"
-    This manual is presented as a multi-page HTML site. You can also view the entire manual as a [single page](./single_page).
+## Key Features
+
+- **Open source** — CSE is freely available on [GitHub](https://github.com/cse-sim/cse) under a permissive license, making it easy to inspect, extend, and integrate into custom tools.
+
+- **Plain-text, stable input format** — Input files are human-readable, diff cleanly, and remain backwards-compatible across releases — making CSE easy to integrate into automated pipelines and long-lived toolchains without migration overhead.
+
+- **Fast runtimes** — Annual simulations complete in seconds, making CSE practical for parametric sweeps and large compliance batch runs.
+
+- **Powerful expression language** — Any input can be a time-varying expression referencing weather, time-of-year, or other model state variables, enabling precise dynamic control without preprocessor workarounds. There is no need to define special "sensors" or "actuators".
+
+- **Pressure-based airflow network** — Infiltration and mechanical ventilation are modeled as a fully-coupled pressure network, capturing interactions between envelope leakage, fans, and HVAC that other simulation engines treat independently.
+
+- **Photovoltaic & battery storage** — PV arrays and battery systems are first-class model components, with shading analysis, string losses, and configurable dispatch controls including grid-responsive peak-saving strategies.
+
+- **Minute-resolution domestic hot water** — DHW draws are simulated as discrete events at one-minute timesteps, enabling accurate evaluation of heat pump water heater controls and tank recovery dynamics that cannot be accurately represented in engines with coupled DHW timesteps.
 
 
 ## Installation
 
-### Hardware and Software Requirements
+Pre-built binaries are available on the [CSE GitHub releases page](https://github.com/cse-sim/cse/releases). Download the appropriate binary for your platform and place it in a directory on your system `PATH`.
 
-CSE is a command line application. That is, it runs in a terminal.  Memory and disk space requirements depend on the size of projects being modeled, but are generally modest.
+To build from source, see the [CSE repository](https://github.com/cse-sim/cse) for build instructions.
 
-To prepare input files, a text editor is required. Notepad will suffice, although a text editor intended for programming is generally more capable. Alternatively, some word processors can be used in "ASCII" or "text" or "non-document" mode.
-
-### Installation Procedure
-
-Create a directory on your hard disk with the name \\CSE or some other name of your choice. Copy the files into that directory. Add the name of the directory to the PATH environment setting unless you intend to use CSE only from the CSE directory.
+!!! info "Single-Page Option"
+    The documentation is primarily a multi-page HTML site. You can also view the entire manual as a [single page](./single_page).
