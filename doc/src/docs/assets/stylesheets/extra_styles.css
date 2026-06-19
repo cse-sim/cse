@@ -231,12 +231,8 @@
 .md-typeset h2 {
   font-size: 1.5rem;
   font-weight: 500;
-  color: var(--cse-colors-heading-muted);
-  text-decoration: underline;
-  text-underline-offset: 0.25rem;
-  text-decoration-color: var(--md-primary-fg-color);
+  color: var(--cse-colors-heading);
 }
-
 
 .md-typeset h3 {
   font-size: 1.2rem;
@@ -417,8 +413,8 @@ html .md-typeset :is(.admonition, details) > p:not(.admonition-title) {
 }
 
 .md-typeset code {
-  /* typically, 14 px when 1em is 15 px */
-  font-size: 0.933333333em;
+  font-size: 1em;
+  line-height: 1.25;
 }
 
 .md-typeset figure {
