@@ -312,30 +312,34 @@
 }
 
 /* Starting selector had html for some reason, so we add it here to match specificity */
-html .md-typeset :is(.admonition, details)>:last-child {
+html .md-typeset :is(.admonition, details) > p:not(.admonition-title) {
   margin-block: 0.6em;
   padding-inline-start: 0.3em;
 }
 
 
-.md-typeset :is(.admonition, details):is(.note, .info, .quote) {
+.md-typeset :is(.admonition, details):is(.info, *) {
   border-color: transparent;
 }
 
-.md-typeset :is(.admonition, details):is(.tip, .abstract, .question, .example) {
-  border-color: var(--cse-colors-fg-info);
+.md-typeset :is(.admonition, details):not(:has(p:not(.admonition-title))) .admonition-title {
+  border-radius: 0.15rem;
 }
 
-.md-typeset :is(.admonition, details):is(.success) {
-  border-color: var(--cse-colors-fg-success);
+.md-typeset :is(.admonition, details):is(.tip, .abstract, .question, .example):has(p:not(.admonition-title)) {
+  border-color: var(--cse-colors-bg-info);
 }
 
-.md-typeset :is(.admonition, details):is(.warning) {
-  border-color: var(--cse-colors-fg-warning);
+.md-typeset :is(.admonition, details):is(.success):has(p:not(.admonition-title)) {
+  border-color: var(--cse-colors-bg-success);
 }
 
-.md-typeset :is(.admonition, details):is(.failure, .danger, .bug) {
-  border-color: var(--cse-colors-fg-error);
+.md-typeset :is(.admonition, details):is(.warning):has(p:not(.admonition-title)) {
+  border-color: var(--cse-colors-bg-warning);
+}
+
+.md-typeset :is(.admonition, details):is(.failure, .danger, .bug):has(p:not(.admonition-title)) {
+  border-color: var(--cse-colors-bg-error);
 }
 
 .md-typeset :is(.admonition, details):is(.note, .info, .quote)::before {
