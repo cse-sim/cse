@@ -1,4 +1,5 @@
-![Text](assets/images/logo-cse-white.svg)
+![cse logo](assets/images/logo-cse-white.svg#only-dark)
+![cse logo](assets/images/logo-cse-midnight.svg#only-light)
 
 ## About
 
