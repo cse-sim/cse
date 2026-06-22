@@ -66,11 +66,23 @@ else()
 endif()
 
 set(_exe "${_cache_CSE_EXECUTABLE_NAME}${_exe_suffix}")
+set(_canonical_exe "cse${_exe_suffix}")
+
 if(NOT EXISTS "${BUILD_DIRECTORY}/${_exe}")
   message(FATAL_ERROR "Executable not found: ${BUILD_DIRECTORY}/${_exe}")
 endif()
 
-set(_archive_base "${_cache_CSE_EXECUTABLE_NAME}-${RELEASE_TAG}-${_os}-${_arch}")
+if(NOT _exe STREQUAL _canonical_exe)
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -E copy "${BUILD_DIRECTORY}/${_exe}" "${BUILD_DIRECTORY}/${_canonical_exe}"
+    RESULT_VARIABLE _result
+  )
+  if(_result)
+    message(FATAL_ERROR "Failed to copy ${_exe} to ${_canonical_exe}")
+  endif()
+endif()
+
+set(_archive_base "cse-${RELEASE_TAG}-${_os}-${_arch}")
 if(DEFINED _cache_CSE_COMPILER_NAME AND NOT _cache_CSE_COMPILER_NAME STREQUAL "")
   string(APPEND _archive_base "-${_cache_CSE_COMPILER_NAME}")
 endif()
@@ -78,14 +90,14 @@ endif()
 if(WIN32)
   set(_archive "${BUILD_DIRECTORY}/${_archive_base}.zip")
   execute_process(
-    COMMAND ${CMAKE_COMMAND} -E tar cf "${_archive}" --format=zip -- "${_exe}"
+    COMMAND ${CMAKE_COMMAND} -E tar cf "${_archive}" --format=zip -- "${_canonical_exe}"
     WORKING_DIRECTORY "${BUILD_DIRECTORY}"
     RESULT_VARIABLE _result
   )
 else()
   set(_archive "${BUILD_DIRECTORY}/${_archive_base}.tar.gz")
   execute_process(
-    COMMAND ${CMAKE_COMMAND} -E tar czf "${_archive}" -- "${_exe}"
+    COMMAND ${CMAKE_COMMAND} -E tar czf "${_archive}" -- "${_canonical_exe}"
     WORKING_DIRECTORY "${BUILD_DIRECTORY}"
     RESULT_VARIABLE _result
   )
@@ -93,6 +105,10 @@ endif()
 
 if(_result)
   message(FATAL_ERROR "Failed to create archive: ${_archive}")
+endif()
+
+if(NOT _exe STREQUAL _canonical_exe)
+  file(REMOVE "${BUILD_DIRECTORY}/${_canonical_exe}")
 endif()
 
 message(STATUS "Created: ${_archive}")

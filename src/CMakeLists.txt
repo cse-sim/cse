@@ -284,7 +284,6 @@ endif()
 
 add_dependencies(CSE version_header generate_rcdef_outputs)
 
-set(CSE_EXECUTABLE_NAME "cse" CACHE STRING "Output name of the CSE executable." FORCE)
 set_target_properties(CSE PROPERTIES
   OUTPUT_NAME "${CSE_EXECUTABLE_NAME}"
 )
