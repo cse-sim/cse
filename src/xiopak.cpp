@@ -583,6 +583,7 @@ int xfWriteable(			// check whether file is writeable
 ////////////////////////////////////////////////////////////////////////
 #if 0
 // idea: validate path re syntactical correctness
+// see issue #629
 bool xfIsValidPathSyntax(
 	const char* fPath)
 {

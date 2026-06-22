@@ -61,6 +61,7 @@ void FC cgWthrClean( 		// cgwthr overall init/cleanup routine
 }		// cgWthrClean
 //---------------------------------------------------------------------------
 #if defined( TRAPMUNGEDWFNAME)
+// debug aid re issue #619 (delete when fix verified)
 bool WfCheck(const char* where)
 {
 	extern TOPRAT Topi;
