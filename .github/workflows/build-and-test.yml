@@ -67,9 +67,9 @@ jobs:
         id: package
         run: |
           cmake -P cmake/package.cmake
-          archive=$(ls build/cse-*.zip build/cse-*.tar.gz 2>/dev/null | head -1)
+          archive=$(ls build/cse-*.zip build/cse-*.tar.gz 2>/dev/null | head -1) || true
           echo "archive=${archive}" >> "$GITHUB_OUTPUT"
-          echo "archive_name=$(basename ${archive})" >> "$GITHUB_OUTPUT"
+          echo "archive_name=$(basename "${archive}")" >> "$GITHUB_OUTPUT"
       - name: Upload executable artifact
         uses: actions/upload-artifact@v7
         with:
