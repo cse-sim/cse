@@ -284,20 +284,13 @@ endif()
 
 add_dependencies(CSE version_header generate_rcdef_outputs)
 
-if (${CSE_COMPILER_NAME} STREQUAL "msvc" AND ${CSE_BUILD_ARCHITECTURE} STREQUAL "32")
-  set(executable_name "CSE")
-  set(debug_postfix "d")
-else()
-  set(executable_name "cse-${CSE_COMPILER_NAME}-${CSE_BUILD_ARCHITECTURE}")
-  set(debug_postfix "-debug")
-endif ()
-
+set(CSE_EXECUTABLE_NAME "cse" CACHE STRING "Output name of the CSE executable." FORCE)
 set_target_properties(CSE PROPERTIES
-  OUTPUT_NAME "${executable_name}"
+  OUTPUT_NAME "${CSE_EXECUTABLE_NAME}"
 )
 
 set_target_properties(CSE PROPERTIES
-  DEBUG_POSTFIX "${debug_postfix}"
+  DEBUG_POSTFIX "-debug"
 )
 
 foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})

@@ -106,20 +106,7 @@ const char ProgName[] = "CSE";
 
 const char ProgVersion[] = CSEVRSN_TEXT;	// program version text "x.xxx" (csevrsn.h)
 
-const char ProgVariant[] = 	// text showing platform TODO: Revise to use CSE_OS / CSE_COMPILER / CSE_ARCH
-	#if defined( WIN)
-	   "for Win32";
-	#elif defined( DLL)
-	   "Win32 DLL";
-	#elif defined( CSE_DLL)
-	   "DLL";
-	#elif defined( CSE_CONSOLE)
-	   #if CSE_ARCH == 64
-		"for Win64 console";
-	   #else
-		"for Win32 console";
-	   #endif
-	#endif
+const char ProgVariant[] = "for " CSE_OS_STR " " CSE_ARCH_STR " (" CSE_COMPILER_STR ")";
 
 int TestOptions = 0;	// test option bits, set via -t command line argument
 						//   1: hide directory paths in error messages (show file name only)
@@ -828,6 +815,9 @@ noHans:
 					rc |= err( ERR, "Invalid -t option '%s' (s/b integer)", arg+2);
 				argLenMax = -1;		// don't enforce length limit
 				break;
+
+			case 'v':
+				exit(0);  // Version info already displayed at signon.  Could display more if desired.
 
 			case '\0':
 				rc |= err( ERR,  				// issue error msg, continue for now

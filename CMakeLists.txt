@@ -48,9 +48,10 @@ endif()
 
 # Build Compiler
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-  set(CSE_COMPILER_NAME "gcc")
+  set(CSE_COMPILER_NAME "gcc" CACHE STRING "Normalized compiler identifier." FORCE)
 else()
-  string(TOLOWER ${CMAKE_CXX_COMPILER_ID} CSE_COMPILER_NAME)
+  string(TOLOWER ${CMAKE_CXX_COMPILER_ID} _compiler_name)
+  set(CSE_COMPILER_NAME "${_compiler_name}" CACHE STRING "Normalized compiler identifier." FORCE)
 endif()
 
 if(NOT DEFINED CSE_EXECUTABLE_DIRECTORY)

@@ -14,13 +14,13 @@
 #endif
 
 // version # for current build (derived from git repo tags)
-#define CSEVRSN_MAJOR @CSEVRSN_MAJOR@
-#define CSEVRSN_MINOR @CSEVRSN_MINOR@
-#define CSEVRSN_PATCH @CSEVRSN_PATCH@
+#define CSEVRSN_MAJOR @CSE_version_major@
+#define CSEVRSN_MINOR @CSE_version_minor@
+#define CSEVRSN_PATCH @CSE_version_patch@
 
-#define CSEVRSN_META "@CSEVRSN_META@"
+#define CSEVRSN_META "@CSE_version_meta@"
 
 // version # as quoted text
-#define CSEVRSN_TEXT MAKE_LITERAL(CSEVRSN_MAJOR.CSEVRSN_MINOR.CSEVRSN_PATCH@CSEVRSN_PRERELEASE@) CSEVRSN_META
+#define CSEVRSN_TEXT MAKE_LITERAL(CSEVRSN_MAJOR.CSEVRSN_MINOR.CSEVRSN_PATCH@CSE_version_prerelease@) CSEVRSN_META
 
 // csevrsn.h end
