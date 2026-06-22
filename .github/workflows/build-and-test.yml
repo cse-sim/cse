@@ -75,6 +75,7 @@ jobs:
         with:
           name: ${{ steps.package.outputs.archive_name }}
           path: ${{ steps.package.outputs.archive }}
+          archive: false
       - name: Test
         id: test
         run: ctest -C ${{ matrix.config }} -j ${{ steps.cpu-cores.outputs.count }} --output-on-failure -E shadetest  # CI can't do GPU calcs at this time (the steps above get us close, but throws an exception on destruction)
