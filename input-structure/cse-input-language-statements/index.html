@@ -12,21 +12,21 @@
         <meta name="author" content="CSE Authors">
       
       
-        <link rel="canonical" href="https://cse-sim.github.io/cse/probe-definitions/impFileFldNames/">
+        <link rel="canonical" href="https://cse-sim.github.io/cse/input-structure/cse-input-language-statements/">
       
       
-        <link rel="prev" href="../Inverse/">
+        <link rel="prev" href="../the-preprocessor/">
       
       
-        <link rel="next" href="../importFile/">
+        <link rel="next" href="../expressions/">
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.4.10">
     
     
       
-        <title>impFileFldNames - CSE Documentation</title>
+        <title>CSE Input Language Statements - Documentation</title>
       
     
     
@@ -47,8 +47,8 @@
         
         
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CSource+Code+Pro:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Source Code Pro"}</style>
       
     
     
@@ -77,7 +77,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
   
     
     
@@ -87,6 +87,11 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
+      
+        
+        <a href="#cse-input-language-statements" class="md-skip">
+          Skip to content
+        </a>
       
     </div>
     <div data-md-component="announce">
@@ -100,10 +105,9 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="CSE Documentation" class="md-header__button md-logo" aria-label="CSE Documentation" data-md-component="logo">
+    <a href="../.." title="Documentation" class="md-header__button md-logo" aria-label="Documentation" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+  <img src="../../assets/images/logo-cse-white.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -114,13 +118,13 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            CSE Documentation
+            Documentation
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              impFileFldNames
+              CSE Input Language Statements
             
           </span>
         </div>
@@ -133,7 +137,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
     
       <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_3" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9h-1.9M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69m-9.15 3.96h2.3L12 9l-1.15 3.65Z"/></svg>
@@ -207,7 +211,7 @@
         <a href="https://github.com/cse-sim/cse" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
   </div>
   <div class="md-source__repository">
     cse
@@ -240,20 +244,19 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="CSE Documentation" class="md-nav__button md-logo" aria-label="CSE Documentation" data-md-component="logo">
+    <a href="../.." title="Documentation" class="md-nav__button md-logo" aria-label="Documentation" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+  <img src="../../assets/images/logo-cse-white.svg" alt="logo">
 
     </a>
-    CSE Documentation
+    Documentation
   </label>
   
     <div class="md-nav__source">
       <a href="https://github.com/cse-sim/cse" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
   </div>
   <div class="md-source__repository">
     cse
@@ -305,17 +308,402 @@
       
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../input-structure/" class="md-nav__link">
+  
+    
+    
+      
         
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
   
   <span class="md-ellipsis">
     Input Structure
   </span>
   
 
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Input Structure
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../the-preprocessor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    The Preprocessor
+  </span>
+  
+
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    CSE Input Language Statements
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    CSE Input Language Statements
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#object-statements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Object Statements
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Object Statements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#object-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      Object Names
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alter" class="md-nav__link">
+    <span class="md-ellipsis">
+      ALTER
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      DELETE
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#like-clause" class="md-nav__link">
+    <span class="md-ellipsis">
+      LIKE clause
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#copy-clause" class="md-nav__link">
+    <span class="md-ellipsis">
+      COPY clause
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usetype-clause" class="md-nav__link">
+    <span class="md-ellipsis">
+      USETYPE clause
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deftype" class="md-nav__link">
+    <span class="md-ellipsis">
+      DEFTYPE
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#end-and-endxxxx" class="md-nav__link">
+    <span class="md-ellipsis">
+      END and ENDxxxx
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#member-statements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Member Statements
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Member Statements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#autosize" class="md-nav__link">
+    <span class="md-ellipsis">
+      AUTOSIZE
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unset" class="md-nav__link">
+    <span class="md-ellipsis">
+      UNSET
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#require" class="md-nav__link">
+    <span class="md-ellipsis">
+      REQUIRE
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#freeze" class="md-nav__link">
+    <span class="md-ellipsis">
+      FREEZE
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#action-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Action Commands
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Action Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#run" class="md-nav__link">
+    <span class="md-ellipsis">
+      RUN
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clear" class="md-nav__link">
+    <span class="md-ellipsis">
+      CLEAR
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../expressions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Expressions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-defined-functions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    User-defined Functions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../probes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Probes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../variation-frequencies-revisited/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Variation Frequencies Revisited
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -1678,8 +2066,6 @@
       
   
   
-    
-  
   
     
     
@@ -1834,23 +2220,21 @@
       
         
       
-        
-      
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../../probe-definitions/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -1867,7 +2251,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             Probe Definitions
@@ -1882,7 +2266,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../AFMETER/" class="md-nav__link">
+      <a href="../../probe-definitions/AFMETER/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1902,7 +2286,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../accumulator/" class="md-nav__link">
+      <a href="../../probe-definitions/accumulator/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1922,7 +2306,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../ahRes/" class="md-nav__link">
+      <a href="../../probe-definitions/ahRes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1942,7 +2326,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../airHandler/" class="md-nav__link">
+      <a href="../../probe-definitions/airHandler/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1962,7 +2346,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Battery/" class="md-nav__link">
+      <a href="../../probe-definitions/Battery/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1982,7 +2366,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../boiler/" class="md-nav__link">
+      <a href="../../probe-definitions/boiler/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2002,7 +2386,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../chiller/" class="md-nav__link">
+      <a href="../../probe-definitions/chiller/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2022,7 +2406,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../construction/" class="md-nav__link">
+      <a href="../../probe-definitions/construction/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2042,7 +2426,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../coolPlant/" class="md-nav__link">
+      <a href="../../probe-definitions/coolPlant/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2062,7 +2446,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../DESCOND/" class="md-nav__link">
+      <a href="../../probe-definitions/DESCOND/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2082,7 +2466,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../DHWDayUse/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWDayUse/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2102,7 +2486,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../DHWHeater/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWHeater/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2122,7 +2506,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../DHWHeatRec/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWHeatRec/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2142,7 +2526,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../DHWLoop/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWLoop/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2162,7 +2546,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../DHWLoopBranch/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWLoopBranch/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2182,7 +2566,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../DHWLoopHeater/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWLoopHeater/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2202,7 +2586,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../DHWLoopPump/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWLoopPump/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2222,7 +2606,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../DHWLoopSeg/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWLoopSeg/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2242,7 +2626,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../DHWMETER/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWMETER/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2262,7 +2646,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../DHWPump/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWPump/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2282,7 +2666,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../DHWSolarCollector/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWSolarCollector/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2302,7 +2686,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../DHWSolarSys/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWSolarSys/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2322,7 +2706,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../DHWSYS/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWSYS/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2342,7 +2726,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../DHWSYSRES/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWSYSRES/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2362,7 +2746,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../DHWTank/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWTank/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2382,7 +2766,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../DHWUse/" class="md-nav__link">
+      <a href="../../probe-definitions/DHWUse/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2402,7 +2786,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../DUCTSEGRes/" class="md-nav__link">
+      <a href="../../probe-definitions/DUCTSEGRes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2422,7 +2806,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../DuctSeg/" class="md-nav__link">
+      <a href="../../probe-definitions/DuctSeg/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2442,7 +2826,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../doas/" class="md-nav__link">
+      <a href="../../probe-definitions/doas/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2462,7 +2846,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../door/" class="md-nav__link">
+      <a href="../../probe-definitions/door/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2482,7 +2866,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../export/" class="md-nav__link">
+      <a href="../../probe-definitions/export/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2502,7 +2886,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../exportCol/" class="md-nav__link">
+      <a href="../../probe-definitions/exportCol/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2522,7 +2906,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../exportFile/" class="md-nav__link">
+      <a href="../../probe-definitions/exportFile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2542,7 +2926,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../foundation/" class="md-nav__link">
+      <a href="../../probe-definitions/foundation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2562,7 +2946,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../foundationBlock/" class="md-nav__link">
+      <a href="../../probe-definitions/foundationBlock/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2582,7 +2966,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../gain/" class="md-nav__link">
+      <a href="../../probe-definitions/gain/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2602,7 +2986,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../glazeType/" class="md-nav__link">
+      <a href="../../probe-definitions/glazeType/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2622,7 +3006,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../heatPlant/" class="md-nav__link">
+      <a href="../../probe-definitions/heatPlant/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2642,7 +3026,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../holiday/" class="md-nav__link">
+      <a href="../../probe-definitions/holiday/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2662,7 +3046,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Inverse/" class="md-nav__link">
+      <a href="../../probe-definitions/Inverse/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2680,37 +3064,9 @@
                 
   
   
-    
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  <span class="md-ellipsis">
-    impFileFldNames
-  </span>
-  
-
-      </a>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
   
     <li class="md-nav__item">
-      <a href="../importFile/" class="md-nav__link">
+      <a href="../../probe-definitions/importFile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2730,7 +3086,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../izXfer/" class="md-nav__link">
+      <a href="../../probe-definitions/izXfer/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2750,7 +3106,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../LOADMETER/" class="md-nav__link">
+      <a href="../../probe-definitions/LOADMETER/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2770,7 +3126,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../layer/" class="md-nav__link">
+      <a href="../../probe-definitions/layer/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2790,7 +3146,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../mass/" class="md-nav__link">
+      <a href="../../probe-definitions/mass/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2810,7 +3166,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../material/" class="md-nav__link">
+      <a href="../../probe-definitions/material/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2830,7 +3186,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../meter/" class="md-nav__link">
+      <a href="../../probe-definitions/meter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2850,7 +3206,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../PERFORMANCEMAP/" class="md-nav__link">
+      <a href="../../probe-definitions/PERFORMANCEMAP/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2870,7 +3226,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../PipeSeg/" class="md-nav__link">
+      <a href="../../probe-definitions/PipeSeg/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2890,7 +3246,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../PMGRIDAXIS/" class="md-nav__link">
+      <a href="../../probe-definitions/PMGRIDAXIS/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2910,7 +3266,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../PMLOOKUPDATA/" class="md-nav__link">
+      <a href="../../probe-definitions/PMLOOKUPDATA/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2930,7 +3286,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../PVArray/" class="md-nav__link">
+      <a href="../../probe-definitions/PVArray/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2950,7 +3306,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../perimeter/" class="md-nav__link">
+      <a href="../../probe-definitions/perimeter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2970,7 +3326,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../RSYS/" class="md-nav__link">
+      <a href="../../probe-definitions/RSYS/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2990,7 +3346,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../RSYSRes/" class="md-nav__link">
+      <a href="../../probe-definitions/RSYSRes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3010,7 +3366,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../report/" class="md-nav__link">
+      <a href="../../probe-definitions/report/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3030,7 +3386,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reportCol/" class="md-nav__link">
+      <a href="../../probe-definitions/reportCol/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3050,7 +3406,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reportFile/" class="md-nav__link">
+      <a href="../../probe-definitions/reportFile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3070,7 +3426,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../SHADEX/" class="md-nav__link">
+      <a href="../../probe-definitions/SHADEX/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3090,7 +3446,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../sgdist/" class="md-nav__link">
+      <a href="../../probe-definitions/sgdist/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3110,7 +3466,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../shade/" class="md-nav__link">
+      <a href="../../probe-definitions/shade/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3130,7 +3486,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../surface/" class="md-nav__link">
+      <a href="../../probe-definitions/surface/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3150,7 +3506,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../terminal/" class="md-nav__link">
+      <a href="../../probe-definitions/terminal/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3170,7 +3526,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../top/" class="md-nav__link">
+      <a href="../../probe-definitions/top/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3190,7 +3546,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../towerPlant/" class="md-nav__link">
+      <a href="../../probe-definitions/towerPlant/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3210,7 +3566,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../weather/" class="md-nav__link">
+      <a href="../../probe-definitions/weather/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3230,7 +3586,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../weatherFile/" class="md-nav__link">
+      <a href="../../probe-definitions/weatherFile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3250,7 +3606,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../weatherNextHour/" class="md-nav__link">
+      <a href="../../probe-definitions/weatherNextHour/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3270,7 +3626,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../window/" class="md-nav__link">
+      <a href="../../probe-definitions/window/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3290,7 +3646,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../xsurf/" class="md-nav__link">
+      <a href="../../probe-definitions/xsurf/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3310,7 +3666,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../zhx/" class="md-nav__link">
+      <a href="../../probe-definitions/zhx/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3330,7 +3686,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../znRes/" class="md-nav__link">
+      <a href="../../probe-definitions/znRes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3350,7 +3706,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../zone/" class="md-nav__link">
+      <a href="../../probe-definitions/zone/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3388,6 +3744,187 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#object-statements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Object Statements
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Object Statements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#object-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      Object Names
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alter" class="md-nav__link">
+    <span class="md-ellipsis">
+      ALTER
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      DELETE
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#like-clause" class="md-nav__link">
+    <span class="md-ellipsis">
+      LIKE clause
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#copy-clause" class="md-nav__link">
+    <span class="md-ellipsis">
+      COPY clause
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usetype-clause" class="md-nav__link">
+    <span class="md-ellipsis">
+      USETYPE clause
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deftype" class="md-nav__link">
+    <span class="md-ellipsis">
+      DEFTYPE
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#end-and-endxxxx" class="md-nav__link">
+    <span class="md-ellipsis">
+      END and ENDxxxx
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#member-statements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Member Statements
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Member Statements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#autosize" class="md-nav__link">
+    <span class="md-ellipsis">
+      AUTOSIZE
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unset" class="md-nav__link">
+    <span class="md-ellipsis">
+      UNSET
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#require" class="md-nav__link">
+    <span class="md-ellipsis">
+      REQUIRE
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#freeze" class="md-nav__link">
+    <span class="md-ellipsis">
+      FREEZE
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#action-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Action Commands
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Action Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#run" class="md-nav__link">
+    <span class="md-ellipsis">
+      RUN
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clear" class="md-nav__link">
+    <span class="md-ellipsis">
+      CLEAR
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -3405,40 +3942,175 @@
   
 
 
-  <h1>impFileFldNames</h1>
+<h1 id="cse-input-language-statements">CSE Input Language Statements<a class="headerlink" href="#cse-input-language-statements" title="Permanent link">¶</a></h1>
+<p>This section describes the general form of CSE input language statements that define objects, assign values to the data members of objects, and initiate actions. The concepts of objects and the class hierarchy were introduced in the section on <a class="autorefs autorefs-internal" title="Form of the CSE Data" href="../#form-of-the-cse-data">form of CSE data</a>. Information on statements for specific CSE input language classes and their members is the subject of the <a class="autorefs autorefs-internal" title="Input Data" href="../../input-data/#input-data">input data</a> section.</p>
+<h2 id="object-statements">Object Statements<a class="headerlink" href="#object-statements" title="Permanent link">¶</a></h2>
+<p>As we described in a <a class="autorefs autorefs-internal" title="Statements -- Overview" href="../#statements-overview">previous section</a>, the description of an object is introduced by a statement containing at least the class name, and usually your chosen name for the particular object. In addition, this section will describe several optional qualifiers and modifying clauses that permit defining similar objects without repeating all of the member details, and reopening a previously given object description to change or add to it.</p>
+<p>Examples of the basic object-beginning statement:</p>
+<div class="language-text highlight"><pre><span></span><code>    ZONE "North";
 
-<hr/>
-<p>title: impFileFldNames
----<a href="" id="p_impfilefldnames"></a></p>
-<div class="probe-table-sibling"></div>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Variability</th>
-<th>Description/Comments</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>impfi</td>
-<td>TI</td>
-<td>input time</td>
-<td><ul>
-<li>0 or subscript of IMPF record for file in ImpfiB/ImpfB</li>
-<li>fnmt[]: array of info on fields ref'd by name, in order seen (before numbers known).</li>
-<li>used at runtime to get fnr's to access fields. subscript: "fnmi", "field name index"</li>
-</ul></td>
-</tr>
-<tr>
-<td>fnmiN</td>
-<td>number</td>
-<td>input time</td>
-<td>number of named fields seen for this file / max fnmi (+ 1 if 0-based)</td>
-</tr>
-</tbody>
-</table>
+    METER "Electric - Cooling";
+
+    LAYER;
+</code></pre></div>
+<p>As described in <a class="autorefs autorefs-internal" title="Nested Objects" href="../#nested-objects">the section on nested objects</a>, such a statement is followed by statements giving the object's member values or describing subobjects of the object. The object description ends when you begin another object that is not of a subclass of the object, or when a member of an embedding (higher level) object previously begun is given, or when <a class="autorefs autorefs-internal" title="END and ENDxxxx" href="#end-and-endxxxx">END</a> is given.</p>
+<h3 id="object-names">Object Names<a class="headerlink" href="#object-names" title="Permanent link">¶</a></h3>
+<p>An object name consists of up to 63 characters. If you always enclose the name in quotation marks, punctuation and spaces may be used freely; if the name starts with a letter or dollar sign and consists only of letters, digits, underscore, and dollar sign, and is different from all of the words already defined in CSE input language (as listed below in this section), you may omit the quotes. Capitalization, and Leading and trailing spaces and tabs, are always disregarded by input language processor. Names of 0 length, and names containing control characters (ASCII codes 0-31) are not allowed.</p>
+<p>Examples of valid names that do not require quotes:</p>
+<div class="language-text highlight"><pre><span></span><code>    North
+    gas_meter
+    slab140E
+</code></pre></div>
+<p>The following object names are acceptable if always enclosed in quotes:</p>
+<div class="language-text highlight"><pre><span></span><code>    "Front Door"
+    "M L King Day"
+    "123"
+    "3.5-inch wall"
+</code></pre></div>
+<p>We suggest always quoting object names so you won't have to worry about disallowed words and characters.</p>
+<p>Duplicate names result in error messages. Object names must be distinct between objects of the same class which are subobjects of the same object. For example, all <a class="autorefs autorefs-internal" href="../../input-data/zone/#zone">ZONE</a> names must be distinct, since all <a class="autorefs autorefs-internal" href="../../input-data/zone/#zone">ZONEs</a> are subobjects of Top. It is permissible to have <a class="autorefs autorefs-internal" href="../../input-data/surface/#surface">SURFACEs</a> with the same name in different <a class="autorefs autorefs-internal" href="../../input-data/zone/#zone">ZONEs</a> -- but it is a good idea to keep all of your object names distinct to minimize the chance of an accidental mismatch or a confusing message regarding some other error.</p>
+<p>For some classes, such as <a class="autorefs autorefs-internal" href="../../input-data/zone/#zone">ZONE</a>, a name is required for each object. This is because several other statements refer to specific <a class="autorefs autorefs-internal" href="../../input-data/zone/#zone">ZONEs</a>, and because a name is needed to identify <a class="autorefs autorefs-internal" href="../../input-data/zone/#zone">ZONEs</a> in reports. For other classes, the name is optional. The specific statement descriptions in the <a class="autorefs autorefs-internal" href="../../input-data/#input-data">Input Data</a> Section 5 say which names are required. We suggest always using object names even where not required; one reason is because they allow CSE to issue clearer error messages.</p>
+<p>The following <em>reserved words will not work as object names unless enclosed in quotes</em>:</p>
+<p><em>(this list needs to be assembled and typed in)</em></p>
+<h3 id="alter">ALTER<a class="headerlink" href="#alter" title="Permanent link">¶</a></h3>
+<p>ALTER is used to reopen a previously defined object when it is not possible or desired to give the entire description contiguously.</p>
+<p>ALTER could be used if you wish to order the input in a special way. For example, <a class="autorefs autorefs-internal" href="../../input-data/surface/#surface">SURFACE</a> objects are subobjects of <a class="autorefs autorefs-internal" href="../../input-data/zone/#zone">ZONE</a> and are normally described with the <a class="autorefs autorefs-internal" href="../../input-data/zone/#zone">ZONE</a> they are part of. However, if you wanted to put all roofs together, you could use input of the general form:</p>
+<div class="language-text highlight"><pre><span></span><code>    ZONE "1";  . . .  (zone 1 description)
+    ZONE "2";  . . .
+    . . .
+    ALTER ZONE "1";               // revert to specifying zone 1
+        SURFACE "Roof1";  . . .   (describe roof of zone 1)
+    ALTER ZONE "2";
+        SURFACE "Roof2";  . . .
+</code></pre></div>
+<p>ALTER can be used to facilitate making similar runs. For example, to evaluate the effect of a change in the size of a window, you might use:</p>
+<div class="language-text highlight"><pre><span></span><code>    ZONE "South";
+        SURFACE "SouthWall";
+        ...
+            WINDOW "BigWindow";
+                wnHeight = 6;  wnWidth = 20;
+    . . .
+    RUN;          // perform simulation and generate reports
+    // data from simulation is still present unless CLEAR given
+    ALTER ZONE "South";
+        ALTER SURFACE "SouthWall";
+            ALTER WINDOW "BigWindow";
+                wnHeight = 4;  wnWidth = 12;  // make window smaller
+    RUN;          // perform simulation and print reports again
+</code></pre></div>
+<p>ALTER also lets you access the predefined "Primary" <a class="autorefs autorefs-internal" href="../../input-data/reportfile/#reportfile">REPORTFILE</a> and <a class="autorefs autorefs-internal" href="../../input-data/exportfile/#exportfile">EXPORTFILE</a> objects which will be described in the <a class="autorefs autorefs-internal" href="../../input-data/#input-data">Input Data</a> Section:</p>
+<div class="language-text highlight"><pre><span></span><code>    ALTER REPORTFILE "Primary";    /* open description of object automatically
+                                      supplied by CSE -- no other way to access */
+        rfPageFmt = NO;            /* Turn off page headers and footers --
+                                      not desired when reports are to be
+                                      reviewed on screen. */
+</code></pre></div>
+<h3 id="delete">DELETE<a class="headerlink" href="#delete" title="Permanent link">¶</a></h3>
+<p>DELETE followed by a class name and an object name removes the specified object, and any subobjects it has. You might do this after <a class="autorefs autorefs-internal" href="#run">RUN</a> when changing the data for a similar run (but to remove all data, <a class="autorefs autorefs-internal" href="#clear">CLEAR</a> is handier), or you might use DELETE after <a class="autorefs autorefs-internal" title="COPY clause" href="#copy-clause">COPYing</a> (below) an object if the intent is to copy all but certain subobjects.</p>
+<h3 id="like-clause">LIKE clause<a class="headerlink" href="#like-clause" title="Permanent link">¶</a></h3>
+<p>LIKE lets you specify that an object being defined starts with the same member values as another object already defined. You then need give only those members that are different. For Example:</p>
+<div class="language-text highlight"><pre><span></span><code>    MATERIAL "SheetRock";         // half inch gypsum board
+        matCond = .0925;          // conductivity per foot
+        matSpHt = .26;            // specific heat
+        matDens = 50;             // density
+        matThk = 0'0.5;           // thickness 1/2 inch
+    MATERIAL "5/8 SheetRock" LIKE "SheetRock"; // 5/8" gypsum board
+        matThk = 0'0.625;         // thickness 5/8 inch
+        // other members same as "SheetRock", need not be repeated
+</code></pre></div>
+<p>The object named after LIKE must be already defined and must be of the same class as the new object.</p>
+<p>LIKE copies only the member values; it does not copy any subobjects of the prototype object. For example, LIKEing a <a class="autorefs autorefs-internal" href="../../input-data/zone/#zone">ZONE</a> to a previously defined <a class="autorefs autorefs-internal" href="../../input-data/zone/#zone">ZONE</a> does not cause the new zone to contain the surfaces of the prototype <a class="autorefs autorefs-internal" href="../../input-data/zone/#zone">ZONE</a>. If you want to duplicate the surfaces, use <a class="autorefs autorefs-internal" title="COPY clause" href="#copy-clause">COPY</a> instead of LIKE.</p>
+<h3 id="copy-clause">COPY clause<a class="headerlink" href="#copy-clause" title="Permanent link">¶</a></h3>
+<p>COPY lets you specify that the object being defined is the same as a previously defined object including all of the subobjects of that object. For example,</p>
+<div class="language-text highlight"><pre><span></span><code>    . . .
+    ZONE "West" COPY "North";
+        DELETE WALL "East";
+        ALTER WALL "South";
+            sfExCnd = ambient;
+</code></pre></div>
+<p>Specifies a <a class="autorefs autorefs-internal" href="../../input-data/zone/#zone">ZONE</a> named "West" which is the same as <a class="autorefs autorefs-internal" href="../../input-data/zone/#zone">ZONE</a> North except that it does not contain a copy of West's East wall, and the South wall has ambient exposure.</p>
+<h3 id="usetype-clause">USETYPE clause<a class="headerlink" href="#usetype-clause" title="Permanent link">¶</a></h3>
+<p>USETYPE followed by the type name is used in creating an object of a type previously defined with <a class="autorefs autorefs-internal" href="#deftype">DEFTYPE</a> (next section). Example:</p>
+<div class="language-text highlight"><pre><span></span><code>    SURFACE "EastWall" USETYPE "IntWall";     // use interior wall TYPE (below)
+        sfAzm = 90;                           // this wall faces to the East
+        sfArea = 8 * 30;                      // area of each wall is different
+        sfAdjZn = "East";                     // zone on other side of wall
+</code></pre></div>
+<p>Any differences from the type, and any required information not given in the type, must then be specified. Any member specified in the type may be respecified in the object unless <a class="autorefs autorefs-internal" title="FREEZE" href="#freeze">FROZEN</a> (see <a class="autorefs autorefs-internal" title="FREEZE" href="#freeze">this section</a>) in the type (normally, a duplicate specification for a member results in an error message).</p>
+<h3 id="deftype">DEFTYPE<a class="headerlink" href="#deftype" title="Permanent link">¶</a></h3>
+<p>DEFTYPE is used to begin defining a TYPE for a class. When a TYPE is created, no object is created; rather, a partial or complete object description is stored for later use with DEFTYPE. TYPES facilitate creating multiple similar objects, as well as storing commonly used descriptions in a file to be #included in several different files, or to be altered for multiple runs in comparative studies without changing the including files. Example (boldface for emphasis only):</p>
+<!-- this works: tested 7-92 -->
+<div class="language-text highlight"><pre><span></span><code>    DEFTYPE SURFACE "BaseWall"                // common characteristics of all walls
+        sfType = WALL;                        // walls are walls, so say it once
+        sfTilt = 90;                          // all our walls are vertical;
+                                              //  but sfAzm varies, so it is not in TYPE.
+        sfU = .83;                            // surf conductance; override if different
+        sfModel = QUICK;
+
+    DEFTYPE SURFACE "ExtWall" USETYPE "BaseWall";
+        sfExCnd = AMBIENT;                    // other side of wall is outdoors
+        sfExAbs = 0.5;                        // member only needed for exterior walls
+
+    DEFTYPE SURFACE "IntWall" USETYPE "BaseWall";   // interior wall
+        sfExCnd = ADJZN;                      // user must give sfAdjZn.
+</code></pre></div>
+<p>In a TYPE as much or as little of the description as desired may be given. Omitting normally-required members does not result in an error message in the type definition, though of course an error will occur at use if the member is not given there.</p>
+<p>At use, member values specified in the TYPE can normally be re specified freely; to prevent this, "freeze" the desired member(s) in the type definition with</p>
+<div class="language-text highlight"><pre><span></span><code>    FREEZE *memberName*;
+</code></pre></div>
+<p>Alternately, if you wish to be sure the user of the TYPE enters a particular member even if it is normally optional, use</p>
+<div class="language-text highlight"><pre><span></span><code>    REQUIRE *memberName*
+</code></pre></div>
+<p>Sometimes in the TYPE definition, member(s) that you do not want defined are defined -- for example, if the TYPE definition were itself initiated with a statement containing <a class="autorefs autorefs-internal" title="LIKE clause" href="#like-clause">LIKE</a>, <a class="autorefs autorefs-internal" title="COPY clause" href="#copy-clause">COPY</a>, or <a class="autorefs autorefs-internal" title="USETYPE clause" href="#usetype-clause">USETYPE</a>. In such cases the member specification can be removed with</p>
+<div class="language-text highlight"><pre><span></span><code>    UNSET *memberName*;
+</code></pre></div>
+<!--
+Check on [LIKE][like-clause] TYPE <name>, [COPY][copy-clause] TYPE <name>.... no such animals, 7-92 rob
+-->
+<h3 id="end-and-endxxxx">END and ENDxxxx<a class="headerlink" href="#end-and-endxxxx" title="Permanent link">¶</a></h3>
+<p>END, optionally followed by an object name, can be used to unequivocally terminate an object. Further, as of July 1992 there is still available a specific word to terminate each type of object, such as ENDZONE to terminate a <a class="autorefs autorefs-internal" href="../../input-data/zone/#zone">ZONE</a> object. If the object name is given after END or ENDxxxx, an additional check is performed: if the name is not that of an object which has been begun and not terminated, an error message occurs. Generally, we have found it is not important to use END or ENDxxxx, especially since the member names in different classes are distinct.</p>
+<h2 id="member-statements">Member Statements<a class="headerlink" href="#member-statements" title="Permanent link">¶</a></h2>
+<p>As introduced in the section on <a class="autorefs autorefs-internal" title="Statements -- Overview" href="../#statements-overview">statements</a>, statements which assign values to members are of the general form:</p>
+<div class="language-text highlight"><pre><span></span><code>    *memberName* = *expression*;
+</code></pre></div>
+<p>The specific member names for each class of objects are given in Section 5; many have already been shown in examples.</p>
+<p>Depending on the member, the appropriate type for the expression giving the member value may be numeric (integer or floating point), string, object name, or multiple-choice. <a class="autorefs autorefs-internal" href="../expressions/#expressions">Expressions</a> of all types will be described in detail in the section on <a class="autorefs autorefs-internal" title="Expressions" href="../expressions/#expressions">expressions</a>.</p>
+<p>Each member also has its <em>variability</em> (also given in the <a class="autorefs autorefs-internal" title="Input Data" href="../../input-data/#input-data">input data</a> section), or maximum acceptable <em>variation</em>. This is how often the expression for the value can change during the simulation -- hourly, daily, monthly, no change (constant), etc. The "variations" were introduced in the <a class="autorefs autorefs-internal" title="Expressions -- Overview" href="../#expressions-overview">expressions overview</a> section and will be further detailed in a <a class="autorefs autorefs-internal" title="Variation Frequencies Revisited" href="../variation-frequencies-revisited/#variation-frequencies-revisited">section on variation frequencies</a>.</p>
+<p>Four special statements, <a class="autorefs autorefs-internal" href="#autosize">AUTOSIZE</a>, <a class="autorefs autorefs-internal" href="#unset">UNSET</a>, <a class="autorefs autorefs-internal" href="#require">REQUIRE</a>, and <a class="autorefs autorefs-internal" href="#freeze">FREEZE</a>, add flexibility in working with members.</p>
+<h3 id="autosize">AUTOSIZE<a class="headerlink" href="#autosize" title="Permanent link">¶</a></h3>
+<p>AUTOSIZE followed by a member name, sets the member to be sized by CSE. The option to AUTOSIZE a member will be shown under its legal range where it is described in the <a class="autorefs autorefs-internal" title="Input Data" href="../../input-data/#input-data">input data</a> section. AUTOSIZE is only applicable to members describing HVAC system airflows and heating/cooling capacities. If AUTOSIZE is used for any member in the input, input describing design day conditions must also be specified (see <a class="autorefs autorefs-internal" href="../../input-data/top-members/#top-autosizing">TOP Autosizing</a>).</p>
+<h3 id="unset">UNSET<a class="headerlink" href="#unset" title="Permanent link">¶</a></h3>
+<p>UNSET followed by a member name is used when it is desired to delete a member value previously given. UNSETing a member resets the object to the same internal state it was in before the member was originally given. This makes it legal to specify a new value for the member (normally, a duplicate specification results in an error message); if the member is required (as specified in the <a class="autorefs autorefs-internal" title="Input Data" href="../../input-data/#input-data">input data</a> section), then an error message will occur if <a class="autorefs autorefs-internal" href="#run">RUN</a> is given without re specifying the member.</p>
+<p>Situations where you really might want to specify a member, then later remove it, include:</p>
+<ul>
+<li>
+<p>After a <a class="autorefs autorefs-internal" href="#run">RUN</a> command has completed one simulation run, if you wish to specify another simulation run without <a class="autorefs autorefs-internal" href="#clear">CLEARing</a> and giving all the data again, you may need to UNSET some members of some objects in order to re specify them or because they need to be omitted from the new run. In this case, use ALTER(s) to reopen the object(s) before UNSETing.</p>
+</li>
+<li>
+<p>In defining a <a class="autorefs autorefs-internal" title="DEFTYPE" href="#deftype">TYPE</a> (see <a class="autorefs autorefs-internal" title="DEFTYPE" href="#deftype">this section</a>), you may wish to make sure certain members are not specified so that the user must give them or omit them if desired. If the origin of the type (possibly a sequence of <a class="autorefs autorefs-internal" href="#deftype">DEFTYPEs</a>, <a class="autorefs autorefs-internal" title="LIKE clause" href="#like-clause">LIKEs</a>, and/or <a class="autorefs autorefs-internal" title="COPY clause" href="#copy-clause">COPYs</a>) has defined unwanted members, get rid of them with UNSET.</p>
+</li>
+</ul>
+<p>Note that UNSET is only for deleting <em>members</em> (names that would be followed with an = and a a value when being defined). To delete an entire <em>object</em>, use <a class="autorefs autorefs-internal" href="#delete">DELETE</a> (see <a class="autorefs autorefs-internal" title="DELETE" href="#delete">this section</a>).</p>
+<h3 id="require">REQUIRE<a class="headerlink" href="#require" title="Permanent link">¶</a></h3>
+<p>REQUIRE followed by a member name makes entry of that member mandatory if it was otherwise optional; it is useful in defining a <a class="autorefs autorefs-internal" title="DEFTYPE" href="#deftype">TYPE</a> (see <a class="autorefs autorefs-internal" title="DEFTYPE" href="#deftype">this section</a>) when you desire to make sure the user enters a particular member, for example to be sure the <a class="autorefs autorefs-internal" title="DEFTYPE" href="#deftype">TYPE</a> is applied in the intended manner. REQUIRE by itself does not delete any previously entered value, so if the member already has a value, you will need to <a class="autorefs autorefs-internal" href="#unset">UNSET</a> it. ?? <em>verify</em></p>
+<h3 id="freeze">FREEZE<a class="headerlink" href="#freeze" title="Permanent link">¶</a></h3>
+<p>FREEZE followed by a member name makes it illegal to <a class="autorefs autorefs-internal" href="#unset">UNSET</a> or redefine that member of the object. Note that FREEZE is unnecessary most of the time since CSE issues an error message for duplicate definitions without an intervening <a class="autorefs autorefs-internal" href="#unset">UNSET</a>, unless the original definition came from a <a class="autorefs autorefs-internal" title="DEFTYPE" href="#deftype">TYPE</a> (see <a class="autorefs autorefs-internal" title="DEFTYPE" href="#deftype">this section</a>). Situations where you might want to FREEZE one or more members include:</p>
+<ul>
+<li>
+<p>When defining a <a class="autorefs autorefs-internal" title="DEFTYPE" href="#deftype">TYPE</a> (see <a class="autorefs autorefs-internal" title="DEFTYPE" href="#deftype">this section</a>). Normally, the member values in a type are like defaults; they can be freely overridden by member specifications at each use. If you wish to insure a <a class="autorefs autorefs-internal" title="DEFTYPE" href="#deftype">TYPE</a> is used as intended, you may wish to FREEZE members to prevent accidental misuse.</p>
+</li>
+<li>
+<p>When your are defining objects for later use or for somebody else to use (perhaps in a file to be included) and you wish to guard against misuse, you may wish to FREEZE members. Of course, this is not foolproof, since there is at present no way to allow use of predefined objects or types without allowing access to the statements defining them.</p>
+</li>
+</ul>
+<h2 id="action-commands">Action Commands<a class="headerlink" href="#action-commands" title="Permanent link">¶</a></h2>
+<p>CSE has two action commands, <a class="autorefs autorefs-internal" href="#run">RUN</a> and <a class="autorefs autorefs-internal" href="#clear">CLEAR</a>.</p>
+<h3 id="run">RUN<a class="headerlink" href="#run" title="Permanent link">¶</a></h3>
+<p>RUN tells <code>CSE</code> to do an hourly simulation with the data now in memory, that is, the data given in the preceding part of the input file.</p>
+<p>Note that CSE does NOT automatically run the simulator; an input file containing no RUN results in no simulation (you might nevertheless wish to submit an incomplete file to CSE to check for errors in the data already entered). The explicit RUN command also makes it possible to do multiple simulation runs in one session using a single input file.</p>
+<p>When RUN is encountered in the input file, CSE checks the data. Many error messages involving inconsistencies between member values or missing required members occur at this time. If the data is good, CSE starts the simulation. When the simulation is complete and the reports have been output, CSE continues reading the input file. Statements after the first run can add to or change the data in preparation for another RUN. Note that the data for the first run is NOT automatically removed; if you wish to start over with complete specifications, use <a class="autorefs autorefs-internal" href="#clear">CLEAR</a> after RUN.</p>
+<h3 id="clear">CLEAR<a class="headerlink" href="#clear" title="Permanent link">¶</a></h3>
+<p>CLEAR removes all input data (objects and all their members) from CSE memory. CLEAR is normally used after <a class="autorefs autorefs-internal" href="#run">RUN</a>, when you wish to perform another simulation run and wish to start clean. If CLEAR is not used, the objects from the prior run's input remain in memory and may be changed or added to produce the input data for the next simulation run.</p>
 
 
 
@@ -3460,7 +4132,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../Inverse/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Inverse">
+          <a href="../the-preprocessor/" class="md-footer__link md-footer__link--prev" aria-label="Previous: The Preprocessor">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
@@ -3470,20 +4142,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Inverse
+                The Preprocessor
               </div>
             </div>
           </a>
         
         
           
-          <a href="../importFile/" class="md-footer__link md-footer__link--next" aria-label="Next: importFile">
+          <a href="../expressions/" class="md-footer__link md-footer__link--next" aria-label="Next: Expressions">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                importFile
+                Expressions
               </div>
             </div>
             <div class="md-footer__button md-icon">
