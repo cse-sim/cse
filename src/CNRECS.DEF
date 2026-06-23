@@ -3540,7 +3540,8 @@ RECORD RSYS "RSYS" *RAT	// residential HVAC system
 *declare "RC rs_SizeHtASHP( float dsnLoad, float tdbOut);"
 *declare "void rs_DefaultCapNomsIf();"
 *declare "DHWSYS* rs_GetCHDHWSYS() { return rs_pCHDHWSYS; };"
-*declare "RC rs_SetupCHDHW();"
+*declare "RC rs_SetupCHDHW1();"
+*declare "RC rs_SetupCHDHW2();"
 *declare "float rs_CurCapHtCHDHW( float speedF);"
 *declare "enum { rsmOFF, rsmHEAT, rsmCOOL, rsmOAV, rsmCOUNT };"
 
@@ -4243,7 +4244,8 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *declare "RC ws_EndIvl( int ivl);"
   *declare "void ws_SetMTRPtrs();"
   *declare "float ws_BranchFlow() const;"
-  *declare "RC ws_CheckCHDHWConfig( class RSYS* pRS);"
+  *declare "RC ws_CheckCHDHWConfig( const class RSYS* pRS);"
+  *declare "float ws_GetCHDHWCapMult() const;"
   *declare "float ws_GetCHDHWTSupply() const;"
   *declare "void ws_AccumCHDHWFlowSh( float vol, float tR);"
 
