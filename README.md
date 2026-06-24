@@ -1,15 +1,15 @@
 [![Build and Test](https://github.com/cse-sim/cse/workflows/Build%20and%20Test/badge.svg)](https://github.com/cse-sim/cse/actions?query=branch%3Amain)
 
-## California Simulation Engine (CSE)
+## CSE
 
-CSE is a general purpose building simulation model developed primarily to perform the required calculations for the California Building Energy Code Compliance for Residential buildings ([CBECC-Res](http://www.bwilcox.com/BEES/BEES.html)) software.
+CSE is a general-purpose building simulation engine for modeling annual building energy use for heating, cooling, ventilation, and lighting. Originally built for California residential energy code compliance, it has since evolved into a broader platform used by researchers, standards developers, and software integrators.
 
-### CSE User Manual
+### Documentation
 
-The CSE User Manual can be found on the [CSE Documentation Web Site](https://cse-sim.github.io/cse):
+The [CSE Documentation Web Site](https://cse-sim.github.io/cse) offers two options for viewing the documentation:
 
-- [HTML Format](https://cse-sim.github.io/cse/single_page/) (single page)
-- [HTML Format](https://cse-sim.github.io/cse/introduction/) (multi page)
+- [Single page](https://cse-sim.github.io/cse/single_page/)
+- [Multi page](https://cse-sim.github.io/cse/)
 
 ### Issues and Issue Reporting
 
@@ -19,19 +19,23 @@ All known issues are listed on our [Issue Tracker]. New issues can be reported t
 
 ### Development
 
-CSE is configured as a CMake project. Currently, CMake is only configured to generate Microsoft Visual Studio solutions compiled with Microsoft Visual C++ (other generators and compilers will not work). A batch script is set up for automatic project setup. Simply double click or run the **build.bat** script in the root directory. All products (e.g., CSE.exe) will be placed in a directory called **msvc**.
+CSE is configured as a CMake project. Windows (MSVC) and macOS (Clang) are fully supported. Linux support is in progress. To build, run the appropriate script from the root directory:
+
+- **Windows:** `build.bat`
+- **macOS/Linux:** `build.sh`
+
+All build products (e.g., `CSE.exe`) will be placed in a directory called `build`.
 
 #### Testing
 
-Automated testing of your build can be executed by running after building the entire solution
+Automated testing of your build can be executed by running the following from the `build` directory:
 
 `ctest -C Release`
 
-from the **msvc\\build** directory.
-
 #### Dependencies
 
-- Microsoft Visual Visual C++ (v142 toolset)
-- CMake 3.10 or later
+- Microsoft Visual C++ or Clang
+- CMake
+- Python (via [uv](https://docs.astral.sh/uv/), required for building documentation)
 
-Note: Generating the documentation requires additional tools. See [doc\\README.md](doc/README.md).
+See [doc/README.md](doc/README.md) for documentation build instructions.
