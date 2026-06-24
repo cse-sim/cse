@@ -1047,7 +1047,7 @@ RECORD HCI "hci sub" *SUBSTRUCT		// HCI: helper for managing variable inside con
 	*declare "void hc_Init( float hc);"
 	*declare "double hc_HC( double hc);"
 	#define HCHISTL 4				// length of value history re smoothing
-	*declare "enum { hcHISTL=4 };"	// make HCHISTL known to C++ (must agree with HCHISTL)
+    *declare "static const int hcHISTL = 4;" // make HCHISTL known to C++ (must agree with HCHISTL)
 
 #if defined( CONV_ASHRAECOMPARE)
    	*declare "void hc_InitAsh( float tilt, int si);"

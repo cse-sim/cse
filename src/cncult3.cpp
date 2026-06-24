@@ -3406,7 +3406,7 @@ void SBC::sb_Init(
 //-----------------------------------------------------------------------------
 void SBC::sb_SGFInit()
 {
-	VZero( sb_sgf[ 0], socCOUNT*sgcCOUNT);
+	memset(sb_sgf, 0, sizeof(sb_sgf));
 }	// SBC::sb_SGFInit
 //-----------------------------------------------------------------------------
 void SBC::sb_CalcAwAbsSlr()		// compute area-weighted solar abs
