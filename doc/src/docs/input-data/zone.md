@@ -286,13 +286,15 @@ Name of RSYS providing heating, cooling, and optional central fan integrated ven
 
 Type: float
 
-Heating capacity at current conditions
+Ideal sensible heating capacity for current hour.  If at the end of a simulation step the air temperature in a conditioned zone is below znTH after contributions from any other systems such as RSYS, additional heat is added (up to znQMxH) to hold the zone at the setpoint.  No mechanical equipment or delivery air flow are modeled.
+
+If a LOADMETER is specified in znLoadMtr, the added heat is accumulated to the LOADMETER qHtg.
 
 {{
   member_table({
     "units": "Btuh",
     "legal_range": "x ≥ 0", 
-    "default": "*none*",
+    "default": "0 (no ideal heating capacity)",
     "required": "No",
     "variability": "hourly" 
   })
@@ -302,13 +304,13 @@ Heating capacity at current conditions
 
 Type: float
 
-Rated heating capacity
+Rated or nominal ideal sensible heating capacity. znQMxHRated allows documentation of the rated capacity of the "system" that provides znQMxH.  znQMxHRated has no simulation effect.
 
 {{
   member_table({
     "units": "Btuh",
     "legal_range": "x ≥ 0", 
-    "default": "*none*",
+    "default": "0 (no ideal heating capacity)",
     "required": "No",
     "variability": "constant" 
   })
@@ -318,13 +320,18 @@ Rated heating capacity
 
 Type: float
 
-Cooling capacity at current conditions
+ype: float
+
+Ideal sensible cooling capacity for current hour.  If at the end of a simulation step the air temperature in a conditioned zone is above znTC after contributions from any other systems such as RSYS, additional heat is removed (up to znQMxC) to hold the zone at the setpoint.  No mechanical equipment, delivery air flow, or latent effects are modeled.
+
+If a LOADMETER is specified in znLoadMtr, the removed heat is accumulated to the LOADMETER qClg.
+
 
 {{
   member_table({
     "units": "Btuh",
     "legal_range": "x ≤ 0", 
-    "default": "*none*",
+    "default": "0 (no ideal cooling capacity)",
     "required": "No",
     "variability": "hourly" 
   })
@@ -334,13 +341,12 @@ Cooling capacity at current conditions
 
 Type: float
 
-Rated cooling capacity
-
+Rated or nominal ideal sensible cooling capacity. znQMxCRated allows documentation of the rated capacity of the "system" that provides znQMxC.  znQMxCRated has no simulation effect.
 {{
   member_table({
     "units": "Btuh",
     "legal_range": "x ≤ 0", 
-    "default": "*none*",
+    "default": "0 (no ideal cooling capacity)",
     "required": "No",
     "variability": "constant" 
   })
