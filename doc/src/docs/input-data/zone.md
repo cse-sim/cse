@@ -264,7 +264,7 @@ Cooling set point used (and required) when znModel=CZM and zone has no terminals
   })
 }}
 
-znModel = CZM zone heating and cooling is provided either via an RSYS HVAC system, by "magic" heat transfers specified by znQxxx items, or via TERMINAL (s).  One of these must be defined.
+znModel = CZM zone heating and cooling is provided either via an RSYS HVAC system, by ideal heat transfers specified by znQMxH/znQMxC items, or via TERMINAL (s).  At least one of these must be defined.
 
 ### znRSys
 
@@ -288,7 +288,8 @@ Type: float
 
 Ideal sensible heating capacity for current hour.  If at the end of a simulation step the air temperature in a conditioned zone is below znTH after contributions from any other systems such as RSYS, additional heat is added (up to znQMxH) to hold the zone at the setpoint.  No mechanical equipment or delivery air flow are modeled.
 
-If a LOADMETER is specified in znLoadMtr, the added heat is accumulated to the LOADMETER qHtg.
+Added heat is accumulated to ZNRES qshIdeal and to qHtg of the LOADMETER specified in znLoadMtr (if any).
+
 
 {{
   member_table({
@@ -320,12 +321,9 @@ Rated or nominal ideal sensible heating capacity. znQMxHRated allows documentati
 
 Type: float
 
-ype: float
-
 Ideal sensible cooling capacity for current hour.  If at the end of a simulation step the air temperature in a conditioned zone is above znTC after contributions from any other systems such as RSYS, additional heat is removed (up to znQMxC) to hold the zone at the setpoint.  No mechanical equipment, delivery air flow, or latent effects are modeled.
 
-If a LOADMETER is specified in znLoadMtr, the removed heat is accumulated to the LOADMETER qClg.
-
+Removed heat is accumulated to ZNRES qscIdeal and to qClg of the LOADMETER specified by znLoadMtr (if any).
 
 {{
   member_table({
