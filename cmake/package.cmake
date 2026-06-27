@@ -82,10 +82,11 @@ if(NOT _exe STREQUAL _canonical_exe)
   endif()
 endif()
 
-set(_archive_base "cse-${RELEASE_TAG}-${_os}-${_arch}")
+set(_archive_base "cse-${_os}-${_arch}")
 if(DEFINED _cache_CSE_COMPILER_NAME AND NOT _cache_CSE_COMPILER_NAME STREQUAL "")
   string(APPEND _archive_base "-${_cache_CSE_COMPILER_NAME}")
 endif()
+string(APPEND _archive_base "-${RELEASE_TAG}")
 
 if(WIN32)
   set(_archive "${BUILD_DIRECTORY}/${_archive_base}.zip")
