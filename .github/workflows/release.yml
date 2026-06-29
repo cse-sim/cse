@@ -7,8 +7,25 @@ on:
 
 jobs:
   release-cse:
-    name: Deploy CSE release
-    runs-on: windows-2022
+    name: Release ${{ matrix.os }}-${{ matrix.os_ver }}-${{ matrix.compiler }}-${{ matrix.arch }}bit
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows
+            os_ver: "2022"
+            arch: "32"
+            compiler: msvc
+          - os: windows
+            os_ver: "2022"
+            arch: "64"
+            compiler: msvc
+            publish_docs: true
+          - os: macos
+            os_ver: "14"
+            arch: "64"
+            compiler: clang
+    runs-on: ${{ matrix.os }}-${{ matrix.os_ver }}
     defaults:
       run:
         shell: bash
@@ -23,12 +40,17 @@ jobs:
         with:
           python-version: "3.13"
       - name: Build CSE
-        run: cmake -DBUILD_ARCHITECTURE=32 -DCOMPILER_ID=msvc -DCONFIGURATION=Release -DBUILD_DIRECTORY=build -DBUILD_DOCS_WITH_ALL=ON -P cmake/configure-and-build.cmake
+        run: cmake -DBUILD_ARCHITECTURE=${{ matrix.arch }} -DCOMPILER_ID=${{ matrix.compiler }} -DCONFIGURATION=Release -DBUILD_DIRECTORY=build -DBUILD_DOCS_WITH_ALL=ON -P cmake/configure-and-build.cmake
+      - name: Package CSE
+        run: cmake -P cmake/package.cmake
       - name: Upload executable to release assets
         uses: softprops/action-gh-release@v3
         with:
-          files: build/CSE.exe
+          files: |
+            build/cse-*.zip
+            build/cse-*.tar.gz
       - name: Update gh-pages
+        if: matrix.publish_docs
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
