@@ -250,7 +250,7 @@ target_include_directories(CSE PRIVATE
   "${penumbra_SOURCE_DIR}/include"
 )
 
-target_compile_features(CSE PUBLIC cxx_std_17)
+target_compile_features(CSE PUBLIC cxx_std_20)
 
 if(USE_XMODULE)
   target_compile_definitions(CSE PRIVATE SUPPURT_XMODULE)

@@ -588,7 +588,7 @@ int CDEC main( int argc, char * argv[] )
 
 	// Success file: remove here, create at exit iff success
 	//   re build dependencies
-	constexpr char* fNameSuccess = "rcdef_success.txt";
+	const char* fNameSuccess = "rcdef_success.txt";
 	if (xfExist(fNameSuccess) != 0)
 	{	if (std::remove(fNameSuccess))
 			msgWrite(ABT, "\nCannot delete '%s'\n", fNameSuccess);
