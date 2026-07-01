@@ -2048,9 +2048,6 @@ bool ZNR::zn_IsAirHVACActive() const		// determine air motion
 /*virtual*/ RSYS::~RSYS()
 {
 	rs_DeleteWorkingSubObjects();
-	delete rs_pCHDHW;
-	rs_pCHDHW = nullptr;
-
 }	// RSYS::~RSYS
 //----------------------------------------------------------------------------
 void RSYS::rs_DeleteWorkingSubObjects()	// delete runtime subobjects
@@ -2240,10 +2237,12 @@ RC RSYS::rs_CkFHeating()
 	{	// combined heat and DHW
 		rc |= requireX(whenTy, RSYS_CHDHWSYSI);
 		rc |= disallowX(whenTy, RSYS_TDDESH);
+
 		if (IsAusz( RSYS_CAPH))
 			rc |= oer("rsCapH cannot be AUTOSIZE %s", whenTy);
 		else
 			rc |= ignoreX(whenTy, RSYS_CAPH);
+
 		// rs_CdH?
 		rc |= disallowX("when rsType is CombinedHeatDHW or ACCombinedHeatDHW",
 				ASHP_HtgFNs, ASHPPM_HtgFNs);
@@ -2469,6 +2468,8 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 {
 	RC rc = RCOK;
 
+	rs_SetWorkingPtrs();
+
 	if (!IsSet(RSYS_TDDESH))
 		rs_tdDesH = rs_IsHP()    ? 30.f	// lower default temp rise for ASHP
 		                         : 50.f;	// (changed later for CHDHW)
@@ -2602,8 +2603,6 @@ RC RSYS::rs_TopRSys2()		// final set up for run
 {
 	RC rc = RCOK;
 
-	rs_SetWorkingPtrs();		// MTR and other inter-object pointers
-
 	// Initialize DUCTSEGs / check for consistency with rs_DSEH/rs_DSEC
 	// link DUCTSEGs to this RSYS
 	DUCTSEG* ds;
@@ -2638,8 +2637,10 @@ RC RSYS::rs_TopRSys2()		// final set up for run
 	}
 	
 	// combined heat / DHW
+	// Note: rs_SetupCHDHW1() must be called for ALL RSYSs before rs_SetupCHDHW2()
+	//  (done by caller)
 	if (rs_IsCHDHW())
-		rc |= rs_SetupCHDHW();
+		rc |= rs_SetupCHDHW2();
 
 	if (rc == RCOK)
 		rs_SetRunConstants();
@@ -2975,7 +2976,7 @@ float RSYS::rs_AMFOperating(
 		rs_capHt = rs_CurCapHtCHDHW( speedF);
 		float avf;
 		float fanPwr;	// unused
-		rs_pCHDHW->hvt_BlowerAVFandPower(rs_capHt, avf, fanPwr);
+		rs_pCHDHW->chw_BlowerAVFandPower(rs_capHt, avf, fanPwr);
 		amf = AVFtoAMF(avf);
 	}
 	else
@@ -3247,7 +3248,7 @@ void RSYS::rs_SetWorkingPtrs()		// set runtime pointers to meters etc.
 	rs_pSrcSideLoadMtr[ 0] = LdMtrR.GetAtSafe(rs_srcSideLoadMtri);
 	rs_pSrcSideLoadMtr[ 1] = LdMtrR.GetAtSafe(rs_htgSrcSideLoadMtri);
 	rs_pSrcSideLoadMtr[ 2] = LdMtrR.GetAtSafe(rs_clgSrcSideLoadMtri);
-	rs_pCHDHWSYS = WsR.GetAtSafe(rs_CHDHWSYSi);
+	// rs_pCHDHWSYS = WsR.GetAtSafe( rs_CHDHWSYSi)  set in rs_SetupCHDHW1()
 }		// RSYS::rs_SetMTRPtrs
 //-----------------------------------------------------------------------------
 RC RSYS::rs_SetupSizes(		// derive capacity-dependent values
@@ -4881,8 +4882,31 @@ RC RSYS::rs_SetupWSHP()		// set WSHP defaults and derived parameters
 	return rc;
 }		// RSYS::rs_SetupWSHP
 //-----------------------------------------------------------------------------
-RC RSYS::rs_SetupCHDHW()		// check/set up combined heat / DWH
+RC RSYS::rs_SetupCHDHW1()	// initial check/setup of CHDHW configuration
+// calls DHWSYS::ws_CheckCHDHWConfig()
+// MUST be done for all RSYSs before any rs_SetupCHDHW2()
+// 
+// returns RCOK iff no errors
+{
+	RC rc = RCOK;
+
+	rs_pCHDHWSYS = WsR.GetAtSafe(rs_CHDHWSYSi);
+
+	if (rs_IsCHDHW())
+	{
+		if (!rs_pCHDHWSYS)
+			rc |= oer("Missing rsCHDHWSYS");	// impossible? due to prior checks
+		else
+			rc |= rs_pCHDHWSYS->ws_CheckCHDHWConfig(this);
+	}
+
+	return rc;
+
+}	// RSYS::rs_SetupCHDHW1
+//-----------------------------------------------------------------------------
+RC RSYS::rs_SetupCHDHW2()		// check/set up combined heat / DWH
 // call from rs_TopRSys2()
+//    *after* rs_SetupCHDHW1() for ALL RSYSs
 //    *after* rs_SetWorkingPtrs()
 //    *after* topDHW() -- DHWSYS, DHWHEATER, etc must exist
 
@@ -4892,28 +4916,32 @@ RC RSYS::rs_SetupCHDHW()		// check/set up combined heat / DWH
 
 	DHWSYS* pWS = rs_GetCHDHWSYS();
 
+#if 0
 	if (!pWS)
 		rc |= oer("Missing rsCHDHWSYS");	// impossible? due to prior checks
 	else
 		rc |= pWS->ws_CheckCHDHWConfig(	this);
+#endif
 
 	if (!rc)
 	{
 		rs_pCHDHW = new CHDHW( this);
-		float ratedSFP = float(rs_pCHDHW->hvt_GetRatedSpecificFanPower());
+		float ratedSFP = float(rs_pCHDHW->chw_GetRatedSpecificFanPower());
 		if (!IsSet(RSYS_FANSFPH))
 			rs_fanSFPH = ratedSFP;
-		rc |= rs_pCHDHW->hvt_Init(rs_fanSFPH);
+		float mult = pWS->ws_GetCHDHWCapMult();
+		float capHRtd = -1.f; //TODO IsSet(RSYS_CAPH) ? rs_capH : -1.f;
+		rc |= rs_pCHDHW->chw_Init(rs_fanSFPH, mult, capHRtd);
 
-		rs_tdDesH = rs_pCHDHW->hvt_GetTRise();
-		rs_capH = rs_pCHDHW->hvt_GetRatedCap();
+		rs_tdDesH = rs_pCHDHW->chw_GetTRise();
+		rs_capH = rs_pCHDHW->chw_GetRatedCap();  // ???
 
 		// rated fan heat (unused?)
-		rs_fanHRtdH = ratedSFP * rs_pCHDHW->hvt_GetRatedBlowerAVF() * BtuperWh;
+		rs_fanHRtdH = ratedSFP * rs_pCHDHW->chw_GetRatedBlowerAVF() * BtuperWh;
 	}
 
 	return rc;
-}		// RSYS::rs_SetupCHDHW
+}		// RSYS::rs_SetupCHDHW2
 //----------------------------------------------------------------------------
 float RSYS::rs_CurCapHtCHDHW(		// current CHDHW heating cap etc
 	float speedF)		// current speed, 0 - 1
@@ -4926,7 +4954,7 @@ float RSYS::rs_CurCapHtCHDHW(		// current CHDHW heating cap etc
 		DHWSYS* pWS = rs_GetCHDHWSYS();
 		rs_tCoilEW = pWS->ws_GetCHDHWTSupply();
 		float capHtMin;
-		rs_pCHDHW->hvt_CapHtgMinMax(rs_tCoilEW, capHtMin, rs_capHtFS);
+		rs_pCHDHW->chw_CapHtgMinMax(rs_tCoilEW, capHtMin, rs_capHtFS);
 		rs_speedFMin = capHtMin / rs_capHtFS;
 	}
 	return rs_capHtFS * speedF;
@@ -6575,7 +6603,7 @@ RC RSYS::rs_FinalizeSh()
 			rs_outSenTot = rs_runF * rs_capHt;
 			float avf;		// AVF, cfm
 			float fanPwr;	// fan power, W
-			rs_pCHDHW->hvt_BlowerAVFandPower(rs_outSenTot, avf, fanPwr);
+			rs_pCHDHW->chw_BlowerAVFandPower(rs_outSenTot, avf, fanPwr);
 			// if (rs_runF < 1.) cycle?
 
 #if 1	// CHDHW fan power fix, 2/2026
@@ -6587,7 +6615,7 @@ x			rs_outFan = rs_runF * fanPwr * Top.tp_subhrDur * BtuperWh;	// WRONG fan heat
 			runFFan = rs_runF;
 
 			// flow (gpm) needed for gross output
-			float waterVolFlow = rs_pCHDHW->hvt_WaterVolFlow(rs_outSen, rs_tCoilEW);
+			float waterVolFlow = rs_pCHDHW->chw_WaterVolFlow(rs_outSen, rs_tCoilEW);
 			float vol = rs_runF * waterVolFlow * Top.tp_subhrDur * 60.f;
 
 			// return temp based on gross (coil) output
