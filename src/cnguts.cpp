@@ -992,8 +992,8 @@ RC FC cgRddInit(	// Perform initialization common to main simulation run and eac
 	// Zone UA initialization loop: sum conductance of light exterior surfaces and perimeters
 	// calc moved to topSf2() 3-4-2013
 	// recalc here and compare results (devel aid)
-	double tUA[ 200];
-	double tUASpecT[ 200];
+	double tUA[ 1000];		// 1000 = max # of zones handled
+	double tUASpecT[ 1000];
 	RLUP( ZrB, zp)							// loop zone run records
 		tUA[ zp->ss] = tUASpecT[ zp->ss] = 0.;		// init to zero
 	XSRAT *xs;
