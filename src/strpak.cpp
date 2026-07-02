@@ -543,15 +543,25 @@ char* strSpacePad( 		// Pad a string with spaces (e.g. for FORTRAN)
 const char* FC strffix( 	// put a filename in canonical form
 
 	const char* name, 	// input filname
-	const char* ext ) 	// default extension including period
+	const char* ext, 	// default extension including period
+	bool ucFName /*=false*/)	// true: uppercase the file NAME (not its directory path)
+								//   Do not set true for names that will be used to open an existing
+								//   file for reading -- on case-sensitive file systems (e.g. Linux),
+								//   uppercasing breaks the lookup unless the on-disk name happens to be
+								//   all upper case. Appropriate for canonicalizing an OUTPUT file name.
 
-// returns uppercase filename with extension in Tmpstr[]
+// returns filename with extension in Tmpstr[], trimmed and optionally uppercased
 {
 	const char* lastslsh = strrchr( name, '\\');
 	char* nu = (strrchr( name, '.') <= lastslsh)
 				? strtcat( name, ext, NULL)
 				: strtcat( name, NULL);
-	strTrim( nu, _strupr(nu));		// trim in place (in Tmpstr)
+	strTrim( nu, nu);		// trim in place (in Tmpstr)
+	if (ucFName)
+	{	char* fNamePart = strrchr( nu, '\\');	// last dir separator, if any
+		fNamePart = fNamePart ? fNamePart + 1 : nu;	// start of file name (past any dir path)
+		_strupr( fNamePart);				// upper-case file name only, leave dir path as given
+	}
 	return nu;
 }		// strffix
 //-------------------------------------------------------------------
@@ -917,7 +927,7 @@ WStr WStrPrintf( 	// make like sprintf and return pointer to result in XSTR
 // ======================================================================
 WStr WStrVprintf(	// make like vsprintf and return pointer to result in tmpstr.
 	MSGORHANDLE mOrH,		// format string or message handle
-	va_list ap /*=NULL*/)					// arg list
+	va_list ap)					// arg list
 {
 	char buf[ MSG_MAXLEN];
 

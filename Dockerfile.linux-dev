@@ -1,0 +1,50 @@
+# Dockerfile.linux-dev
+#
+# Convenience container for building and testing CSE on Ubuntu from a
+# macOS/Windows workstation, without needing a separate Linux machine or VM.
+# This is a local development aid only -- CI installs the same dependencies
+# directly on GitHub-hosted ubuntu runners (see .github/workflows/build-and-test.yml)
+# rather than using this image.
+#
+# See build-and-test-linux.sh (macOS/Linux) or build-and-test-linux.bat
+# (Windows) for a one-command build+test using this image. Those scripts pin
+# --platform linux/amd64 to match the x86_64 CI runners; building/running
+# natively for another architecture (e.g. arm64 on Apple Silicon, via Docker
+# Desktop's default native emulation) is not tested.
+#
+# Build:
+#   docker build --platform linux/amd64 -f Dockerfile.linux-dev -t cse-linux-dev .
+#
+# Run (mount the repo so edits on the host are reflected immediately):
+#   docker run --rm -it --platform linux/amd64 -v "$(pwd)":/src -w /src cse-linux-dev
+#
+# Inside the container:
+#   cmake -DBUILD_ARCHITECTURE=64 -DCOMPILER_ID=gcc -DCONFIGURATION=Release \
+#     -DBUILD_DIRECTORY=build -DBUILD_DOCS_WITH_ALL=ON -P cmake/configure-and-build.cmake
+#   cd build && ctest -C Release -j "$(nproc)" --output-on-failure -E shadetest
+
+FROM ubuntu:24.04
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get update -qq && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
+      build-essential \
+      cmake \
+      git \
+      curl \
+      ca-certificates \
+      pkg-config \
+      python3 \
+      python3-pip \
+      libxrandr-dev \
+      libxinerama-dev \
+      libxcursor-dev \
+      libxi-dev \
+      libx11-dev \
+      libxext-dev \
+      libgl1-mesa-dev \
+      libglu1-mesa-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install --no-cache-dir --break-system-packages uv
+
+CMD ["/bin/bash"]

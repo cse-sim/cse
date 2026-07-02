@@ -581,7 +581,7 @@ RSYS hours for Thu 15-Jan
 
 ! Log for Run 001:
 
-! CSE 0.927.0+pm-resistance-fix.65f95d55.53 for Win32 console
+! CSE 1.0.0-test1+linux-builds.ec7ef564.19 for Windows 32-bit (MSVC)
 
 
 
@@ -1589,7 +1589,7 @@ RSYS hours for Thu 15-Jan
 
 ! Log for Run 002:
 
-! CSE 0.927.0+pm-resistance-fix.65f95d55.53 for Win32 console
+! CSE 1.0.0-test1+linux-builds.ec7ef564.19 for Windows 32-bit (MSVC)
 
 
 
@@ -1605,16 +1605,16 @@ Input for Run 002:
 Error Messages for Run 002:
 
 ---------------
-PERFMAP3.CSE(110): Info: RSYS 'Sys1': 
+perfmap3.cse(110): Info: RSYS 'Sys1': 
     'rsFanPwrH' is ignored when rsType=ACPM (heating not available)
 ---------------
-PERFMAP3.CSE(110): Info: 
+perfmap3.cse(110): Info: 
   RSYS 'Sys1': 'rsCapH' is ignored when rsType=ACPM (heating not available)
 ---------------
-PERFMAP3.CSE(110): Info: 
+perfmap3.cse(110): Info: 
   RSYS 'Sys1': 'rsAFUE' is ignored when rsType=ACPM (heating not available)
 ---------------
-PERFMAP3.CSE(110): Info: RSYS 'Sys1': 
+perfmap3.cse(110): Info: RSYS 'Sys1': 
     'rsCapNomH' is ignored when rsType=ACPM (heating not available)
 ---------------
 
@@ -2201,7 +2201,7 @@ RSYS hours for Thu 15-Jan
 
 ! Log for Run 003:
 
-! CSE 0.927.0+pm-resistance-fix.65f95d55.53 for Win32 console
+! CSE 1.0.0-test1+linux-builds.ec7ef564.19 for Windows 32-bit (MSVC)
 
 
 
@@ -2215,16 +2215,16 @@ Input for Run 003:
         
         RUN
 -----------------------
-???     PERFMAP3.CSE(110): Info: RSYS 'Sys1': 
+???     perfmap3.cse(110): Info: RSYS 'Sys1': 
 ???         'rsFanPwrH' is ignored when rsType=ACPM (heating not available)
 -----------------------
-???     PERFMAP3.CSE(110): Info: 
+???     perfmap3.cse(110): Info: 
 ???       RSYS 'Sys1': 'rsCapH' is ignored when rsType=ACPM (heating not available)
 -----------------------
-???     PERFMAP3.CSE(110): Info: 
+???     perfmap3.cse(110): Info: 
 ???       RSYS 'Sys1': 'rsAFUE' is ignored when rsType=ACPM (heating not available)
 -----------------------
-???     PERFMAP3.CSE(110): Info: RSYS 'Sys1': 
+???     perfmap3.cse(110): Info: RSYS 'Sys1': 
 ???         'rsCapNomH' is ignored when rsType=ACPM (heating not available)
 -----------------------
         
@@ -2234,18 +2234,18 @@ Input for Run 003:
 
 
 
-! CSE 0.927.0+pm-resistance-fix.65f95d55.53 for Win32 console run(s) done: Fri 13-Feb-26   7:33:59 pm
+! CSE 1.0.0-test1+linux-builds.ec7ef564.19 for Windows 32-bit (MSVC) run(s) done: Thu 02-Jul-26   2:04:01 pm
 
 ! Executable:   d:\a\cse\cse\build\cse.exe
-!               13-Feb-26   7:33 pm   (VS 14.29    3421184 bytes)  (HPWH 1.4.1+HEAD.9d96ad0a.1587)
+!               02-Jul-26   2:03 pm   (VS 14.29    3598848 bytes)  (HPWH 1.4.1+HEAD.11240a73.2140)
 ! Command line: -x!  -b -t1 perfmap3
 ! Input file:   D:\a\cse\cse\test\perfmap3.cse
-! Report file:  D:\A\CSE\CSE\TEST\PERFMAP3.REP
+! Report file:  D:\a\cse\cse\test\perfmap3.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.18     Calls = 3         T/C = 0.0600
+!                Input:  Time = 0.17     Calls = 3         T/C = 0.0577
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 1.43     Calls = 3         T/C = 0.4753
+!           Simulation:  Time = 1.44     Calls = 3         T/C = 0.4787
 !              Reports:  Time = 0.01     Calls = 3         T/C = 0.0017
-!                Total:  Time = 1.61     Calls = 1         T/C = 1.6110
+!                Total:  Time = 1.61     Calls = 1         T/C = 1.6140

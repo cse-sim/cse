@@ -3,7 +3,7 @@
 Error Messages for Run 001:
 
 ---------------
-CHDHW.CSE(6664): Info: RSYS 'rsys1': 'rsCapH' is ignored when rsType=ACCombinedHeatDHW
+chdhw.cse(6664): Info: RSYS 'rsys1': 'rsCapH' is ignored when rsType=ACCombinedHeatDHW
 ---------------
 Info: Zone 'Zone1-zn': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
@@ -3646,7 +3646,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.927.0+add-commercial-units-1.2b98d458.113 for Win32 console
+! CSE 1.0.0-test1+linux-builds.ec7ef564.19 for Windows 32-bit (MSVC)
 
 
 
@@ -5837,7 +5837,7 @@ Input for Run 001:
         
         DELETE Report "eb"    // move from end of CSE file
 -----------------------
-???     CHDHW.CSE(6664): Info: RSYS 'rsys1': 'rsCapH' is ignored when rsType=ACCombinedHeatDHW
+???     chdhw.cse(6664): Info: RSYS 'rsys1': 'rsCapH' is ignored when rsType=ACCombinedHeatDHW
 -----------------------
         
         ALTER REPORTFILE Primary rfPageFmt = NO
@@ -6253,7 +6253,7 @@ Input for Run 001:
 Error Messages for Run 001:
 
 ---------------
-CHDHW.CSE(6664): Info: RSYS 'rsys1': 'rsCapH' is ignored when rsType=ACPMCombinedHeatDHW
+chdhw.cse(6664): Info: RSYS 'rsys1': 'rsCapH' is ignored when rsType=ACPMCombinedHeatDHW
 ---------------
 Info: Zone 'Zone1-zn': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
@@ -9896,7 +9896,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 002:
 
-! CSE 0.927.0+add-commercial-units-1.2b98d458.113 for Win32 console
+! CSE 1.0.0-test1+linux-builds.ec7ef564.19 for Windows 32-bit (MSVC)
 
 
 
@@ -9917,7 +9917,7 @@ Input for Run 001:
         
         PERFORMANCEMAP "PMClg"
 -----------------------
-???     CHDHW.CSE(6664): Info: RSYS 'rsys1': 'rsCapH' is ignored when rsType=ACPMCombinedHeatDHW
+???     chdhw.cse(6664): Info: RSYS 'rsys1': 'rsCapH' is ignored when rsType=ACPMCombinedHeatDHW
 -----------------------
         
             PMGRIDAXIS "ClgDBT" pmGXType = "DBT" pmGXValues = 60, 82, 95, 115 pmGXRefValue = 95
@@ -9946,18 +9946,18 @@ Input for Run 001:
 
 
 
-! CSE 0.927.0+add-commercial-units-1.2b98d458.113 for Win32 console run(s) done: Fri 20-Feb-26   1:06:56 pm
+! CSE 1.0.0-test1+linux-builds.ec7ef564.19 for Windows 32-bit (MSVC) run(s) done: Thu 02-Jul-26   2:05:37 pm
 
-! Executable:   c:\src\cse\builds\cse.exe
-!               20-Feb-26  12:36 pm   (VS 14.29    3594752 bytes)  (HPWH 1.4.1+HEAD.11240a73.2140)
+! Executable:   d:\a\cse\cse\build\cse.exe
+!               02-Jul-26   2:03 pm   (VS 14.29    3598848 bytes)  (HPWH 1.4.1+HEAD.11240a73.2140)
 ! Command line: -x!  -b -t1 chdhw
-! Input file:   C:\src\cse\test\chdhw.cse
-! Report file:  C:\SRC\CSE\TEST\CHDHW.REP
+! Input file:   D:\a\cse\cse\test\chdhw.cse
+! Report file:  D:\a\cse\cse\test\chdhw.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.71     Calls = 2         T/C = 0.3575
+!                Input:  Time = 0.98     Calls = 2         T/C = 0.4890
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 12.88    Calls = 2         T/C = 6.4420
-!              Reports:  Time = 0.02     Calls = 2         T/C = 0.0080
-!                Total:  Time = 13.62    Calls = 1         T/C = 13.6170
+!           Simulation:  Time = 19.09    Calls = 2         T/C = 9.5450
+!              Reports:  Time = 0.02     Calls = 2         T/C = 0.0085
+!                Total:  Time = 20.09    Calls = 1         T/C = 20.0860

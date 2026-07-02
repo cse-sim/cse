@@ -795,7 +795,7 @@ void WDYEAR::wdy_Stats(			// statistics for day
 									//   [ 1] = ditto, next highest
 // returns min, mean, and max dry-bulb for day
 {
-	VHR tdvElecHr[24] = { 0 };		// day's tdvElec for hour-rank sort
+	VHR tdvElecHr[24] = {};		// day's tdvElec for hour-rank sort
 	taDbMin = 9999.;
 	taDbMax = tdvElecPk = -9999.;
 	taDbAvg = tdvElecAvg = 0.;

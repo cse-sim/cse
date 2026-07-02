@@ -317,6 +317,10 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *r NOYESCH tp_brHrly	// YES to generate hourly binary results file, default NO. From input file or cmd line.
 			// brf and brfHrly are intended to be independent, except monthly-hourly averages
     		//  in basic file may only be computed if brfHrly is also on, 11-20-93.
+    *i NOYESCH tp_ucFName	// YES to upper-case OUTPUT file NAMEs (not their dir path), as CSE has
+							//   historically done, e.g. binary results/report/export files.
+							//   default NO: use case as given/derived. (Never applied to input files:
+							//   would break opening them by name on case-sensitive file systems, e.g. Linux.)
     *i CULSTR tp_brFileName // file name for binary results, extension .brs and/or .bhr added. default: input file name.
                             // settable in DLL version only, only by command line switches. Default is file output (if brs/brHrly) only.
      *r BOO tp_brMem			// Put binary results in Windows global memory and return handles; do not write file.

@@ -3,7 +3,7 @@
 Error Messages for Run 001:
 
 ---------------
-DHW02.CSE(38): Info: 
+dhw02.cse(38): Info: 
   DHWSYS 'DS0': 'wsDayWasteVol' is ignored -- there are no wsDayUse draws.
 ---------------
 
@@ -11,7 +11,7 @@ DHW02.CSE(38): Info:
 
 ! Log for Run 001:
 
-! CSE 0.923.0+dhw-message-tweak.937e80d9.1.dirty for Win32 console
+! CSE 1.0.0-test1+linux-builds.ec7ef564.19 for Windows 32-bit (MSVC)
 
 
 
@@ -81,10 +81,10 @@ Input for Run 001:
 Error Messages for Run 002:
 
 ---------------
-DHW02.CSE(38): Info: 
+dhw02.cse(38): Info: 
   DHWSYS 'DS0': 'wsDayWasteVol' is ignored -- there are no wsDayUse draws.
 ---------------
-DHW02.CSE(121): Info: DHWSYS 'DS2': 
+dhw02.cse(121): Info: DHWSYS 'DS2': 
     'wsDayWasteBranchVolF' is ignored -- there are no wsDayUse draws.
 ---------------
 
@@ -1102,7 +1102,7 @@ Br1 for Wed 01-Apr
 
 ! Log for Run 002:
 
-! CSE 0.923.0+dhw-message-tweak.937e80d9.1.dirty for Win32 console
+! CSE 1.0.0-test1+linux-builds.ec7ef564.19 for Windows 32-bit (MSVC)
 
 
 
@@ -1111,7 +1111,7 @@ Input for Run 001:
         
         METER Elec1
 -----------------------
-???     DHW02.CSE(38): Info: 
+???     dhw02.cse(38): Info: 
 ???       DHWSYS 'DS0': 'wsDayWasteVol' is ignored -- there are no wsDayUse draws.
 -----------------------
         METER Fuel1
@@ -1347,27 +1347,27 @@ Input for Run 001:
         
         
 -----------------------
-???     DHW02.CSE(38): Info: 
+???     dhw02.cse(38): Info: 
 ???       DHWSYS 'DS0': 'wsDayWasteVol' is ignored -- there are no wsDayUse draws.
 -----------------------
-???     DHW02.CSE(121): Info: DHWSYS 'DS2': 
+???     dhw02.cse(121): Info: DHWSYS 'DS2': 
 ???         'wsDayWasteBranchVolF' is ignored -- there are no wsDayUse draws.
 -----------------------
 
 
 
-! CSE 0.923.0+dhw-message-tweak.937e80d9.1.dirty for Win32 console run(s) done: Thu 09-Jan-25   4:3 pm
+! CSE 1.0.0-test1+linux-builds.ec7ef564.19 for Windows 32-bit (MSVC) run(s) done: Thu 02-Jul-26   2:04:46 pm
 
-! Executable:   d:\cse\builds\cse.exe
-!               09-Jan-25   4:3 pm   (VS 14.29    2941952 bytes)  (HPWH 1.24.0)
-! Command line: -x!  -t1 DHW02
-! Input file:   D:\cse\test\DHW02.cse
-! Report file:  D:\CSE\TEST\DHW02.REP
+! Executable:   d:\a\cse\cse\build\cse.exe
+!               02-Jul-26   2:03 pm   (VS 14.29    3598848 bytes)  (HPWH 1.4.1+HEAD.11240a73.2140)
+! Command line: -x!  -b -t1 dhw02
+! Input file:   D:\a\cse\cse\test\dhw02.cse
+! Report file:  D:\a\cse\cse\test\dhw02.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.09     Calls = 2         T/C = 0.0465
+!                Input:  Time = 0.12     Calls = 2         T/C = 0.0580
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 1.41     Calls = 2         T/C = 0.7055
-!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0015
-!                Total:  Time = 1.51     Calls = 1         T/C = 1.5130
+!           Simulation:  Time = 2.56     Calls = 2         T/C = 1.2805
+!              Reports:  Time = 0.00     Calls = 2         T/C = 0.0010
+!                Total:  Time = 2.68     Calls = 1         T/C = 2.6810

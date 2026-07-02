@@ -741,7 +741,7 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 	if ( IsVal( TOPRAT_BRFILENAME))  		// if binary result filename given (and stored -- insurance)
 			&& !tp_brFileName.IsBlank() )	// and not just "" to negate filename in earlier run
 	{
-		char *s = strffix( tp_brFileName, "");	// standardize: deblank, uppercase. "": no default extension. to TmpStr.
+		char *s = strffix( tp_brFileName, "", tp_ucFName==C_NOYESCH_YES);	// standardize: deblank, optionally uppercase file name. "": no default extension. to TmpStr.
 		char *dot = strrchr( s, '.');		// point last period in pathName
 		if (dot > strchr( s, '\\') && *(dot+1))	// if file extension given (not . in a dir name, not final . )
 		{
