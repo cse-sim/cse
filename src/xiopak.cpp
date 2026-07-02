@@ -597,6 +597,39 @@ bool xfIsValidPathSyntax(
 }	// xfIsValidPathSyntax
 #endif
 //------------------------------------------------------------------------
+static bool xfCaseCorrect(	// case-insensitive fallback lookup, in place
+	char* tPath)			// path to check/correct; must be writable and
+							//   large enough (correction never lengthens it)
+// CSE has historically assumed a case-insensitive file system; many input,
+//   weather/TDV, and #include file references use a case that differs from
+//   their on-disk name. If tPath isn't found as given, look for a
+//   case-insensitive match in its directory and correct tPath's file name
+//   portion in place (same length: safe). On a case-insensitive file system
+//   (Windows, default macOS), the exact-case check already succeeds and this
+//   is never reached; on a case-sensitive one (Linux, or macOS with a
+//   case-sensitive volume), it provides the same tolerant behavior.
+// Returns true iff tPath was corrected to an existing case-insensitive match.
+{
+	std::error_code ec;
+	filesys::path p( tPath);
+	filesys::path dir = p.has_parent_path() ? p.parent_path() : filesys::path(".");
+	std::string target = p.filename().string();
+	if (target.empty() || !filesys::is_directory( dir, ec))
+		return false;
+	for (const auto& entry : filesys::directory_iterator( dir, ec))
+	{	if (ec)
+			break;
+		std::string entryName = entry.path().filename().string();
+		if (entryName.size() == target.size()
+			&& std::equal( entryName.begin(), entryName.end(), target.begin(),
+				[]( unsigned char a, unsigned char b) { return tolower( a) == tolower( b); }))
+		{	strcpy( tPath + strlen( tPath) - target.size(), entryName.c_str());
+			return true;
+		}
+	}
+	return false;
+}	// xfCaseCorrect
+//------------------------------------------------------------------------
 int xfExist(	// determine file existence
 	const char* fPath,				// pathname
 	char* fPathChecked /*=NULL*/)	// ptr to optional buf[ CSE_MAX_PATH]
@@ -610,11 +643,13 @@ int xfExist(	// determine file existence
 	int ret = 0;
 	// trim whitespace from beg and ws + \ from end (insurance)
 	// return to caller or use tmpstr
-	const char* tPath = strTrimEX( fPathChecked, strTrimB( fPath), "\\");
+	char* tPath = strTrimEX( fPathChecked, strTrimB( fPath), "\\");
 	if (!IsBlank( tPath))
 	{
 		std::error_code ec;
 		bool fileFound = filesys::exists(filesys::path(tPath), ec);
+		if (!fileFound && !ec)
+			fileFound = xfCaseCorrect( tPath);
 		if (fileFound) {
 			ret = (filesys::is_directory(filesys::path(tPath))) ? 3 // Directory found 
 					: (filesys::is_empty(filesys::path(tPath))) ? 1 // File empty
