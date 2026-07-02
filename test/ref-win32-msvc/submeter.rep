@@ -3,19 +3,19 @@
 Error Messages for Run 001:
 
 ---------------
-SUBMETER.CSE(5609): Info: 
+submeter.cse(5609): Info: 
   meter 'MtrElec': Duplicate reference from meter 'MtrElecRecomb'
 ---------------
-SUBMETER.CSE(5610): Info: 
+submeter.cse(5610): Info: 
   meter 'MtrElec2': Duplicate reference from meter 'MtrElecRecomb'
 ---------------
-SUBMETER.CSE(5611): Info: 
+submeter.cse(5611): Info: 
   meter 'MtrElecPV': Duplicate reference from meter 'MtrElecRecomb'
 ---------------
-SUBMETER.CSE(7121): Info: 
+submeter.cse(7121): Info: 
   LOADMETER 'LMHtg': Duplicate reference from LOADMETER 'LMCancel'
 ---------------
-SUBMETER.CSE(7122): Info: 
+submeter.cse(7122): Info: 
   LOADMETER 'LMClg': Duplicate reference from LOADMETER 'LMCancel'
 ---------------
 Info: Zone 'Conditioned-zn': Temp control outcomes
@@ -2772,7 +2772,7 @@ LMClgPeak daily for Jul
 
 ! Log for Run 001:
 
-! CSE 0.927.0+init-presets-from-cbor-hpwh.ab431587.106.dirty for Win32 console
+! CSE 1.0.0-test1+linux-builds.ec7ef564.19 for Windows 32-bit (MSVC)
 
 
 
@@ -5565,36 +5565,36 @@ Input for Run 001:
          RUN
          $EOF
 -----------------------
-???     SUBMETER.CSE(5609): Info: 
+???     submeter.cse(5609): Info: 
 ???       meter 'MtrElec': Duplicate reference from meter 'MtrElecRecomb'
 -----------------------
-???     SUBMETER.CSE(5610): Info: 
+???     submeter.cse(5610): Info: 
 ???       meter 'MtrElec2': Duplicate reference from meter 'MtrElecRecomb'
 -----------------------
-???     SUBMETER.CSE(5611): Info: 
+???     submeter.cse(5611): Info: 
 ???       meter 'MtrElecPV': Duplicate reference from meter 'MtrElecRecomb'
 -----------------------
-???     SUBMETER.CSE(7121): Info: 
+???     submeter.cse(7121): Info: 
 ???       LOADMETER 'LMHtg': Duplicate reference from LOADMETER 'LMCancel'
 -----------------------
-???     SUBMETER.CSE(7122): Info: 
+???     submeter.cse(7122): Info: 
 ???       LOADMETER 'LMClg': Duplicate reference from LOADMETER 'LMCancel'
 -----------------------
 
 
 
-! CSE 0.927.0+init-presets-from-cbor-hpwh.ab431587.106.dirty for Win32 console run(s) done: Fri 13-Feb-26   9:29:33 am
+! CSE 1.0.0-test1+linux-builds.ec7ef564.19 for Windows 32-bit (MSVC) run(s) done: Thu 02-Jul-26   2:05:43 pm
 
-! Executable:   c:\src\cse\builds\cse.exe
-!               13-Feb-26   9:15 am   (VS 14.29    3595264 bytes)  (HPWH 1.4.1+revert-generic-init.9337aa4a.2128)
+! Executable:   d:\a\cse\cse\build\cse.exe
+!               02-Jul-26   2:03 pm   (VS 14.29    3598848 bytes)  (HPWH 1.4.1+HEAD.11240a73.2140)
 ! Command line: -x!  -b -t1 submeter
-! Input file:   C:\src\cse\test\submeter.cse
-! Report file:  C:\SRC\CSE\TEST\SUBMETER.REP
+! Input file:   D:\a\cse\cse\test\submeter.cse
+! Report file:  D:\a\cse\cse\test\submeter.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.65     Calls = 2         T/C = 0.3270
-!           AutoSizing:  Time = 0.47     Calls = 1         T/C = 0.4740
-!           Simulation:  Time = 7.03     Calls = 1         T/C = 7.0330
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0050
-!                Total:  Time = 8.17     Calls = 1         T/C = 8.1680
+!                Input:  Time = 0.95     Calls = 2         T/C = 0.4730
+!           AutoSizing:  Time = 0.78     Calls = 1         T/C = 0.7810
+!           Simulation:  Time = 9.52     Calls = 1         T/C = 9.5220
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0040
+!                Total:  Time = 11.25    Calls = 1         T/C = 11.2540
