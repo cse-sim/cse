@@ -98,6 +98,20 @@ REPORT
    reportcol colVal=@meter[ "VentMtr"].H.fanV colHead = "VElec"
 endReport
 
-    
+REPORT rpType=UDT  rpFreq=SubHOUR  rpDayBeg=sep 13 rpDayEnd=sep 13
+   reportcol colVal=@Top.iHr colHead="Hr" colwid=2
+   reportcol colVal=@Top.iSubhr colHead="Sh" colwid=2
+   reportcol colVal=@Top.tDbOHr    colHead="Tout"   ColWid=6 coldec=3
+   reportcol colVal=@Zone[1].fVent colHead="fVent" colWid=6 coldec=3
+   reportcol colVal=@Znres[ 1].S.eqfVentHr colHead = "eqfVentH" colWid=8 coldec=2
+   reportcol colVal=@Znres[ 1].S.Tair colHead="Ta1" ColWid=6 coldec=3
+   reportcol colVal=@Znres[ 1].S.qshHvac colHead = "hHVAC" ColWid=7 coldec=3
+   reportcol colVal=@Znres[ 1].S.qshIdeal colHead = "hIdeal" ColWid=7 coldec=3
+   reportcol colVal=@Znres[ 1].S.qscHvac colHead = "cHVAC" ColWid=7 coldec=3
+   reportcol colVal=@Znres[ 1].S.qscIdeal colHead = "cIdeal" ColWid=7 coldec=3
+   reportcol colVal=@Znres[ 1].S.qsBal colHead = "qsBal" ColWid=7 coldec=3
+   reportcol colVal=@Znres[ 1].S.qsIz colHead = "qVent" ColWid=7 coldec=3
+endReport
+
 RUN
 //--- end of run ---
