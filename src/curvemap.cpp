@@ -219,7 +219,7 @@ RC PMACCESS::pa_Init(		// input -> Btwxt conversion
 	pa_pParent = pParent;
 
 	// insurance: capRef can be nan re autosizing
-	pa_capRef = isnan(capRef) ? 0. : capRef;
+	pa_capRef = std::isnan(capRef) ? 0. : capRef;
 
 	pa_pPERFORMANCEMAP = pPM;	// source performance map
 
