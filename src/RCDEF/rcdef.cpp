@@ -327,7 +327,7 @@ static void write_summary1(FILE* stream, bool bListUnusedFields=false);
 // error handling
 static bool rcderr(const char* s, ...);
 static void msgWrite(int erOp, const char* msg, ...);
-static void msgWriteV(int erOp, const char* msg, va_list ap = nullptr);
+static void msgWriteV(int erOp, const char* msg, va_list ap);
 
 
 // Common string buffer
@@ -3352,13 +3352,13 @@ static void msgWrite(		// write msg to stdOut and maybe rcdef.err
 static void msgWriteV(		// write msg to stdOut and maybe rcdef.err
 	int erOp,
 	const char* msg,		// text to write (may include printf-style formatting
-	va_list ap /*= nullptr*/)	// optional arg list
+	va_list ap)				// arg list, from caller's va_start
 {
 	if (erOp == IGN)
 		return;
 
 	// format message
-	const char* ss = ap ? strtvprintf(msg, ap) : msg;
+	const char* ss = strtvprintf(msg, ap);
 
 	auto fprintf1 = [erOp, ss](FILE* stream) -> void
 	{	fprintf(stream, "\n    %s\n", ss);
