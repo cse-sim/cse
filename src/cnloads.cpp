@@ -1049,11 +1049,6 @@ int ZNR::zn_FVentCR()			// find zone's preferred vent fraction
 //          0: no effect / don't care
 //          1: useful
 {
-#if 0 && defined( _DEBUG)
-	if (Top.jDay == 178)
-		printf("\nzn_FVentCR '%s'", Name());
-#endif
-
 	int ret = 0;
 	zn_fVentPrf = 0.f;
 
@@ -1102,13 +1097,6 @@ RC ZNR::zn_CondixCR(		// zone conditions part 1, convective/radiant model
 {
 	RC rc = RCOK;
 
-#if 0 && defined( _DEBUG)
-x	if (!Top.isWarmup)
-x	{	if (Top.jDay==31 && strMatch( Name(), "SDuctZone"))
-x			printf( "Hit\n");
-x	}
-#endif
-
 #if defined( CRTERMAH)
 	zn_rsAmfSysReq[ 0] = zn_rsAmfSysReq[ 1] = 0.;	// RSYS air requests
 
@@ -1141,11 +1129,6 @@ x	}
 
 	zn_anAmfCpVent = 0.;		// full vent heat rate, Btuh/F
 	zn_anAmfCpTVent = 0.;		// full vent heat addition, Btuh
-#endif
-
-#if 0 && defined( _DEBUG)
-	if (Top.jDay == 256 && Top.iHr == 23 && Top.iSubhr > 10)
-		printf("\nHit");
 #endif
 
 	bool bUZ = zn_IsUZ();
@@ -1234,8 +1217,8 @@ x	}
 				if (zn_hcMode != RSYS::rsmOFF)
 				{
 #if 0 && defined( _DEBUG)
-					x					if (Top.tp_pass1B)
-						x						printf("1B\n");
+x					if (Top.tp_pass1B)
+x						printf("1B\n");
 #endif
 					int rsAvail = rs->rs_SupplyAirState(zn_hcMode);
 
@@ -4053,26 +4036,6 @@ void RSYS::rs_CoolingSHR()		// derive cooling sensible heat ratio
 //         rs_vfPerTon = indoor std air cfm / ton
 // return: rs_SHR = SHR under current conditions
 {
-#if 0 && defined( _DEBUG)
-x	if (!Top.isWarmup)
-x		printf("Hit\n");
-#endif
-#if 0 && defined( _DEBUG)
-	if (!Top.isWarmup)
-	{
-		if (fabs(rs_asIn.as_tdb - 80.) < .2
-		 && fabs(rs_twbCoilIn - 67.) < 1.
-		 && fabs(rs_tdbOut - 95.f) < .2)
-			printf("Hit\n");
-	}
-#endif
-#if 0 && defined( _DEBUG)
-	rs_tdbOut = 95.f;
-	rs_tdbCoilIn = 80.f;
-	rs_twbCoilIn = 67.f;
-	rs_vfPerTon = 400.f;
-#endif
-
 	rs_SHR = CoolingSHR(rs_tdbOut, rs_tdbCoilIn, rs_twbCoilIn, rs_vfPerTon);
 
 }		// RSYS::rs_CoolingSHR
@@ -4176,11 +4139,6 @@ void RSYS::rs_CoolingOutletAirState(		// cooling outlet (leaving) air state
 		rs_ExportCorrelationValues();
 			bDoneExport = true;
 	}
-#endif
-
-#if 0 && defined( _DEBUG)
-x	if (Top.jDay == 242 && Top.iHr == 14)
-x		printf("\nhit");
 #endif
 
 	// fan heat: coil entering conditions
@@ -6022,10 +5980,6 @@ RC RSYS::rs_AllocateZoneAir()	// finalize zone air flows
 	else if (rs_effHt == 0.f || rs_ctrlAuxH == C_AUXHEATCTRL_LO)
 	{	// compressor is unavailable
 		// meet load with aux alone
-#if 0 && defined( _DEBUG)
-		if (Top.jDay == 336)
-			printf("\nHit %s", Top.dateStr.CStr());
-#endif
 		rs_effHt = 0.f;		// force compressor off (for _LO case)
 		rs_fxCap[ 1] = rs_amf / rs_amfReq[ 1];	// x/0 impossible
 		rs_runFAux = 1.f / rs_fxCap[ 1];
@@ -6056,10 +6010,6 @@ RC RSYS::rs_AllocateZoneAir()	// finalize zone air flows
 		//   1/amf is linear-ish with tSup, reduces iterations
 #if defined( RSYSITERCOUNT)
 		rsysPartAuxCount++;
-#endif
-#if 0 && defined( _DEBUG)
-		if (Top.jDay == 336)
-			printf("\nHit %s", Top.dateStr.CStr());
 #endif
 		double tSup = max(rs_asSup.as_tdb, rs_tSupLs);	// use last result as guess
 		double amfX = DBL_MIN;
@@ -7028,10 +6978,6 @@ RC ZNR::zn_AfterSubhr()
 // end-subhour after-exprs/reports stuff for loads: set 'prior interval' variables etc
 // if done sooner, probes come out wrong.
 {
-#if 0 && defined( _DEBUG)
-	if (Top.iHr == 7)
-		printf("\niHr=%d", Top.iHr);
-#endif
 	tzlsDelta = tz - tzls;		// last subhour t delta: may be used to extrapolate next tz
 	tzls = tz;					// last subhr zone air temp for next subHour
 	wzlsDelta = wz - wzls;		// last subhour w delta: may be used to extrapolate next wz
