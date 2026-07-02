@@ -399,6 +399,22 @@ Run title for the simulation. Appears in report footers, export headers, and in 
   })
 }}
 
+### ucFileName
+
+Type: choice
+
+Whether to upper-case the NAME portion (not the directory path) of generated output file names, such as report, export, and binary results files, as CSE has historically done. Does not affect input or `#include` file names, which are always opened using the case as given -- required for opening files by name on case-sensitive file systems (e.g. Linux).
+
+{{
+  member_table({
+    "units": "",
+    "legal_range": "YES, NO", 
+    "default": "NO",
+    "required": "No",
+    "variability": "constant" 
+  })
+}}
+
 ### runSerial
 
 Type: int

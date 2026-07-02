@@ -75,7 +75,7 @@ int strLineLen( const char *s);
 int strJoinLen( const char *s1, const char *s2);
 char * FC strpad( char *s, const char *pads, int n);
 char* strSpacePad( char* d, size_t n, const char* s=NULL);
-const char * FC strffix( const char *name, const char *ext);
+const char * FC strffix( const char *name, const char *ext, bool ucFName=false);
 const char* strffix2( const char* name, const char* ext, int options=0);
 
 const char* FC strtPathCat( const char *path, const char *namExt);
