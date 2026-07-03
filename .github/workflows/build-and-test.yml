@@ -46,19 +46,19 @@ jobs:
     continue-on-error: ${{ matrix.experimental }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: recursive
       - name: Get number of CPU cores # Can replace when CMake is upgraded to 3.29
-        uses: SimenB/github-actions-cpu-cores@v3
+        uses: SimenB/github-actions-cpu-cores@v2
         id: cpu-cores
       # - name: Setup Mesa3D
       #   uses: bigladder/github-actions/setup-mesa3d@main
       #   with:
       #     install-directory: msvc
       - name: Install uv and set the python version
-        uses: astral-sh/setup-uv@v8.2.0
+        uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.13"
       - name: Build CSE
@@ -71,7 +71,7 @@ jobs:
           echo "archive=${archive}" >> "$GITHUB_OUTPUT"
           echo "archive_name=$(basename "${archive}")" >> "$GITHUB_OUTPUT"
       - name: Upload executable artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.package.outputs.archive_name }}
           path: ${{ steps.package.outputs.archive }}
@@ -83,14 +83,14 @@ jobs:
         continue-on-error: true
       - name: Upload report files artifact
         if: steps.test.outcome == 'failure'
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: Reports-${{ matrix.os }}-${{ matrix.os_ver }}-${{ matrix.arch }}bit_${{ matrix.config }}
           path: |
             test/*.rep
             test/*.REP
       - name: Upload documentation
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: Documentation-${{ matrix.os }}-${{ matrix.os_ver }}-${{ matrix.arch }}
           path: |

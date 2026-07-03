@@ -22,7 +22,7 @@ set(headers
 )
 
 add_executable(RCDEF ${source} ${headers})
-target_compile_features(RCDEF PRIVATE cxx_std_17)
+target_compile_features(RCDEF PRIVATE cxx_std_20)
 target_include_directories(RCDEF PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}" "${CSE_SOURCE_DIR}/src")
 target_compile_definitions(RCDEF PRIVATE NODTYPES)
 target_link_libraries(RCDEF PRIVATE cse_common_interface)
