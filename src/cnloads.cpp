@@ -4922,7 +4922,7 @@ RC RSYS::rs_SetupCHDHW2()		// check/set up combined heat / DWH
 		rc |= rs_pCHDHW->chw_Init(rs_fanSFPH, mult, capHRtd);
 
 		rs_tdDesH = rs_pCHDHW->chw_GetTRise();
-		rs_capH = rs_pCHDHW->chw_GetRatedCap();  // ???
+		rs_capH = rs_pCHDHW->chw_GetRatedCap();
 
 		// rated fan heat (unused?)
 		rs_fanHRtdH = ratedSFP * rs_pCHDHW->chw_GetRatedBlowerAVF() * BtuperWh;

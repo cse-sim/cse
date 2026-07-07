@@ -377,7 +377,7 @@ void ASHPConsistentCaps(   // make air source heat pump heating/cooling capaciti
 //=============================================================================
 
 ///////////////////////////////////////////////////////////////////////////////
-// Harvest Thermal CHDHW (Combined Heat / DHW) routines
+// Combined Heat / DHW routines
 // Data + class CHDHW
 ///////////////////////////////////////////////////////////////////////////////
 CHDHW::CHDHW( record* pParent)
@@ -404,7 +404,7 @@ void CHDHW::chw_Clear()	// clear all non-static members
 
 }	// CHDHW::chw_Clear
 //-----------------------------------------------------------------------------
-// base data from Harvest Thermal memos
+// Performance data from Harvest Thermal memos
 // nominal gross capacity steps, Btuh
 static constexpr std::array chw_grossCaps{ 6000.f, 12000.f, 18000.f, 24000.f, 30000.f, 36000.f };
 // blower air flow, cfm
