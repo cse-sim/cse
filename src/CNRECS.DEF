@@ -4510,6 +4510,8 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *h *e FLOAT ws_DLM;		// distribution loss multiplier (calc'd)
   *h *e FLOAT ws_volRL;		// current hour all-DHWLOOP return volume, gal
   *h *e FLOAT ws_tRL;		// current hour all-DHWLOOP return temp, F
+  *h *e FLOAT ws_loopDeltaT;    // ws_tUse - ws_tRL at end of current hour, F (can be < 0)
+  *h    FLOAT ws_loopDeltaTlh;  // prior hour ws_loopDeltaT (can be < 0)
   *h *e FLOAT ws_HRBL;		// current hour all-DHWLOOPBRANCH losses, Btu
   *h *e FLOAT ws_t24WL;		// current hour all-DHWLOOPBRANCH waste loss volume, gal
 							//    per T24DHW branch model

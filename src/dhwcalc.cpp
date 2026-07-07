@@ -1419,29 +1419,30 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		rc |= pWT->wt_DoHour();
 
 	// multi-unit distribution losses
-	double HRLL = 0.;
-	ws_HRBL = 0.f;
-	ws_t24WL = 0.f;
-	ws_volRL = 0.f;
+	ws_HRDL = ws_HRBL = ws_t24WL = ws_volRL = 0.f;
 	double tVolRet = 0.;
 	if (ws_wlCount > 0)		// if any loops
 	{	DHWLOOP* pWL;
 		RLUPC( WlR, pWL, pWL->ownTi == ss)
 		{	rc |= pWL->wl_DoHour( mult);		// also calcs child DHWLOOPSEGs and DHWLOOPPUMPs
-			HRLL += pWL->wl_HRLLnet;	// loop loss
+			ws_HRDL += pWL->wl_HRLLnet;	// loop loss
 			ws_HRBL += pWL->wl_HRBL;	// branch loss, Btu
 			ws_t24WL += pWL->wl_t24WL;	// T24 model branch waste loss volume, gal (info only)
 			ws_volRL += pWL->wl_volRL;	// vol returned to WH(s), gal
 			tVolRet += pWL->wl_volRL * pWL->wl_tRL;
 		}
-		ws_tRL = tVolRet / ws_volRL;
 	}
-	ws_tRL = ws_volRL > 0.f ? tVolRet / ws_volRL : 0.f;
+	if (ws_volRL > 0.f)	// if any loop flow
+	{
+		ws_tRL = tVolRet / ws_volRL;
+		ws_loopDeltaT = ws_tUse - ws_tRL;	// loop temp deltaT, F (can be < 0)
+	}
+	else
+		ws_tRL = ws_loopDeltaT = 0.f;
 
 	ws_t24WLTot += ws_t24WL;
 
 	// distribution losses
-	ws_HRDL = float(HRLL);
 	if (ws_branchModel == C_DHWBRANCHMODELCH_T24DHW)
 		ws_HRDL += ws_HRBL;		// conditionally include branch losses
 
@@ -2203,6 +2204,8 @@ RC DHWSYS::ws_EndIvl(		// end-of-hour
 	}
 	if (ws_wlhCount > 0.f) RLUPC(WlhR, pWH, pWH->ownTi == ss)
 		rc |= pWH->wh_EndIvl(ivl, 0.f, ws_mult);
+
+	ws_loopDeltaTlh = ws_loopDeltaT;	// last hour value for beg-of-hour expressions
 
 	// note: DHWSYS energy/water meter accum is in ws_DoHour
 	//       values do not vary subhrly
