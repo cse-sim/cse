@@ -25,10 +25,13 @@
 
 #if defined(_WIN32) // _WIN32 Defined for both windows 32-bit and windows 64-bit environments 1
 #define CSE_OS CSE_OS_WINDOWS
+#define CSE_OS_STR "Windows"
 #elif defined( __APPLE__)
 #define CSE_OS CSE_OS_MACOS
+#define CSE_OS_STR "macOS"
 #elif defined( __linux)	// May need to be more specific later (e.g., __GNU__)
 #define CSE_OS CSE_OS_LINUX
+#define CSE_OS_STR "Linux"
 #else
 #error "Unknown CSE_OS"
 #endif
@@ -41,14 +44,18 @@
 
 #if defined( _MSC_VER)
 #define CSE_COMPILER CSE_COMPILER_MSVC
+#define CSE_COMPILER_STR "MSVC"
 #elif defined(__clang__)
 #if defined(__apple_build_version__)
 #define CSE_COMPILER CSE_COMPILER_APPLECLANG // (unsure if we'll need this distinction)
+#define CSE_COMPILER_STR "Apple Clang"
 #else
 #define CSE_COMPILER CSE_COMPILER_CLANG
+#define CSE_COMPILER_STR "Clang"
 #endif
 #elif defined( __GNUC__)
 #define CSE_COMPILER CSE_COMPILER_GCC
+#define CSE_COMPILER_STR "GCC"
 #else
 #error "Unknown CSE_COMPILER"
 #endif
@@ -62,7 +69,11 @@
 #define CSE_ARCH 64
 #endif
 #endif
-#if CSE_ARCH != 32 && CSE_ARCH != 64
+#if CSE_ARCH == 64
+#define CSE_ARCH_STR "64-bit"
+#elif CSE_ARCH == 32
+#define CSE_ARCH_STR "32-bit"
+#else
 #error "Invalid CSE_ARCH -- must be 32 or 64"
 #endif
 

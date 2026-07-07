@@ -63,13 +63,19 @@ jobs:
           python-version: "3.13"
       - name: Build CSE
         run: cmake -DBUILD_ARCHITECTURE=${{ matrix.arch }} -DCOMPILER_ID=${{ matrix.compiler }} -DCONFIGURATION=${{ matrix.config }} -DBUILD_DIRECTORY=build -DBUILD_DOCS_WITH_ALL=ON -P cmake/configure-and-build.cmake
+      - name: Package CSE
+        id: package
+        run: |
+          cmake -P cmake/package.cmake
+          archive=$(ls build/cse-*.zip build/cse-*.tar.gz 2>/dev/null | head -1) || true
+          echo "archive=${archive}" >> "$GITHUB_OUTPUT"
+          echo "archive_name=$(basename "${archive}")" >> "$GITHUB_OUTPUT"
       - name: Upload executable artifact
         uses: actions/upload-artifact@v7
         with:
-          name: CSE-${{ matrix.os }}-${{ matrix.os_ver }}-${{ matrix.arch }}bit-${{ matrix.config }}
-          path: |
-            build/CSE*
-            build/cse*
+          name: ${{ steps.package.outputs.archive_name }}
+          path: ${{ steps.package.outputs.archive }}
+          archive: false
       - name: Test
         id: test
         run: ctest -C ${{ matrix.config }} -j ${{ steps.cpu-cores.outputs.count }} --output-on-failure -E shadetest  # CI can't do GPU calcs at this time (the steps above get us close, but throws an exception on destruction)

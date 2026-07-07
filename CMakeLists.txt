@@ -48,13 +48,27 @@ endif()
 
 # Build Compiler
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-  set(CSE_COMPILER_NAME "gcc")
+  set(CSE_COMPILER_NAME "gcc" CACHE STRING "Normalized compiler identifier." FORCE)
 else()
-  string(TOLOWER ${CMAKE_CXX_COMPILER_ID} CSE_COMPILER_NAME)
+  string(TOLOWER ${CMAKE_CXX_COMPILER_ID} _compiler_name)
+  set(CSE_COMPILER_NAME "${_compiler_name}" CACHE STRING "Normalized compiler identifier." FORCE)
 endif()
 
 if(NOT DEFINED CSE_EXECUTABLE_DIRECTORY)
   set(CSE_EXECUTABLE_DIRECTORY ${CMAKE_BINARY_DIR})
+endif()
+
+if(NOT CSE_EXECUTABLE_DIRECTORY STREQUAL CMAKE_BINARY_DIR)
+  set(_unique_names_default ON)
+else()
+  set(_unique_names_default OFF)
+endif()
+option(CSE_UNIQUE_BINARY_NAMES "Append compiler and architecture to the executable name to support side-by-side installations of different builds." ${_unique_names_default})
+
+if(CSE_UNIQUE_BINARY_NAMES)
+  set(CSE_EXECUTABLE_NAME "cse-${CSE_COMPILER_NAME}-${CSE_BUILD_ARCHITECTURE}" CACHE STRING "Output name of the CSE executable." FORCE)
+else()
+  set(CSE_EXECUTABLE_NAME "cse" CACHE STRING "Output name of the CSE executable." FORCE)
 endif()
 
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
