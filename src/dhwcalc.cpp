@@ -4831,11 +4831,17 @@ static const DRMAP drMap[] =
 
 }	// DHWHEATER::wh_DRMapSigToDRStatus
 //-----------------------------------------------------------------------------
-RC DHWHEATER::wh_DoSubhrStart()
+RC DHWHEATER::wh_DoSubhrStart()	// subhour init
 {
 	RC rc = RCOK;
 
-	// DHWSYS* pWS = wh_GetDHWSYS();
+	DHWSYS* pWS = wh_GetDHWSYS();
+
+	// default energy use adjustment factors from parent
+	if (!IsSet(DHWHEATER_FADJELEC))
+		wh_fAdjElec = pWS->ws_fAdjElec;
+	if (!IsSet(DHWHEATER_FADJFUEL))
+		wh_fAdjFuel = pWS->ws_fAdjFuel;
 
 	wh_effSh = 0.f;
 	wh_inElecSh = 0.f;

@@ -2173,8 +2173,11 @@ CULT( "wsDayWasteBranchVolF",DAT,DHWSYS_DAYWASTEBRANCHVOLF,
 CULT("wsDrawMaxDur", DAT,   DHWSYS_DRAWMAXDUR,     0, 0, VEOI,  TYSI,  0,      4,    N, N),
 CULT("wsLoadMaxDur", DAT,   DHWSYS_LOADMAXDUR,     0, 0, VEOI,  TYSI,  0,     12,    N, N),
 
+CULT( "wsFAdjElec",	 DAT,   DHWSYS_FADJELEC,0,     0, VSUBHRLY,TYFL, 0,      1.0f,   N, N),
+CULT( "wsFAdjFuel",	 DAT,   DHWSYS_FADJFUEL,0,     0, VSUBHRLY,TYFL, 0,      1.0f,   N, N),
 CULT( "wsElecMtr",   DAT,   DHWSYS_ELECMTRI, 0,       0, VEOI,	 TYREF, &MtriB, N,      N, N),
 CULT( "wsFuelMtr",   DAT,   DHWSYS_FUELMTRI, 0,       0, VEOI,	 TYREF, &MtriB, N,      N, N),
+
 CULT( "wsWriteDrawCSV",DAT, DHWSYS_DRAWCSV,  0,       0, VEOI,   TYCH,  0,      C_NOYESCH_NO, N, N),
 CULT( "dhwheater",   RATE,  0,               0,       0, 0,      0,     &WHiB,  N,      dhwHeaterT, N),
 CULT( "dhwloopheater",RATE, 0,               0,       0, 0,      0,     &WLHiB, N,      dhwHeaterT, N),

@@ -4268,6 +4268,11 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *i TI ws_elecMtri;		// meter for system electricity use
   *i TI ws_fuelMtri;		// meter for system fuel use
 
+  *s FLOAT_GEZ ws_fAdjElec; // electricity use adjustment factor, default 1
+                            //   provides default for child DHWHEATER/DHWLOOPHEATER wh_fAdjElec
+  *s FLOAT_GEZ ws_fAdjFuel; // fuel use adjustmentment factor, default 1
+                            //   provides default for child DHWHEATER/DHWLOOPHEATER wh_fAdjFuel
+
 							// energy inputs for current hour, Btuh
 							//   NOTE: values DO NOT include DHWHEATER use
   *h *e FLOAT ws_inElec;	//    electricity (note not kWh)
@@ -4836,12 +4841,10 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *h *e DBL wh_totOut;		// cumulative (year to date) total heat delivered to hot water, Btu
 							//   includes wh_qXBU
 
-  *s FLOAT_GEZ wh_fAdjElec; // electricity use adjustment factor
+  *s FLOAT_GEZ wh_fAdjElec; // electricity use adjustment factor, default = parent ws_fAdjElec
                             //   applied to all electricity use (primary, BU, XBU)
-                            //   default 1
-  *s FLOAT_GEZ wh_fAdjFuel; // fuel use adjment factor
+  *s FLOAT_GEZ wh_fAdjFuel; // fuel use adjustment factor, default = parent ws_fAdjFuel
                             //   applied to fuel use
-                            //   default 1
 
 							// energy inputs for current subhour, Btu
 							//   subhour results accumulated here
@@ -4852,7 +4855,6 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 								//       (does not include wh_inElecXBUSh)
   *s *e FLOAT wh_inElecXBUSh;	//    XBU "extra" backup (reheating to maintain ws_tUse)
   *s *e FLOAT wh_inFuelSh;		//	  fuel (including wh_pilotPwr)
-    
 
 							// energy inputs for current hour, Btu
 							//   set from analogous subhour values
