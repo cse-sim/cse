@@ -6,7 +6,8 @@
 // cnglob.h: Global definitions for CSE: include first in all files.
 ///////////////////////////////////////////////////////////////////////////////
 
-#define GLOB	// ifndef GLOB may be used to prevent duplicate compilation
+#ifndef GLOB	// ifndef GLOB used to prevent duplicate compilation
+#define GLOB
 
 
 #include "cndefns.h"	// configuration definitions
@@ -732,3 +733,5 @@ const DWORD dbdSBC = 16384;		// surface conditions
 
 
 // end of cnglob.h
+
+#endif	// GLOB
