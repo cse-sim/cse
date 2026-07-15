@@ -76,6 +76,11 @@ Choice indicating report type. Report types may be described at greater length, 
   ZST,     Zone statistics. Requires *rpZone*.
   ZEB,     Zone energy balance. Requires *rpZone*.
   MTR,     Meter report. Requires *rpMeter*.
+  AH,      Air handler report.  Requires *rpAH*.
+  AHSIZE,  Air handler sizing report.  Requires *rpAH*.
+  AHLOAD,  Air handler load report.  Requires *rpAH*.
+  TUSIZE,  Terminal sizing report.  Requires *rpTU*.
+  TULOAD,  Terminal load report.  Requires *rpTU*.
   DHWMTR,  DHW meter report.  Requires *rpDHWMeter*
   AFMTR,   Air flow meter report.  Requires *rpAFMeter*
   UDT,     User-defined table. Data items are specified with REPORTCOL commands (next section). Allows creating almost any desired report by using CSE expressions to specify numeric or string values to tabulate; 'Probes' may be used in the expressions to access CSE internal data.")
@@ -220,7 +225,7 @@ Specifies air flow meter(s) to be reported, for *rpType*=AFMTR.
   })
 }}
 
-### rpAh
+### rpAH
 
 Type: ahName
 
@@ -236,7 +241,7 @@ Specifies air handler(s) to be reported, for *rpType*=AH, AHSIZE, or AHLOAD.
   })
 }}
 
-### rpTu
+### rpTU
 
 Type: tuName
 

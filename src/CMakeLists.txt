@@ -143,10 +143,6 @@ set(source
 
 list(APPEND source ${cse_common_source})
 
-set(precomp
-  StdAfx.cpp
-)
-
 set(rcFile
   cse.rc
 )
@@ -220,29 +216,14 @@ if(USE_BINRES) # CSE Binary results file writer
   list(APPEND headers brfw.h)
 endif()
 
-# Precompiled Headers
-macro(addMSVCPrecompiledHeader PrecompiledHeader PrecompiledSourceVar SourcesVar)
-  if(MSVC)
-    get_filename_component(PrecompiledBasename ${PrecompiledHeader} NAME_WE)
-    set(PrecompiledBinary "${CMAKE_CURRENT_BINARY_DIR}/${PrecompiledBasename}.pch")
-    set(Sources ${${SourcesVar}})
-    set(PrecompiledSource ${${PrecompiledSourceVar}})
-
-    set_source_files_properties(${PrecompiledSource}
-                                PROPERTIES COMPILE_FLAGS "/Yc\"${PrecompiledHeader}\" /Fp\"${PrecompiledBinary}\""
-                                           OBJECT_OUTPUTS "${PrecompiledBinary}")
-    set_source_files_properties(${Sources}
-                                PROPERTIES COMPILE_FLAGS "/Yu\"${PrecompiledHeader}\" /Fp\"${PrecompiledBinary}\""
-                                           OBJECT_DEPENDS "${PrecompiledBinary}")
-    # Add precompiled header to SourcesVar
-    list(APPEND ${SourcesVar} ${PrecompiledSource})
-  endif()
-endmacro()
-
-addMSVCPrecompiledHeader("cnglob.h" precomp source)
-
 # Final executable/linking
 add_executable(CSE ${source} ${rcFile} ${headers})
+
+# Precompiled Headers
+# Uses CMake's built-in support (>= 3.16), which is generator- and compiler-agnostic:
+# it works with both Ninja and MSBuild (and GCC/Clang). CMake force-includes cnglob.h
+# into every source, replacing the old manual MSVC-only /Yc + /Yu StdAfx.cpp scheme.
+target_precompile_headers(CSE PRIVATE "cnglob.h")
 
 target_include_directories(CSE PRIVATE
   "${CSE_BINARY_DIR}/src"
@@ -284,20 +265,12 @@ endif()
 
 add_dependencies(CSE version_header generate_rcdef_outputs)
 
-if (${CSE_COMPILER_NAME} STREQUAL "msvc" AND ${CSE_BUILD_ARCHITECTURE} STREQUAL "32")
-  set(executable_name "CSE")
-  set(debug_postfix "d")
-else()
-  set(executable_name "cse-${CSE_COMPILER_NAME}-${CSE_BUILD_ARCHITECTURE}")
-  set(debug_postfix "-debug")
-endif ()
-
 set_target_properties(CSE PROPERTIES
-  OUTPUT_NAME "${executable_name}"
+  OUTPUT_NAME "${CSE_EXECUTABLE_NAME}"
 )
 
 set_target_properties(CSE PROPERTIES
-  DEBUG_POSTFIX "${debug_postfix}"
+  DEBUG_POSTFIX "-debug"
 )
 
 foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
