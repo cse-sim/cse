@@ -942,6 +942,22 @@ Specifies electrical parasitic power to represent recirculation pumps or other s
   })
 }}
 
+### wsFAdjElec, wsFAdjFuel
+
+Type: float
+
+Energy use modifiers.  Provide default values for child DHWHEATER/DHWLOOPHEATER whFAdjElec and fuel whFAdjFuel.  
+
+{{
+  member_table({
+    "units": "",
+    "legal_range": "≥ 0", 
+    "default": "1",
+    "required": "No",
+    "variability": "subhourly" 
+  })
+}}
+
 ### wsDrawMaxDur
 
 Type: integer

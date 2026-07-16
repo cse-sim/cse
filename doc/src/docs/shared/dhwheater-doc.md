@@ -693,11 +693,13 @@ Type: float
 
 Water heater energy use modifiers.  Multiplies calculated use of electricity (whFAdjElec) and fuel (whFAdjFuel).  All components of energy use -- primary, backup, XBU (extra backup), and other auxiliary -- are modified before they are accumulated to whElecMtr and whFuelMtr.
 
+If not given, whFAdjElec and whFAdjFuel are set from parent DHWSYS wsFAdjElec and wsFAdjFuel.  These in turn have default value 1.  Use of the parent DHWSYS values reduces input when implementing an all-system adjustment.
+
 {{
   member_table({
     "units": "",
     "legal_range": "≥ 0", 
-    "default": "1",
+    "default": "1 (see above)",
     "required": "No",
     "variability": "subhourly" 
   })

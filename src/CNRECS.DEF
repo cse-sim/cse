@@ -4268,6 +4268,11 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *i TI ws_elecMtri;		// meter for system electricity use
   *i TI ws_fuelMtri;		// meter for system fuel use
 
+  *s FLOAT_GEZ ws_fAdjElec; // electricity use adjustment factor, default 1
+                            //   provides default for child DHWHEATER/DHWLOOPHEATER wh_fAdjElec
+  *s FLOAT_GEZ ws_fAdjFuel; // fuel use adjustmentment factor, default 1
+                            //   provides default for child DHWHEATER/DHWLOOPHEATER wh_fAdjFuel
+
 							// energy inputs for current hour, Btuh
 							//   NOTE: values DO NOT include DHWHEATER use
   *h *e FLOAT ws_inElec;	//    electricity (note not kWh)
@@ -4512,6 +4517,8 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *h *e FLOAT ws_DLM;		// distribution loss multiplier (calc'd)
   *h *e FLOAT ws_volRL;		// current hour all-DHWLOOP return volume, gal
   *h *e FLOAT ws_tRL;		// current hour all-DHWLOOP return temp, F
+  *h *e FLOAT ws_loopDeltaT;    // ws_tUse - ws_tRL at end of current hour, F (can be < 0)
+  *h    FLOAT ws_loopDeltaTlh;  // prior hour ws_loopDeltaT (can be < 0)
   *h *e FLOAT ws_HRBL;		// current hour all-DHWLOOPBRANCH losses, Btu
   *h *e FLOAT ws_t24WL;		// current hour all-DHWLOOPBRANCH waste loss volume, gal
 							//    per T24DHW branch model
@@ -4538,7 +4545,7 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
 *END		// DHWSYS
 
 //=============================================================================
-RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
+RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// HPWH tank and heater interface
 *prefix hw_
 *excon
 *exdes
@@ -4591,12 +4598,12 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 									//   corresponds to nodes for HPWH default 12 node setup
 *declare "std::vector< double> hw_pNodePowerExtra_W;"	// runtime extra tank heat linkage to HPWH
 
-*h FLOAT hw_fMixUse;				// factor for draw adjustment re HPWH setpoint > DHWSYS::ws_tUse
-									//   Some HPWHs (e.g. SANCO2) have fixed (high) setpoints
-									//   draws are reduced to balance load at ws_tUse.
-*h FLOAT hw_fMixRL;					// factor for loop return flow adjustment re HPWH setpoint > DHWSYS::ws_tUse
-									//   Some HPWHs (e.g. SANCO2) have fixed (high) setpoints
-									//   Loop return flow is reduced to balance load at ws_tUse.
+*h FLOAT hw_fMixUse;				// mix fraction for DHW use draws to produce ws_tUse
+                                    //   hw_fMixUse from heater.  (1-hw_fMixUse) from mains.
+                                    //   prior tick value used to derive draw passed to HPWH
+*h FLOAT hw_fMixRL;					// mix fraction for DHWLOOP recirculation
+                                    //   hw_fMixRL from heater.  (1-hw_fMixUse) from loop return
+                                    //   prior tick value used to derived draw passed to HPWH
 
 *s *e *array 2 DBL hw_inElec;		// current subhr HPWH electricity use, kWh
 									//   [0]=primary(=compressor or non-HP resistance) + misc
@@ -4604,7 +4611,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *s *e *array 2 DBL hw_heatAdded;	// current subhr HPWH heat added to water, kWh
 									//   [0]=primary(=compressor or non-HP resistance)
 									//   [1]=resistance backup (iff HP) (not including hw_HPWHxBU)
-*s *e DBL hw_tOut;                  // last tick HPWH outlet temp, C
+*s *e DBL hw_tOut;                  // last tick HPWH outlet temp, F
                                     //   0 if no draw
 *s *e DBL hw_tOutCHDHW;             // last tick output temp available to CHDHW, F
                                     //   0 if no draw
@@ -4834,12 +4841,10 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
   *h *e DBL wh_totOut;		// cumulative (year to date) total heat delivered to hot water, Btu
 							//   includes wh_qXBU
 
-  *s FLOAT_GEZ wh_fAdjElec; // electricity use adjustment factor
+  *s FLOAT_GEZ wh_fAdjElec; // electricity use adjustment factor, default = parent ws_fAdjElec
                             //   applied to all electricity use (primary, BU, XBU)
-                            //   default 1
-  *s FLOAT_GEZ wh_fAdjFuel; // fuel use adjment factor
+  *s FLOAT_GEZ wh_fAdjFuel; // fuel use adjustment factor, default = parent ws_fAdjFuel
                             //   applied to fuel use
-                            //   default 1
 
 							// energy inputs for current subhour, Btu
 							//   subhour results accumulated here
@@ -4850,7 +4855,6 @@ RECORD DHWHEATER "DHWHeater" *RAT	// input / runtime DHW heater
 								//       (does not include wh_inElecXBUSh)
   *s *e FLOAT wh_inElecXBUSh;	//    XBU "extra" backup (reheating to maintain ws_tUse)
   *s *e FLOAT wh_inFuelSh;		//	  fuel (including wh_pilotPwr)
-    
 
 							// energy inputs for current hour, Btu
 							//   set from analogous subhour values
