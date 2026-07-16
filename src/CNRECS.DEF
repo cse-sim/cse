@@ -4545,7 +4545,7 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
 *END		// DHWSYS
 
 //=============================================================================
-RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
+RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// HPWH tank and heater interface
 *prefix hw_
 *excon
 *exdes
@@ -4598,12 +4598,12 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 									//   corresponds to nodes for HPWH default 12 node setup
 *declare "std::vector< double> hw_pNodePowerExtra_W;"	// runtime extra tank heat linkage to HPWH
 
-*h FLOAT hw_fMixUse;				// factor for draw adjustment re HPWH setpoint > DHWSYS::ws_tUse
-									//   Some HPWHs (e.g. SANCO2) have fixed (high) setpoints
-									//   draws are reduced to balance load at ws_tUse.
-*h FLOAT hw_fMixRL;					// factor for loop return flow adjustment re HPWH setpoint > DHWSYS::ws_tUse
-									//   Some HPWHs (e.g. SANCO2) have fixed (high) setpoints
-									//   Loop return flow is reduced to balance load at ws_tUse.
+*h FLOAT hw_fMixUse;				// mix fraction for DHW use draws to produce ws_tUse
+                                    //   hw_fMixUse from heater.  (1-hw_fMixUse) from mains.
+                                    //   prior tick value used to derive draw passed to HPWH
+*h FLOAT hw_fMixRL;					// mix fraction for DHWLOOP recirculation
+                                    //   hw_fMixRL from heater.  (1-hw_fMixUse) from loop return
+                                    //   prior tick value used to derived draw passed to HPWH
 
 *s *e *array 2 DBL hw_inElec;		// current subhr HPWH electricity use, kWh
 									//   [0]=primary(=compressor or non-HP resistance) + misc
@@ -4611,7 +4611,7 @@ RECORD HPWHLINK "HPWHLink" *SUBSTRUCT	// Ecotope's HPWH tank and heater
 *s *e *array 2 DBL hw_heatAdded;	// current subhr HPWH heat added to water, kWh
 									//   [0]=primary(=compressor or non-HP resistance)
 									//   [1]=resistance backup (iff HP) (not including hw_HPWHxBU)
-*s *e DBL hw_tOut;                  // last tick HPWH outlet temp, C
+*s *e DBL hw_tOut;                  // last tick HPWH outlet temp, F
                                     //   0 if no draw
 *s *e DBL hw_tOutCHDHW;             // last tick output temp available to CHDHW, F
                                     //   0 if no draw
