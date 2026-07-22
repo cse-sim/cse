@@ -1473,7 +1473,7 @@ const char * FC pointExt( const char *pNam) 	// return pointer to . before exten
 {
 	if (!pNam)
 		return NULL;
-	const char *ext1 = strrchr( pNam, '\\');
+	const char *ext1 = strrchr( pNam, CSE_DIR_SEP);
 	ext1 = ext1 ? ext1+1 : pNam;		// pointer after last \ or to start
 	const char *ext2 = strchr( ext1, '.');
 	return ext2 ? ext2 : ext1 + strlen(ext1);	// pointer to period or to end
@@ -1485,7 +1485,7 @@ const char * FC pointNamExt( const char *pNam)	// return pointer to primary file
 		return NULL;
 	const char *afColon = strchr( pNam, ':');
 	afColon = afColon ? afColon+1 : pNam;	// pointer after first : or to start
-	const char *afBs = strrchr( afColon, '\\');
+	const char *afBs = strrchr( afColon, CSE_DIR_SEP);
 	return afBs ? afBs + 1 : afColon;		// return pointer after last \ or after first colon
 }					// pointNamExt
 //---------------------------------------------------------------------------

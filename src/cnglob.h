@@ -57,6 +57,8 @@ typedef HANDLE HINSTANCE;
 typedef HINSTANCE HMODULE;
 #endif
 
+extern const char CSE_DIR_SEP;	// native directory separator ('/' or '\\'), xiopak.cpp
+
 #define LOCAL   static	// for file-local functions: a clearer word than "static"
 #define STATIC  static	// for local data; static un-doable for (former) debugging
 #define REFDATA static	// For readonly, pak-specific data which could be overlayed

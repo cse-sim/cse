@@ -57,6 +57,8 @@ static constexpr char PATH_DELIMITER = ';';
 static constexpr char PATH_DELIMITER = ':';
 #endif
 
+const char CSE_DIR_SEP = static_cast<char>( filesys::path::preferred_separator);
+
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL SEC FC xioerr( XFILE *xf);

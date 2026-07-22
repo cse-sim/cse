@@ -552,13 +552,13 @@ const char* FC strffix( 	// put a filename in canonical form
 
 // returns filename with extension in Tmpstr[], trimmed and optionally uppercased
 {
-	const char* lastslsh = strrchr( name, '\\');
+	const char* lastslsh = strrchr( name, CSE_DIR_SEP);
 	char* nu = (strrchr( name, '.') <= lastslsh)
 				? strtcat( name, ext, NULL)
 				: strtcat( name, NULL);
 	strTrim( nu, nu);		// trim in place (in Tmpstr)
 	if (ucFName)
-	{	char* fNamePart = strrchr( nu, '\\');	// last dir separator, if any
+	{	char* fNamePart = strrchr( nu, CSE_DIR_SEP);	// last dir separator, if any
 		fNamePart = fNamePart ? fNamePart + 1 : nu;	// start of file name (past any dir path)
 		_strupr( fNamePart);				// upper-case file name only, leave dir path as given
 	}

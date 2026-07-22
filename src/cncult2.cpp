@@ -743,7 +743,7 @@ RC TOPRAT::brFileCk()	// check/clean up inputs re binary results files, rob 12-2
 	{
 		char *s = strffix( tp_brFileName, "", tp_ucFName==C_NOYESCH_YES);	// standardize: deblank, optionally uppercase file name. "": no default extension. to TmpStr.
 		char *dot = strrchr( s, '.');		// point last period in pathName
-		if (dot > strchr( s, '\\') && *(dot+1))	// if file extension given (not . in a dir name, not final . )
+		if (dot > strchr( s, CSE_DIR_SEP) && *(dot+1))	// if file extension given (not . in a dir name, not final . )
 		{
 			// warning for extension given (won't be used)
 
