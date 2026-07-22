@@ -705,14 +705,11 @@ int fileFind1(			// check existence of a single file
 
 {
 	char tPath[CSE_MAX_PATH];
-	int i = 0;
+	const char* trimmedName = strTrim( NULL, fName);
 	if (drvDir && drvDir[ 0])
-	{  	strTrim( tPath, drvDir);
-		i = strlenInt(tPath);
-		if (tPath[ i-1] != ':' && tPath[ i-1] != '\\')
-			tPath[ i++] = '\\';		// add \ to dir if needed
-	}
-	strcpy( tPath+i, strTrim( NULL, fName));
+		xfjoinpath( strTrim( NULL, drvDir), trimmedName, tPath);
+	else
+		strcpy( tPath, trimmedName);
 
 	int ret = xfExist( tPath, fPath);	// check file
 										// return exact name checked
@@ -804,8 +801,6 @@ void Path::add( 		// add PATH_DELIMITER-delimited paths to Path object
 		if (*(q-1) != PATH_DELIMITER && *s != PATH_DELIMITER)	// unless there already is a PATH_DELIMITER
 			*q++ = PATH_DELIMITER;			// supply separating PATH_DELIMITER
 	strcpy( q, s);			// append new path(s)
-	_strupr(q);				/* upper-case user-entered paths for uniform appearance 2-95
-          				   (paths from system are upper case; most filenames get uppercased eg by strffix). */
 	p = nup;				// store new pointer
 }		// Path::add
 //---------------------------------------------------------------------------
