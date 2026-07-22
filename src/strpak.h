@@ -98,7 +98,7 @@ char * CDEC strntcat( int n, ...);
 char* strt_string_view(std::string_view sv);
 const char* scWrapIf( const char* s1, const char* s2, const char* tween, int lineLength=defaultCpl);
 const char* strtprintf( MSGORHANDLE mOrH, ...);
-const char* strtvprintf( MSGORHANDLE mOrH, va_list ap);
+const char* strtvprintf( MSGORHANDLE mOrH, va_list ap=NULL);
 int   FC strlstin( const char *list, const char *str);
 const char* strOrdinal( int number);
 
@@ -118,7 +118,7 @@ x char tolowerx( char *p );
 WStr& WStrUpper( WStr& s);
 WStr& WStrLower( WStr& s);
 WStr WStrPrintf( MSGORHANDLE mOrH, ...);
-WStr WStrVprintf( MSGORHANDLE mOrH, va_list ap);
+WStr WStrVprintf( MSGORHANDLE mOrH, va_list ap=NULL);
 WStr WStrFmtFloatDTZ( double v, int maxPrec, int minPrec=0);
 WStr WStrDTZ( const WStr& s, int minPrec=0);
 

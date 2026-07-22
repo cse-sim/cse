@@ -927,7 +927,7 @@ WStr WStrPrintf( 	// make like sprintf and return pointer to result in XSTR
 // ======================================================================
 WStr WStrVprintf(	// make like vsprintf and return pointer to result in tmpstr.
 	MSGORHANDLE mOrH,		// format string or message handle
-	va_list ap)					// arg list
+	va_list ap /*=NULL*/)					// arg list
 {
 	char buf[ MSG_MAXLEN];
 
