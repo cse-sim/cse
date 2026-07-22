@@ -608,26 +608,51 @@ static bool xfCaseCorrect(	// case-insensitive fallback lookup, in place
 //   (Windows, default macOS), the exact-case check already succeeds and this
 //   is never reached; on a case-sensitive one (Linux, or macOS with a
 //   case-sensitive volume), it provides the same tolerant behavior.
-// Returns true iff tPath was corrected to an existing case-insensitive match.
+// Returns true iff tPath was corrected to an existing, unambiguous case-insensitive match.
 {
-	std::error_code ec;
 	filesys::path p( tPath);
 	filesys::path dir = p.has_parent_path() ? p.parent_path() : filesys::path(".");
 	std::string target = p.filename().string();
-	if (target.empty() || !filesys::is_directory( dir, ec))
+	if (target.empty())
 		return false;
-	for (const auto& entry : filesys::directory_iterator( dir, ec))
-	{	if (ec)
-			break;
-		std::string entryName = entry.path().filename().string();
-		if (entryName.size() == target.size()
-			&& std::equal( entryName.begin(), entryName.end(), target.begin(),
-				[]( unsigned char a, unsigned char b) { return tolower( a) == tolower( b); }))
-		{	strcpy( tPath + strlen( tPath) - target.size(), entryName.c_str());
-			return true;
-		}
+	// note: is_directory()/directory_iterator() set ec even for the ordinary "doesn't exist"
+	//   case (unlike exists()), and this fcn is tried against many PATH-search candidate
+	//   directories where that's routine, not an error -- so ENOENT/ENOTDIR are not reported.
+	auto isRealError = []( const std::error_code& ec)
+	{	return ec && ec != std::errc::no_such_file_or_directory && ec != std::errc::not_a_directory; };
+
+	std::error_code ec;
+	if (!filesys::is_directory( dir, ec))
+	{	if (isRealError( ec))
+			err( ERR, "Error checking directory '%s' for case-insensitive match to '%s': %s",
+				dir.string().c_str(), target.c_str(), ec.message().c_str());
+		return false;
 	}
-	return false;
+	std::vector<std::string> matches;
+	filesys::directory_iterator end;
+	for (filesys::directory_iterator it( dir, ec); !ec && it != end; it.increment( ec))
+	{	std::string entryName = it->path().filename().string();
+		if (std::equal( entryName.begin(), entryName.end(), target.begin(), target.end(),
+				[]( unsigned char a, unsigned char b) { return tolower( a) == tolower( b); }))
+			matches.push_back( entryName);
+	}
+	if (isRealError( ec))
+	{	err( ERR, "Error scanning directory '%s' for case-insensitive match to '%s': %s",
+			dir.string().c_str(), target.c_str(), ec.message().c_str());
+		return false;
+	}
+	if (matches.empty())
+		return false;
+	if (matches.size() > 1)
+	{	std::string alts = matches[ 0];
+		for (size_t i=1; i<matches.size(); i++)
+			alts += "' or '" + matches[ i];
+		err( ERR, "Ambiguous case-insensitive match for '%s' in directory '%s': could be '%s'",
+			target.c_str(), dir.string().c_str(), alts.c_str());
+		return false;
+	}
+	strcpy( tPath + strlen( tPath) - target.size(), matches[ 0].c_str());
+	return true;
 }	// xfCaseCorrect
 //------------------------------------------------------------------------
 int xfExist(	// determine file existence
