@@ -21,7 +21,7 @@ where:
 
 -   -U*name* undefines the preprocessor symbol *name*.
 
--   -i*path;path;path* specifies directories where CSE looks for input and include files.
+-   -i*path;path;path* specifies directories where CSE looks for input, include, and weather files.
 
 -   -b batch mode: suppresses all prompts for user input.  Currently there are no prompts implemented in CSE.  -b is retained in case prompts are added in the future.  It is good practice to include -b in batch script CSE invocations.
 
@@ -48,15 +48,13 @@ where:
 
 As with any program, in order to invoke CSE, the directory containing CSE.EXE must be the current directory, or that directory must be on the operating system path, or you must type the directory path before CSE.
 
-A CSE simulation requires a weather file. The name of the weather file is given in the CSE input file (`wfName=` statement, see [Weather Data Items][top-weather-data-items]). The weather file must be in one of the same three places: current directory, directory containing CSE.EXE, or a directory on the operating system path; or, the directory path to the file must be given in the `wfName=` statement in the usual pathName syntax. ?? Appears that file must be in current directory due to file locating bugs 2011-07
+The CSE input file, named on the CSE command line, is located by searching, in order: the current directory; any directories given with the `-i` command line switch; the operating system `PATH`; and the directory containing CSE.EXE. Alternatively, the directory path to the file may be given directly on the command line.
 
-<!--
-TODO: Check file locating methods.  Path.find() etc.  Update here as needed re weather file etc.
--->
+A CSE simulation requires a weather file. The name of the weather file is given in the CSE input file (`wfName=` statement, see [Weather Data Items][top-weather-data-items]). Once the input file has been located, its directory is added to the search list, so the weather file is located using the same search order as the input file, plus the input file's own directory -- or the directory path to it may be given directly in the `wfName=` statement.
 
-The CSE input file, named on the CSE command line, must be in the current directory or the directory path to it must be included in the command line.
+Included input files, named in `#include` preprocessor directives (see "[The Preprocessor][the-preprocessor]") in the input file, are located using this same search order, including the input file's own directory. The default extension for included files is ".CSE".
 
-Included input files, named in `#include` preprocessor directives (see "[The Preprocessor][the-preprocessor]") in the input file, must be in the current directory or the path to them must be given in the `#include` directive. In particular, CSE will NOT automatically look for included files in the directory containing the input file. The default extension for included files is ".CSE".
+On case-sensitive file systems (e.g. Linux), if a file located by any of the searches above is not found using the exact case given, CSE falls back to a case-insensitive search of the directory and uses the matching file if exactly one is found; if more than one file in the directory matches case-insensitively, CSE reports an error rather than guessing which one was intended.
 
 Output files created by default by CSE (error message file, primary report and export files) will be in the same directory as the input file; output files created by explicit command in the input file (additional report and/or export files) will be in the current directory unless another path is explicitly specified in the command creating the file.
 

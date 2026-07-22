@@ -403,7 +403,9 @@ Run title for the simulation. Appears in report footers, export headers, and in 
 
 Type: choice
 
-Whether to upper-case the NAME portion (not the directory path) of generated output file names, such as report, export, and binary results files, as CSE has historically done. Does not affect input or `#include` file names, which are always opened using the case as given -- required for opening files by name on case-sensitive file systems (e.g. Linux).
+Whether to upper-case the NAME portion (not the directory path) of generated output file names, such as report, export, and binary results files, as CSE has historically done. Does not affect input or `#include` file names, which are always opened using the case as given -- see [Locating Files][locating-files] for how CSE resolves case on case-sensitive file systems.
+
+When `NO` (default), the file name portion instead takes the case of the input file as resolved on disk (see [Locating Files][locating-files]), which may differ from the case typed on the command line. For example, if the input file on disk is named `InputFile.cse` and CSE is invoked as `CSE inputfile`, the default report file is `InputFile.rep`, not `inputfile.rep`. When `YES`, the file name portion is upper-cased unconditionally, regardless of the input file's case on disk.
 
 {{
   member_table({
