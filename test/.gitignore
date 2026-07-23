@@ -16,6 +16,9 @@ error_handling/*.spl
 // re-include reference rep files
 !ref-win32-msvc/*.rep
 !ref-win32-msvc/*.REP
+!ref-win64-msvc/*.rep
+!ref-win64-msvc/*.REP
+
 
 # why?
 !*.exe

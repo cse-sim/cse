@@ -1,0 +1,186 @@
+
+
+Monthly Energy Use, meter "Elec0"
+
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+--- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+Jan -28.47      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -28.47
+Feb -29.41      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -29.41
+Mar -39.24      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -39.24
+Apr -44.35      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -44.35
+May -47.81      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -47.81
+Jun -46.87      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -46.87
+Jul -45.69      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -45.69
+Aug -43.46      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -43.46
+Sep -39.99      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -39.99
+Oct -35.54      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -35.54
+Nov -27.96      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -27.96
+Dec -27.25      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -27.25
+
+Yr  -456.0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0 -456.0
+
+
+
+! Log for Run 001:
+
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+
+
+
+Input for Run 001:
+
+        // PV Test file
+        
+        WfName="Boulder.epw"
+        wuDays=0
+        nSubSteps=1
+        
+        METER Elec0
+        
+        PVARRAY "Flat"
+          pvElecMtr = Elec0
+          pvEndUse = PV
+          pvDCSysSize = 5
+          pvModuleType = Standard
+          pvArrayType = FixedOpenRack
+          pvTilt = 0
+          pvAzm = 180
+          pvGrndRefl = 0.2
+        
+        PVARRAY "S_30" LIKE "Flat"
+          pvTilt = 30
+          pvAzm = 180
+        
+        PVARRAY "S_60" LIKE "Flat"
+          pvTilt = 60
+          pvAzm = 180
+        
+        PVARRAY "S_90" LIKE "Flat"
+          pvTilt = 90
+          pvAzm = 180
+        
+        PVARRAY "E_30" LIKE "Flat"
+          pvTilt = 30
+          pvAzm = 90
+        
+        PVARRAY "E_60" LIKE "Flat"
+          pvTilt = 60
+          pvAzm = 90
+        
+        PVARRAY "E_90" LIKE "Flat"
+          pvTilt = 90
+          pvAzm = 90
+        
+        PVARRAY "W_30" LIKE "Flat"
+          pvTilt = 30
+          pvAzm = 270
+        
+        PVARRAY "W_60" LIKE "Flat"
+          pvTilt = 60
+          pvAzm = 270
+        
+        PVARRAY "W_90" LIKE "Flat"
+          pvTilt = 90
+          pvAzm = 270
+        
+        PVARRAY "N_30" LIKE "Flat"
+          pvTilt = 30
+          pvAzm = 0
+        
+        PVARRAY "N_60" LIKE "Flat"
+          pvTilt = 60
+          pvAzm = 0
+        
+        PVARRAY "N_90" LIKE "Flat"
+          pvTilt = 90
+          pvAzm = 0
+        
+        PVARRAY "Premium" LIKE "S_30"
+          pvModuleType = Premium
+        
+        PVARRAY "ThinFilm" LIKE "S_30"
+          pvModuleType = ThinFilm
+        
+        PVARRAY "Custom" LIKE "S_30"
+          pvModuleType = Custom
+          pvCoverRefrInd = 1.5
+          pvTempCoeff = -0.001
+        
+        PVARRAY "RoofMount" LIKE "S_30"
+          pvArrayType = FixedRoofMount
+        
+        PVARRAY "OneAxis" LIKE "S_30"
+          pvArrayType = OneAxisTracking
+        
+        PVARRAY "OneAxisBT" LIKE "S_30"
+          pvArrayType = OneAxisTracking
+        
+        PVARRAY "TwoAxis" LIKE "S_30"
+          pvArrayType = TwoAxisTracking
+          UNSET pvTilt
+          UNSET pvAzm
+        
+        PVARRAY "HighRatio" LIKE "S_30"
+          pvDCtoACRatio = 1.5
+        
+        
+        DELETE REPORT "EB"
+        
+        EXPORTFILE "PVout"
+          xfFileName="PVout"
+          xfFileStat=OVERWRITE
+        
+#       #define PVCols( n ) \
+#         ExportCol colhead=n colVal=@PVArray[n].acOut
+        
+        
+        EXPORT exExportFile="PVout" exType=UDT exFreq=HOUR exTitle="PV Output" exDayBeg=jan 1 exDayEnd=dec 31 exHeader=ColumnsOnly
+          ExportCol colhead="Day" colVal=@Top.dateStr
+          ExportCol colhead="Hour" colVal=@Top.iHr
+          ExportCol colhead="ST Hour" colVal=@Top.iHrST
+          ExportCol colhead="Outdoor Drybulb" colVal=@Top.tDbOHrAv
+          ExportCol colhead="Beam Radiation" colVal=@Top.radBeamHrAv
+          ExportCol colhead="Diff. Radiation" colVal=@Top.radDiffHrAv
+          PVCols( "Flat" )
+          PVCols( "S_30" )
+          PVCols( "S_60" )
+          PVCols( "S_90" )
+          PVCols( "E_30" )
+          PVCols( "E_60" )
+          PVCols( "E_90" )
+          PVCols( "W_30" )
+          PVCols( "W_60" )
+          PVCols( "W_90" )
+          PVCols( "N_30" )
+          PVCols( "N_60" )
+          PVCols( "N_90" )
+          PVCols( "Premium" )
+          PVCols( "ThinFilm" )
+          PVCols( "Custom" )
+          PVCols( "RoofMount" )
+          PVCols( "OneAxis" )
+          PVCols( "OneAxisBT" )
+          PVCols( "TwoAxis" )
+          PVCols( "HighRatio" )
+        
+        REPORT     rpType=MTR     rpMeter=Elec0    rpFreq=Month
+        
+        RUN
+
+
+
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:54 pm
+
+! Executable:   d:\cse\msvc\cse.exe
+!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
+! Command line: -x!  -b -t1 pvtest
+! Input file:   D:\cse\test\pvtest.cse
+! Report file:  D:\CSE\TEST\PVTEST.REP
+
+! Timing info --
+
+!                Input:  Time = 0.06     Calls = 1         T/C = 0.0580
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 0.56     Calls = 1         T/C = 0.5580
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0090
+!                Total:  Time = 0.63     Calls = 1         T/C = 0.6260
