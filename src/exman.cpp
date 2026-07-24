@@ -1603,7 +1603,7 @@ RC rerIV( 	// inner fcn to issue runtime error message; msg handle ok for fmt; t
 	int erOp,			// error action: WRN or PWRN
 	int isWarn, 			// 0: error (increment errCount); 1: warning (display suppressible); 2: info.
 	MSGORHANDLE fmt,		// message text
-	va_list ap /*=NULL*/)	// message argument list
+	va_list ap /*=va_NULL*/)	// message argument list
 
 // increments error count if isWarn==0.  returns RCBAD for convenience.
 {

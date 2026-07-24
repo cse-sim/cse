@@ -898,7 +898,7 @@ const char* CDEC strtprintf( 	// make like sprintf and return pointer to result 
 const char* FC strtvprintf( 	// make like vsprintf and return pointer to result in tmpstr.
 	MSGORHANDLE mOrH,	// format string or message handle
 						//   mOrH.IsNull(): return ""
-	va_list ap)			// args
+	va_list ap /*=va_NULL*/)		// args (if va_NULL, no formatting)
 {
 	char buf[ MSG_MAXLEN];
 
@@ -917,7 +917,7 @@ WStr WStrPrintf( 	// make like sprintf and return pointer to result in XSTR
 // ======================================================================
 WStr WStrVprintf(	// make like vsprintf and return pointer to result in tmpstr.
 	MSGORHANDLE mOrH,		// format string or message handle
-	va_list ap /*=NULL*/)					// arg list
+	va_list ap /*=va_NULL*/)					// arg list
 {
 	char buf[ MSG_MAXLEN];
 
