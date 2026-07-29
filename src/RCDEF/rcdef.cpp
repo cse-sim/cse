@@ -344,7 +344,7 @@ LOCAL char* stash(const char* s)
 
 {
 	char* newStbp = Stbp + strlen(Stbp) + 1;     // point past last string to next Stbuf byte
-	if ((newStbp - Stbuf) > STBUFSIZE - 500)
+	if (size_t(newStbp - Stbuf) > STBUFSIZE - 500)
 	{
 		rcderr("Stbuf not large enough -- increase STBUFSIZE.");
 		byebye(2);
