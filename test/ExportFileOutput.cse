@@ -4,7 +4,7 @@ EXPORTFILE
   xfFileName=EXPORT_FILE_ABSOLUTE_PATH
 
 EXPORTFILE
-  xfFileName=".\\..\\test\\ExportFileRelativePath.csv"
+  xfFileName="./../test/ExportFileRelativePath.csv"
 
 EXPORTFILE
   xfFileName="ExportFileNoPath.csv"

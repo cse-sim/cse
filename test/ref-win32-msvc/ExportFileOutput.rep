@@ -23,7 +23,7 @@ Monthly Energy Balance, Sum of Zones
 
 ! Log for Run 001:
 
-! CSE 0.927.0+linux-builds.77429218.247.dirty for Windows 32-bit (MSVC)
+! CSE 0.927.0+linux-builds.400a7f1d.248.dirty for Windows 32-bit (MSVC)
 
 
 
@@ -35,7 +35,7 @@ Input for Run 001:
           xfFileName=EXPORT_FILE_ABSOLUTE_PATH
         
         EXPORTFILE
-          xfFileName=".\\..\\test\\ExportFileRelativePath.csv"
+          xfFileName="./../test/ExportFileRelativePath.csv"
         
         EXPORTFILE
           xfFileName="ExportFileNoPath.csv"
@@ -46,10 +46,10 @@ Input for Run 001:
 
 
 
-! CSE 0.927.0+linux-builds.77429218.247.dirty for Windows 32-bit (MSVC) run(s) done: Wed 29-Jul-26   1:34:09 pm
+! CSE 0.927.0+linux-builds.400a7f1d.248.dirty for Windows 32-bit (MSVC) run(s) done: Wed 29-Jul-26   2:08:48 pm
 
 ! Executable:   d:\cse\builds\cse-msvc-32.exe
-!               29-Jul-26   1:33 pm   (VS 14.29    4470272 bytes)  (HPWH 1.26.0+HEAD.11240a73.553)
+!               29-Jul-26   2:05 pm   (VS 14.29    4470272 bytes)  (HPWH 1.26.0+HEAD.11240a73.553)
 ! Command line: -x!  -b -t1
 !               -DEXPORT_FILE_ABSOLUTE_PATH="D:/cse/test/ExportFileAbsolutePath.csv"
 !               ExportFileOutput
@@ -60,6 +60,6 @@ Input for Run 001:
 
 !                Input:  Time = 0.02     Calls = 1         T/C = 0.0240
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 0.04     Calls = 1         T/C = 0.0450
+!           Simulation:  Time = 0.03     Calls = 1         T/C = 0.0330
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
-!                Total:  Time = 0.07     Calls = 1         T/C = 0.0700
+!                Total:  Time = 0.06     Calls = 1         T/C = 0.0580
