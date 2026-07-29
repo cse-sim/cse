@@ -29,7 +29,7 @@ const size_t TMPSTRSZ = 400000;		// size of Tmpstr[].
 static char Tmpstr[ TMPSTRSZ+2];	// buffer.
 // Each allocation is followed by prior TmpstrNx value for rev-order dealloc (strtempPop).
 // +2 extra bytes at end hold flag re overwrite check (obsolete? 7-10)
-static int TmpstrNx = 0;	// Next available byte in Tmpstr[].
+static size_t TmpstrNx = 0;	// Next available byte in Tmpstr[].
 
 // == CULSTR ==
 // Persistent string type that can be manipulated in the CUL realm.
@@ -773,12 +773,12 @@ char * FC strtemp(		// allocate n+1 bytes in temp string buffer (Tmpstr[])
 
 {
 	n++;					// for terminal 0: saves many +1's in calls
-	int priorNx = TmpstrNx;				// save for reverse ptr after the new alloc
+	size_t priorNx = TmpstrNx;				// save for reverse ptr after the new alloc
 	if (TmpstrNx + n + sizeof( int) > TMPSTRSZ)	// if full
 		TmpstrNx = 0;				// wrap. else s==Tmpstr+priorNx.
 	char* s = Tmpstr + TmpstrNx;	// pointer to return to caller
 	TmpstrNx += n;					// pass allocated space
-	*(int *)(Tmpstr+TmpstrNx) = priorNx;	// after it put old TmpstrNx value
+	*(int *)(Tmpstr+TmpstrNx) = static_cast<int>(priorNx);	// after it put old TmpstrNx value
 	TmpstrNx += sizeof( int);				// point past that for next call
 	return s;
 }			// strtemp
@@ -799,7 +799,7 @@ char * FC strtempPop( char *anS)	// conditionally deallocate temp string buffer 
 		return anS;
 
 // fetch TmpstrNx value b4 last strtemp
-	int priorNx = *(int *)(Tmpstr + TmpstrNx - sizeof( int));
+	size_t priorNx = *(int *)(Tmpstr + TmpstrNx - sizeof( int));
 	if (priorNx < 0 || priorNx > TMPSTRSZ)	// nop if out of range
 		return anS;				// insurance re bugs or whole Tmpstr[]'s worth of deallocs
 // determine pointer most recent strtemp() returned

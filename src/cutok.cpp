@@ -730,7 +730,7 @@ LOCAL void svFname( 		// save #line file name (to last til end session); set uli
 // do nothing if name same as current name, for speed
 	if ( uliFileIx != 0
 	&&  uliFname4Ix				// insurance
-	&&  strlen(uliFname4Ix)==len
+	&&  strlen(uliFname4Ix)==size_t( len)
 	&&  memcmp( name, uliFname4Ix, len)==0 )
 		return;
 
@@ -937,10 +937,10 @@ RC cuErv( 	// errmsg with optional preprocessed file line text, caret, file name
 // make up line with caret spaced over to error column
 	char caret[ULIBUFSZ + 2] = { 0 };
 	if ( shoCaret  			// if ^ display requested
-	 &&  col < sizeof(caret)-3  	// if ^ position fits buffer
+	 &&  col < int( sizeof(caret))-3  	// if ^ position fits buffer
 	 &&  *tex	  			// skip if null ret'd for file line:
 							// eg if prev token not in buf due to long comment: ^ wd be confusing
-	 &&  (strlen(cmsg) + strlen(tex) + strlen(where) + col + 10)
+	 &&  int(strlen(cmsg) + strlen(tex) + strlen(where) + col + 10)
 	    <  MSG_MAXLEN )		// skip if would come close to exceeding max msg length (messages.h)
 	{
 		int lWhere = strlenInt(where);
