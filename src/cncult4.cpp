@@ -1304,17 +1304,23 @@ RC RFI::rf_CheckForDupFileName()		// make sure this RFI is only user of its file
 	RLUP( RfiB, fip)
 	{	if (fip->ss >= ss)		// only check smaller-subscripted ones vs this -- else get multiple messages
 			break;
-		if (!ISNANDLE(fip->rf_fileName) && !_stricmp( fip->rf_fileName, rf_fileName))
+		if (!ISNANDLE( fip->rf_fileName) && xfSamePath( fip->rf_fileName, rf_fileName))
 			return ooer( RFI_FILENAME, MH_S0441, mbrIdTx( RFI_FILENAME), rf_fileName.CStr(), fip->Name());
 				// "Duplicate %s '%s' (already used in ReportFile '%s')"
+		else if (!ISNANDLE( fip->rf_fileName) && !_stricmp( fip->rf_fileName, rf_fileName))
+			oWarn( "%s '%s' differs only in letter case from ReportFile '%s'; probably unintended",
+					mbrIdTx( RFI_FILENAME), rf_fileName.CStr(), fip->Name());
 	}
 	RLUP( XfiB, fip)
 	{
 		if (fip->ss >= ss)		// only check smaller-subscripted ones vs this -- else get multiple messages
 			break;
-		if (!ISNANDLE(fip->rf_fileName) && !_stricmp( fip->rf_fileName, rf_fileName))
+		if (!ISNANDLE( fip->rf_fileName) && xfSamePath( fip->rf_fileName, rf_fileName))
 			return ooer( RFI_FILENAME, MH_S0442, mbrIdTx( RFI_FILENAME), rf_fileName.CStr(), fip->Name());
 						// "Duplicate %s '%s' (already used in ExportFile '%s')"
+		else if (!ISNANDLE( fip->rf_fileName) && !_stricmp( fip->rf_fileName, rf_fileName))
+			oWarn( "%s '%s' differs only in letter case from ExportFile '%s'; probably unintended",
+					mbrIdTx( RFI_FILENAME), rf_fileName.CStr(), fip->Name());
 	}
 	return RCOK;
 }	// RFI::rf_CheckForDupFileName

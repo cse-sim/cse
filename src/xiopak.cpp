@@ -1143,6 +1143,24 @@ bool xfisabsolutepath(// Checks whether the path is absolute
 	return result;
 }  /* xfisabsolutepath */
 //=============================================================================
+bool xfSamePath(	// Compares two paths per this platform's file name case rules
+	const char* path1,	// first path
+	const char* path2)	// second path
+// Does not resolve relative paths, symlinks, or "." / ".." segments, and does
+//   not query the actual target file system's case sensitivity -- there is no
+//   portable way to do that for a path that may not exist yet (e.g. an
+//   output file that hasn't been created). Instead assumes each platform's
+//   conventional default: case-insensitive on Windows and macOS, case-
+//   sensitive elsewhere (Linux).
+// Returns true iff path1 and path2 name the same file per that convention.
+{
+#if defined( _WIN32) || defined( __APPLE__)
+	return _stricmp( path1, path2) == 0;
+#else
+	return strcmp( path1, path2) == 0;
+#endif
+}	// xfSamePath
+//=============================================================================
 
 
 // end of xiopak.cpp
