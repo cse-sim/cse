@@ -938,12 +938,14 @@ RC HEATCOIL::setup(				// check/set up a heating coil subrecord: has additional 
     {  static float dat[]={k0,k1,k2,k3};  		\
        memcpy( r->field(heatCoilFn+HEATCOIL_##subFn+PYCUBIC_K), dat, sizeof(dat) );	\
     }
-//// default biquadratic polynomial coefficients: array of 6 floats. uses r, fss, heatCoilFn.
-//#define DFLBIQUAD( subFn, k0,k1,k2,k3,k4,k5 )		\
-//    if (!(fss[HEATCOIL_##subFn+PYBIQUAD_K] & FsSET))	\
-//    {  static float dat[]={k0,k1,k2,k3,k4,k5};  	\
-//       memcpy( r->field(heatCoilFn+HEATCOIL_##subFn+PYBIQUAD_K), dat, sizeof(dat) ); 	\
-//    }
+#if 0
+// default biquadratic polynomial coefficients: array of 6 floats. uses r, fss, heatCoilFn.
+#define DFLBIQUAD( subFn, k0,k1,k2,k3,k4,k5 )		\
+    if (!(fss[HEATCOIL_##subFn+PYBIQUAD_K] & FsSET))	\
+    {  static float dat[]={k0,k1,k2,k3,k4,k5};  	\
+       memcpy( r->field(heatCoilFn+HEATCOIL_##subFn+PYBIQUAD_K), dat, sizeof(dat) ); 	\
+    }
+#endif
 
 	RC rc /*=RCOK*/;
 	const char* when = "bug";			// for various error message subtexts per coil application. cannot be MH.
@@ -1042,13 +1044,19 @@ RC HEATCOIL::setup(				// check/set up a heating coil subrecord: has additional 
 			break;
 		}
 		if (fss[HEATCOIL_EIRRAT] & FsSET)					// error if eirRat given
-			if ( !(fss[HEATCOIL_EIRRAT] & FsVAL)					// and value is not constant
-					||  eirRat != 1.0 )							//     or not 1.0
+		{
+			if (!(fss[HEATCOIL_EIRRAT] & FsVAL)					// and value is not constant
+				||  eirRat != 1.0)							//     or not 1.0
+			{
 				ERSHC(EIRRAT) MH_S0653, when, IDSHC(EIRRAT) );		// "%s, %s must be constant 1.0 or omitted"
 				if (fss[HEATCOIL_EFFRAT] & FsSET)					// if effRat given (CULT requires constant)
+				{
 					if (effRat != 1.0)							// error if value not 1.0
-					ERSHC(EFFRAT) MH_S0654, when, IDSHC(EFFRAT) );		// "%s, %s must be 1.0 or omitted"
-					// CULT defaults eirR to 1.0, and code doesn't use it anyway 7-92, so no need to default here.
+						ERSHC(EFFRAT) MH_S0654, when, IDSHC(EFFRAT) );		// "%s, %s must be 1.0 or omitted"
+				}
+				// CULT defaults eirR to 1.0, and code doesn't use it anyway 7-92, so no need to default here.
+			}
+		}
 	}
 
 	// gas furnace/oil furnace additional defaults and checks

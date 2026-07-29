@@ -344,7 +344,7 @@ LOCAL char* stash(const char* s)
 
 {
 	char* newStbp = Stbp + strlen(Stbp) + 1;     // point past last string to next Stbuf byte
-	if ((newStbp - Stbuf) > STBUFSIZE - 500)
+	if (size_t(newStbp - Stbuf) > STBUFSIZE - 500)
 	{
 		rcderr("Stbuf not large enough -- increase STBUFSIZE.");
 		byebye(2);
@@ -588,7 +588,7 @@ int CDEC main( int argc, char * argv[] )
 
 	// Success file: remove here, create at exit iff success
 	//   re build dependencies
-	constexpr char* fNameSuccess = "rcdef_success.txt";
+	constexpr const char* fNameSuccess = "rcdef_success.txt";
 	if (xfExist(fNameSuccess) != 0)
 	{	if (std::remove(fNameSuccess))
 			msgWrite(ABT, "\nCannot delete '%s'\n", fNameSuccess);

@@ -942,7 +942,7 @@ int setScreenQuiet( int sq)
 //---------------------------------------------------------------------------
 bool mbIErr( const char* fcn, const char* fmt, ... )
 {
-	va_list( ap);
+	va_list ap;
 	va_start( ap, fmt);
 	const char* t = strtvprintf( fmt, ap);
 	errCritV( PERR, 1 /*isWarn*/, strtprintf( "%s %s", fcn, t), NULL);

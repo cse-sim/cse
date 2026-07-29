@@ -535,7 +535,9 @@ RC FC ppOpI( const char* fname, const char* defex)		// inner pp file opener: add
 	INSTK * isi;
 	RC rc = RCOK;
 
-// standardize name (upper case) and conditionally use default extension
+// standardize name (deblank) and conditionally use default extension
+//   (do NOT uppercase: this name is about to be used to open an existing file,
+//    which must preserve on-disk case on case-sensitive file systems, e.g. Linux)
 	fname = strffix( fname, defex);		// to tmpstr
 
 // find file using paths given to ppAddPath
