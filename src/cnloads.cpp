@@ -458,10 +458,12 @@ RC ZNR::zn_BegSubhr2()			// zone start of subhour, part 2
 	zn_OAVRlfO.af_Init();
 	zn_rsAmfSup = zn_rsAmfRet = 0.;
 
-	// NO! CNE zone model can skip step calc and use prior result
+	// NO! CNE airhandler/terminal zone model can skip step calc and use prior results
 	//  initialization done later for CZM zone model
 	// zn_qsHvac = 0.;
 	// zn_qlHvac = 0.;
+
+	zn_qsIdeal = 0.;
 
 	zn_fVentPrf = zn_fVent = 0.f;	// vent fraction
 									//  = actual / possible vent flow
@@ -1047,11 +1049,6 @@ int ZNR::zn_FVentCR()			// find zone's preferred vent fraction
 //          0: no effect / don't care
 //          1: useful
 {
-#if 0 && defined( _DEBUG)
-	if (Top.jDay == 178)
-		printf("\nzn_FVentCR '%s'", Name());
-#endif
-
 	int ret = 0;
 	zn_fVentPrf = 0.f;
 
@@ -1099,13 +1096,6 @@ RC ZNR::zn_CondixCR(		// zone conditions part 1, convective/radiant model
 // returns RCOK or ...
 {
 	RC rc = RCOK;
-
-#if 0 && defined( _DEBUG)
-x	if (!Top.isWarmup)
-x	{	if (Top.jDay==31 && strMatch( Name(), "SDuctZone"))
-x			printf( "Hit\n");
-x	}
-#endif
 
 #if defined( CRTERMAH)
 	zn_rsAmfSysReq[ 0] = zn_rsAmfSysReq[ 1] = 0.;	// RSYS air requests
@@ -1200,22 +1190,25 @@ x	}
 	{	// HVAC may be required
 
 		zn_fVent = 0.f;		// no vent
-		zn_pz0 = zn_pz0W[ 0];
+		zn_pz0 = zn_pz0W[0];
 
 		RSYS* rs = zn_GetRSYS();
 		if (rs)
 		{	// this zone is served by an RSYS
 			if (zn_hcMode == RSYS::rsmOFF)	// if not already handled (e.g. rsmOAV)
-			{	zn_tzsp = 0.f;
+			{
+				zn_tzsp = 0.f;
 				if (tz > zn_tzspC)
-				{	zn_tzsp = zn_tzspC;
+				{
+					zn_tzsp = zn_tzspC;
 					zn_hcMode = RSYS::rsmCOOL;
 #if defined( ZNHVACFCONV)
 					zn_fConv = zn_fConvC;
 #endif
 				}
 				else if (tz < zn_tzspH)
-				{	zn_tzsp = zn_tzspH;
+				{
+					zn_tzsp = zn_tzspH;
 					zn_hcMode = RSYS::rsmHEAT;
 #if defined( ZNHVACFCONV)
 					zn_fConv = zn_fConvH;
@@ -1225,22 +1218,22 @@ x	}
 				{
 #if 0 && defined( _DEBUG)
 x					if (Top.tp_pass1B)
-x						printf( "1B\n");
+x						printf("1B\n");
 #endif
-					int rsAvail = rs->rs_SupplyAirState( zn_hcMode);
+					int rsAvail = rs->rs_SupplyAirState(zn_hcMode);
 
 					if (rsAvail >= 2)
 					{	// mode is possible
-						rc |= zn_AirRequest( rs, 1);	// determine air requirement given rs_asSup
-														//   1: msg if bad supply temp
-						// zone temp calc'd in zn_CondixCR2()
+						rc |= zn_AirRequest(rs, 1);	// determine air requirement given rs_asSup
+						//   1: msg if bad supply temp
+// zone temp calc'd in zn_CondixCR2()
 					}
 					else if (rsAvail == 1)
 					{	// autosizing but not requested mode
 						// hold temp at set point, ignore HVAC air (TODO?)
 						tz = zn_tzsp;
 #if defined( ZNHVACFCONV)
-						zn_QsHvacCR( tz, zn_fConv);
+						zn_QsHvacCR(tz, zn_fConv);
 #else
 						zn_QAirCR(tz);
 #endif
@@ -1250,16 +1243,9 @@ x						printf( "1B\n");
 				}
 			}
 		}
-		else
-		{	// non-RSYS zone ("magic" heating and cooling)
-			zn_IdealHVAC();
-		}
+		// plus maybe ideal heating/cooling
+		// see zn_CondixCR2I()
 	}
-
-#if defined( _DEBUG)
-	if (tz < -100.f || tz > 200.f)
-		warn( "Zone '%s': unreasonable air temp %0.2f\n", Name(), tz);
-#endif
 
 	return rc;
 }		// ZNR::zn_CondixCR
@@ -1351,52 +1337,6 @@ void ZNR::zn_SetRSYSAmfFromTSup()	// set RSYS-to-zone air flow given tSup
 	// else zn_rsAmfxxx = 0
 }		// ZNR::zn_SetRSYSAmfFromTSup
 //-----------------------------------------------------------------------------
-void ZNR::zn_IdealHVAC()		// idealized space conditioning
-// applies "magic" heating or cooling
-{
-	if (tz > zn_tzspC && i.znQMxC < 0.f)
-	{
-		zn_hcMode = RSYS::rsmCOOL;
-		tz = zn_tzsp = zn_tzspC;
-	#if defined( ZNHVACFCONV)
-		zn_fConv = zn_fConvC;
-		zn_qsHvac = zn_QsHvacCR(tz, zn_fConv);
-	#else
-		zn_qsHvac = zn_QAirCR(tz);
-	#endif
-		if (fabs(zn_qsHvac) > fabs(i.znQMxC))
-		{	zn_qsHvac = i.znQMxC;
-	#if defined( ZNHVACFCONV)
-			tz = zn_TAirCR(zn_qsHvac * zn_fConv, 0., zn_qsHvac * (1.f - zn_fConv));
-	#else
-			tz = zn_TAirCR(zn_qsHvac, 0.);
-	#endif
-		}
-		// else capacity sufficient
-	}
-	else if (tz < zn_tzspH && i.znQMxH > 0.f)
-	{	// tz < TH: air needs heating
-		zn_hcMode = RSYS::rsmHEAT;
-		tz = zn_tzsp = zn_tzspH;
-#if defined( ZNHVACFCONV)
-		zn_fConv = zn_fConvH;
-		zn_qsHvac = zn_QsHvacCR(tz, zn_fConv);
-#else
-		zn_qsHvac = zn_QAirCR(tz);
-#endif
-		if (zn_qsHvac > i.znQMxH)
-		{	// heat at heating capacity, find resulting tz.
-			zn_qsHvac = i.znQMxH;
-#if defined( ZNHVACFCONV)
-			tz = zn_TAirCR(zn_qsHvac * zn_fConv, 0., zn_qsHvac * (1.f - zn_fConv));
-#else
-			tz = zn_TAirCR(zn_qsHvac, 0.);
-#endif
-		}
-		// else capacity sufficient
-	}
-}		// ZNR::zn_IdealHVAC
-//-----------------------------------------------------------------------------
 void ZNR::zn_MapTerminalResults()	// transfer terminal model outcomes to working mbrs
 {
 
@@ -1477,14 +1417,6 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 			zn_qsHvac = mCp*(tSup - tz);
 			// zn_qsHvac = zn_QAirCR(tzls); experiment, same results 11-21
 			zn_sysAirI.af_AccumDry( zn_rsAmfSup, rs->rs_asSup);
-			if (zn_hcMode == RSYS::rsmOAV)
-				zn_OAVRlfO.af_AccumDry( -zn_rsAmfSup, tz, wzls);	// w not used
-			else
-				zn_sysAirO.af_AccumDry( -zn_rsAmfRet, tz, wzls);	// w finalized in zn_AirXMoistureBal
-#if defined( _DEBUG)
-			if (tz < -100.f || tz > 200.f)
-				warn( "Zone '%s': unreasonable air temp %0.2f\n", Name(), tz);
-#endif
 		}
 
 #if defined( _DEBUG)
@@ -1505,11 +1437,24 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 	else if (zn_HasTerminal())
 	{
 		zn_MapTerminalResults();
-
-
 	}
 #endif
-	// else all known
+
+	if (zn_hcMode == RSYS::rsmOAV)
+		zn_OAVRlfO.af_AccumDry(-zn_rsAmfSup, tz, wzls);	// w not used
+	else if (zn_fVent == 0.f)
+	{	zn_IdealHVAC();
+		if (rs)
+			zn_sysAirO.af_AccumDry(-zn_rsAmfRet, tz, wzls);	// w finalized in zn_AirXMoistureBal
+	}
+
+
+#if defined( _DEBUG)
+	if (tz < -100.f || tz > 200.f)
+		warn("Zone '%s': unreasonable air temp %0.2f\n", Name(), tz);
+#endif
+
+	// how all known
 #if defined( ZNHVACFCONV)
 	zn_tr = zn_TRadCR( tz, zn_qsHvac*(1.-zn_fConv));
 #else
@@ -1523,6 +1468,68 @@ RC ZNR::zn_CondixCR2()		// zone conditions, part 2
 	return RCOK;
 
 }		// ZNR::zn_CondixCR2
+//-----------------------------------------------------------------------------
+void ZNR::zn_IdealHVAC()		// idealized space conditioning
+// applies "magic" heating or cooling
+{
+	double qsTot{ 0 };	// sensible power required to hold set point (or max available), Btuh
+	int hcMode = RSYS::rsmOFF;
+	if (tz > zn_tzspC && i.znQMxC < 0.f)
+	{
+		hcMode = RSYS::rsmCOOL;
+		tz = zn_tzsp = zn_tzspC;
+#if defined( ZNHVACFCONV)
+		zn_fConv = zn_fConvC;
+		qsTot = zn_QsHvacCR(tz, zn_fConv);
+#else
+		qsTot = zn_QAirCR(tz);
+#endif
+		if (fabs(qsTot) > fabs(i.znQMxC))
+		{
+			qsTot = i.znQMxC;
+#if defined( ZNHVACFCONV)
+			tz = zn_TAirCR(qsTot * zn_fConv, 0., qsTot * (1.f - zn_fConv));
+#else
+			tz = zn_TAirCR(qsTot, 0.);
+#endif
+		}
+		// else capacity sufficient
+	}
+	else if (tz < zn_tzspH && i.znQMxH > 0.f)
+	{	// tz < TH: air needs heating
+		hcMode = RSYS::rsmHEAT;
+		tz = zn_tzsp = zn_tzspH;
+#if defined( ZNHVACFCONV)
+		zn_fConv = zn_fConvH;
+		qsTot = zn_QsHvacCR(tz, zn_fConv);
+#else
+		qsTot = zn_QAirCR(tz);
+#endif
+		if (qsTot > i.znQMxH)
+		{	// heat at heating capacity, find resulting tz.
+			qsTot = i.znQMxH;
+#if defined( ZNHVACFCONV)
+			tz = zn_TAirCR(qsTot * zn_fConv, 0., qsTot * (1.f - zn_fConv));
+#else
+			tz = zn_TAirCR(qsTot, 0.);
+#endif
+		}
+		// else capacity sufficient
+	}
+	if (hcMode != RSYS::rsmOFF)
+	{	// accounting
+		RSYS* rs = zn_GetRSYS();
+		if (rs)		// what about terminal?
+			zn_qsIdeal = qsTot - zn_qsHvac;
+			// mode?
+		else
+		{
+			zn_qsIdeal = zn_qsHvac = qsTot;
+			zn_hcMode = hcMode;
+		}
+	}
+
+}		// ZNR::zn_IdealHVAC
 //----------------------------------------------------------------------------
 #if defined(_DEBUG)
 RC ZNR::zn_AirFlowVsTsup()
@@ -2048,9 +2055,6 @@ bool ZNR::zn_IsAirHVACActive() const		// determine air motion
 /*virtual*/ RSYS::~RSYS()
 {
 	rs_DeleteWorkingSubObjects();
-	delete rs_pCHDHW;
-	rs_pCHDHW = nullptr;
-
 }	// RSYS::~RSYS
 //----------------------------------------------------------------------------
 void RSYS::rs_DeleteWorkingSubObjects()	// delete runtime subobjects
@@ -2240,10 +2244,12 @@ RC RSYS::rs_CkFHeating()
 	{	// combined heat and DHW
 		rc |= requireX(whenTy, RSYS_CHDHWSYSI);
 		rc |= disallowX(whenTy, RSYS_TDDESH);
+
 		if (IsAusz( RSYS_CAPH))
 			rc |= oer("rsCapH cannot be AUTOSIZE %s", whenTy);
 		else
 			rc |= ignoreX(whenTy, RSYS_CAPH);
+
 		// rs_CdH?
 		rc |= disallowX("when rsType is CombinedHeatDHW or ACCombinedHeatDHW",
 				ASHP_HtgFNs, ASHPPM_HtgFNs);
@@ -2469,6 +2475,8 @@ RC RSYS::rs_TopRSys1()		// check RSYS, initial set up for run
 {
 	RC rc = RCOK;
 
+	rs_SetWorkingPtrs();
+
 	if (!IsSet(RSYS_TDDESH))
 		rs_tdDesH = rs_IsHP()    ? 30.f	// lower default temp rise for ASHP
 		                         : 50.f;	// (changed later for CHDHW)
@@ -2602,8 +2610,6 @@ RC RSYS::rs_TopRSys2()		// final set up for run
 {
 	RC rc = RCOK;
 
-	rs_SetWorkingPtrs();		// MTR and other inter-object pointers
-
 	// Initialize DUCTSEGs / check for consistency with rs_DSEH/rs_DSEC
 	// link DUCTSEGs to this RSYS
 	DUCTSEG* ds;
@@ -2638,8 +2644,10 @@ RC RSYS::rs_TopRSys2()		// final set up for run
 	}
 	
 	// combined heat / DHW
+	// Note: rs_SetupCHDHW1() must be called for ALL RSYSs before rs_SetupCHDHW2()
+	//  (done by caller)
 	if (rs_IsCHDHW())
-		rc |= rs_SetupCHDHW();
+		rc |= rs_SetupCHDHW2();
 
 	if (rc == RCOK)
 		rs_SetRunConstants();
@@ -2975,7 +2983,7 @@ float RSYS::rs_AMFOperating(
 		rs_capHt = rs_CurCapHtCHDHW( speedF);
 		float avf;
 		float fanPwr;	// unused
-		rs_pCHDHW->hvt_BlowerAVFandPower(rs_capHt, avf, fanPwr);
+		rs_pCHDHW->chw_BlowerAVFandPower(rs_capHt, avf, fanPwr);
 		amf = AVFtoAMF(avf);
 	}
 	else
@@ -3247,7 +3255,7 @@ void RSYS::rs_SetWorkingPtrs()		// set runtime pointers to meters etc.
 	rs_pSrcSideLoadMtr[ 0] = LdMtrR.GetAtSafe(rs_srcSideLoadMtri);
 	rs_pSrcSideLoadMtr[ 1] = LdMtrR.GetAtSafe(rs_htgSrcSideLoadMtri);
 	rs_pSrcSideLoadMtr[ 2] = LdMtrR.GetAtSafe(rs_clgSrcSideLoadMtri);
-	rs_pCHDHWSYS = WsR.GetAtSafe(rs_CHDHWSYSi);
+	// rs_pCHDHWSYS = WsR.GetAtSafe( rs_CHDHWSYSi)  set in rs_SetupCHDHW1()
 }		// RSYS::rs_SetMTRPtrs
 //-----------------------------------------------------------------------------
 RC RSYS::rs_SetupSizes(		// derive capacity-dependent values
@@ -3795,6 +3803,12 @@ RC RSYS::rs_EndSubhr()
 		R.ecPrimary = rs_inPrimary * Top.tp_subhrDur;
 		R.ecFan = eFan;
 
+#if 0 && defined( _DEBUG)
+		float effX = abs(R.qcSen + R.qcLat) / max(R.ecPrimary, .001f);
+		if (frDiff(rs_effCt, effX) > 0.01f)
+			printf("\nMismatch");
+#endif
+
 		R.ecTot += R.ecPrimary + R.ecFan /* + R.ecParasitic, see above */;
 
 		for (int iM = 0; iM < 3; iM += 2)
@@ -4023,26 +4037,6 @@ void RSYS::rs_CoolingSHR()		// derive cooling sensible heat ratio
 //         rs_vfPerTon = indoor std air cfm / ton
 // return: rs_SHR = SHR under current conditions
 {
-#if 0 && defined( _DEBUG)
-x	if (!Top.isWarmup)
-x		printf("Hit\n");
-#endif
-#if 0 && defined( _DEBUG)
-	if (!Top.isWarmup)
-	{
-		if (fabs(rs_asIn.as_tdb - 80.) < .2
-		 && fabs(rs_twbCoilIn - 67.) < 1.
-		 && fabs(rs_tdbOut - 95.f) < .2)
-			printf("Hit\n");
-	}
-#endif
-#if 0 && defined( _DEBUG)
-	rs_tdbOut = 95.f;
-	rs_tdbCoilIn = 80.f;
-	rs_twbCoilIn = 67.f;
-	rs_vfPerTon = 400.f;
-#endif
-
 	rs_SHR = CoolingSHR(rs_tdbOut, rs_tdbCoilIn, rs_twbCoilIn, rs_vfPerTon);
 
 }		// RSYS::rs_CoolingSHR
@@ -4146,11 +4140,6 @@ void RSYS::rs_CoolingOutletAirState(		// cooling outlet (leaving) air state
 		rs_ExportCorrelationValues();
 			bDoneExport = true;
 	}
-#endif
-
-#if 0 && defined( _DEBUG)
-x	if (Top.jDay == 242 && Top.iHr == 14)
-x		printf("\nhit");
 #endif
 
 	// fan heat: coil entering conditions
@@ -4881,8 +4870,31 @@ RC RSYS::rs_SetupWSHP()		// set WSHP defaults and derived parameters
 	return rc;
 }		// RSYS::rs_SetupWSHP
 //-----------------------------------------------------------------------------
-RC RSYS::rs_SetupCHDHW()		// check/set up combined heat / DWH
+RC RSYS::rs_SetupCHDHW1()	// initial check/setup of CHDHW configuration
+// calls DHWSYS::ws_CheckCHDHWConfig()
+// MUST be done for all RSYSs before any rs_SetupCHDHW2()
+// 
+// returns RCOK iff no errors
+{
+	RC rc = RCOK;
+
+	rs_pCHDHWSYS = WsR.GetAtSafe(rs_CHDHWSYSi);
+
+	if (rs_IsCHDHW())
+	{
+		if (!rs_pCHDHWSYS)
+			rc |= oer("Missing rsCHDHWSYS");	// impossible? due to prior checks
+		else
+			rc |= rs_pCHDHWSYS->ws_CheckCHDHWConfig(this);
+	}
+
+	return rc;
+
+}	// RSYS::rs_SetupCHDHW1
+//-----------------------------------------------------------------------------
+RC RSYS::rs_SetupCHDHW2()		// check/set up combined heat / DWH
 // call from rs_TopRSys2()
+//    *after* rs_SetupCHDHW1() for ALL RSYSs
 //    *after* rs_SetWorkingPtrs()
 //    *after* topDHW() -- DHWSYS, DHWHEATER, etc must exist
 
@@ -4892,28 +4904,32 @@ RC RSYS::rs_SetupCHDHW()		// check/set up combined heat / DWH
 
 	DHWSYS* pWS = rs_GetCHDHWSYS();
 
+#if 0
 	if (!pWS)
 		rc |= oer("Missing rsCHDHWSYS");	// impossible? due to prior checks
 	else
 		rc |= pWS->ws_CheckCHDHWConfig(	this);
+#endif
 
 	if (!rc)
 	{
 		rs_pCHDHW = new CHDHW( this);
-		float ratedSFP = float(rs_pCHDHW->hvt_GetRatedSpecificFanPower());
+		float ratedSFP = float(rs_pCHDHW->chw_GetRatedSpecificFanPower());
 		if (!IsSet(RSYS_FANSFPH))
 			rs_fanSFPH = ratedSFP;
-		rc |= rs_pCHDHW->hvt_Init(rs_fanSFPH);
+		float mult = pWS->ws_GetCHDHWCapMult();
+		float capHRtd = -1.f; //TODO IsSet(RSYS_CAPH) ? rs_capH : -1.f;
+		rc |= rs_pCHDHW->chw_Init(rs_fanSFPH, mult, capHRtd);
 
-		rs_tdDesH = rs_pCHDHW->hvt_GetTRise();
-		rs_capH = rs_pCHDHW->hvt_GetRatedCap();
+		rs_tdDesH = rs_pCHDHW->chw_GetTRise();
+		rs_capH = rs_pCHDHW->chw_GetRatedCap();
 
 		// rated fan heat (unused?)
-		rs_fanHRtdH = ratedSFP * rs_pCHDHW->hvt_GetRatedBlowerAVF() * BtuperWh;
+		rs_fanHRtdH = ratedSFP * rs_pCHDHW->chw_GetRatedBlowerAVF() * BtuperWh;
 	}
 
 	return rc;
-}		// RSYS::rs_SetupCHDHW
+}		// RSYS::rs_SetupCHDHW2
 //----------------------------------------------------------------------------
 float RSYS::rs_CurCapHtCHDHW(		// current CHDHW heating cap etc
 	float speedF)		// current speed, 0 - 1
@@ -4926,7 +4942,7 @@ float RSYS::rs_CurCapHtCHDHW(		// current CHDHW heating cap etc
 		DHWSYS* pWS = rs_GetCHDHWSYS();
 		rs_tCoilEW = pWS->ws_GetCHDHWTSupply();
 		float capHtMin;
-		rs_pCHDHW->hvt_CapHtgMinMax(rs_tCoilEW, capHtMin, rs_capHtFS);
+		rs_pCHDHW->chw_CapHtgMinMax(rs_tCoilEW, capHtMin, rs_capHtFS);
 		rs_speedFMin = capHtMin / rs_capHtFS;
 	}
 	return rs_capHtFS * speedF;
@@ -5992,10 +6008,6 @@ RC RSYS::rs_AllocateZoneAir()	// finalize zone air flows
 	else if (rs_effHt == 0.f || rs_ctrlAuxH == C_AUXHEATCTRL_LO)
 	{	// compressor is unavailable
 		// meet load with aux alone
-#if 0 && defined( _DEBUG)
-		if (Top.jDay == 336)
-			printf("\nHit %s", Top.dateStr.CStr());
-#endif
 		rs_effHt = 0.f;		// force compressor off (for _LO case)
 		rs_fxCap[ 1] = rs_amf / rs_amfReq[ 1];	// x/0 impossible
 		rs_runFAux = 1.f / rs_fxCap[ 1];
@@ -6026,10 +6038,6 @@ RC RSYS::rs_AllocateZoneAir()	// finalize zone air flows
 		//   1/amf is linear-ish with tSup, reduces iterations
 #if defined( RSYSITERCOUNT)
 		rsysPartAuxCount++;
-#endif
-#if 0 && defined( _DEBUG)
-		if (Top.jDay == 336)
-			printf("\nHit %s", Top.dateStr.CStr());
 #endif
 		double tSup = max(rs_asSup.as_tdb, rs_tSupLs);	// use last result as guess
 		double amfX = DBL_MIN;
@@ -6575,7 +6583,7 @@ RC RSYS::rs_FinalizeSh()
 			rs_outSenTot = rs_runF * rs_capHt;
 			float avf;		// AVF, cfm
 			float fanPwr;	// fan power, W
-			rs_pCHDHW->hvt_BlowerAVFandPower(rs_outSenTot, avf, fanPwr);
+			rs_pCHDHW->chw_BlowerAVFandPower(rs_outSenTot, avf, fanPwr);
 			// if (rs_runF < 1.) cycle?
 
 #if 1	// CHDHW fan power fix, 2/2026
@@ -6587,7 +6595,7 @@ x			rs_outFan = rs_runF * fanPwr * Top.tp_subhrDur * BtuperWh;	// WRONG fan heat
 			runFFan = rs_runF;
 
 			// flow (gpm) needed for gross output
-			float waterVolFlow = rs_pCHDHW->hvt_WaterVolFlow(rs_outSen, rs_tCoilEW);
+			float waterVolFlow = rs_pCHDHW->chw_WaterVolFlow(rs_outSen, rs_tCoilEW);
 			float vol = rs_runF * waterVolFlow * Top.tp_subhrDur * 60.f;
 
 			// return temp based on gross (coil) output
@@ -6998,10 +7006,6 @@ RC ZNR::zn_AfterSubhr()
 // end-subhour after-exprs/reports stuff for loads: set 'prior interval' variables etc
 // if done sooner, probes come out wrong.
 {
-#if 0 && defined( _DEBUG)
-	if (Top.iHr == 7)
-		printf("\niHr=%d", Top.iHr);
-#endif
 	tzlsDelta = tz - tzls;		// last subhour t delta: may be used to extrapolate next tz
 	tzls = tz;					// last subhr zone air temp for next subHour
 	wzlsDelta = wz - wzls;		// last subhour w delta: may be used to extrapolate next wz

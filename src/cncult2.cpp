@@ -1543,9 +1543,21 @@ LOCAL RC topRSys2()	// additional RSYS check / setup
 {
 	RC rc = RCOK;
 	RSYS* pRS;
-	// loop run records (added by topRSys2())
-	RLUP( RsR, pRS)
-		rc |= pRS->rs_TopRSys2();
+
+	// RSYS run records pass 1
+	//   config DHWSYS for CHDHW as needed
+	//   must be done for ALL RSYSs prior to rs_SetupCHDHW2() (called in rs_TopRsys2())
+	RLUP(RsR, pRS)
+	{	// call for all RSYSs (CHDHW or not)
+		rc |= pRS->rs_SetupCHDHW1();
+	}
+
+	// RSYS run records pass 2
+	//   complete setup
+	if (!rc)
+	{	RLUP(RsR, pRS)
+			rc |= pRS->rs_TopRSys2();
+	}
 	return rc;
 }	// ::topRSys2
 //=============================================================================

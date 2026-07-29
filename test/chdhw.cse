@@ -6668,7 +6668,6 @@ RSYS   "rsys1"
    // rsFanPwrH = 0.45
    rsFanPwrC = 0.45                     // Cooling fan power
    rsSEER = 15
-   rsCapH = 36000
    rsCapC = 40000
    rsParElec = ($tdboHrAv < 50) * 40    // Parasitic electric use, W
    rsElecMtr = "MtrElec"                // Electric use meter
