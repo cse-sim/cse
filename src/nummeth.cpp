@@ -536,7 +536,7 @@ template< typename T, size_t NI> PWLFUNC< T, NI>::PWLFUNC(
 template< typename T, size_t NI> void PWLFUNC< T, NI>::pwl_Setup()
 {
 	T xStep = (pwl_xMax - pwl_xMin) / (NI-1);
-	for (int i = 0; i < NI; i++)
+	for (size_t i = 0; i < NI; i++)
 	{
 		T x = pwl_xMin + i*xStep;
 		pwl_a[i] = (*pwl_pFunc)(x);

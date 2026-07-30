@@ -204,7 +204,7 @@ static int exTail = 0;	// subscript of last exTab entry in eval order; 0 for emp
 // safe size for memset
 //  see ext_Clear();
 constexpr size_t extCLEARSIZE = sizeof(EXTAB);
-#else defined( USEVECT)
+#else
 constexpr size_t extCLEARSIZE = sizeof(EXTAB) - offsetof(EXTAB, ext_whVal);
 //---------------------------------------------------------------------------
 EXTAB::EXTAB() : ext_whVal(), ext_whChaf()

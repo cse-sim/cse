@@ -1371,7 +1371,7 @@ RC FC cvS2Choi( 		// convert string to choice value for given data type else for
 		// search this choice data type's strings for a match, using getChoiTxI (just above).
 		int v;
 		for (v = 1;  v <= GetDttab(dt).nchoices;  v++)			// loop data type's choices (GetDttab: srd.h)
-		{	int tyX;
+		{	int tyX{ 0 };
 			const char* chtx = getChoiTxI( dt, v, &tyX, 1);
 			if (tyX == chtyHIDDEN)
 				continue;		// hidden, cannot match

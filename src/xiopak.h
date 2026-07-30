@@ -121,6 +121,7 @@ bool xfhasroot(const char* filePath);
 bool xfhasrootdirectory(const char* filePath);
 bool xfhasext(const char* filePath);
 void xfjoinpath(const char* pathname1, const char* pathname2, char* fullPath );
+bool xfSamePath(const char* path1, const char* path2);
 
 #endif	// _XIOPAK_H
 

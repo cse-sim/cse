@@ -242,10 +242,7 @@ if(USE_BINRES)
 endif()
 
 set(libs
-  glad
   penumbra
-  glfw
-  tess2
   HPWHsim
   libkiva
   btwxt
