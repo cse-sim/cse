@@ -3,7 +3,7 @@
 Error Messages for Run 001:
 
 ---------------
-DHW02.CSE(38): Info: 
+DHW02.cse(38): Info: 
   DHWSYS 'DS0': 'wsDayWasteVol' is ignored -- there are no wsDayUse draws.
 ---------------
 
@@ -11,7 +11,7 @@ DHW02.CSE(38): Info:
 
 ! Log for Run 001:
 
-! CSE 0.927.0+64bit-regression.6c1f03bf.263.dirty for Windows 64-bit (MSVC)
+! CSE 0.927.0+64bit-regression.4616e24a.291 for Windows 64-bit (MSVC)
 
 
 
@@ -81,10 +81,10 @@ Input for Run 001:
 Error Messages for Run 002:
 
 ---------------
-DHW02.CSE(38): Info: 
+DHW02.cse(38): Info: 
   DHWSYS 'DS0': 'wsDayWasteVol' is ignored -- there are no wsDayUse draws.
 ---------------
-DHW02.CSE(121): Info: DHWSYS 'DS2': 
+DHW02.cse(121): Info: DHWSYS 'DS2': 
     'wsDayWasteBranchVolF' is ignored -- there are no wsDayUse draws.
 ---------------
 
@@ -1102,7 +1102,7 @@ Br1 for Wed 01-Apr
 
 ! Log for Run 002:
 
-! CSE 0.927.0+64bit-regression.6c1f03bf.263.dirty for Windows 64-bit (MSVC)
+! CSE 0.927.0+64bit-regression.4616e24a.291 for Windows 64-bit (MSVC)
 
 
 
@@ -1111,7 +1111,7 @@ Input for Run 001:
         
         METER Elec1
 -----------------------
-???     DHW02.CSE(38): Info: 
+???     DHW02.cse(38): Info: 
 ???       DHWSYS 'DS0': 'wsDayWasteVol' is ignored -- there are no wsDayUse draws.
 -----------------------
         METER Fuel1
@@ -1347,27 +1347,27 @@ Input for Run 001:
         
         
 -----------------------
-???     DHW02.CSE(38): Info: 
+???     DHW02.cse(38): Info: 
 ???       DHWSYS 'DS0': 'wsDayWasteVol' is ignored -- there are no wsDayUse draws.
 -----------------------
-???     DHW02.CSE(121): Info: DHWSYS 'DS2': 
+???     DHW02.cse(121): Info: DHWSYS 'DS2': 
 ???         'wsDayWasteBranchVolF' is ignored -- there are no wsDayUse draws.
 -----------------------
 
 
 
-! CSE 0.927.0+64bit-regression.6c1f03bf.263.dirty for Windows 64-bit (MSVC) run(s) done: Thu 23-Jul-26  11:37:01 am
+! CSE 0.927.0+64bit-regression.4616e24a.291 for Windows 64-bit (MSVC) run(s) done: Mon 03-Aug-26   1:07:38 pm
 
 ! Executable:   d:\cse\builds\cse-msvc-64.exe
-!               23-Jul-26  11:02 am   (VS 14.29    5264384 bytes)  (HPWH 1.26.0+HEAD.11240a73.553)
+!               03-Aug-26   1:03 pm   (VS 14.29    5271040 bytes)  (HPWH 1.26.0+HEAD.11240a73.553)
 ! Command line: -x!  -t1 dhw02
-! Input file:   D:\cse\test\dhw02.cse
-! Report file:  D:\CSE\TEST\DHW02.REP
+! Input file:   D:\cse\test\DHW02.cse
+! Report file:  D:\cse\test\DHW02.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.04     Calls = 2         T/C = 0.0175
+!                Input:  Time = 0.04     Calls = 2         T/C = 0.0180
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 0.58     Calls = 2         T/C = 0.2920
-!              Reports:  Time = 0.04     Calls = 2         T/C = 0.0185
-!                Total:  Time = 0.66     Calls = 1         T/C = 0.6590
+!           Simulation:  Time = 0.59     Calls = 2         T/C = 0.2940
+!              Reports:  Time = 0.04     Calls = 2         T/C = 0.0190
+!                Total:  Time = 0.66     Calls = 1         T/C = 0.6620

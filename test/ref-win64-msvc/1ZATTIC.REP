@@ -3,13 +3,13 @@
 Error Messages for Run 001:
 
 ---------------
-1zattic.cse(372): Info: 
+1ZAttic.cse(372): Info: 
   zone 'Attic': 'znTH' is ignored when zone is unconditioned
 ---------------
-1zattic.cse(372): Info: 
+1ZAttic.cse(372): Info: 
   zone 'Attic': 'znTC' is ignored when zone is unconditioned
 ---------------
-1zattic.cse(372): Info: 
+1ZAttic.cse(372): Info: 
   zone 'Attic': 'znQMxHRated' is ignored when zone is unconditioned
 ---------------
 Info: Zone 'Z1': Temp control outcomes
@@ -3402,7 +3402,7 @@ IzXfer AX2              Zn1: Attic  Zn2: (ambient)  UAconst: 0      NVctrl: AirN
 ! Log for Run 001:
 
 ################
-! CSE 0.927.0+64bit-regression.bbfb2f93.284 for Windows 64-bit (MSVC)   Thu 30-Jul-26   4:02:04 pm
+! CSE 0.927.0+64bit-regression.4616e24a.291 for Windows 64-bit (MSVC)   Mon 03-Aug-26   1:04:33 pm
 
 
 ================
@@ -17229,7 +17229,7 @@ Attic W:  mwIG=0.000  mwInf=0.000  mwAN=5.730  mwDuctLk=0.000  mwSys=0.000  mwSu
 Attic UZ: anMCp/T[ 0]=115.33/8945.1  anMCp/T[ 1]=0.00/0.0  ventUt=0
      Nair=83482.94  Dair=1004.26  Nrad=85182.21  Drad=931.28  CX=600.19  airX=9.883
      ta=85.35  tr=89.07  qIzSh=-898  fvent=0.000  pz0=-0.0069  qsHvac=0
-! CSE 0.927.0+64bit-regression.bbfb2f93.284 for Windows 64-bit (MSVC)
+! CSE 0.927.0+64bit-regression.4616e24a.291 for Windows 64-bit (MSVC)
 
 
 
@@ -17737,30 +17737,30 @@ Input for Run 001:
         
          $EOF
 -----------------------
-???     1zattic.cse(372): Info: 
+???     1ZAttic.cse(372): Info: 
 ???       zone 'Attic': 'znTH' is ignored when zone is unconditioned
 -----------------------
-???     1zattic.cse(372): Info: 
+???     1ZAttic.cse(372): Info: 
 ???       zone 'Attic': 'znTC' is ignored when zone is unconditioned
 -----------------------
-???     1zattic.cse(372): Info: 
+???     1ZAttic.cse(372): Info: 
 ???       zone 'Attic': 'znQMxHRated' is ignored when zone is unconditioned
 -----------------------
 
 
 
-! CSE 0.927.0+64bit-regression.bbfb2f93.284 for Windows 64-bit (MSVC) run(s) done: Thu 30-Jul-26   4:02:05 pm
+! CSE 0.927.0+64bit-regression.4616e24a.291 for Windows 64-bit (MSVC) run(s) done: Mon 03-Aug-26   1:04:35 pm
 
 ! Executable:   d:\cse\builds\cse-msvc-64.exe
-!               30-Jul-26   3:59 pm   (VS 14.29    5271040 bytes)  (HPWH 1.26.0+HEAD.11240a73.553)
+!               03-Aug-26   1:03 pm   (VS 14.29    5271040 bytes)  (HPWH 1.26.0+HEAD.11240a73.553)
 ! Command line: -x!  -t1 1zattic
-! Input file:   D:\cse\test\1zattic.cse
-! Report file:  D:\cse\test\1zattic.rep
+! Input file:   D:\cse\test\1ZAttic.cse
+! Report file:  D:\cse\test\1ZAttic.rep
 
 ! Timing info --
 
 !                Input:  Time = 0.02     Calls = 1         T/C = 0.0200
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 1.12     Calls = 1         T/C = 1.1240
+!           Simulation:  Time = 1.18     Calls = 1         T/C = 1.1770
 !              Reports:  Time = 0.01     Calls = 1         T/C = 0.0130
-!                Total:  Time = 1.16     Calls = 1         T/C = 1.1590
+!                Total:  Time = 1.21     Calls = 1         T/C = 1.2100

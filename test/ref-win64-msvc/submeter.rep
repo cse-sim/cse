@@ -3,19 +3,19 @@
 Error Messages for Run 001:
 
 ---------------
-SUBMETER.CSE(5609): Info: 
+submeter.cse(5609): Info: 
   meter 'MtrElec': Duplicate reference from meter 'MtrElecRecomb'
 ---------------
-SUBMETER.CSE(5610): Info: 
+submeter.cse(5610): Info: 
   meter 'MtrElec2': Duplicate reference from meter 'MtrElecRecomb'
 ---------------
-SUBMETER.CSE(5611): Info: 
+submeter.cse(5611): Info: 
   meter 'MtrElecPV': Duplicate reference from meter 'MtrElecRecomb'
 ---------------
-SUBMETER.CSE(7121): Info: 
+submeter.cse(7121): Info: 
   LOADMETER 'LMHtg': Duplicate reference from LOADMETER 'LMCancel'
 ---------------
-SUBMETER.CSE(7122): Info: 
+submeter.cse(7122): Info: 
   LOADMETER 'LMClg': Duplicate reference from LOADMETER 'LMCancel'
 ---------------
 Info: Zone 'Conditioned-zn': Temp control outcomes
@@ -2772,7 +2772,7 @@ LMClgPeak daily for Jul
 
 ! Log for Run 001:
 
-! CSE 0.927.0+64bit-regression.6c1f03bf.263.dirty for Windows 64-bit (MSVC)
+! CSE 0.927.0+64bit-regression.4616e24a.291 for Windows 64-bit (MSVC)
 
 
 
@@ -5565,36 +5565,36 @@ Input for Run 001:
          RUN
          $EOF
 -----------------------
-???     SUBMETER.CSE(5609): Info: 
+???     submeter.cse(5609): Info: 
 ???       meter 'MtrElec': Duplicate reference from meter 'MtrElecRecomb'
 -----------------------
-???     SUBMETER.CSE(5610): Info: 
+???     submeter.cse(5610): Info: 
 ???       meter 'MtrElec2': Duplicate reference from meter 'MtrElecRecomb'
 -----------------------
-???     SUBMETER.CSE(5611): Info: 
+???     submeter.cse(5611): Info: 
 ???       meter 'MtrElecPV': Duplicate reference from meter 'MtrElecRecomb'
 -----------------------
-???     SUBMETER.CSE(7121): Info: 
+???     submeter.cse(7121): Info: 
 ???       LOADMETER 'LMHtg': Duplicate reference from LOADMETER 'LMCancel'
 -----------------------
-???     SUBMETER.CSE(7122): Info: 
+???     submeter.cse(7122): Info: 
 ???       LOADMETER 'LMClg': Duplicate reference from LOADMETER 'LMCancel'
 -----------------------
 
 
 
-! CSE 0.927.0+64bit-regression.6c1f03bf.263.dirty for Windows 64-bit (MSVC) run(s) done: Thu 23-Jul-26  11:50:09 am
+! CSE 0.927.0+64bit-regression.4616e24a.291 for Windows 64-bit (MSVC) run(s) done: Mon 03-Aug-26   1:09:34 pm
 
 ! Executable:   d:\cse\builds\cse-msvc-64.exe
-!               23-Jul-26  11:02 am   (VS 14.29    5264384 bytes)  (HPWH 1.26.0+HEAD.11240a73.553)
+!               03-Aug-26   1:03 pm   (VS 14.29    5271040 bytes)  (HPWH 1.26.0+HEAD.11240a73.553)
 ! Command line: -x!  -t1 submeter
 ! Input file:   D:\cse\test\submeter.cse
-! Report file:  D:\CSE\TEST\SUBMETER.REP
+! Report file:  D:\cse\test\submeter.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.32     Calls = 2         T/C = 0.1610
-!           AutoSizing:  Time = 0.15     Calls = 1         T/C = 0.1500
-!           Simulation:  Time = 2.28     Calls = 1         T/C = 2.2770
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0080
-!                Total:  Time = 2.76     Calls = 1         T/C = 2.7600
+!                Input:  Time = 0.32     Calls = 2         T/C = 0.1615
+!           AutoSizing:  Time = 0.15     Calls = 1         T/C = 0.1510
+!           Simulation:  Time = 2.24     Calls = 1         T/C = 2.2380
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0060
+!                Total:  Time = 2.72     Calls = 1         T/C = 2.7210
