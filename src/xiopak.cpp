@@ -599,18 +599,13 @@ bool xfIsValidPathSyntax(
 }	// xfIsValidPathSyntax
 #endif
 //------------------------------------------------------------------------
-static bool xfCaseCorrect(	// case-insensitive fallback lookup, in place
-	char* tPath)			// path to check/correct; must be writable and
-							//   large enough (correction never lengthens it)
-// CSE has historically assumed a case-insensitive file system; many input,
-//   weather/TDV, and #include file references use a case that differs from
-//   their on-disk name. If tPath isn't found as given, look for a
-//   case-insensitive match in its directory and correct tPath's file name
-//   portion in place (same length: safe). On a case-insensitive file system
-//   (Windows, default macOS), the exact-case check already succeeds and this
-//   is never reached; on a case-sensitive one (Linux, or macOS with a
-//   case-sensitive volume), it provides the same tolerant behavior.
-// Returns true iff tPath was corrected to an existing, unambiguous case-insensitive match.
+static bool xfCaseCorrect(	// look up tPath's on-disk case; corrects tPath's file name in place
+	char* tPath)			// path to check/correct; must be writable (correction never lengthens it)
+// On case-sensitive systems (Linux) a wrong-case check fails outright, so this runs as a
+//   not-found fallback. On case-insensitive ones (Windows, default macOS) the exact check can
+//   succeed with the wrong case, so callers needing the true on-disk case call this even on success.
+// Returns true if tPath's directory has a matching entry: an exact match wins immediately (never
+//   ambiguous, even with differently-cased siblings); else a single case-insensitive match.
 {
 	filesys::path p( tPath);
 	filesys::path dir = p.has_parent_path() ? p.parent_path() : filesys::path(".");
@@ -631,13 +626,20 @@ static bool xfCaseCorrect(	// case-insensitive fallback lookup, in place
 		return false;
 	}
 	std::vector<std::string> matches;
+	bool exact = false;
 	filesys::directory_iterator end;
 	for (filesys::directory_iterator it( dir, ec); !ec && it != end; it.increment( ec))
 	{	std::string entryName = it->path().filename().string();
+		if (entryName == target)
+		{	exact = true;	// already correct on disk: not ambiguous, regardless of siblings
+			break;
+		}
 		if (std::equal( entryName.begin(), entryName.end(), target.begin(), target.end(),
 				[]( unsigned char a, unsigned char b) { return tolower( a) == tolower( b); }))
 			matches.push_back( entryName);
 	}
+	if (exact)
+		return true;
 	if (isRealError( ec))
 	{	err( ERR, "Error scanning directory '%s' for case-insensitive match to '%s': %s",
 			dir.string().c_str(), target.c_str(), ec.message().c_str());
@@ -715,6 +717,10 @@ int fileFind1(			// check existence of a single file
 
 	int ret = xfExist( tPath, fPath);	// check file
 										// return exact name checked
+	if (ret > 0 && fPath)
+		xfCaseCorrect( fPath);	// verify/correct fPath's case against the on-disk entry: xfExist's
+								//   exact-case check can succeed on a case-insensitive file system
+								//   (e.g. macOS, Windows) even when the given case is wrong
 	return ret;
 }			// fileFind1
 //-----------------------------------------------------------------------------

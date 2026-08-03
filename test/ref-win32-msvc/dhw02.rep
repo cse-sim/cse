@@ -3,7 +3,7 @@
 Error Messages for Run 001:
 
 ---------------
-dhw02.cse(38): Info: 
+DHW02.cse(38): Info: 
   DHWSYS 'DS0': 'wsDayWasteVol' is ignored -- there are no wsDayUse draws.
 ---------------
 
@@ -81,10 +81,10 @@ Input for Run 001:
 Error Messages for Run 002:
 
 ---------------
-dhw02.cse(38): Info: 
+DHW02.cse(38): Info: 
   DHWSYS 'DS0': 'wsDayWasteVol' is ignored -- there are no wsDayUse draws.
 ---------------
-dhw02.cse(121): Info: DHWSYS 'DS2': 
+DHW02.cse(121): Info: DHWSYS 'DS2': 
     'wsDayWasteBranchVolF' is ignored -- there are no wsDayUse draws.
 ---------------
 
@@ -1111,7 +1111,7 @@ Input for Run 001:
         
         METER Elec1
 -----------------------
-???     dhw02.cse(38): Info: 
+???     DHW02.cse(38): Info: 
 ???       DHWSYS 'DS0': 'wsDayWasteVol' is ignored -- there are no wsDayUse draws.
 -----------------------
         METER Fuel1
@@ -1347,10 +1347,10 @@ Input for Run 001:
         
         
 -----------------------
-???     dhw02.cse(38): Info: 
+???     DHW02.cse(38): Info: 
 ???       DHWSYS 'DS0': 'wsDayWasteVol' is ignored -- there are no wsDayUse draws.
 -----------------------
-???     dhw02.cse(121): Info: DHWSYS 'DS2': 
+???     DHW02.cse(121): Info: DHWSYS 'DS2': 
 ???         'wsDayWasteBranchVolF' is ignored -- there are no wsDayUse draws.
 -----------------------
 
