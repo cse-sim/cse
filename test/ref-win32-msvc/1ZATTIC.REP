@@ -3,13 +3,13 @@
 Error Messages for Run 001:
 
 ---------------
-1zattic.cse(372): Info: 
+1ZAttic.cse(372): Info: 
   zone 'Attic': 'znTH' is ignored when zone is unconditioned
 ---------------
-1zattic.cse(372): Info: 
+1ZAttic.cse(372): Info: 
   zone 'Attic': 'znTC' is ignored when zone is unconditioned
 ---------------
-1zattic.cse(372): Info: 
+1ZAttic.cse(372): Info: 
   zone 'Attic': 'znQMxHRated' is ignored when zone is unconditioned
 ---------------
 Info: Zone 'Z1': Temp control outcomes
@@ -17737,13 +17737,13 @@ Input for Run 001:
         
          $EOF
 -----------------------
-???     1zattic.cse(372): Info: 
+???     1ZAttic.cse(372): Info: 
 ???       zone 'Attic': 'znTH' is ignored when zone is unconditioned
 -----------------------
-???     1zattic.cse(372): Info: 
+???     1ZAttic.cse(372): Info: 
 ???       zone 'Attic': 'znTC' is ignored when zone is unconditioned
 -----------------------
-???     1zattic.cse(372): Info: 
+???     1ZAttic.cse(372): Info: 
 ???       zone 'Attic': 'znQMxHRated' is ignored when zone is unconditioned
 -----------------------
 
