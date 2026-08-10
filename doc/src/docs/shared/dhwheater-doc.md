@@ -447,7 +447,13 @@ BradfordWhiteAeroThermRE2HP80,Bradford White 80-gal AeroTherm Series G2
 LG_APHWC50,LG 50-gal integrated HPWH
 LG_APHWC80,LG 580-gal integrated HPWH
 IceAirccHPWH275D,Ice Air cold-climate 248 kBTUh commercial multi-pass
-IceAirccHPWH550D,Ice Air cold-climate 516 kBTUh commercial multi-pass", True)
+IceAirccHPWH550D,Ice Air cold-climate 516 kBTUh commercial multi-pass
+AOSmith_CAHP2CO6_SP, Emerge XC Double Baja
+AOSmith_CAHP3CO6_SP, EmergeXC Triple Baja
+Laars_ECHV0325_SP, Laars E-Therm 325 kBtu/hr
+Nyle_e360_SP, Nyle 360 kBtu/hr
+Nyle_e180_SP, Nyle 180 kBtu/hr
+Watts_Aegis_500A_HPL_90_70_HIT, Lync by Watts Aegis A 500 MBtuh, True)
 }}
 
 {{
