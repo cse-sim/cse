@@ -437,6 +437,7 @@ friend WFILE;
 	float wdd_taDbAvg07;	//    7 day
 	float wdd_taDbAvg14;	//   14 day
 	float wdd_taDbAvg31;	//   31 day
+	float wdd_taDbAvgMonth;	// this month mean dry bulb air temp, F
 
 							// TDV elect statistics
 	float wdd_tdvElecPk;	//   peak for cur day
@@ -592,6 +593,7 @@ public:
 	void wdy_Stats( int jDay, double& taDbMin, double& taDbAvg, double& taDbMax,
 		double& tdvElecAvg, double& tdvElecPk, UCH tdvElecHrRank[ 24]) const;
 	float wdy_TaDbAvg( int jDay1, int jDay2);
+	float wdy_TaDbAvgMonth( int month, const int* monthLenghts );
 #if 0
 	RC wdy_PrepareWDSLRDAY( WDSLRDAY& wdsd, int dayTy, int jDay);
 #endif
@@ -692,7 +694,7 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 	int iDay;
 	int jDay = 0;
 	for (iMon=1; iMon<=12; iMon++)
-	{	int monLen = monLens[ iMon]  + (wdy_isLeap && iMon==2);
+	{	int monLen = monLens[ iMon] + (wdy_isLeap && iMon==2);
 		for (iDay=0; iDay<monLen; iDay++)
 		{	jDay++;
 			slday(jDay, sltmLST);
@@ -740,8 +742,11 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 	jDay = 0;
 	WDDAY* wddRank[366];	// pointers to days re rank sort
 	wddRank[365] = NULL;	// insurance, unused unless leap year
+	int monthDayStart{ 0 }, monthDayEnd{ 0 };
 	for (iMon=1; iMon<=12; iMon++)
-	{	int monLen = monLens[ iMon]  + (wdy_isLeap && iMon==2);
+	{	int monLen = monLens[ iMon] + (wdy_isLeap && iMon == 2);
+		monthDayEnd += monLen;
+		float TaDbAvgMonth = wdy_TaDbAvg(monthDayStart, monthDayEnd);//wdy_TaDbAvgMonth(iMon, monLens);
 		for (iDay=0; iDay<monLen; iDay++)
 		{	jDay++;
 			WDDAY& wdd = wdy_Day( jDay);
@@ -751,6 +756,9 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 			wdd.wdd_taDbAvg07 = wdy_TaDbAvg( jDay-7, jDay-1);
 			wdd.wdd_taDbAvg14 = wdy_TaDbAvg( jDay-14, jDay-1);
 			wdd.wdd_taDbAvg31 = wdy_TaDbAvg( jDay-31, jDay-1);
+			wdd.wdd_taDbAvgMonth = jDay == 1 || jDay - 1 != monthDayStart ?
+				TaDbAvgMonth :
+				wddRank[ jDay-2]->wdd_taDbAvgMonth;
 			wdd.wdd_tGrnd = CalcGroundTemp(
 								jDay,				// day of year
 								wdy_taDbAvg[ 0],	// air temp annual mean, F
@@ -768,6 +776,7 @@ RC WDYEAR::wdy_Fill(	// read weather data for entire file; compute averages etc.
 			if (wdd.wdd_tMains < wdy_tMainsMin)
 				wdy_tMainsMin = wdd.wdd_tMains;
 		}
+		monthDayStart = monthDayEnd;
 		wdy_tMainsAvg[ 0] += wdy_tMainsAvg[ iMon];
 		wdy_tMainsAvg[ iMon] /= monLen;
 	}
@@ -836,6 +845,19 @@ float WDYEAR::wdy_TaDbAvg(			// multi-day average dry bulb
 		taDbSum += wdy_Day( jDay).wdd_taDbAvg;
 	return float( taDbSum / (jDay2 - jDay1 + 1));
 }		// WDYEAR::wdy_TaDbAvg
+//-----------------------------------------------------------------------------
+float WDYEAR::wdy_TaDbAvgMonth(
+	int month,					// Month of the year, this should be between 1 and 13
+	const int* monthLenghts)	// Array containing the length of each month should be of size 13
+// Returns: the average dry bulb value for given month
+{
+	int startMonthDay = 0;
+	for (int currentMonth = 1; currentMonth < month; currentMonth++) {
+		startMonthDay += *(monthLenghts+currentMonth) + (wdy_isLeap && currentMonth == 2);
+	}
+	int endMonthDay = startMonthDay + *(monthLenghts + month);
+	return wdy_TaDbAvg(startMonthDay, endMonthDay);
+}
 //-----------------------------------------------------------------------------
 RC WDYEAR::wdy_TransferHr(		// transfer cached data to application
 	int jDay,		// day sought (1-365/366)
@@ -1314,6 +1336,7 @@ void WDDAY::wdd_Init()
 	wdd_taDbAvg07 = 0.f;
 	wdd_taDbAvg14 = 0.f;
 	wdd_taDbAvg31 = 0.f;
+	wdd_taDbAvgMonth = 0.f;
 	
 	wdd_tdvElecPk = 0.f;
 	wdd_tdvElecPkRank = 0;
@@ -1378,6 +1401,7 @@ void WDHR::wd_SetDayValues(		// set daily members for this hour
 	wd_taDbAvg07   = wdd.wdd_taDbAvg07;
 	wd_taDbAvg14   = wdd.wdd_taDbAvg14;
 	wd_taDbAvg31   = wdd.wdd_taDbAvg31;
+	wd_taDbAvgMonth = wdd.wdd_taDbAvgMonth;
 	wd_tGrnd       = wdd.wdd_tGrnd;
 	wd_tMains      = wdd.wdd_tMains;
 	wd_tdvElecPk   = wdd.wdd_tdvElecPk;
@@ -1401,6 +1425,7 @@ void WDHR::wd_SetDayValuesIfMissing(		// set missing daily members
 	SETIF( wd_taDbAvg07,	wdd.wdd_taDbAvg07)
 	SETIF( wd_taDbAvg14,	wdd.wdd_taDbAvg14)
 	SETIF( wd_taDbAvg31,	wdd.wdd_taDbAvg31)
+	SETIF( wd_taDbAvgMonth,	wdd.wdd_taDbAvgMonth)
 	SETIF( wd_tGrnd,		wdd.wdd_tGrnd)
 	SETIF( wd_tMains,		wdd.wdd_tMains)
 	SETIF( wd_tdvElecPk,	wdd.wdd_tdvElecPk)
