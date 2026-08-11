@@ -86,7 +86,7 @@ struct CULT;
 
 #include <string.h>
 #include <stddef.h>
-#include <stdarg.h>
+// #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 // #include <cctype> .. in strpak.h
@@ -94,6 +94,13 @@ struct CULT;
 #include <time.h>
 #include <cmath>
 #include <float.h>
+
+// re variable args
+#include <stdarg.h>
+extern va_list va_NULL;		// global "null" va_list for use as default
+							//  avoids non-standard va_list ap = nullptr
+							//  defined in rmkerr.cpp
+
 
 #if defined( USE_STDLIB)
 #include <memory>
