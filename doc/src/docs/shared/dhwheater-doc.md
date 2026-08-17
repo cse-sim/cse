@@ -457,9 +457,9 @@ Watts_Aegis_500A_HPL_90_70_HIT,Lync by Watts Aegis A 500 MBtuh
 Rheem_RMHPHD068_SP,Rheem Single-pass 
 Rheem_RMHPHD068_MP,Rheem Multi-pass
 Rheem_RMHPHDA120_SP,Rheem Single-pass 
-Rheem_RMHPHDA120_MP,Rheem Multi-pass 
+Rheem_RMHPHDA120_MP,Rheem Multi-pass",
 True)
-}}
+}},
 
 {{
   member_table({
