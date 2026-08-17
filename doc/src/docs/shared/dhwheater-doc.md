@@ -453,7 +453,12 @@ AOSmith_CAHP3CO6_SP,Emerge XC Triple Baja
 Laars_ECHV0325_SP,Laars E-Therm 325 kBtu/hr
 Nyle_e360_SP,Nyle 360 kBtu/hr
 Nyle_e180_SP,Nyle 180 kBtu/hr
-Watts_Aegis_500A_HPL_90_70_HIT,Lync by Watts Aegis A 500 MBtuh,True)
+Watts_Aegis_500A_HPL_90_70_HIT,Lync by Watts Aegis A 500 MBtuh
+Rheem_RMHPHD068_SP,Rheem Single-pass 
+Rheem_RMHPHD068_MP,Rheem Multi-pass
+Rheem_RMHPHDA120_SP,Rheem Single-pass 
+Rheem_RMHPHDA120_MP,Rheem Multi-pass 
+True)
 }}
 
 {{
