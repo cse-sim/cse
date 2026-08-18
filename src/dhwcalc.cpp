@@ -1419,29 +1419,30 @@ RC DHWSYS::ws_DoHour(		// hourly calcs
 		rc |= pWT->wt_DoHour();
 
 	// multi-unit distribution losses
-	double HRLL = 0.;
-	ws_HRBL = 0.f;
-	ws_t24WL = 0.f;
-	ws_volRL = 0.f;
+	ws_HRDL = ws_HRBL = ws_t24WL = ws_volRL = 0.f;
 	double tVolRet = 0.;
 	if (ws_wlCount > 0)		// if any loops
 	{	DHWLOOP* pWL;
 		RLUPC( WlR, pWL, pWL->ownTi == ss)
 		{	rc |= pWL->wl_DoHour( mult);		// also calcs child DHWLOOPSEGs and DHWLOOPPUMPs
-			HRLL += pWL->wl_HRLLnet;	// loop loss
+			ws_HRDL += pWL->wl_HRLLnet;	// loop loss
 			ws_HRBL += pWL->wl_HRBL;	// branch loss, Btu
 			ws_t24WL += pWL->wl_t24WL;	// T24 model branch waste loss volume, gal (info only)
 			ws_volRL += pWL->wl_volRL;	// vol returned to WH(s), gal
 			tVolRet += pWL->wl_volRL * pWL->wl_tRL;
 		}
-		ws_tRL = tVolRet / ws_volRL;
 	}
-	ws_tRL = ws_volRL > 0.f ? tVolRet / ws_volRL : 0.f;
+	if (ws_volRL > 0.f)	// if any loop flow
+	{
+		ws_tRL = tVolRet / ws_volRL;
+		ws_loopDeltaT = ws_tUse - ws_tRL;	// loop temp deltaT, F (can be < 0)
+	}
+	else
+		ws_tRL = ws_loopDeltaT = 0.f;
 
 	ws_t24WLTot += ws_t24WL;
 
 	// distribution losses
-	ws_HRDL = float(HRLL);
 	if (ws_branchModel == C_DHWBRANCHMODELCH_T24DHW)
 		ws_HRDL += ws_HRBL;		// conditionally include branch losses
 
@@ -2203,6 +2204,8 @@ RC DHWSYS::ws_EndIvl(		// end-of-hour
 	}
 	if (ws_wlhCount > 0.f) RLUPC(WlhR, pWH, pWH->ownTi == ss)
 		rc |= pWH->wh_EndIvl(ivl, 0.f, ws_mult);
+
+	ws_loopDeltaTlh = ws_loopDeltaT;	// last hour value for beg-of-hour expressions
 
 	// note: DHWSYS energy/water meter accum is in ws_DoHour
 	//       values do not vary subhrly
@@ -3697,7 +3700,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 	//    DHW recirc loop
 	//    CHDHW (combined heat and DHW)
 	//    Losses (extra draw to compensate for distribution losses)
-	double drawRL{ 0. };	// loop flow vol for this heater, this tick, gal
+	double drawRL{ 0. };	// loop return flow vol into this heater, this tick, gal
 	double tRL{ 0. };		// loop return temp, F
 	if (whfcn & DHWHEATER::whfcnSUPPLIESLOOP)
 	{	drawRL = tk.wtk_volRL * hw_fMixRL * scaleWH;
@@ -3713,8 +3716,8 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 	double tRC		// recirc (loop+CHDHW) return temp, F
 		= drawRC > 0. ? (drawRL * tRL + drawCHDHW * tk.wtk_tRCHDHW) / drawRC : 0.;
 
-	double drawUse;			// use draw, gal
-	double drawLoss{ 0. }; // pseudo-draw (gal) to represent e.g. central system branch losses
+	double drawUse{ 0.};	// use draw, gal
+	double drawLoss{ 0. };	// pseudo-draw (gal) to represent e.g. central system branch losses
 #if 0
 	if (Top.tp_isBegMainSim)
 		printf("\nBeg");
@@ -3770,46 +3773,46 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 
     hw_qEnv += hw_pHPWH->getEnergyRemovedFromEnvironment();
     hw_qLoss += hw_pHPWH->getStandbyLosses();
-    hw_tOut = hw_pHPWH->getOutletTemp(); // output temp, C (0 if no draw)
+    double tOutC = hw_pHPWH->getOutletTemp(); // unmixed output temp, C (0 if no draw)
+	hw_tOut = DegCtoF(tOutC);	// unmixed output temp, F
 
 	float HPWHxBU = 0.f; // add'l resistance backup, this tick, Btu
 #if 0
 	printf("\n%d HPWH   drawCHDHW=%0.4f  tOut=%0.1f", Top.iSubhr, drawRC, hw_tOut);
 #endif
-	if (hw_tOut < .01)
+	if (tOutC < .01)
 	{	// no draw / outlet temp estimated
 		hw_tOutCHDHW = 0.;
 		tOutlet = hw_GetEstimatedTOut();
 	}
 	else
-	{	double tOutF = DegCtoF(hw_tOut);	// unmixed outlet temp, F
-		tOutlet = float(tOutF);				// return to caller before modification
+	{	tOutlet = float(hw_tOut);				// return to caller before modification
 		hw_nzDrawCount++;	// this tick has draw
 		if (whfcn & DHWHEATER::whfcnSUPPLIESLOAD)
 		{	// output goes to load
-			if (tOutF < tMix)
+			if (hw_tOut < tMix)
 			{	// load not met, add additional (unlimited) resistance heat
 				hw_fMixUse = hw_fMixRL = 1.f;
-				HPWHxBU = waterRhoCp * drawForTick * (tMix - tOutF);
+				HPWHxBU = waterRhoCp * drawForTick * (tMix - hw_tOut);
 				hw_HPWHxBU += HPWHxBU;
-				hw_tOutCHDHW = tOutF = tMix;	// output temp XBU boosted for
+				hw_tOutCHDHW = hw_tOut = tMix;	// output temp XBU boosted for
 												//  for both DHW and CHDHW
 			}
 			else
 			{	// mix to obtain ws_tUse
 				//   set hw_fMixUse and hw_fMixRL for next tick
-				DHWMix(tMix, tOutF, tMains, hw_fMixUse);
-				DHWMix(tMix, tOutF, tRL, hw_fMixRL);
-				hw_tOutCHDHW = tOutF;	// CHDHW gets unmixed, DHW mixed
+				DHWMix(tMix, hw_tOut, tMains, hw_fMixUse);
+				DHWMix(tMix, hw_tOut, tRL, hw_fMixRL);
+				hw_tOutCHDHW = hw_tOut;	// CHDHW gets unmixed, DHW mixed
 			}
 		}
-		hw_tHWOutF += tOutF;	// accum for average
-								// note tOutF may have changed (but not tOut)
+		hw_tHWOutF += hw_tOut;	// accum for average
+								// note hw_tOut may have changed (but not tOut)
 
 		// total heat output = heat added to water, kWh
 		//   includes DHW, loop, CHDHW; does not include XBU
 		double qHWTick = KJ_TO_KWH(
-			(GAL_TO_L(drawForTick)*hw_tOut
+			(GAL_TO_L(drawForTick)*tOutC
 				- GAL_TO_L(drawForTick - drawRC)*DegFtoC(tInlet)
 				- GAL_TO_L(drawRC)*DegFtoC(tRC))
 			* HPWH::DENSITYWATER_kgperL
@@ -3821,7 +3824,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 			KJ_TO_KWH(
 				GAL_TO_L(1.) * HPWH::DENSITYWATER_kgperL * HPWH::CPWATER_kJperkgC / 1.8));
 
-		double qX = drawForTick * (tOutF - tInlet) * waterRhoCp;
+		double qX = drawForTick * (hw_tOut - tInlet) * waterRhoCp;
 		double qHWTickBtu = KWH_TO_BTU(qHWTick) + HPWHxBU;
 		double qDiff = fabs(qX - qHWTickBtu);
 		if (qDiff > .001)
@@ -3880,7 +3883,7 @@ RC HPWHLINK::hw_DoSubhrTick(		// calcs for 1 tick
 											UNTEMP,	5},
 		  {"tSP",	   DegCtoF(hw_pHPWH->getSetpoint()),
 											UNTEMP,	5},
-		  {"tOut",      hw_tOut > 0. ? DegCtoF(hw_tOut) : CSVItem::ci_UNSET,
+		  {"tOut",      hw_tOut > 0. ? hw_tOut : CSVItem::ci_UNSET,
 											UNTEMP,  5},
 		  {"tUse",      tMix > 0.f ? tMix : CSVItem::ci_UNSET,
 											UNTEMP,  5},
@@ -4828,11 +4831,17 @@ static const DRMAP drMap[] =
 
 }	// DHWHEATER::wh_DRMapSigToDRStatus
 //-----------------------------------------------------------------------------
-RC DHWHEATER::wh_DoSubhrStart()
+RC DHWHEATER::wh_DoSubhrStart()	// subhour init
 {
 	RC rc = RCOK;
 
-	// DHWSYS* pWS = wh_GetDHWSYS();
+	DHWSYS* pWS = wh_GetDHWSYS();
+
+	// default energy use adjustment factors from parent
+	if (!IsSet(DHWHEATER_FADJELEC))
+		wh_fAdjElec = pWS->ws_fAdjElec;
+	if (!IsSet(DHWHEATER_FADJFUEL))
+		wh_fAdjFuel = pWS->ws_fAdjFuel;
 
 	wh_effSh = 0.f;
 	wh_inElecSh = 0.f;
