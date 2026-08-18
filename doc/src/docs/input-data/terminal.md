@@ -464,7 +464,7 @@ Choice of:
 {{
   csv_table("NONE,         No fan in this TERMINAL (default); input for other terminal fan members disallowed.
   SERIES,       Fan runs whenever scheduled ON (see tfanSched&comma; next); if VAV cfm &lt; terminal fan cfm (tfanVfDs)&comma; the additional flow comes from the return air.
-  PARALLEL,     Fan runs when scheduled ON (see tfanSched) and terminal's simulated VAV cfm is less than tfanVfDs plus tuVfMn ?? plus tuVfMn??. Terminal fan cfm is added to VAV cfm from AIRHANDLER to get cfm to ZONE.")
+  PARALLEL,     Fan runs when scheduled ON (see tfanSched) and terminal's simulated VAV cfm is less than tfanVfDs plus tuVfMn. Terminal fan cfm is added to VAV cfm from AIRHANDLER to get cfm to ZONE.")
 }}
 
 

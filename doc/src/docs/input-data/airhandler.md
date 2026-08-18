@@ -82,7 +82,7 @@ Supply temperature setpoint numeric value OR* choice of control method (WZ, CZ, 
 
 {{
   csv_table("_float_, A numeric value specifies the supply temperature setpoint. An expression can be used to make dependent on time&comma; weather&comma; etc.
-WZ, Warmest Zone: for cooling&comma; sets the supply temperature setpoint each sub??hour so that the control zone (see*ahWzCzns*) requiring the coolest supply temperature can meet its load with its VAV damper 90% of the way from its minimum opening to its maximum&comma; that is&comma; at a flow of: _tuVfMn_ + .9(_tuVfMxC_ - * tuVfMn*).
+WZ, Warmest Zone: for cooling&comma; sets the supply temperature setpoint each hour so that the control zone (see*ahWzCzns*) requiring the coolest supply temperature can meet its load with its VAV damper 90% of the way from its minimum opening to its maximum&comma; that is&comma; at a flow of: _tuVfMn_ + .9(_tuVfMxC_ - * tuVfMn*).
 CZ, Coolest Zone: analogous to WZ&comma; but for heating
 RA, Supply temperature setpoint value is controlled by return air temperature (this cannot be done with a CSE expression without lagging a subhour). See _ahTsRaMn_ and _ahTsRaMx_.
 ZN, Causes air handler to switch between heating&comma; OFF&comma; and cooling as required by the load of a single zone. When the zone thermostat (modeled through the _tuTC_ and _tuTH_ inputs) calls for neither heating nor cooling&comma; the air handler shuts down&comma; including stopping its fan(s). Changes _ahFanCycles_ default to YES&comma; to simulate a constant volume&comma; fan cycling system.
@@ -558,7 +558,7 @@ design or rated pressure.
   })
 }}
 
-_At most, one of the next three?? items may be defined: ??_ rework re rfanElecPwr
+_At most one of the next three items (rfanElecPwr, rfanEff, rfanShaftBhp) may be defined._
 
 ### rfanElecPwr
 
@@ -1430,7 +1430,7 @@ Exponent in power relationship expressing coil effectiveness as a function of re
 
 Type: _float_
 
-Fraction of air flow which does NOT flow through DX cooling coil, for better humidity control. Running less of the air through the coil lets the coil run colder, resulting in greater moisture removal right??.
+Fraction of air flow which does NOT flow through DX cooling coil, for better humidity control. Running less of the air through the coil lets the coil run colder, resulting in greater moisture removal.
 
 {{
   member_table({
