@@ -3,14 +3,14 @@
 Error Messages for Run 001:
 
 ---------------
-DHWLOOP32U.CSE(5161): Warning: 
-  reportCol of report [DHWLOOP32U.CSE(5158)]: 
+DHWLoop32U.cse(5161): Warning: 
+  reportCol of report [DHWLoop32U.cse(5158)]: 
     S0546: End-of-interval varying value is reported more often than it is set:
     rpFreq of report '' is 'Subhour', but colVal for colHead 'tIn'
     varies (is given a value) only at end of each hour.
 ---------------
-DHWLOOP32U.CSE(5161): Warning: 
-  reportCol of report [DHWLOOP32U.CSE(5158)]: 
+DHWLoop32U.cse(5161): Warning: 
+  reportCol of report [DHWLoop32U.cse(5158)]: 
     S0546: End-of-interval varying value is reported more often than it is set:
     rpFreq of report '' is 'Subhour', but colVal for colHead 'tRL'
     varies (is given a value) only at end of each hour.
@@ -1480,7 +1480,7 @@ Subhourly User-defined Report, Sat 10-Jan
 
 ! Log for Run 001:
 
-! CSE 0.927.0+dhw-mmv.9b5d80f3.267.dirty for Windows 32-bit (MSVC)
+! CSE 0.927.0+64bit-regression.6a9bb66f.313 for Windows 32-bit (MSVC)
 
 
 
@@ -6655,14 +6655,14 @@ Input for Run 001:
          RUN
          $EOF
 -----------------------
-???     DHWLOOP32U.CSE(5161): Warning: 
-???       reportCol of report [DHWLOOP32U.CSE(5158)]: 
+???     DHWLoop32U.cse(5161): Warning: 
+???       reportCol of report [DHWLoop32U.cse(5158)]: 
 ???         S0546: End-of-interval varying value is reported more often than it is set:
 ???         rpFreq of report '' is 'Subhour', but colVal for colHead 'tIn'
 ???         varies (is given a value) only at end of each hour.
 -----------------------
-???     DHWLOOP32U.CSE(5161): Warning: 
-???       reportCol of report [DHWLOOP32U.CSE(5158)]: 
+???     DHWLoop32U.cse(5161): Warning: 
+???       reportCol of report [DHWLoop32U.cse(5158)]: 
 ???         S0546: End-of-interval varying value is reported more often than it is set:
 ???         rpFreq of report '' is 'Subhour', but colVal for colHead 'tRL'
 ???         varies (is given a value) only at end of each hour.
@@ -6670,18 +6670,18 @@ Input for Run 001:
 
 
 
-! CSE 0.927.0+dhw-mmv.9b5d80f3.267.dirty for Windows 32-bit (MSVC) run(s) done: Thu 16-Jul-26   4:57:29 pm
+! CSE 0.927.0+64bit-regression.6a9bb66f.313 for Windows 32-bit (MSVC) run(s) done: Wed 19-Aug-26  11:30:04 am
 
 ! Executable:   d:\cse\builds\cse-msvc-32.exe
-!               16-Jul-26   2:01 pm   (VS 14.29    4466176 bytes)  (HPWH 1.26.0+HEAD.11240a73.553)
+!               19-Aug-26  11:28 am   (VS 14.29    4473344 bytes)  (HPWH 1.26.0+HEAD.c1a1597c.580)
 ! Command line: -x!  -t1 dhwloop32U
-! Input file:   D:\cse\test\dhwloop32U.cse
-! Report file:  D:\CSE\TEST\DHWLOOP32U.REP
+! Input file:   D:\cse\test\DHWLoop32U.cse
+! Report file:  D:\cse\test\DHWLoop32U.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.23     Calls = 1         T/C = 0.2310
+!                Input:  Time = 0.23     Calls = 1         T/C = 0.2340
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 2.80     Calls = 1         T/C = 2.8030
+!           Simulation:  Time = 2.93     Calls = 1         T/C = 2.9300
 !              Reports:  Time = 0.01     Calls = 1         T/C = 0.0120
-!                Total:  Time = 3.05     Calls = 1         T/C = 3.0480
+!                Total:  Time = 3.18     Calls = 1         T/C = 3.1780
