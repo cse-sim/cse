@@ -19,12 +19,12 @@ All known issues are listed on our [Issue Tracker]. New issues can be reported t
 
 ### Development
 
-CSE is configured as a CMake project. Windows (MSVC) and macOS (Clang) are fully supported. Linux support is in progress. To build, run the appropriate script from the root directory:
+CSE is configured as a CMake project. Windows (MSVC), macOS (Clang), and Linux (GCC) are fully supported. To build, run the appropriate script from the root directory:
 
 - **Windows:** `build.bat`
 - **macOS/Linux:** `build.sh`
 
-All build products (e.g., `CSE.exe`) will be placed in a directory called `build`.
+All build products (e.g., `cse` on macOS/Linux, `cse.exe` on Windows) will be placed in a directory called `build`.
 
 #### Testing
 
@@ -34,7 +34,7 @@ Automated testing of your build can be executed by running the following from th
 
 #### Dependencies
 
-- Microsoft Visual C++ or Clang
+- Microsoft Visual C++, Clang, or GCC
 - CMake
 - Python (via [uv](https://docs.astral.sh/uv/), required for building documentation)
 
