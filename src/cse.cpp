@@ -84,6 +84,8 @@
 // configuration defined on compiler command line (or inferred, see cnglob.h)
 #include "cseface.h"
 
+#include "nlohmann/json.hpp"
+
 #if defined(WINorDLL)
 #include <cnewin.h> // public declarations for Windows caller of CSE subroutine. Declares cne() for Windows (linked or DLL).
 #ifdef DLL
@@ -589,6 +591,11 @@ LOCAL int cse2(int argc, const char *argv[])
 	{
 		errlvl = exitCode;
 	}
+    catch (nlohmann::json::exception e)
+    {
+        err(PROGERR, "Unhandled json exception '%s'\nTerminating", e.what());
+        errlvl = 2;
+    }
 	catch (std::exception e)
 	{
 		err(PROGERR, "Unhandled exception '%s'\nTerminating", e.what());

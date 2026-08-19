@@ -5146,6 +5146,21 @@ DHWSYSRES1DAY( feb 4)
 DHWSYSRES1DAY( jul 10)
 
 
+#define DETCOLS( s, h, l) \
+ReportCol colhead="tMains" colVal=@Weather.tMains colDec=2 colWid = 6 \
+ReportCol colhead="tIn" colVal=@DhwLoopHeater[h].tInlet colDec=2 colWid = 6 \
+ReportCol colHead="tRL" colVal=@DHWLoop[l].tRL colDec=2 colWid=7 \
+ReportCol colHead="tOut" colVal=@DHWLoopHEATER[h].HPWH.tOut colDec=2 colWid=7 \
+ReportCol colHead="tUse" colVal=@DHWSys[s].tUse colDec=2 colWid=7 \
+ReportCol colHead="fMixUse" colVal=@DHWLoopHEATER[h].HPWH.fMixUse colDec=3 colWid=7 \
+ReportCol colHead="fMixRL" colVal=@DHWLoopHEATER[h].HPWH.fMixRL colDec=3 colWid=7 \
+
+REPORT rpType=UDT rpFreq=Subhour rpDayBeg=Jan 10 rpDayEnd=Jan 10
+ReportCol colHead="Hr" colVal=$hour colWid=2
+ReportCol colHead="Sh" colVal=@top.iSubhr colWid=2
+DETCOLS(1,1,1)
+
+
 
 
 
