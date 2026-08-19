@@ -67,6 +67,7 @@ markdown_extensions:
   - admonition
   - attr_list
   - def_list
+  - footnotes
   - toc:
       permalink: true
   - pymdownx.arithmatex:
