@@ -89,7 +89,7 @@ make_cse_test(submeter)
 make_cse_test(shadetest)
 make_cse_test(CRTerminalAH)
 make_cse_test(MF8X)
-make_cse_test(ExportFileOutput -DEXPORT_FILE_ABSOLUTE_PATH="${CMAKE_SOURCE_DIR}/test/absolutePathEXPORTFILE.csv")
+make_cse_test(ExportFileOutput -DEXPORT_FILE_ABSOLUTE_PATH="${CMAKE_SOURCE_DIR}/test/ExportFileAbsolutePath.csv")
 
 if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
   set(script_ext "bat")

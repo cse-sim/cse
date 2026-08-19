@@ -1,11 +1,13 @@
+ucFileName = NO
+
 EXPORTFILE
   xfFileName=EXPORT_FILE_ABSOLUTE_PATH
 
 EXPORTFILE
-  xfFileName=".\\..\\test\\relativePathExportFile.csv"
+  xfFileName="./../test/ExportFileRelativePath.csv"
 
 EXPORTFILE
-  xfFileName="noPathExportFile.csv"
+  xfFileName="ExportFileNoPath.csv"
 
 WfName="Bishop.epw"
 

@@ -3,10 +3,10 @@
 Error Messages for Run 001: Import test with autosizing
 
 ---------------
-IMPORT.CSE(1354): Warning: 
+import.cse(1354): Warning: 
   importFile 'Unused': S0575: Unused IMPORTFILE: no IMPORT()s from it found.
 ---------------
-IMPORT.CSE(1354): Warning: 
+import.cse(1354): Warning: 
   importFile 'Unused': S0575: Unused IMPORTFILE: no IMPORT()s from it found.
 ---------------
 Warning: Zone 'Attic-atc': Condensation occurred in 1308 subhours of run.
@@ -129,7 +129,7 @@ Battery/PV Output for Wed 01-Jul
 
 ! Log for Run 001: Import test with autosizing
 
-! CSE 0.927.0+import-fix.40c90865.177.dirty for Win32 console
+! CSE 1.0.0-test1+linux-builds.ec7ef564.19 for Windows 32-bit (MSVC)
 
 
 
@@ -1526,24 +1526,24 @@ Input for Run 001:
          RUN
          $EOF
 -----------------------
-???     IMPORT.CSE(1354): Warning: 
+???     import.cse(1354): Warning: 
 ???       importFile 'Unused': S0575: Unused IMPORTFILE: no IMPORT()s from it found.
 -----------------------
 
 
 
-! CSE 0.927.0+import-fix.40c90865.177.dirty for Win32 console run(s) done: Tue 21-Apr-26   4:51:12 pm
+! CSE 1.0.0-test1+linux-builds.ec7ef564.19 for Windows 32-bit (MSVC) run(s) done: Thu 02-Jul-26   2:05:35 pm
 
-! Executable:   d:\cse\builds\cse.exe
-!               21-Apr-26   4:38 pm   (VS 14.29    4474368 bytes)  (HPWH 1.26.0+HEAD.11240a73.553)
-! Command line: -x!  -t1 import
-! Input file:   D:\cse\test\import.cse
-! Report file:  D:\CSE\TEST\IMPORT.REP
+! Executable:   d:\a\cse\cse\build\cse.exe
+!               02-Jul-26   2:03 pm   (VS 14.29    3598848 bytes)  (HPWH 1.4.1+HEAD.11240a73.2140)
+! Command line: -x!  -b -t1 import
+! Input file:   D:\a\cse\cse\test\import.cse
+! Report file:  D:\a\cse\cse\test\import.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.06     Calls = 2         T/C = 0.0290
-!           AutoSizing:  Time = 0.21     Calls = 1         T/C = 0.2080
-!           Simulation:  Time = 2.76     Calls = 1         T/C = 2.7580
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0040
-!                Total:  Time = 3.03     Calls = 1         T/C = 3.0310
+!                Input:  Time = 0.13     Calls = 2         T/C = 0.0670
+!           AutoSizing:  Time = 0.73     Calls = 1         T/C = 0.7300
+!           Simulation:  Time = 9.77     Calls = 1         T/C = 9.7670
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
+!                Total:  Time = 10.63    Calls = 1         T/C = 10.6330

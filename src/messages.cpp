@@ -138,7 +138,7 @@ const char* msg(		// retrieve message text, format args
 		mOrH,		// caller's message text or message handle
 		ap );		// ptr to args for vsprintf() in msgI
 
-	if (!mBuf)					// if caller wants Tmpstr
+	if (p == stkBuf)					// if caller wants Tmpstr
 		p = strncpy0( NULL, stkBuf, mLen+1);	// copy string to Tmpstr
 
 	return p;		// return pt to caller's mBuf or to Tmpstr

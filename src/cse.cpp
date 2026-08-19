@@ -1355,9 +1355,9 @@ RC TOPRAT::tp_CheckOutputFilePath( // check output file name
 //    else RCBAD
 {
 	const char *msg = NULL;
-	if (!_stricmp(filePath, InputFilePath))
+	if (xfSamePath(filePath, InputFilePath))
 		msg = "Cannot overwrite current input file";
-	else if (!_stricmp(filePath, ErrFilePath()))
+	else if (xfSamePath(filePath, ErrFilePath()))
 		msg = "Cannot overwrite current error file";
 	if (msg)
 	{

@@ -23,20 +23,22 @@ Monthly Energy Balance, Sum of Zones
 
 ! Log for Run 001:
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+! CSE 0.927.0+linux-builds.400a7f1d.248.dirty for Windows 32-bit (MSVC)
 
 
 
 Input for Run 001:
 
+        ucFileName = NO
+        
         EXPORTFILE
           xfFileName=EXPORT_FILE_ABSOLUTE_PATH
         
         EXPORTFILE
-          xfFileName=".\\..\\test\\relativePathExportFile.csv"
+          xfFileName="./../test/ExportFileRelativePath.csv"
         
         EXPORTFILE
-          xfFileName="noPathExportFile.csv"
+          xfFileName="ExportFileNoPath.csv"
         
         WfName="Bishop.epw"
         
@@ -44,20 +46,20 @@ Input for Run 001:
 
 
 
-! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:38:33 pm
+! CSE 0.927.0+linux-builds.400a7f1d.248.dirty for Windows 32-bit (MSVC) run(s) done: Wed 29-Jul-26   2:08:48 pm
 
-! Executable:   d:\cse\msvc\cse.exe
-!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
+! Executable:   d:\cse\builds\cse-msvc-32.exe
+!               29-Jul-26   2:05 pm   (VS 14.29    4470272 bytes)  (HPWH 1.26.0+HEAD.11240a73.553)
 ! Command line: -x!  -b -t1
-!               -DEXPORT_FILE_ABSOLUTE_PATH="D:/cse/test/absolutePathEXPORTFILE.csv"
+!               -DEXPORT_FILE_ABSOLUTE_PATH="D:/cse/test/ExportFileAbsolutePath.csv"
 !               ExportFileOutput
 ! Input file:   D:\cse\test\ExportFileOutput.cse
-! Report file:  D:\CSE\TEST\EXPORTFILEOUTPUT.REP
+! Report file:  D:\cse\test\ExportFileOutput.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.11     Calls = 1         T/C = 0.1130
+!                Input:  Time = 0.02     Calls = 1         T/C = 0.0240
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 0.10     Calls = 1         T/C = 0.0990
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0000
-!                Total:  Time = 0.21     Calls = 1         T/C = 0.2120
+!           Simulation:  Time = 0.03     Calls = 1         T/C = 0.0330
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
+!                Total:  Time = 0.06     Calls = 1         T/C = 0.0580

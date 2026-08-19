@@ -57,6 +57,8 @@ static constexpr char PATH_DELIMITER = ';';
 static constexpr char PATH_DELIMITER = ':';
 #endif
 
+const char CSE_DIR_SEP = static_cast<char>( filesys::path::preferred_separator);
+
 
 /*----------------------- LOCAL FUNCTION DECLARATIONS ---------------------*/
 LOCAL SEC FC xioerr( XFILE *xf);
@@ -597,6 +599,66 @@ bool xfIsValidPathSyntax(
 }	// xfIsValidPathSyntax
 #endif
 //------------------------------------------------------------------------
+static bool xfCaseCorrect(	// look up tPath's on-disk case; corrects tPath's file name in place
+	char* tPath)			// path to check/correct; must be writable (correction never lengthens it)
+// On case-sensitive systems (Linux) a wrong-case check fails outright, so this runs as a
+//   not-found fallback. On case-insensitive ones (Windows, default macOS) the exact check can
+//   succeed with the wrong case, so callers needing the true on-disk case call this even on success.
+// Returns true if tPath's directory has a matching entry: an exact match wins immediately (never
+//   ambiguous, even with differently-cased siblings); else a single case-insensitive match.
+{
+	filesys::path p( tPath);
+	filesys::path dir = p.has_parent_path() ? p.parent_path() : filesys::path(".");
+	std::string target = p.filename().string();
+	if (target.empty())
+		return false;
+	// note: is_directory()/directory_iterator() set ec even for the ordinary "doesn't exist"
+	//   case (unlike exists()), and this fcn is tried against many PATH-search candidate
+	//   directories where that's routine, not an error -- so ENOENT/ENOTDIR are not reported.
+	auto isRealError = []( const std::error_code& ec)
+	{	return ec && ec != std::errc::no_such_file_or_directory && ec != std::errc::not_a_directory; };
+
+	std::error_code ec;
+	if (!filesys::is_directory( dir, ec))
+	{	if (isRealError( ec))
+			err( ERR, "Error checking directory '%s' for case-insensitive match to '%s': %s",
+				dir.string().c_str(), target.c_str(), ec.message().c_str());
+		return false;
+	}
+	std::vector<std::string> matches;
+	bool exact = false;
+	filesys::directory_iterator end;
+	for (filesys::directory_iterator it( dir, ec); !ec && it != end; it.increment( ec))
+	{	std::string entryName = it->path().filename().string();
+		if (entryName == target)
+		{	exact = true;	// already correct on disk: not ambiguous, regardless of siblings
+			break;
+		}
+		if (std::equal( entryName.begin(), entryName.end(), target.begin(), target.end(),
+				[]( unsigned char a, unsigned char b) { return tolower( a) == tolower( b); }))
+			matches.push_back( entryName);
+	}
+	if (exact)
+		return true;
+	if (isRealError( ec))
+	{	err( ERR, "Error scanning directory '%s' for case-insensitive match to '%s': %s",
+			dir.string().c_str(), target.c_str(), ec.message().c_str());
+		return false;
+	}
+	if (matches.empty())
+		return false;
+	if (matches.size() > 1)
+	{	std::string alts = matches[ 0];
+		for (size_t i=1; i<matches.size(); i++)
+			alts += "' or '" + matches[ i];
+		err( ERR, "Ambiguous case-insensitive match for '%s' in directory '%s': could be '%s'",
+			target.c_str(), dir.string().c_str(), alts.c_str());
+		return false;
+	}
+	strcpy( tPath + strlen( tPath) - target.size(), matches[ 0].c_str());
+	return true;
+}	// xfCaseCorrect
+//------------------------------------------------------------------------
 int xfExist(	// determine file existence
 	const char* fPath,				// pathname
 	char* fPathChecked /*=NULL*/)	// ptr to optional buf[ CSE_MAX_PATH]
@@ -610,11 +672,13 @@ int xfExist(	// determine file existence
 	int ret = 0;
 	// trim whitespace from beg and ws + \ from end (insurance)
 	// return to caller or use tmpstr
-	const char* tPath = strTrimEX( fPathChecked, strTrimB( fPath), "\\");
+	char* tPath = strTrimEX( fPathChecked, strTrimB( fPath), "\\");
 	if (!IsBlank( tPath))
 	{
 		std::error_code ec;
 		bool fileFound = filesys::exists(filesys::path(tPath), ec);
+		if (!fileFound && !ec)
+			fileFound = xfCaseCorrect( tPath);
 		if (fileFound) {
 			ret = (filesys::is_directory(filesys::path(tPath))) ? 3 // Directory found 
 					: (filesys::is_empty(filesys::path(tPath))) ? 1 // File empty
@@ -645,17 +709,18 @@ int fileFind1(			// check existence of a single file
 
 {
 	char tPath[CSE_MAX_PATH];
-	int i = 0;
+	const char* trimmedName = strTrim( NULL, fName);
 	if (drvDir && drvDir[ 0])
-	{  	strTrim( tPath, drvDir);
-		i = strlenInt(tPath);
-		if (tPath[ i-1] != ':' && tPath[ i-1] != '\\')
-			tPath[ i++] = '\\';		// add \ to dir if needed
-	}
-	strcpy( tPath+i, strTrim( NULL, fName));
+		xfjoinpath( strTrim( NULL, drvDir), trimmedName, tPath);
+	else
+		strcpy( tPath, trimmedName);
 
 	int ret = xfExist( tPath, fPath);	// check file
 										// return exact name checked
+	if (ret > 0 && fPath)
+		xfCaseCorrect( fPath);	// verify/correct fPath's case against the on-disk entry: xfExist's
+								//   exact-case check can succeed on a case-insensitive file system
+								//   (e.g. macOS, Windows) even when the given case is wrong
 	return ret;
 }			// fileFind1
 //-----------------------------------------------------------------------------
@@ -744,8 +809,6 @@ void Path::add( 		// add PATH_DELIMITER-delimited paths to Path object
 		if (*(q-1) != PATH_DELIMITER && *s != PATH_DELIMITER)	// unless there already is a PATH_DELIMITER
 			*q++ = PATH_DELIMITER;			// supply separating PATH_DELIMITER
 	strcpy( q, s);			// append new path(s)
-	_strupr(q);				/* upper-case user-entered paths for uniform appearance 2-95
-          				   (paths from system are upper case; most filenames get uppercased eg by strffix). */
 	p = nup;				// store new pointer
 }		// Path::add
 //---------------------------------------------------------------------------
@@ -1085,6 +1148,24 @@ bool xfisabsolutepath(// Checks whether the path is absolute
 	bool result = filesys::path(path).is_absolute();
 	return result;
 }  /* xfisabsolutepath */
+//=============================================================================
+bool xfSamePath(	// Compares two paths per this platform's file name case rules
+	const char* path1,	// first path
+	const char* path2)	// second path
+// Does not resolve relative paths, symlinks, or "." / ".." segments, and does
+//   not query the actual target file system's case sensitivity -- there is no
+//   portable way to do that for a path that may not exist yet (e.g. an
+//   output file that hasn't been created). Instead assumes each platform's
+//   conventional default: case-insensitive on Windows and macOS, case-
+//   sensitive elsewhere (Linux).
+// Returns true iff path1 and path2 name the same file per that convention.
+{
+#if defined( _WIN32) || defined( __APPLE__)
+	return _stricmp( path1, path2) == 0;
+#else
+	return strcmp( path1, path2) == 0;
+#endif
+}	// xfSamePath
 //=============================================================================
 
 
