@@ -3177,10 +3177,10 @@ RC HPWHLINK::hw_InitResistance(		// set up HPWH has EF-rated resistance heater
     { C_WHASHPTYCH_NYLE_E360_SP,     hwatLARGE | hpwh_presets::MODELS::Nyle_e360_SP },
     { C_WHASHPTYCH_NYLE_E180_SP,     hwatLARGE | hpwh_presets::MODELS::Nyle_e180_SP },
     { C_WHASHPTYCH_WATTS_AEGIS_500A_SP,     hwatLARGE | hpwh_presets::MODELS::Watts_Aegis_500A_HPL_90_70_HIT },
-    { C_WHASHPTYCH_RHEEM_RMHPHD068_SP,    hwatLARGE | hpwh_presets::MODELS::Rheem_RMHPHD068_SP },
-    { C_WHASHPTYCH_RHEEM_RMHPHDA120_SP,    hwatLARGE | hpwh_presets::MODELS::Rheem_RMHPHDA120_SP },
-    { C_WHASHPTYCH_RHEEM_RMHPHD068_MP,    hwatLARGE | hpwh_presets::MODELS::Rheem_RMHPHD068_MP },
-    { C_WHASHPTYCH_RHEEM_RMHPHDA120_MP,    hwatLARGE | hpwh_presets::MODELS::Rheem_RMHPHDA120_MP },
+    { C_WHASHPTYCH_RHEEM_RMHPHDA068VD_SP,    hwatLARGE | hpwh_presets::MODELS::Rheem_RMHPHDA068VD_SP },
+    { C_WHASHPTYCH_RHEEM_RMHPHDA120VD_SP,    hwatLARGE | hpwh_presets::MODELS::Rheem_RMHPHDA120VD_SP },
+    { C_WHASHPTYCH_RHEEM_RMHPHDA068VD_MP,    hwatLARGE | hpwh_presets::MODELS::Rheem_RMHPHDA068VD_MP },
+    { C_WHASHPTYCH_RHEEM_RMHPHDA120VD_MP,    hwatLARGE | hpwh_presets::MODELS::Rheem_RMHPHDA120VD_MP },
 
 
     { 32767,                         hpwh_presets::MODELS::unknown }  };

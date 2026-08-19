@@ -454,10 +454,10 @@ Laars_ECHV0325_SP,Laars E-Therm 325 kBtu/hr
 Nyle_e360_SP,Nyle 360 kBtu/hr
 Nyle_e180_SP,Nyle 180 kBtu/hr
 Watts_Aegis_500A_HPL_90_70_HIT,Lync by Watts Aegis A 500 MBtuh
-Rheem_RMHPHD068_SP,Rheem RMHPHDA068VD Singlepass 68 kBtu/hr 
-Rheem_RMHPHD068_MP,Rheem RMHPHDA068VD Multipass 68 kBtu/hr
-Rheem_RMHPHDA120_SP,Rheem RMHPHDA120VD Singlepass 120 kBtu/hr 
-Rheem_RMHPHDA120_MP,Rheem RMHPHDA120VD Multipass 120 kBtu/hr",
+Rheem_RMHPHDA068VD_SP,Rheem RMHPHDA068VD Singlepass 68 kBtu/hr 
+Rheem_RMHPHDA068VD_MP,Rheem RMHPHDA068VD Multipass 68 kBtu/hr
+Rheem_RMHPHDA120VD_SP,Rheem RMHPHDA120VD Singlepass 120 kBtu/hr 
+Rheem_RMHPHDA120VD_MP,Rheem RMHPHDA120VD Multipass 120 kBtu/hr",
 True)
 }},
 
