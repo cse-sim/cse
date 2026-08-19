@@ -1,0 +1,204 @@
+
+
+Monthly Energy Use, meter "mtrElec"
+
+Mon    Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+--- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+Jan 472.74      0      0      0 410.04 62.701      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Feb 426.99      0      0      0 370.36 56.633      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Mar 472.68      0      0      0 410.02 62.667      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Apr 457.49      0      0      0 396.81 60.678      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+May 472.74      0      0      0 410.04 62.701      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jun 457.49      0      0      0 396.81 60.678      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Jul 472.74      0      0      0 410.04 62.701      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Aug 472.74      0      0      0 410.04 62.701      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Sep 457.49      0      0      0 396.81 60.678      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Oct 472.74      0      0      0 410.04 62.701      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Nov 457.55      0      0      0 396.84 60.706      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+Dec 472.74      0      0      0 410.04 62.701      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+
+Yr  5566.2      0      0      0 4827.9 738.24      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+
+
+
+Hourly Energy Use, meter "mtrElec", Thu 15-Jan
+
+Hr     Tot    Clg    Htg   HPBU    Dhw  DhwBU DhwMFL   FanC   FanH   FanV    Fan    Aux   Proc    Lit    Rcp    Ext   Refr   Dish    Dry   Wash   Cook  User1  User2     BT     PV
+--- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+  1      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+  2      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+  3      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+  4      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+  5      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+  6      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+  7      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+  8      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+  9  0.317      0      0      0  0.317      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 10  1.027      0      0      0  1.000 0.0268      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 11  1.349      0      0      0  1.000  0.349      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 12  1.497      0      0      0  1.000  0.498      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 13  1.889      0      0      0  1.000  0.890      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 14  1.000      0      0      0  1.000      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 15  1.259      0      0      0  1.000  0.259      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 16  1.000      0      0      0  1.000      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 17  1.000      0      0      0  1.000      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 18  1.000      0      0      0  1.000      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 19  1.000      0      0      0  1.000      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 20  1.000      0      0      0  1.000      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 21  1.000      0      0      0  1.000      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 22  0.914      0      0      0  0.914      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 23      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+ 24      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+
+Day 15.250      0      0      0 13.227  2.023      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0
+
+
+
+Monthly Hot Water Use, DHW meter "WH0"
+
+Mon   Total Unknown  Faucet  Shower    Bath  CWashr  DWashr
+--- ------- ------- ------- ------- ------- ------- -------
+Jan 2948.16 2948.16       0       0       0       0       0
+Feb 2662.85 2662.85       0       0       0       0       0
+Mar 2948.16 2948.16       0       0       0       0       0
+Apr 2853.05 2853.05       0       0       0       0       0
+May 2948.16 2948.16       0       0       0       0       0
+Jun 2853.05 2853.05       0       0       0       0       0
+Jul 2948.16 2948.16       0       0       0       0       0
+Aug 2948.16 2948.16       0       0       0       0       0
+Sep 2853.05 2853.05       0       0       0       0       0
+Oct 2948.16 2948.16       0       0       0       0       0
+Nov 2853.05 2853.05       0       0       0       0       0
+Dec 2948.16 2948.16       0       0       0       0       0
+
+Yr  34712.2 34712.2       0       0       0       0       0
+
+
+
+Hourly Hot Water Use, DHW meter "WH0", Thu 15-Jan
+
+Hr    Total Unknown  Faucet  Shower    Bath  CWashr  DWashr
+--- ------- ------- ------- ------- ------- ------- -------
+  1       0       0       0       0       0       0       0
+  2       0       0       0       0       0       0       0
+  3       0       0       0       0       0       0       0
+  4       0       0       0       0       0       0       0
+  5       0       0       0       0       0       0       0
+  6       0       0       0       0       0       0       0
+  7       0       0       0       0       0       0       0
+  8       0       0       0       0       0       0       0
+  9  15.850  15.850       0       0       0       0       0
+ 10  15.850  15.850       0       0       0       0       0
+ 11  15.850  15.850       0       0       0       0       0
+ 12  15.850  15.850       0       0       0       0       0
+ 13  15.850  15.850       0       0       0       0       0
+ 14       0       0       0       0       0       0       0
+ 15  15.850  15.850       0       0       0       0       0
+ 16       0       0       0       0       0       0       0
+ 17       0       0       0       0       0       0       0
+ 18       0       0       0       0       0       0       0
+ 19       0       0       0       0       0       0       0
+ 20       0       0       0       0       0       0       0
+ 21       0       0       0       0       0       0       0
+ 22       0       0       0       0       0       0       0
+ 23       0       0       0       0       0       0       0
+ 24       0       0       0       0       0       0       0
+
+Day  95.102  95.102       0       0       0       0       0
+
+
+
+! Log for Run 001:
+
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console
+
+
+
+Input for Run 001:
+
+        // DHW_INV.cse -- HPWH tank temperature inversion test case
+        
+        // CTZ12 Weather
+        WfName="CTZ12S13b.CSW"
+        dbgPrintMask = $dayofyear == 15 ? 256 : 0
+        repHdrL = "Inversion test case"
+        
+        wuDays=30
+        nSubSteps=6 
+        
+        // Hourly use schedules
+#       #define WHUSE01 hourval( \
+#         0,   0,   0,   0,   0,   0,   0,   0, \
+#         1,   1,   1,   1,   1,   0,   1,   0, \
+#         0,   0,   0,   0,   0,   0,   0,   0 )
+        
+#        #define TSUP01 hourval( \
+#        50,  50,  50,  50,  50,  50,  50,  50, \
+#        50,  50,  50,  50, 113,  50,  50,  50, \
+#        50,  50,  50,  50,  50,  50,  50,  50 )
+        
+        
+        //====================================================================
+        // single system
+        
+        METER mtrElec
+        METER Fuel0
+        DHWMETER FX0
+        DHWMETER WH0
+        
+        DHWSYS "DS0"
+          wsMult = 1
+          wsElecMtr = mtrElec
+          wsFXHWMTR = FX0
+          wsWHHWMTR = WH0
+          wsTInlet = TSUP01
+          wsTSetpoint = 131	// 55 C
+          wsTUse = 122		// 50 C	
+          wsUse = 15.8503 * WHUSE01	// 1 l/min
+          wsDSM = 1
+          wsSDLM = 1
+        
+        DHWHEATER "ResTank"
+          whType = SmallStorage
+          whHeatSrc = ResistanceX
+          whTEx = 68		// 20 C
+          whVol = 52.83		// 200 l		
+          whEF = .92
+          whResHtPwr = 1000
+        
+        
+        DELETE REPORT EB
+        
+        REPORT rpType=MTR rpMeter = mtrElec rpFreq=MONTH rpBtuSf = 3413
+        REPORT rpType=MTR rpMeter = mtrElec rpFreq=HOUR rpDayBeg=jan 15 rpDayEnd = jan 15 rpBtuSf = 3413
+        
+        REPORT rpType=DHWMTR rpDHWMeter = WH0 rpFreq=MONTH
+        REPORT rpType=DHWMTR rpDHWMeter = WH0 rpFreq=HOUR rpDayBeg=jan 15 rpDayEnd = jan 15
+        
+        //==============================================================
+        
+        
+        RUN
+        
+        
+        
+        
+        
+
+
+
+! CSE 0.920.0+main.99c64c5b.17 for Win32 console run(s) done: Mon 18-Dec-23   4:17:53 pm
+
+! Executable:   d:\cse\msvc\cse.exe
+!               18-Dec-23   4:07 pm   (VS 14.29    2796544 bytes)  (HPWH 1.22.0+HEAD.f9b8f77.122)
+! Command line: -x!  -b -t1 DHW_INV
+! Input file:   D:\cse\test\DHW_INV.cse
+! Report file:  D:\CSE\TEST\DHW_INV.REP
+
+! Timing info --
+
+!                Input:  Time = 0.05     Calls = 1         T/C = 0.0520
+!           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
+!           Simulation:  Time = 1.21     Calls = 1         T/C = 1.2090
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
+!                Total:  Time = 1.26     Calls = 1         T/C = 1.2620
