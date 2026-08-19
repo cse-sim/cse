@@ -267,7 +267,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../introduction/" class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4167,9 +4167,9 @@
 <td>number</td>
 <td>End of subhour</td>
 <td><ul>
-<li>factor for draw adjustment re HPWH setpoint &gt; [DHWSYS][dhwsys]::ws_tUse</li>
-<li>Some HPWHs (e.g. SANCO2) have fixed (high) setpoints</li>
-<li>draws are reduced to balance load at ws_tUse.</li>
+<li>mix fraction for DHW use draws to produce ws_tUse</li>
+<li>hw_fMixUse from heater.  (1-hw_fMixUse) from mains.</li>
+<li>prior tick value used to derive draw passed to HPWH</li>
 </ul></td>
 </tr>
 <tr>
@@ -4177,9 +4177,9 @@
 <td>number</td>
 <td>End of subhour</td>
 <td><ul>
-<li>factor for loop return flow adjustment re HPWH setpoint &gt; [DHWSYS][dhwsys]::ws_tUse</li>
-<li>Some HPWHs (e.g. SANCO2) have fixed (high) setpoints</li>
-<li>Loop return flow is reduced to balance load at ws_tUse.</li>
+<li>mix fraction for [DHWLOOP][dhwloop] recirculation</li>
+<li>hw_fMixRL from heater.  (1-hw_fMixUse) from loop return</li>
+<li>prior tick value used to derived draw passed to HPWH</li>
 </ul></td>
 </tr>
 </tbody>
@@ -4220,7 +4220,7 @@
 <td>DBL</td>
 <td>End of subhour</td>
 <td><ul>
-<li>last tick HPWH outlet temp, C</li>
+<li>last tick HPWH outlet temp, F</li>
 <li>0 if no draw</li>
 </ul></td>
 </tr>
@@ -4517,9 +4517,8 @@
 <td>FLOAT_GEZ</td>
 <td>Start of subhour</td>
 <td><ul>
-<li>electricity use adjustment factor</li>
+<li>electricity use adjustment factor, default = parent ws_fAdjElec</li>
 <li>applied to all electricity use (primary, BU, XBU)</li>
-<li>default 1</li>
 </ul></td>
 </tr>
 <tr>
@@ -4527,9 +4526,8 @@
 <td>FLOAT_GEZ</td>
 <td>Start of subhour</td>
 <td><ul>
-<li>fuel use adjment factor</li>
+<li>fuel use adjustment factor, default = parent ws_fAdjFuel</li>
 <li>applied to fuel use</li>
-<li>default 1</li>
 </ul></td>
 </tr>
 </tbody>

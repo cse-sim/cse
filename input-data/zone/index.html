@@ -272,7 +272,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../introduction/" class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4747,7 +4747,7 @@
 </tr>
 </tbody>
 </table>
-<p><a class="autorefs autorefs-internal" href="#znmodel">znModel</a> = CZM zone heating and cooling is provided either via an <a class="autorefs autorefs-internal" href="../rsys/#rsys">RSYS</a> HVAC system, by "magic" heat transfers specified by znQxxx items, or via <a class="autorefs autorefs-internal" href="../terminal/#terminal">TERMINAL</a> (s).  One of these must be defined.</p>
+<p><a class="autorefs autorefs-internal" href="#znmodel">znModel</a> = CZM zone heating and cooling is provided either via an <a class="autorefs autorefs-internal" href="../rsys/#rsys">RSYS</a> HVAC system, by ideal heat transfers specified by <a class="autorefs autorefs-internal" href="#znqmxh">znQMxH</a>/<a class="autorefs autorefs-internal" href="#znqmxc">znQMxC</a> items, or via <a class="autorefs autorefs-internal" href="../terminal/#terminal">TERMINAL</a> (s).  At least one of these must be defined.</p>
 <h3 id="znrsys">znRSys<a class="headerlink" href="#znrsys" title="Permanent link">¶</a></h3>
 <p>Type: rsysName</p>
 <p>Name of <a class="autorefs autorefs-internal" href="../rsys/#rsys">RSYS</a> providing heating, cooling, and optional central fan integrated ventilation to this zone.</p>
@@ -4774,7 +4774,8 @@
 </table>
 <h3 id="znqmxh">znQMxH<a class="headerlink" href="#znqmxh" title="Permanent link">¶</a></h3>
 <p>Type: float</p>
-<p>Heating capacity at current conditions</p>
+<p>Ideal sensible heating capacity for current hour.  If at the end of a simulation step the air temperature in a conditioned zone is below <a class="autorefs autorefs-internal" href="#znth">znTH</a> after contributions from any other systems such as <a class="autorefs autorefs-internal" href="../rsys/#rsys">RSYS</a>, additional heat is added (up to znQMxH) to hold the zone at the setpoint.  No mechanical equipment or delivery air flow are modeled.</p>
+<p>Added heat is accumulated to ZNRES qshIdeal and to qHtg of the <a class="autorefs autorefs-internal" href="../loadmeter/#loadmeter">LOADMETER</a> specified in <a class="autorefs autorefs-internal" href="#znloadmtr">znLoadMtr</a> (if any).</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -4790,7 +4791,7 @@
 <tr>
 <td>Btuh</td>
 <td>x ≥ 0</td>
-<td><em>none</em></td>
+<td>0 (no ideal heating capacity)</td>
 <td>No</td>
 <td>hourly</td>
 </tr>
@@ -4798,7 +4799,7 @@
 </table>
 <h3 id="znqmxhrated">znQMxHRated<a class="headerlink" href="#znqmxhrated" title="Permanent link">¶</a></h3>
 <p>Type: float</p>
-<p>Rated heating capacity</p>
+<p>Rated or nominal ideal sensible heating capacity. znQMxHRated allows documentation of the rated capacity of the "system" that provides <a class="autorefs autorefs-internal" href="#znqmxh">znQMxH</a>.  znQMxHRated has no simulation effect.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -4814,7 +4815,7 @@
 <tr>
 <td>Btuh</td>
 <td>x ≥ 0</td>
-<td><em>none</em></td>
+<td>0 (no ideal heating capacity)</td>
 <td>No</td>
 <td>constant</td>
 </tr>
@@ -4822,7 +4823,8 @@
 </table>
 <h3 id="znqmxc">znQMxC<a class="headerlink" href="#znqmxc" title="Permanent link">¶</a></h3>
 <p>Type: float</p>
-<p>Cooling capacity at current conditions</p>
+<p>Ideal sensible cooling capacity for current hour.  If at the end of a simulation step the air temperature in a conditioned zone is above <a class="autorefs autorefs-internal" href="#zntc">znTC</a> after contributions from any other systems such as <a class="autorefs autorefs-internal" href="../rsys/#rsys">RSYS</a>, additional heat is removed (up to znQMxC) to hold the zone at the setpoint.  No mechanical equipment, delivery air flow, or latent effects are modeled.</p>
+<p>Removed heat is accumulated to ZNRES qscIdeal and to qClg of the <a class="autorefs autorefs-internal" href="../loadmeter/#loadmeter">LOADMETER</a> specified by <a class="autorefs autorefs-internal" href="#znloadmtr">znLoadMtr</a> (if any).</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -4838,7 +4840,7 @@
 <tr>
 <td>Btuh</td>
 <td>x ≤ 0</td>
-<td><em>none</em></td>
+<td>0 (no ideal cooling capacity)</td>
 <td>No</td>
 <td>hourly</td>
 </tr>
@@ -4846,7 +4848,7 @@
 </table>
 <h3 id="znqmxcrated">znQMxCRated<a class="headerlink" href="#znqmxcrated" title="Permanent link">¶</a></h3>
 <p>Type: float</p>
-<p>Rated cooling capacity</p>
+<p>Rated or nominal ideal sensible cooling capacity. znQMxCRated allows documentation of the rated capacity of the "system" that provides <a class="autorefs autorefs-internal" href="#znqmxc">znQMxC</a>.  znQMxCRated has no simulation effect.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -4862,7 +4864,7 @@
 <tr>
 <td>Btuh</td>
 <td>x ≤ 0</td>
-<td><em>none</em></td>
+<td>0 (no ideal cooling capacity)</td>
 <td>No</td>
 <td>constant</td>
 </tr>

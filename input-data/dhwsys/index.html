@@ -272,7 +272,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../introduction/" class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1779,6 +1779,15 @@
   <a href="#wsparelec" class="md-nav__link">
     <span class="md-ellipsis">
       wsParElec
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wsfadjelec-wsfadjfuel" class="md-nav__link">
+    <span class="md-ellipsis">
+      wsFAdjElec, wsFAdjFuel
     </span>
   </a>
   
@@ -4591,6 +4600,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#wsfadjelec-wsfadjfuel" class="md-nav__link">
+    <span class="md-ellipsis">
+      wsFAdjElec, wsFAdjFuel
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#wsdrawmaxdur" class="md-nav__link">
     <span class="md-ellipsis">
       wsDrawMaxDur
@@ -6087,6 +6105,30 @@ tWHFeed = tInletAdj + wsSSF*([wsTUse][wstuse]-tInletAdj)
 <td>0</td>
 <td>No</td>
 <td>hourly</td>
+</tr>
+</tbody>
+</table>
+<h3 id="wsfadjelec-wsfadjfuel">wsFAdjElec, wsFAdjFuel<a class="headerlink" href="#wsfadjelec-wsfadjfuel" title="Permanent link">¶</a></h3>
+<p>Type: float</p>
+<p>Energy use modifiers.  Provide default values for child <a class="autorefs autorefs-internal" href="../dhwheater/#dhwheater">DHWHEATER</a>/<a class="autorefs autorefs-internal" href="../dhwloopheater/#dhwloopheater">DHWLOOPHEATER</a> <a class="autorefs autorefs-internal" title="whFAdjElec, whFAdjFuel" href="../dhwheater/#whfadjelec-whfadjfuel">whFAdjElec</a> and fuel <a class="autorefs autorefs-internal" title="whFAdjElec, whFAdjFuel" href="../dhwheater/#whfadjelec-whfadjfuel">whFAdjFuel</a>.  </p>
+<div class="member-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Units</th>
+<th>Legal Range</th>
+<th>Default</th>
+<th>Required</th>
+<th>Variability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>≥ 0</td>
+<td>1</td>
+<td>No</td>
+<td>subhourly</td>
 </tr>
 </tbody>
 </table>

@@ -268,7 +268,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../introduction/" class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5048,6 +5048,56 @@ activated via <a class="autorefs autorefs-internal" href="../../input-data/dhwsy
 <td>Ice Air cold-climate 516 kBTUh commercial multi-pass</td>
 <td></td>
 </tr>
+<tr>
+<td>AOSmith_CAHP2CO6_SP</td>
+<td>Emerge XC Double Baja</td>
+<td></td>
+</tr>
+<tr>
+<td>AOSmith_CAHP3CO6_SP</td>
+<td>Emerge XC Triple Baja</td>
+<td></td>
+</tr>
+<tr>
+<td>Laars_ECHV0325_SP</td>
+<td>Laars E-Therm 325 kBtu/hr</td>
+<td></td>
+</tr>
+<tr>
+<td>Nyle_e360_SP</td>
+<td>Nyle 360 kBtu/hr</td>
+<td></td>
+</tr>
+<tr>
+<td>Nyle_e180_SP</td>
+<td>Nyle 180 kBtu/hr</td>
+<td></td>
+</tr>
+<tr>
+<td>Watts_Aegis_500A_HPL_90_70_HIT</td>
+<td>Lync by Watts Aegis A 500 MBtuh</td>
+<td></td>
+</tr>
+<tr>
+<td>Rheem_RMHPHDA068VD_SP</td>
+<td>Rheem RMHPHDA068VD Singlepass 68 kBtu/hr</td>
+<td></td>
+</tr>
+<tr>
+<td>Rheem_RMHPHDA068VD_MP</td>
+<td>Rheem RMHPHDA068VD Multipass 68 kBtu/hr</td>
+<td></td>
+</tr>
+<tr>
+<td>Rheem_RMHPHDA120VD_SP</td>
+<td>Rheem RMHPHDA120VD Singlepass 120 kBtu/hr</td>
+<td></td>
+</tr>
+<tr>
+<td>Rheem_RMHPHDA120VD_MP</td>
+<td>Rheem RMHPHDA120VD Multipass 120 kBtu/hr</td>
+<td></td>
+</tr>
 </tbody>
 </table>
 <div class="member-table-sibling"></div>
@@ -5399,6 +5449,7 @@ activated via <a class="autorefs autorefs-internal" href="../../input-data/dhwsy
 <h3 id="whfadjelec-whfadjfuel">whFAdjElec, whFAdjFuel<a class="headerlink" href="#whfadjelec-whfadjfuel" title="Permanent link">¶</a></h3>
 <p>Type: float</p>
 <p>Water heater energy use modifiers.  Multiplies calculated use of electricity (whFAdjElec) and fuel (whFAdjFuel).  All components of energy use -- primary, backup, XBU (extra backup), and other auxiliary -- are modified before they are accumulated to <a class="autorefs autorefs-internal" href="#whelecmtr">whElecMtr</a> and <a class="autorefs autorefs-internal" href="#whfuelmtr">whFuelMtr</a>.</p>
+<p>If not given, whFAdjElec and whFAdjFuel are set from parent <a class="autorefs autorefs-internal" href="../../input-data/dhwsys/#dhwsys">DHWSYS</a> wsFAdjElec and wsFAdjFuel.  These in turn have default value 1.  Use of the parent <a class="autorefs autorefs-internal" href="../../input-data/dhwsys/#dhwsys">DHWSYS</a> values reduces input when implementing an all-system adjustment.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -5414,7 +5465,7 @@ activated via <a class="autorefs autorefs-internal" href="../../input-data/dhwsy
 <tr>
 <td></td>
 <td>≥ 0</td>
-<td>1</td>
+<td>1 (see above)</td>
 <td>No</td>
 <td>subhourly</td>
 </tr>

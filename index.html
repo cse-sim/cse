@@ -16,13 +16,15 @@
       
       
       
+        <link rel="next" href="operation/">
+      
       
       <link rel="icon" href="assets/images/favicon.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.4.10">
     
     
       
-        <title>California Simulation Engine - Documentation</title>
+        <title>Documentation</title>
       
     
     
@@ -85,7 +87,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#overview" class="md-skip">
+        <a href="#about" class="md-skip">
           Skip to content
         </a>
       
@@ -120,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              California Simulation Engine
+              Introduction
             
           </span>
         </div>
@@ -266,9 +268,27 @@
       
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="introduction/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Introduction
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -277,6 +297,51 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#about" class="md-nav__link">
+    <span class="md-ellipsis">
+      About
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Features
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -3527,8 +3592,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -3537,18 +3600,27 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#cse-user-manual" class="md-nav__link">
+  <a href="#about" class="md-nav__link">
     <span class="md-ellipsis">
-      CSE User Manual
+      About
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#cse-source-code" class="md-nav__link">
+  <a href="#key-features" class="md-nav__link">
     <span class="md-ellipsis">
-      CSE Source Code
+      Key Features
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
     </span>
   </a>
   
@@ -3572,12 +3644,44 @@
   
 
 
-<h1 -="-" id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">¶</a></h1>
-<p>CSE is a general purpose building simulation model developed primarily to perform the required calculations for the California Building Energy Code Compliance for Residential buildings (<a href="http://www.bwilcox.com/BEES/BEES.html">CBECC-Res</a>) software.</p>
-<h2 -="-" id="cse-user-manual">CSE User Manual<a class="headerlink" href="#cse-user-manual" title="Permanent link">¶</a></h2>
-<p>This manual is presented as a multi-page HTML site. You can also view the entire manual as a <a href="./single_page">single page</a>.</p>
-<h2 -="-" id="cse-source-code">CSE Source Code<a class="headerlink" href="#cse-source-code" title="Permanent link">¶</a></h2>
-<p>The CSE source code is hosted on <a href="https://github.com/cse-sim/cse">GitHub</a>.</p>
+  <h1>Introduction</h1>
+
+<p><img alt="cse logo" src="assets/images/logo-cse-white.svg#only-dark"/>
+<img alt="cse logo" src="assets/images/logo-cse-midnight.svg#only-light"/></p>
+<h2 id="about">About<a class="headerlink" href="#about" title="Permanent link">¶</a></h2>
+<p>CSE began as the <strong>C</strong>alifornia <strong>S</strong>imulation <strong>E</strong>ngine, built primarily for residential energy code compliance in California. The "C" has since outgrown its origins — call it <strong>C</strong>ommon, <strong>C</strong>omprehensive, <strong>C</strong>apable, or simply CSE — as the engine has evolved into a general-purpose building simulation platform used by researchers, standards developers, and software integrators well beyond California.</p>
+<p>CSE models annual building energy use for heating, cooling, ventilation, and lighting. It is driven by plain-text input files, making it well-suited for scripted workflows, parametric studies, and integration into larger compliance or analysis tools such as <a href="https://github.com/california-energy-commission/CBECC">CBECC</a>.</p>
+<h2 id="key-features">Key Features<a class="headerlink" href="#key-features" title="Permanent link">¶</a></h2>
+<ul>
+<li>
+<p><strong>Open source</strong> — CSE is freely available on <a href="https://github.com/cse-sim/cse">GitHub</a> under a permissive license, making it easy to inspect, extend, and integrate into custom tools.</p>
+</li>
+<li>
+<p><strong>Plain-text, stable input format</strong> — Input files are human-readable, diff cleanly, and remain backwards-compatible across releases — making CSE easy to integrate into automated pipelines and long-lived toolchains without migration overhead.</p>
+</li>
+<li>
+<p><strong>Fast runtimes</strong> — Annual simulations complete in seconds, making CSE practical for parametric sweeps and large compliance batch runs.</p>
+</li>
+<li>
+<p><strong>Powerful expression language</strong> — Any input can be a time-varying expression referencing weather, time-of-year, or other model state variables, enabling precise dynamic control without preprocessor workarounds. There is no need to define special "sensors" or "actuators".</p>
+</li>
+<li>
+<p><strong>Pressure-based airflow network</strong> — Infiltration and mechanical ventilation are modeled as a fully-coupled pressure network, capturing interactions between envelope leakage, fans, and HVAC that other simulation engines treat independently.</p>
+</li>
+<li>
+<p><strong>Photovoltaic &amp; battery storage</strong> — PV arrays and battery systems are first-class model components, with shading analysis, string losses, and configurable dispatch controls including grid-responsive peak-saving strategies.</p>
+</li>
+<li>
+<p><strong>Minute-resolution domestic hot water</strong> — DHW draws are simulated as discrete events at one-minute timesteps, enabling accurate evaluation of heat pump water heater controls and tank recovery dynamics that cannot be accurately represented in engines with coupled DHW timesteps.</p>
+</li>
+</ul>
+<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">¶</a></h2>
+<p>Pre-built binaries are available on the <a href="https://github.com/cse-sim/cse/releases">CSE GitHub releases page</a>. Download the appropriate binary for your platform and place it in a directory on your system <code>PATH</code>.</p>
+<p>To build from source, see the <a href="https://github.com/cse-sim/cse">CSE repository</a> for build instructions.</p>
+<div class="admonition info">
+<p class="admonition-title">Single-Page Option</p>
+<p>The documentation is primarily a multi-page HTML site. You can also view the entire manual as a <a href="./single_page">single page</a>.</p>
+</div>
 
 
 
@@ -3594,6 +3698,28 @@
       
         <footer class="md-footer">
   
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+        
+          
+          <a href="operation/" class="md-footer__link md-footer__link--next" aria-label="Next: Operation">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Operation
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
     
   
   <div class="md-footer-meta md-typeset">

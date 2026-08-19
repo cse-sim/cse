@@ -267,7 +267,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../introduction/" class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3891,13 +3891,25 @@
 <td>Y.qscHvac</td>
 <td>number</td>
 <td>End of run</td>
-<td>zone accumulated HVAC sensible cooling, Btu (&lt;=0) (OAV not included)</td>
+<td>zone accumulated HVAC sensible cooling, Btu (&lt;=0) (ideal included, OAV not included)</td>
 </tr>
 <tr>
 <td>Y.qshHvac</td>
 <td>number</td>
 <td>End of run</td>
 <td>zone accumulated HVAC sensible heating, Btu (&gt;=0)</td>
+</tr>
+<tr>
+<td>Y.qscIdeal</td>
+<td>number</td>
+<td>End of run</td>
+<td>zone accumulated ideal sensible cooling, Btu (&lt;=0) (ideal included, OAV not included)</td>
+</tr>
+<tr>
+<td>Y.qshIdeal</td>
+<td>number</td>
+<td>End of run</td>
+<td>zone accumulated ideal sensible heating, Btu (&gt;=0)</td>
 </tr>
 <tr>
 <td>Y.qcMech</td>
@@ -3927,11 +3939,23 @@
 <td>Y.litEu</td>
 <td>number</td>
 <td>End of run</td>
-<td><ul>
-<li>... from [GAINs][gain], in addition to posting Eu to meter, re daylighting for NREL. 9-94.</li>
-<li>floats that track min/max value</li>
-</ul></td>
+<td>... from GAINs, in addition to posting Eu to meter, re daylighting for NREL. 9-94.</td>
 </tr>
+</tbody>
+</table>
+
+floats that track min/max values
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td>Y.unMetMaxTD[index]</td>
 <td>number Array [2]</td>
@@ -4269,13 +4293,25 @@
 <td>M.qscHvac</td>
 <td>number</td>
 <td>Unknown</td>
-<td>zone accumulated HVAC sensible cooling, Btu (&lt;=0) (OAV not included)</td>
+<td>zone accumulated HVAC sensible cooling, Btu (&lt;=0) (ideal included, OAV not included)</td>
 </tr>
 <tr>
 <td>M.qshHvac</td>
 <td>number</td>
 <td>Unknown</td>
 <td>zone accumulated HVAC sensible heating, Btu (&gt;=0)</td>
+</tr>
+<tr>
+<td>M.qscIdeal</td>
+<td>number</td>
+<td>Unknown</td>
+<td>zone accumulated ideal sensible cooling, Btu (&lt;=0) (ideal included, OAV not included)</td>
+</tr>
+<tr>
+<td>M.qshIdeal</td>
+<td>number</td>
+<td>Unknown</td>
+<td>zone accumulated ideal sensible heating, Btu (&gt;=0)</td>
 </tr>
 <tr>
 <td>M.qcMech</td>
@@ -4305,11 +4341,23 @@
 <td>M.litEu</td>
 <td>number</td>
 <td>Unknown</td>
-<td><ul>
-<li>... from [GAINs][gain], in addition to posting Eu to meter, re daylighting for NREL. 9-94.</li>
-<li>floats that track min/max value</li>
-</ul></td>
+<td>... from GAINs, in addition to posting Eu to meter, re daylighting for NREL. 9-94.</td>
 </tr>
+</tbody>
+</table>
+
+floats that track min/max values
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td>M.unMetMaxTD[index]</td>
 <td>number Array [2]</td>
@@ -4647,13 +4695,25 @@
 <td>D.qscHvac</td>
 <td>number</td>
 <td>End of day</td>
-<td>zone accumulated HVAC sensible cooling, Btu (&lt;=0) (OAV not included)</td>
+<td>zone accumulated HVAC sensible cooling, Btu (&lt;=0) (ideal included, OAV not included)</td>
 </tr>
 <tr>
 <td>D.qshHvac</td>
 <td>number</td>
 <td>End of day</td>
 <td>zone accumulated HVAC sensible heating, Btu (&gt;=0)</td>
+</tr>
+<tr>
+<td>D.qscIdeal</td>
+<td>number</td>
+<td>End of day</td>
+<td>zone accumulated ideal sensible cooling, Btu (&lt;=0) (ideal included, OAV not included)</td>
+</tr>
+<tr>
+<td>D.qshIdeal</td>
+<td>number</td>
+<td>End of day</td>
+<td>zone accumulated ideal sensible heating, Btu (&gt;=0)</td>
 </tr>
 <tr>
 <td>D.qcMech</td>
@@ -4683,11 +4743,23 @@
 <td>D.litEu</td>
 <td>number</td>
 <td>End of day</td>
-<td><ul>
-<li>... from [GAINs][gain], in addition to posting Eu to meter, re daylighting for NREL. 9-94.</li>
-<li>floats that track min/max value</li>
-</ul></td>
+<td>... from GAINs, in addition to posting Eu to meter, re daylighting for NREL. 9-94.</td>
 </tr>
+</tbody>
+</table>
+
+floats that track min/max values
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td>D.unMetMaxTD[index]</td>
 <td>number Array [2]</td>
@@ -5025,13 +5097,25 @@
 <td>H.qscHvac</td>
 <td>number</td>
 <td>End of hour</td>
-<td>zone accumulated HVAC sensible cooling, Btu (&lt;=0) (OAV not included)</td>
+<td>zone accumulated HVAC sensible cooling, Btu (&lt;=0) (ideal included, OAV not included)</td>
 </tr>
 <tr>
 <td>H.qshHvac</td>
 <td>number</td>
 <td>End of hour</td>
 <td>zone accumulated HVAC sensible heating, Btu (&gt;=0)</td>
+</tr>
+<tr>
+<td>H.qscIdeal</td>
+<td>number</td>
+<td>End of hour</td>
+<td>zone accumulated ideal sensible cooling, Btu (&lt;=0) (ideal included, OAV not included)</td>
+</tr>
+<tr>
+<td>H.qshIdeal</td>
+<td>number</td>
+<td>End of hour</td>
+<td>zone accumulated ideal sensible heating, Btu (&gt;=0)</td>
 </tr>
 <tr>
 <td>H.qcMech</td>
@@ -5061,11 +5145,23 @@
 <td>H.litEu</td>
 <td>number</td>
 <td>End of hour</td>
-<td><ul>
-<li>... from [GAINs][gain], in addition to posting Eu to meter, re daylighting for NREL. 9-94.</li>
-<li>floats that track min/max value</li>
-</ul></td>
+<td>... from GAINs, in addition to posting Eu to meter, re daylighting for NREL. 9-94.</td>
 </tr>
+</tbody>
+</table>
+
+floats that track min/max values
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td>H.unMetMaxTD[index]</td>
 <td>number Array [2]</td>
@@ -5403,13 +5499,25 @@
 <td>S.qscHvac</td>
 <td>number</td>
 <td>End of subhour</td>
-<td>zone accumulated HVAC sensible cooling, Btu (&lt;=0) (OAV not included)</td>
+<td>zone accumulated HVAC sensible cooling, Btu (&lt;=0) (ideal included, OAV not included)</td>
 </tr>
 <tr>
 <td>S.qshHvac</td>
 <td>number</td>
 <td>End of subhour</td>
 <td>zone accumulated HVAC sensible heating, Btu (&gt;=0)</td>
+</tr>
+<tr>
+<td>S.qscIdeal</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>zone accumulated ideal sensible cooling, Btu (&lt;=0) (ideal included, OAV not included)</td>
+</tr>
+<tr>
+<td>S.qshIdeal</td>
+<td>number</td>
+<td>End of subhour</td>
+<td>zone accumulated ideal sensible heating, Btu (&gt;=0)</td>
 </tr>
 <tr>
 <td>S.qcMech</td>
@@ -5439,11 +5547,23 @@
 <td>S.litEu</td>
 <td>number</td>
 <td>End of subhour</td>
-<td><ul>
-<li>... from [GAINs][gain], in addition to posting Eu to meter, re daylighting for NREL. 9-94.</li>
-<li>floats that track min/max value</li>
-</ul></td>
+<td>... from GAINs, in addition to posting Eu to meter, re daylighting for NREL. 9-94.</td>
 </tr>
+</tbody>
+</table>
+
+floats that track min/max values
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td>S.unMetMaxTD[index]</td>
 <td>number Array [2]</td>
@@ -5818,13 +5938,25 @@
 <td>prior.Y.qscHvac</td>
 <td>number</td>
 <td>Start of run</td>
-<td>zone accumulated HVAC sensible cooling, Btu (&lt;=0) (OAV not included)</td>
+<td>zone accumulated HVAC sensible cooling, Btu (&lt;=0) (ideal included, OAV not included)</td>
 </tr>
 <tr>
 <td>prior.Y.qshHvac</td>
 <td>number</td>
 <td>Start of run</td>
 <td>zone accumulated HVAC sensible heating, Btu (&gt;=0)</td>
+</tr>
+<tr>
+<td>prior.Y.qscIdeal</td>
+<td>number</td>
+<td>Start of run</td>
+<td>zone accumulated ideal sensible cooling, Btu (&lt;=0) (ideal included, OAV not included)</td>
+</tr>
+<tr>
+<td>prior.Y.qshIdeal</td>
+<td>number</td>
+<td>Start of run</td>
+<td>zone accumulated ideal sensible heating, Btu (&gt;=0)</td>
 </tr>
 <tr>
 <td>prior.Y.qcMech</td>
@@ -5854,11 +5986,23 @@
 <td>prior.Y.litEu</td>
 <td>number</td>
 <td>Start of run</td>
-<td><ul>
-<li>... from [GAINs][gain], in addition to posting Eu to meter, re daylighting for NREL. 9-94.</li>
-<li>floats that track min/max value</li>
-</ul></td>
+<td>... from GAINs, in addition to posting Eu to meter, re daylighting for NREL. 9-94.</td>
 </tr>
+</tbody>
+</table>
+
+floats that track min/max values
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td>prior.Y.unMetMaxTD[index]</td>
 <td>number Array [2]</td>
@@ -6196,13 +6340,25 @@
 <td>prior.M.qscHvac</td>
 <td>number</td>
 <td>Unknown</td>
-<td>zone accumulated HVAC sensible cooling, Btu (&lt;=0) (OAV not included)</td>
+<td>zone accumulated HVAC sensible cooling, Btu (&lt;=0) (ideal included, OAV not included)</td>
 </tr>
 <tr>
 <td>prior.M.qshHvac</td>
 <td>number</td>
 <td>Unknown</td>
 <td>zone accumulated HVAC sensible heating, Btu (&gt;=0)</td>
+</tr>
+<tr>
+<td>prior.M.qscIdeal</td>
+<td>number</td>
+<td>Unknown</td>
+<td>zone accumulated ideal sensible cooling, Btu (&lt;=0) (ideal included, OAV not included)</td>
+</tr>
+<tr>
+<td>prior.M.qshIdeal</td>
+<td>number</td>
+<td>Unknown</td>
+<td>zone accumulated ideal sensible heating, Btu (&gt;=0)</td>
 </tr>
 <tr>
 <td>prior.M.qcMech</td>
@@ -6232,11 +6388,23 @@
 <td>prior.M.litEu</td>
 <td>number</td>
 <td>Unknown</td>
-<td><ul>
-<li>... from [GAINs][gain], in addition to posting Eu to meter, re daylighting for NREL. 9-94.</li>
-<li>floats that track min/max value</li>
-</ul></td>
+<td>... from GAINs, in addition to posting Eu to meter, re daylighting for NREL. 9-94.</td>
 </tr>
+</tbody>
+</table>
+
+floats that track min/max values
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td>prior.M.unMetMaxTD[index]</td>
 <td>number Array [2]</td>
@@ -6574,13 +6742,25 @@
 <td>prior.D.qscHvac</td>
 <td>number</td>
 <td>Start of day</td>
-<td>zone accumulated HVAC sensible cooling, Btu (&lt;=0) (OAV not included)</td>
+<td>zone accumulated HVAC sensible cooling, Btu (&lt;=0) (ideal included, OAV not included)</td>
 </tr>
 <tr>
 <td>prior.D.qshHvac</td>
 <td>number</td>
 <td>Start of day</td>
 <td>zone accumulated HVAC sensible heating, Btu (&gt;=0)</td>
+</tr>
+<tr>
+<td>prior.D.qscIdeal</td>
+<td>number</td>
+<td>Start of day</td>
+<td>zone accumulated ideal sensible cooling, Btu (&lt;=0) (ideal included, OAV not included)</td>
+</tr>
+<tr>
+<td>prior.D.qshIdeal</td>
+<td>number</td>
+<td>Start of day</td>
+<td>zone accumulated ideal sensible heating, Btu (&gt;=0)</td>
 </tr>
 <tr>
 <td>prior.D.qcMech</td>
@@ -6610,11 +6790,23 @@
 <td>prior.D.litEu</td>
 <td>number</td>
 <td>Start of day</td>
-<td><ul>
-<li>... from [GAINs][gain], in addition to posting Eu to meter, re daylighting for NREL. 9-94.</li>
-<li>floats that track min/max value</li>
-</ul></td>
+<td>... from GAINs, in addition to posting Eu to meter, re daylighting for NREL. 9-94.</td>
 </tr>
+</tbody>
+</table>
+
+floats that track min/max values
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td>prior.D.unMetMaxTD[index]</td>
 <td>number Array [2]</td>
@@ -6952,13 +7144,25 @@
 <td>prior.H.qscHvac</td>
 <td>number</td>
 <td>Start of hour</td>
-<td>zone accumulated HVAC sensible cooling, Btu (&lt;=0) (OAV not included)</td>
+<td>zone accumulated HVAC sensible cooling, Btu (&lt;=0) (ideal included, OAV not included)</td>
 </tr>
 <tr>
 <td>prior.H.qshHvac</td>
 <td>number</td>
 <td>Start of hour</td>
 <td>zone accumulated HVAC sensible heating, Btu (&gt;=0)</td>
+</tr>
+<tr>
+<td>prior.H.qscIdeal</td>
+<td>number</td>
+<td>Start of hour</td>
+<td>zone accumulated ideal sensible cooling, Btu (&lt;=0) (ideal included, OAV not included)</td>
+</tr>
+<tr>
+<td>prior.H.qshIdeal</td>
+<td>number</td>
+<td>Start of hour</td>
+<td>zone accumulated ideal sensible heating, Btu (&gt;=0)</td>
 </tr>
 <tr>
 <td>prior.H.qcMech</td>
@@ -6988,11 +7192,23 @@
 <td>prior.H.litEu</td>
 <td>number</td>
 <td>Start of hour</td>
-<td><ul>
-<li>... from [GAINs][gain], in addition to posting Eu to meter, re daylighting for NREL. 9-94.</li>
-<li>floats that track min/max value</li>
-</ul></td>
+<td>... from GAINs, in addition to posting Eu to meter, re daylighting for NREL. 9-94.</td>
 </tr>
+</tbody>
+</table>
+
+floats that track min/max values
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td>prior.H.unMetMaxTD[index]</td>
 <td>number Array [2]</td>
@@ -7330,13 +7546,25 @@
 <td>prior.S.qscHvac</td>
 <td>number</td>
 <td>Start of subhour</td>
-<td>zone accumulated HVAC sensible cooling, Btu (&lt;=0) (OAV not included)</td>
+<td>zone accumulated HVAC sensible cooling, Btu (&lt;=0) (ideal included, OAV not included)</td>
 </tr>
 <tr>
 <td>prior.S.qshHvac</td>
 <td>number</td>
 <td>Start of subhour</td>
 <td>zone accumulated HVAC sensible heating, Btu (&gt;=0)</td>
+</tr>
+<tr>
+<td>prior.S.qscIdeal</td>
+<td>number</td>
+<td>Start of subhour</td>
+<td>zone accumulated ideal sensible cooling, Btu (&lt;=0) (ideal included, OAV not included)</td>
+</tr>
+<tr>
+<td>prior.S.qshIdeal</td>
+<td>number</td>
+<td>Start of subhour</td>
+<td>zone accumulated ideal sensible heating, Btu (&gt;=0)</td>
 </tr>
 <tr>
 <td>prior.S.qcMech</td>
@@ -7366,11 +7594,23 @@
 <td>prior.S.litEu</td>
 <td>number</td>
 <td>Start of subhour</td>
-<td><ul>
-<li>... from [GAINs][gain], in addition to posting Eu to meter, re daylighting for NREL. 9-94.</li>
-<li>floats that track min/max value</li>
-</ul></td>
+<td>... from GAINs, in addition to posting Eu to meter, re daylighting for NREL. 9-94.</td>
 </tr>
+</tbody>
+</table>
+
+floats that track min/max values
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td>prior.S.unMetMaxTD[index]</td>
 <td>number Array [2]</td>

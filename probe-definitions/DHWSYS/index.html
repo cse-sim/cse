@@ -267,7 +267,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../introduction/" class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3621,6 +3621,37 @@
 </tr>
 </tbody>
 </table>
+<div class="probe-table-sibling"></div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Variability</th>
+<th>Description/Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fAdjElec</td>
+<td>FLOAT_GEZ</td>
+<td>Start of subhour</td>
+<td><ul>
+<li>electricity use adjustment factor, default 1</li>
+<li>provides default for child [DHWHEATER][dhwheater]/[DHWLOOPHEATER][dhwloopheater] wh_fAdjElec</li>
+</ul></td>
+</tr>
+<tr>
+<td>fAdjFuel</td>
+<td>FLOAT_GEZ</td>
+<td>Start of subhour</td>
+<td><ul>
+<li>fuel use adjustmentment factor, default 1</li>
+<li>provides default for child [DHWHEATER][dhwheater]/[DHWLOOPHEATER][dhwloopheater] wh_fAdjFuel</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
 <ul>
 <li>energy inputs for current hour, Btuh</li>
 <li>NOTE: values DO NOT include [DHWHEATER][dhwheater] use</li>
@@ -4904,6 +4935,18 @@
 <td>number</td>
 <td>End of hour</td>
 <td>current hour all-DHWLOOP return temp, F</td>
+</tr>
+<tr>
+<td>loopDeltaT</td>
+<td>number</td>
+<td>End of hour</td>
+<td>ws_tUse - ws_tRL at end of current hour, F (can be &lt; 0)</td>
+</tr>
+<tr>
+<td>loopDeltaTlh</td>
+<td>number</td>
+<td>Start of hour</td>
+<td>prior hour ws_loopDeltaT (can be &lt; 0)</td>
 </tr>
 <tr>
 <td>HRBL</td>
