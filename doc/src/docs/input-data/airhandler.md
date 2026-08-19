@@ -247,7 +247,7 @@ Heating design supply temperature, for sizing coil vs fan.
 
 Type: _terminal name_
 
-Terminal monitored to determine whether to heat or cool under ZN and ZN2 supply temperature setpoint control. Development aid feature; believe there is no need to give this since ahTsSp = ZN or ZN2 should only be used with <!-- (is only allowed with??) --> one zone.
+Terminal monitored to determine whether to heat or cool under ZN and ZN2 supply temperature setpoint control. Not needed if the air handler serves only one terminal (ahCtu then defaults automatically); required if it serves more than one.
 
 {{
   member_table({
@@ -1398,13 +1398,13 @@ The following six members are used with DX cooling coils.
 
 Type: _float_
 
-Minimum (effective surface) temperature of coil (evaporator). Represents refrigerant setpoint, or cutout to prevent freezing. Coil model will reduce output to keep simulated coil from getting colder than this, even though it lets supply air get warmer than setpoint. Should default be 35??
+Minimum (effective surface) temperature of coil (evaporator). Represents refrigerant setpoint, or cutout to prevent freezing. Coil model will reduce output to keep simulated coil from getting colder than this, even though it lets supply air get warmer than setpoint.
 
 {{
   member_table({
     "units": "°F",
     "legal_range": "_x_ > 0", 
-    "default": "40°F",
+    "default": "35°F",
     "required": "No",
     "variability": "constant" 
   })
@@ -1737,7 +1737,7 @@ Design (rating) condenser temperature (outdoor air temperature) for DX coils.
 
 Type: _float_
 
-Design (rating) (volumetric) air flow rate for DX or CHW cooling coil. The AHRI specification for this test condition for CHW coils is "450 cfm/ton or less", right??
+Design (rating) (volumetric) air flow rate for DX or CHW cooling coil. The AHRI specification for this test condition for CHW coils is "450 cfm/ton or less".
 
 {{
   member_table({
