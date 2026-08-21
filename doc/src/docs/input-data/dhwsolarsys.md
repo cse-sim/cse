@@ -14,7 +14,7 @@ May have no tank for direct system? What if system has multiple primary tanks?
 
 Type: mtrName
 
-Name of METER object, if any, to which DHWSOLARSYS electrical energy use is recorded (under end use ???).
+Name of METER object, if any, to which DHWSOLARSYS electrical energy use is recorded (under end use given by *swEndUse*, which defaults to "DHW").
 
 {{
   member_table({

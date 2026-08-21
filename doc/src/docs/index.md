@@ -25,6 +25,59 @@ CSE models annual building energy use for heating, cooling, ventilation, and lig
 - **Minute-resolution domestic hot water** — DHW draws are simulated as discrete events at one-minute timesteps, enabling accurate evaluation of heat pump water heater controls and tank recovery dynamics that cannot be accurately represented in engines with coupled DHW timesteps.
 
 
+## Comparison with EnergyPlus
+
+EnergyPlus is a powerful, widely used simulation engine and a good fit for many applications,
+though not all. CSE was built with different priorities, and the tradeoffs that follow are
+worth noting.
+
+- **Runtime** — For comparable annual simulations, CSE runs faster than EnergyPlus.[^1] Both
+  engines have gotten faster since that comparison was published, but the relative advantage
+  still makes CSE well suited to parametric sweeps and large compliance batch runs, where
+  runtime differences compound across many simulations.
+
+- **Architecture** — CSE has utilized modern practices for object-oriented design from the beginning, rather
+  than the global state variables EnergyPlus relies on.[^1] That structure makes CSE's codebase
+  less error-prone and easier to extend safely; EnergyPlus's global-state design, by contrast,
+  is not thread-safe.
+
+- **Accuracy** — In direct comparison, CSE and EnergyPlus track measured data from the Central
+  Valley Research Homes project comparably.[^1] Neither tool shows a clear accuracy advantage;
+  the differences between them are in runtime and architecture, not fidelity.
+
+- **Scope & focus** — Both tools set out to be general-purpose building energy simulation
+  engines, but their development has grown in different directions. CSE has concentrated on
+  residential-scale modeling: domestic hot water, duct systems, envelope, and infiltration.
+  EnergyPlus has grown a much broader library of commercial air and plant systems.
+
+[^1]: Kruis, N., M. Larson, B. Wilcox, and C.S. Barnaby (2019). "A Comparison of CSE and
+    EnergyPlus for Residential Energy Calculations." Proceedings of the 16th IBPSA Conference,
+    Rome, Italy. https://doi.org/10.26868/25222708.2019.210839
+
+
+## Validation & Adoption
+
+CSE has been evaluated against ANSI/ASHRAE Standard 140 ("BESTEST") and serves as a reference
+program for the acceptance criteria of the standard's thermal fabric test cases, as well as
+for RESNET's HERS rating software accreditation testing. Beyond that baseline, CSE has a track
+record of adoption and validation across multiple contexts:
+
+- **Official compliance engine** — Within [CBECC](https://github.com/california-energy-commission/CBECC),
+  the California Energy Commission's compliance software for Title 24, CSE performs the
+  simulations for residential buildings (including multifamily dwelling units and common
+  areas); non-residential buildings are modeled with EnergyPlus.
+- **Utility program adoption** — CSE was used by Big Ladder Software to model and calibrate
+  advanced heat pump savings rates for the [Northwest Energy Efficiency Alliance
+  (NEEA)](https://neea.org/resource/advanced-heat-pump-savings-rate-modeling/).
+- **Peer-reviewed validation** — CSE's algorithms are documented and validated against
+  measured data from the Central Valley Research Homes project in Barnaby, C., B. Wilcox,
+  and P. Niles (2013). "Development and Validation of the California Simulation Engine."
+  Proceedings of Building Simulation 2013, Chambéry, France.
+- **Cross-engine comparison** — Kruis, N., M. Larson, B. Wilcox, and C.S. Barnaby (2019).
+  "A Comparison of CSE and EnergyPlus for Residential Energy Calculations." Proceedings of
+  the 16th IBPSA Conference, Rome, Italy. https://doi.org/10.26868/25222708.2019.210839
+
+
 ## Installation
 
 Pre-built binaries are available on the [CSE GitHub releases page](https://github.com/cse-sim/cse/releases). Download the appropriate binary for your platform and place it in a directory on your system `PATH`.
