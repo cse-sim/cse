@@ -24,16 +24,17 @@ CSE is configured as a CMake project. Windows (MSVC), macOS (Clang), and Linux (
 - **Windows:** `build.bat`
 - **macOS/Linux:** `build.sh`
 
-All build products (e.g., `cse` on macOS/Linux, `cse.exe` on Windows) will be placed in a directory called `build`.
+All build products (e.g., `cse` on macOS/Linux, `cse.exe` on Windows) will be placed in `builds/<config>` (e.g., `builds/Release`).
 
 #### Testing
 
-Automated testing of your build can be executed by running the following from the `build` directory:
+Automated testing of your build can be executed by running the following from the `builds/Release` (or `builds/Debug`) directory:
 
 `ctest -C Release`
 
 #### Dependencies
 
+- Git
 - Microsoft Visual C++, Clang, or GCC
 - CMake
 - Python (via [uv](https://docs.astral.sh/uv/), required for building documentation)
