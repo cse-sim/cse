@@ -1,0 +1,26 @@
+<svg viewBox="-87.2 -13.0 415.2 467.0" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Vertical section through a SHADE overhang, showing ohDepth (projection outward from the window) and ohFlap (a downward lip at the outer edge).">
+  <defs><marker id="dim-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 Z" fill="#1a5fb4"/></marker><marker id="dim-arrow-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 Z" fill="#666666"/></marker></defs>
+  <rect x="-87.2" y="-13.0" width="415.2" height="467.0" fill="#ffffff"/>
+  <rect x="20" y="60" width="34" height="370" fill="#999999"/>
+  <line x1="20" y1="60" x2="20" y2="430" stroke="#333333" stroke-width="2"/>
+  <line x1="54" y1="60" x2="54" y2="430" stroke="#333333" stroke-width="2"/>
+  <rect x="20" y="140" width="34" height="260" fill="#dbe9f7" stroke="#333333" stroke-width="2"/>
+  <text x="40.9" y="100.0" font-family="sans-serif" font-size="13" fill="#333333" text-anchor="middle" transform="rotate(-90 40.9 100.0)">Wall</text>
+  <text x="40.9" y="270.0" font-family="sans-serif" font-size="13" fill="#333333" text-anchor="middle" transform="rotate(-90 40.9 270.0)">Window</text>
+  <rect x="54" y="80" width="100" height="18" fill="#cccccc" stroke="#333333" stroke-width="2"/>
+  <rect x="142" y="98" width="12" height="28" fill="#cccccc" stroke="#333333" stroke-width="2"/>
+  <line x1="154" y1="80" x2="154" y2="70" stroke="#aaaaaa" stroke-width="0.75"/>
+  <line x1="54" y1="70" x2="154" y2="70" stroke="#1a5fb4" stroke-width="1.5" marker-start="url(#dim-arrow)" marker-end="url(#dim-arrow)"/>
+  <text x="104.0" y="60" font-family="'Courier New', Courier, monospace" font-size="13" fill="#1a5fb4" text-anchor="middle">ohDepth</text>
+  <line x1="154" y1="98" x2="164" y2="98" stroke="#aaaaaa" stroke-width="0.75"/>
+  <line x1="154" y1="126" x2="164" y2="126" stroke="#aaaaaa" stroke-width="0.75"/>
+  <line x1="164" y1="98" x2="164" y2="126" stroke="#1a5fb4" stroke-width="1.5" marker-start="url(#dim-arrow)" marker-end="url(#dim-arrow)"/>
+  <text x="174" y="116.0" font-family="'Courier New', Courier, monospace" font-size="13" fill="#1a5fb4" text-anchor="start">ohFlap</text>
+  <line x1="54" y1="140" x2="64" y2="140" stroke="#aaaaaa" stroke-width="0.75"/>
+  <line x1="64" y1="98" x2="64" y2="140" stroke="#1a5fb4" stroke-width="1.5" marker-start="url(#dim-arrow)" marker-end="url(#dim-arrow)"/>
+  <text x="74" y="123.0" font-family="'Courier New', Courier, monospace" font-size="13" fill="#1a5fb4" text-anchor="start">ohDistUp</text>
+  <line x1="54" y1="270.0" x2="154" y2="270.0" stroke="#666" stroke-width="1.5" marker-end="url(#dim-arrow-gray)"/>
+  <text x="104.0" y="286.0" font-family="sans-serif" font-size="13" fill="#666" text-anchor="middle">Outward</text>
+  <text x="120.4" y="29" font-family="sans-serif" font-size="18" fill="#333333" text-anchor="middle" font-weight="bold">Vertical Section, Through Overhang</text>
+</svg>
