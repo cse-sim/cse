@@ -2121,7 +2121,7 @@ RECORD FAN "fan sub" *SUBSTRUCT		// FAN SUBRECORD
 					// Error if < 1.0; typically <= 1.5.
 
 *r PRESAIR_GEZ press	// system design pressure, "H2O (inches of water), constant, used in defaulting power / efficiency.
-						// default: supply 3, r/r .75, tu .3, zx ???.
+						// default: supply 3, r/r .75, tu .3, zx .3.
 						// 0 allowed 5-1-92 to eliminate fan heat for test/calibration purposes.
 
 //only one of eff and shaftPwr may be given:
@@ -2168,7 +2168,9 @@ RECORD FAN "fan sub" *SUBSTRUCT		// FAN SUBRECORD
 // *s *e FRAC relFlow	// fraction of design flow
 // *s *e FRAC relLoad	// fraction of full load per part load curve for fan type (1.0 if over design flow: assume pressure drops)
 *s *e POWER p	// (motor) power consumption for subhour -- inPower * relLoad.  *subhrDur for meter.
-*s *e POWER q	// heat (power) to air this subhour: airPower * relLoad.  Member needed in addition to c and dT??
+*s *e POWER q	// heat (power) to air this subhour: airPower * relLoad.  Overdefined (= c*dT), but
+					// stored as its own member for direct access when computing the air handler's fan heat
+					// result, and for use in probes.
 *s *e TEMPDIFF dT	// temp difference due to fan: q/c
 *s *e POWER qAround	// heat to air around motor, if not in air flow, for use re supply fan motor in return air
 
@@ -4435,7 +4437,7 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
   *i DHWBRANCHMODELCH ws_branchModel	// branch model selection
 							//   _T24DHW: prior ACM App-B
 							//   _DRAWWASTE: draw duration increase per ws_drawWaste
-                            //   _DAYWASTE: draw duration increase per ??
+                            //   _DAYWASTE: draw duration increase per ws_dayWasteDrawF[euidx] * ws_dayWasteScale
   *h *array NDHWENDUSESPP FLOAT ws_drawWaste;	// water waste per draw, gal
 							// converts to time added to draw duration
 							//   [ 0] unknown end use
@@ -5787,7 +5789,7 @@ RECORD COIL "coil sub" *SUBSTRUCT	// COIL SUB RECORD
     *r COILTYCH  coilTy	// coil type choice according to application, as follows.  constant.
     			//  air handler cool coil: NONE (default), ELEC, DX, CHW, ...
     			//  air handler heat coil: NONE (default), ELEC, HW, GAS, OIL, AHP, ...
-    			//     terminal heat coil: NONE (default if no local heat), ELEC (dflt if local heat), HW,  GAS,OIL??...
+    			//     terminal heat coil: NONE (default if no local heat), ELEC (dflt if local heat), HW.
 			// "ELEC COOL COIL" is a testing aid that cools with 100% efficiency & capacity at any temp.
 
     *h OFFAVAILVC sched	// AVAIL when coil available, OFF when disabled, hourly, default AVAIL.
@@ -6114,7 +6116,7 @@ RECORD CCH "cch sub" *SUBSTRUCT	// Crankcase Heater subRecord for AIRHANDLER
     //*r POWER p47On	// .. on ..  restore if need found.
     *r POWER p17	// power input to crankcase heater in ARI 17 degree continuous operation test, kW. Niles pCch17.
     *r POWER p47	/* ditto 47 degree test. Niles pCch47. p17 and p47 always the same; p47 may be used in code as
-    			   crankcase heater input in any test. ??clarify while coding. */
+    			   crankcase heater input in any test. */
 
 //CCH runtime
     *s *e FRAC frCprOn	/* fraction of time compressor ran this subhour, input to power determination.
@@ -6780,16 +6782,6 @@ RECORD TU "terminal" *RAT		// TERMINAL
     *r FRAC tfanOffLeak		// backdraft leakage when fan off, 0 to .25 of tfanVfDs, constant, dfl .1, or 0 if no fan.
 
     *nest FAN tfan		// terminal fan FAN subrecord.  If tfan.fanType is NONE, other tfan inputs disallowed.
-    		            // the following terminal inputs are in tfan:
-    //FANTYCH tfanType     	// NONE (default), SERIES, or PARALLEL.  constant.  Fan source is return air.
-    // 				// parallel: fan runs when VAV flow low; tfan cfm is added to VAV cfm to get zone cfm.
-    // 				// series always runs; if VAV cfm < tfan cfm, rest comes from RA.
-    //AFLOW_GZ tfanVfDs		// terminal fan design flow (cfm actual air), RQD if fan present.
-    //				// or default to terminal heat design flow? ??
-    //PRESAIR_GZ tfanPress 	// tu fan external static pressure, .05 to 1.0 "H2O, constant, default .3.
-    //FRAC tfanEff		// tu fan/motor/drive combinded efficiency, constant, default .08. .08!?
-    //MTR tfanMtri		// MTR to which energy use is charged 4-11-92
-    //PYCUBIC2 tfanCurvePy	// part-load energy consumption curve coefficients 6-92, default linear
     //// other fan subrecord members for terminal fan are internally set as follows:
     ////  vfMxF: 1.0;  motPos: INFLO;  shaftPwr: default from eff;
     ////  motEff: 1.0: needn't differentiate fan eff from motEff under INFLO.
@@ -7130,7 +7122,7 @@ RECORD CHILLER "chiller" *RAT	// chiller. subobject of COOLPLANT. ChiB, ChB.
 //CHILLER Full-load energy Input Inputs. Full-load power input at various temp conditions is eiFL = cap*chEirDs*chPyEirT(ts,tcnd).
     *f FLOAT_GZ chCop		/* Full-load Coefficient of performance (output Btu/input Btu) @ chTsDs/chTcndDs, reflecting
 				   motor and chiller efficiency. No such Niles input. Converted to chEirDs for internal use.
-				   Default: current minimum erriciency, Bruce to look up ??, meanwhile can use 3 for testing. */
+				   Default: 4.2 (chosen by Bruce). */
     *r FLOAT_GZ chEirDs		/* Full-load eir (energy input ratio) @ chTsDs/chTcndDs, relecting motor and chiller efficiency.
     				   Alternate input for chCop; used internally; replaces Niles' eirR (eir at ARI conditions). */
     *r *nest PYBIQUAD chPyEirT 	/* biquad poly (6 float coeffs input) of (chTs, chTcnd) to adjust full-load energy input to
@@ -7258,18 +7250,18 @@ RECORD TOWERPLANT "towerPlant" *RAT	// cooling tower(s) plant: supports COOLPLAN
     *r *nest PYCUBIC  ctFcVar	// VARIABLE speed fan cubic curve coefficients, default 0,0,0,1
 /* The next 6 TOWERPLANT members specify one-tower performance under a one set of conditions (the "design conditions").
    The conditions should be chosen to be representative of full load operating conditions. */
-    // verify next 3 per tower?? <--- issues2.txt memo sent to Bruce 10-92. *****
+    // Defaults added per Bruce & Steve's review.
     *r POWER_NZ ctCapDs		/* Design capacity, Btuh. (replaces Niles' design water inlet temperature.)
 				   Default is sum of connected loads / ctN, using largest stage in each coolPlant,
 				   design Btu capacity of each HPLOOP heat exchanger. Made negative if entered positive. */
-    *f AFLOW_GZ ctVfDs   	// Design air flow volume rate through tower / full speed fan flow??, cfm, RQD.
+    *f AFLOW_GZ ctVfDs   	// Design air flow volume rate through tower, cfm, RQD. Equal to full-speed fan flow.
     *r H2OFLOW_GZ ctGpmDs	// Design water flow rate, gpm. default: sum of connected heat rejection pump capacities / ctN.
     *f TEMP_GZ ctTDbODs 	// Design outdoor drybulb temperature, F, RQD. (only needed to convert ctVfDs from cfm to lb/hr).
     *f TEMP_GZ ctTWbODs   	// Design outdoor wetbulb temperature, F, RQD.
     *f TEMP_GZ ctTwoDs    	// Design leaving water temperature, F, default 85.
 /* The following 6 TOWERPLANT members give another one-tower performance point, the "Off-design" point.
    Either give either all that don't have defaults, (and not ctK), or none (ctK may then be given). */
-    // verify next 3 per tower?? <--- issues2.txt memo sent to Bruce 10-92. ******
+    // Defaults added per Bruce & Steve's review.
     *r POWER_NZ ctCapOd   	/* Off-design capacity, Btuh. (replaces Niles' design water inlet temperature.)
 				   Default is sum of connected loads / ctN, using largest stage in each coolPlant,
 				   design Btu capacity of each HPLOOP heat exchanger. Made negative if entered positive. */
