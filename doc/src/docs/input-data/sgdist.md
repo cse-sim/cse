@@ -63,7 +63,7 @@ EXTERIOR,   Apply gain to exterior of surface")
 }}
 
 <!--
-  ??This can produce some strange arrangements; verify that energy balance can be properly defined in all cases.
+This can produce some strange arrangements; energy balance for this path is not covered by any test case. See https://github.com/cse-sim/cse/issues/680.
 -->
 
 ### sgFSO
