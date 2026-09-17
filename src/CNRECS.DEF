@@ -312,7 +312,7 @@ RECORD TOPRAT "top" *RAT	/* top level RAT: contains control info and all once-on
     *i SI runSerial   	// run #, 000-999, per (future 11-91) status file (meanwhile, see cnguts:cnRunSerial 7-92).
     *i CULSTR runTitle   	// user text for report titles, footers, export title 11-22-91.
     *r CULSTR runDateTime	// run date & time string, set by cncult2.cpp:topStarPrf2(), used in reports & bin res file, 9-94.
-    //inputs for binary results files, for NREL, rob 11-93.  *r cuz settable from cmd line switches.
+    //inputs for binary results files, for NREL.  *r cuz settable from cmd line switches.
     *r NOYESCH tp_brs		// YES to generate basic binary results file, default NO. From input file or cmd line switch.
     *r NOYESCH tp_brHrly	// YES to generate hourly binary results file, default NO. From input file or cmd line.
 			// brf and brfHrly are intended to be independent, except monthly-hourly averages
@@ -2156,7 +2156,7 @@ RECORD FAN "fan sub" *SUBSTRUCT		// FAN SUBRECORD
 *s POWER outPower	// motor output power (work done by fan), member 7-95 for one setup check in cncult5.cpp
 //inPower = shaftPwr/motEff  is computed as needed.
 *s POWER airPower	// fan heat to air (Btuh) at vfDs (& pressure): work done by fan, plus motor/drive inefficiency if in flow.
-			// Note work done by fan is modelled as HEAT ADDED TO AIR AT FAN per Chip/Niles (3-92, undocumented)
+			// Note work done by fan is modelled as HEAT ADDED TO AIR AT FAN (not otherwise documented)
 //heat to air around motor (in return air etc) at design flow is: (inPower - airPower). this is 0 if motor in air flow.
 
 // FAN runtime members, set by cnah.cpp:FAN::pute( cFlow, temp)
@@ -2225,7 +2225,7 @@ RECORD ZNISUB "zone sub" *SUBSTRUCT
     				// default: closed if cooling in prior hour (cnloads::loadsAfterHour) (see ZNR:znSCF)
 					// Determines choice between window sco/scc, SGDIST sgd_FSC/sfFSC, via cgsolar.cpp.
 					// Pointed to by .cppontrol of SgR entries (whose factors are (neg) closed-shade gain reductions).
-					// Subhourly variablility desirable (rob's opinion); requires duplicating
+					// Subhourly variablility desirable; requires duplicating
 					// loadsHourBeg solar gain code in loadsSubhr with znSC-change trigger.
 
 	*s TEMP_GZ znTH // base heating set point, F (from input, may be modified for autosizing)
@@ -5873,7 +5873,7 @@ RECORD COOLCOIL "coolCoil sub" *SUBSTRUCT *BASECLASS COIL	/* COOLing COIL SUBREC
     *f FLOAT pydxCaptFLim		//   upper limit for value of pydxCaptF, 8-28-95
     *f *nest PYBIQUAD  pydxEirT 	//  dx energy input for tWbEn and tDbCnd
     *f *nest PYCUBIC   pydxEirUl	//  dx energy in for part load in dx compr-unloading range (minUnldPlr <= plr <= 1).
-    					//  (Adjusts full-load input (eirRat*capt): I claim eir in name is misnomer, rob 5-92).
+    					//  (Adjusts full-load input (eirRat*capt)).
 	    				//     note for minFsldPlr < plr < minUnldPlr, input remains at minUnldPlr's;
     					//          for plr <= minUnldPlr, input does straight line to 0.
 
@@ -6109,7 +6109,7 @@ RECORD CCH "cch sub" *SUBSTRUCT	// Crankcase Heater subRecord for AIRHANDLER
     *i TI mtri		// subscript of meter to which cch energy use is to be recorded, default none.
 
 //CCH setup time
-    //Rob used p not Niles' e for next 2, 10-92:
+    //Uses p not Niles' e for next 2:
      //*r ENERGY e47Off	// energy input during off part of one cycle of ARI 47 degree cycling test, kWh. Niles eCchOffCyc47.
      //*r ENERGY e47On	// .. on ..  Niles eCchOnCyc47.
     *r POWER p47Off	// power input during off part of one cycle of ARI 47 degree cycling test, kWh.
@@ -7122,7 +7122,7 @@ RECORD CHILLER "chiller" *RAT	// chiller. subobject of COOLPLANT. ChiB, ChB.
 //CHILLER Full-load energy Input Inputs. Full-load power input at various temp conditions is eiFL = cap*chEirDs*chPyEirT(ts,tcnd).
     *f FLOAT_GZ chCop		/* Full-load Coefficient of performance (output Btu/input Btu) @ chTsDs/chTcndDs, reflecting
 				   motor and chiller efficiency. No such Niles input. Converted to chEirDs for internal use.
-				   Default: 4.2 (chosen by Bruce). */
+				   Default: 4.2. */
     *r FLOAT_GZ chEirDs		/* Full-load eir (energy input ratio) @ chTsDs/chTcndDs, relecting motor and chiller efficiency.
     				   Alternate input for chCop; used internally; replaces Niles' eirR (eir at ARI conditions). */
     *r *nest PYBIQUAD chPyEirT 	/* biquad poly (6 float coeffs input) of (chTs, chTcnd) to adjust full-load energy input to
@@ -7230,7 +7230,7 @@ RECORD TOWERPLANT "towerPlant" *RAT	// cooling tower(s) plant: supports COOLPLAN
  					     The water will continue to flow through the towers whose fans are off. */
     *h TEMP_GZ tpTsSp    	// Towers delivered water setpoint temperature (Niles' twoSp).  degrees F, hourly, default 85F.
     *i TI tpMtr   		/* subscript of METER object to which tower fan energy input will be posted,
-    				   category "Aux" (Per Bruce, 8-92).  Cooling towers as modelled have no pumps
+    				   category "Aux".  Cooling towers as modelled have no pumps
     				   and use no energy except to drive their fans. default none. */
  //If towStg is LEAD, the following two apply only to the lead tower; any additional towers are assumed to have ONESPEED fans.
     *f CTTYCH ctTy		// Cooling tower fan control type choice: ONESPEED (default), TWOSPEED, or VARIABLE.
@@ -7238,7 +7238,7 @@ RECORD TOWERPLANT "towerPlant" *RAT	// cooling tower(s) plant: supports COOLPLAN
 /*The rest of the TOWERPLANT input variables apply to each tower in the group;
   the towers are assumed identical except for the single-speed fan on non-lead towers. */
 /*The following two inputs permit computation of the tower fan electrical energy
-  consumption (we only need bhp/eff, but Bruce/Steve say use two inputs): */
+  consumption (we only need bhp/eff, but two separate inputs are used): */
     *f BHP_GZ ctShaftPwr  	/* Shaft power of one tower fan motor. RQD.  User name 'shaftBhp'.
     				   Btuh internally, brake horsepower entered, units stuff converts. */
     *f FRAC_GZ ctMotEff  	// Motor (and drive, if any) efficiency, default 0.88
@@ -7250,7 +7250,6 @@ RECORD TOWERPLANT "towerPlant" *RAT	// cooling tower(s) plant: supports COOLPLAN
     *r *nest PYCUBIC  ctFcVar	// VARIABLE speed fan cubic curve coefficients, default 0,0,0,1
 /* The next 6 TOWERPLANT members specify one-tower performance under a one set of conditions (the "design conditions").
    The conditions should be chosen to be representative of full load operating conditions. */
-    // Defaults added per Bruce & Steve's review.
     *r POWER_NZ ctCapDs		/* Design capacity, Btuh. (replaces Niles' design water inlet temperature.)
 				   Default is sum of connected loads / ctN, using largest stage in each coolPlant,
 				   design Btu capacity of each HPLOOP heat exchanger. Made negative if entered positive. */
@@ -7261,7 +7260,7 @@ RECORD TOWERPLANT "towerPlant" *RAT	// cooling tower(s) plant: supports COOLPLAN
     *f TEMP_GZ ctTwoDs    	// Design leaving water temperature, F, default 85.
 /* The following 6 TOWERPLANT members give another one-tower performance point, the "Off-design" point.
    Either give either all that don't have defaults, (and not ctK), or none (ctK may then be given). */
-    // Defaults added per Bruce & Steve's review.
+    // Defaults added after review.
     *r POWER_NZ ctCapOd   	/* Off-design capacity, Btuh. (replaces Niles' design water inlet temperature.)
 				   Default is sum of connected loads / ctN, using largest stage in each coolPlant,
 				   design Btu capacity of each HPLOOP heat exchanger. Made negative if entered positive. */
