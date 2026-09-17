@@ -25,8 +25,10 @@ LABEL_GAP = 10  # standard clear space between a dimension line/arrow and its la
 # diagram in this file uses the same scale for the same *role* of text --
 # this was violated once already (elevation drifted out of sync with
 # section/plan) by passing size= ad hoc at each call site instead of always
-# referencing these.
-TITLE_SIZE = 18
+# referencing these. The images are displayed at the content column's full
+# width (see shade.md's style override, which lifts the site's default
+# max-width: 50% cap on images) rather than via an inflated font-to-canvas
+# ratio, so these can stay at a normal scale.
 FEATURE_SIZE = 13  # plain-language labels inside/on shapes: Window, Wall, Overhang, Left Fin...
 FIELD_SIZE = 13  # monospace CSE field-name dimension labels: ohExL, lfDepth...
 
@@ -34,8 +36,8 @@ FIELD_SIZE = 13  # monospace CSE field-name dimension labels: ohExL, lfDepth...
 # or viewed differently, so its size can't be chosen independently per view.
 WINDOW_W = 200  # elevation's horizontal extent == plan's window band width
 WINDOW_H = 260  # elevation's vertical extent == section's window band height
-FIN_FACE_W = 18  # elevation's fin width == plan's fin width (both face-on)
-WALL_THICKNESS = 34  # section's wall_w == plan's wall band height (both are wall thickness)
+FIN_FACE_W = 18  # elevation's fin width == plan's fin width (both face-on); wide enough to hold a rotated label at FEATURE_SIZE
+WALL_THICKNESS = 34  # section's wall_w == plan's wall band height (both are wall thickness); same rotated-label constraint
 OVERHANG_THICKNESS = 18  # elevation's oh_thick == section's oh_b_thick (both the same slab)
 LF_DIST = 34  # lfDistL: elevation's gap == plan's gap, between the left fin and the window
 RF_DIST = 42  # rfDistR: elevation's gap == plan's gap, between the right fin and the window
@@ -181,13 +183,6 @@ class Diagram:
         y = ref_y + LABEL_GAP + est_half_h if side == "below" else ref_y - LABEL_GAP - est_half_h
         self.field_label(x, y, label, size=size, rotate=-90, tag=label)
 
-    def title(self, text, size=TITLE_SIZE, weight="bold", gap=18):
-        """Add a heading centered on the CONTENT drawn so far -- called last,
-        once the true horizontal center of the diagram is actually known."""
-        cx = (self.extent[0] + self.extent[2]) / 2
-        y = self.extent[1] - gap
-        self.text(cx, y, text, size=size, anchor="middle", weight=weight, tag="title")
-
     def render(self, aria_label):
         minx, miny, maxx, maxy = self.extent
         m = self.margin
@@ -205,7 +200,13 @@ class Diagram:
         )
         body = "\n  ".join(self.parts)
         return (
-            f'<svg viewBox="{vb_x:.1f} {vb_y:.1f} {vb_w:.1f} {vb_h:.1f}" xmlns="http://www.w3.org/2000/svg" role="img"\n'
+            # width/height matching the viewBox 1:1 give the SVG a real intrinsic
+            # size (1 viewBox unit == 1 CSS px) -- without them, an <img>-embedded
+            # SVG falls back to the browser's default ~300x150 box and everything
+            # inside, text included, gets scaled down to fit that, regardless of
+            # how large the actual page column is.
+            f'<svg viewBox="{vb_x:.1f} {vb_y:.1f} {vb_w:.1f} {vb_h:.1f}" width="{vb_w:.0f}" height="{vb_h:.0f}" '
+            f'xmlns="http://www.w3.org/2000/svg" role="img"\n'
             f'     aria-label="{aria_label}">\n'
             f'  {defs}\n'
             f'  <rect x="{vb_x:.1f}" y="{vb_y:.1f}" width="{vb_w:.1f}" height="{vb_h:.1f}" fill="#ffffff"/>\n'
@@ -249,11 +250,11 @@ def build_elevation():
     d.rect(rf_left, rf_top_y, fin_w, rf_bottom_y - rf_top_y, GRAY_FILL)
 
     # ---- feature labels, Title Case, inside their own shapes ----
-    d.text(win_x + win_w / 2, win_y + win_h / 2, "Window", size=17, anchor="middle")
-    d.text(oh_left + (oh_right - oh_left) / 2, oh_top + oh_thick / 2 + 4, "Overhang", size=13, anchor="middle")
-    d.text(lf_cx, (lf_top_y + lf_bottom_y) / 2, "Left Fin", size=13, anchor="middle",
+    d.text(win_x + win_w / 2, win_y + win_h / 2, "Window", size=FEATURE_SIZE, anchor="middle")
+    d.text(oh_left + (oh_right - oh_left) / 2, oh_top + oh_thick / 2 + 4, "Overhang", size=FEATURE_SIZE, anchor="middle")
+    d.text(lf_cx, (lf_top_y + lf_bottom_y) / 2, "Left Fin", size=FEATURE_SIZE, anchor="middle",
            rotate=-90, allow_shape_overlap=True)
-    d.text(rf_cx, (rf_top_y + rf_bottom_y) / 2, "Right Fin", size=13, anchor="middle",
+    d.text(rf_cx, (rf_top_y + rf_bottom_y) / 2, "Right Fin", size=FEATURE_SIZE, anchor="middle",
            rotate=-90, allow_shape_overlap=True)
 
     # ---- ohExL / ohExR: dimension line offset above the overhang;
@@ -261,47 +262,46 @@ def build_elevation():
     dim_y = oh_top - 30
     d.ext_line(oh_left, oh_top, oh_left, dim_y)
     d.ext_line(win_x, win_y, win_x, dim_y)
-    d.h_dim(oh_left, win_x, dim_y, "ohExL", label_size=13)
+    d.h_dim(oh_left, win_x, dim_y, "ohExL")
 
     d.ext_line(win_right, win_y, win_right, dim_y)
     d.ext_line(oh_right, oh_top, oh_right, dim_y)
-    d.h_dim(win_right, oh_right, dim_y, "ohExR", label_size=13)
+    d.h_dim(win_right, oh_right, dim_y, "ohExR")
 
     # ---- ohDistUp: arrow's own endpoints are the real edges (overhang's
     #      bottom, window's top) -- no extension lines needed ----
-    d.v_dim(win_x + win_w / 2, oh_bottom, win_y, "ohDistUp", size=13)
+    d.v_dim(win_x + win_w / 2, oh_bottom, win_y, "ohDistUp")
 
     # ---- lfDistL / rfDistR: arrow spans the real gap directly; label is
     #      rotated (so its width, not its length, has to fit the gap) and
     #      offset -- at the standard LABEL_GAP -- clear of the arrow itself,
     #      not sitting on top of it ----
     dist_y = win_y + 90
-    d.h_dim(lf_right, win_x, dist_y, "lfDistL", rotate_label=True, label_size=13, skip_label=True)
-    d.detached_rotated_label((lf_right + win_x) / 2, dist_y, "lfDistL", size=13, side="below")
-    d.h_dim(win_right, rf_left, dist_y, "rfDistR", rotate_label=True, label_size=13, skip_label=True)
-    d.detached_rotated_label((win_right + rf_left) / 2, dist_y, "rfDistR", size=13, side="below")
+    d.h_dim(lf_right, win_x, dist_y, "lfDistL", rotate_label=True, skip_label=True)
+    d.detached_rotated_label((lf_right + win_x) / 2, dist_y, "lfDistL", side="below")
+    d.h_dim(win_right, rf_left, dist_y, "rfDistR", rotate_label=True, skip_label=True)
+    d.detached_rotated_label((win_right + rf_left) / 2, dist_y, "rfDistR", side="below")
 
     # ---- lfTopUp / rfTopUp: offset to the outside of each fin;
     #      extension lines connect back to the fin-top and window-top corners ----
     dim_x = lf_left - CLEARANCE
     d.ext_line(lf_left, lf_top_y, dim_x, lf_top_y)
     d.ext_line(win_x, win_y, dim_x, win_y)
-    d.v_dim(dim_x, lf_top_y, win_y, "lfTopUp", side="left", size=13)
+    d.v_dim(dim_x, lf_top_y, win_y, "lfTopUp", side="left")
 
     dim_x = rf_right + CLEARANCE
     d.ext_line(rf_right, rf_top_y, dim_x, rf_top_y)
     d.ext_line(win_right, win_y, dim_x, win_y)
-    d.v_dim(dim_x, rf_top_y, win_y, "rfTopUp", side="right", size=13)
+    d.v_dim(dim_x, rf_top_y, win_y, "rfTopUp", side="right")
 
     # ---- lfBotUp / rfBotUp: centered on each fin; a horizontal extension
     #      line carries the window-bottom reference over to the fin's centerline ----
     d.ext_line(win_x, win_bottom, lf_cx, win_bottom)
-    d.v_dim(lf_cx, lf_bottom_y, win_bottom, "lfBotUp", side="left", size=13)
+    d.v_dim(lf_cx, lf_bottom_y, win_bottom, "lfBotUp", side="left")
 
     d.ext_line(win_right, win_bottom, rf_cx, win_bottom)
-    d.v_dim(rf_cx, rf_bottom_y, win_bottom, "rfBotUp", side="right", size=13)
+    d.v_dim(rf_cx, rf_bottom_y, win_bottom, "rfBotUp", side="right")
 
-    d.title("Front Elevation (Viewed From Outside)", size=18)
     return d.render(
         "Front elevation of a window with a SHADE overhang and fins, showing ohExL, ohExR, "
         "ohDistUp, lfDistL, lfTopUp, lfBotUp, rfDistR, rfTopUp, and rfBotUp."
@@ -373,7 +373,6 @@ def build_section():
     d.line(wall_right, outward_y, wall_right + oh_depth, outward_y, stroke="#666", marker="dim-arrow-gray", arrows=False)
     d.text(wall_right + oh_depth / 2, outward_y + LABEL_GAP + 6, "Outward", size=FEATURE_SIZE, fill="#666", anchor="middle")
 
-    d.title("Vertical Section, Through Overhang")
     return d.render(
         "Vertical section through a SHADE overhang, showing ohDepth (projection outward "
         "from the window) and ohFlap (a downward lip at the outer edge)."
@@ -440,7 +439,6 @@ def build_plan():
     d.line(outward_x, fin_bottom, outward_x, fin_bottom + pfin_depth, stroke="#666", marker="dim-arrow-gray", arrows=False)
     d.text(outward_x + LABEL_GAP, fin_bottom + pfin_depth / 2 + 4, "Outward", size=FEATURE_SIZE, fill="#666")
 
-    d.title("Plan Section, Through Both Fins")
     return d.render(
         "Plan section through both SHADE fins, showing lfDepth and rfDepth (each fin's "
         "projection outward from the window)."

@@ -1,7 +1,7 @@
-<svg viewBox="-87.2 -13.0 415.2 467.0" xmlns="http://www.w3.org/2000/svg" role="img"
+<svg viewBox="-4.0 23.0 248.8 431.0" width="249" height="431" xmlns="http://www.w3.org/2000/svg" role="img"
      aria-label="Vertical section through a SHADE overhang, showing ohDepth (projection outward from the window) and ohFlap (a downward lip at the outer edge).">
   <defs><marker id="dim-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 Z" fill="#1a5fb4"/></marker><marker id="dim-arrow-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 Z" fill="#666666"/></marker></defs>
-  <rect x="-87.2" y="-13.0" width="415.2" height="467.0" fill="#ffffff"/>
+  <rect x="-4.0" y="23.0" width="248.8" height="431.0" fill="#ffffff"/>
   <rect x="20" y="60" width="34" height="370" fill="#999999"/>
   <line x1="20" y1="60" x2="20" y2="430" stroke="#333333" stroke-width="2"/>
   <line x1="54" y1="60" x2="54" y2="430" stroke="#333333" stroke-width="2"/>
@@ -22,5 +22,4 @@
   <text x="74" y="123.0" font-family="'Courier New', Courier, monospace" font-size="13" fill="#1a5fb4" text-anchor="start">ohDistUp</text>
   <line x1="54" y1="270.0" x2="154" y2="270.0" stroke="#666" stroke-width="1.5" marker-end="url(#dim-arrow-gray)"/>
   <text x="104.0" y="286.0" font-family="sans-serif" font-size="13" fill="#666" text-anchor="middle">Outward</text>
-  <text x="120.4" y="29" font-family="sans-serif" font-size="18" fill="#333333" text-anchor="middle" font-weight="bold">Vertical Section, Through Overhang</text>
 </svg>

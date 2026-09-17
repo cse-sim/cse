@@ -1,12 +1,12 @@
-<svg viewBox="89.4 14.0 509.2 460.0" xmlns="http://www.w3.org/2000/svg" role="img"
+<svg viewBox="89.4 50.0 509.2 424.0" width="509" height="424" xmlns="http://www.w3.org/2000/svg" role="img"
      aria-label="Front elevation of a window with a SHADE overhang and fins, showing ohExL, ohExR, ohDistUp, lfDistL, lfTopUp, lfBotUp, rfDistR, rfTopUp, and rfBotUp.">
   <defs><marker id="dim-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 Z" fill="#1a5fb4"/></marker><marker id="dim-arrow-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 Z" fill="#666666"/></marker></defs>
-  <rect x="89.4" y="14.0" width="509.2" height="460.0" fill="#ffffff"/>
+  <rect x="89.4" y="50.0" width="509.2" height="424.0" fill="#ffffff"/>
   <rect x="195" y="127" width="315" height="18" fill="#cccccc" stroke="#333333" stroke-width="2"/>
   <rect x="240" y="190" width="200" height="260" fill="#dbe9f7" stroke="#333333" stroke-width="2"/>
   <rect x="188" y="158" width="18" height="222" fill="#cccccc" stroke="#333333" stroke-width="2"/>
   <rect x="482" y="162" width="18" height="193" fill="#cccccc" stroke="#333333" stroke-width="2"/>
-  <text x="340.0" y="320.0" font-family="sans-serif" font-size="17" fill="#333333" text-anchor="middle">Window</text>
+  <text x="340.0" y="320.0" font-family="sans-serif" font-size="13" fill="#333333" text-anchor="middle">Window</text>
   <text x="352.5" y="140.0" font-family="sans-serif" font-size="13" fill="#333333" text-anchor="middle">Overhang</text>
   <text x="200.9" y="269.0" font-family="sans-serif" font-size="13" fill="#333333" text-anchor="middle" transform="rotate(-90 200.9 269.0)">Left Fin</text>
   <text x="494.9" y="258.5" font-family="sans-serif" font-size="13" fill="#333333" text-anchor="middle" transform="rotate(-90 494.9 258.5)">Right Fin</text>
@@ -38,5 +38,4 @@
   <line x1="440" y1="450" x2="491.0" y2="450" stroke="#aaaaaa" stroke-width="0.75"/>
   <line x1="491.0" y1="355" x2="491.0" y2="450" stroke="#1a5fb4" stroke-width="1.5" marker-start="url(#dim-arrow)" marker-end="url(#dim-arrow)"/>
   <text x="501.0" y="406.5" font-family="'Courier New', Courier, monospace" font-size="13" fill="#1a5fb4" text-anchor="start">rfBotUp</text>
-  <text x="344.0" y="56" font-family="sans-serif" font-size="18" fill="#333333" text-anchor="middle" font-weight="bold">Front Elevation (Viewed From Outside)</text>
 </svg>
