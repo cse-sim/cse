@@ -551,6 +551,7 @@ AUTOREF_CONFIG = {
     "exclude_headings": [
         "Introduction",
         "Units",
+        "elevation",
     ],
     "exclude_subheadings_of": ["Built-in Functions"],
 }
