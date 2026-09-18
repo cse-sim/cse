@@ -140,7 +140,7 @@ Number of subhour ticks used per *nSubSteps* for DHWSYS simulation.
 
 Type: float
 
-Endtest convergence tolerance for internal iteration in CNE models (no effect for CSE models) Small values for the tolerance cause more accurate simulations but slower performance. The user may wish to use a high number during the initial design process (to quicken the runs) and then lower the tolerance for the final design (for better accuracy). Values other than .001 have not been explored.
+Endtest convergence tolerance for internal iteration when the zone is served by AIRHANDLER/TERMINAL objects (has no effect on zones served by RSYS). Small values for the tolerance cause more accurate simulations but slower performance. The user may wish to use a high number during the initial design process (to quicken the runs) and then lower the tolerance for the final design (for better accuracy). Values other than .001 have not been explored.
 
 {{
   member_table({
@@ -156,7 +156,7 @@ Endtest convergence tolerance for internal iteration in CNE models (no effect fo
 
 Type: float
 
-Specifies the convergence tolerance for humidity calculations in CNE models (no effect in for CSE models), relative to the tolerance for temperature calculations. A value of .0001 says that a humidity difference of .0001 is about as significant as a temperature difference of one degree. Note that this is multiplied internally by "tol"; to make an overall change in tolerances, change "tol" only.
+Specifies the convergence tolerance for humidity calculations when the zone is served by AIRHANDLER/TERMINAL objects (has no effect on zones served by RSYS), relative to the tolerance for temperature calculations. A value of .0001 says that a humidity difference of .0001 is about as significant as a temperature difference of one degree. Note that this is multiplied internally by "tol"; to make an overall change in tolerances, change "tol" only.
 
 {{
   member_table({
@@ -318,7 +318,7 @@ Allows the user to choose whether to calculate foundation conduction on hourly o
 
 Type: choice
 
-Developmental zone humidity computation method choice for CNE models (no effect for CSE models).
+Zone humidity computation method: selects between two different formulas used in the zone's latent/humidity balance calculation when the zone is served by AIRHANDLER/TERMINAL objects (see choices below). Has no effect on zones served by RSYS.
 
 {{
   csv_table("ROB,         Rob's backward difference method. Works well within limitations of backward difference approach.
@@ -1431,7 +1431,7 @@ Deprecated method for specifying design days for cooling autosizing.  Design con
 
 Type: int
 
-Controls verbosity of screen remarks. Most possible remarks are generated during autosizing of CNE models. Little or no effect in CSE models. TODO: document options
+Controls verbosity of screen remarks. Most possible remarks are generated during autosizing of AIRHANDLER/TERMINAL-modeled zones; little or no effect on RSYS-modeled zones. TODO: document options
 
 {{
   member_table({
