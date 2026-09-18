@@ -1901,7 +1901,7 @@ Type of economizer. Choice of:
   csv_table("NONE, No economizer; outside air flow is the minimum.
 INTEGRATED, Coil and economizer operate independently.
 NONINTEGRATED, Coil does not run when economizer is using all outside air: simulates interlock in some equipment designed to prevent coil icing due to insufficient load&comma; right?
-TWO_STAGE, Economizer is disabled when coil cycles on. _NOT IMPLEMENTED_ as of July 1992.")
+TWO_STAGE, Economizer is disabled when coil cycles on. _NOT IMPLEMENTED_: currently behaves the same as NONINTEGRATED.")
 }}
 
 ### oaLimT
@@ -2185,7 +2185,7 @@ Name of meter, if any, to record energy used by auxiliary components of the heat
 
 _AhSOLeak_ and _ahRoLeak_ express air leaks in the common supply and return ducts, if any, that connect the air handler to the conditioned space. For leakage after the point where a duct branches off to an individual zone, see TERMINAL member _tuSRLeak_. These inputs model leaks in constant pressure (or vacuum) areas nearer the supply fan than the terminal VAV dampers; thus, they are constant volume regardless of flow to the zones. Hence, unless 0 leakage flows are specified, the air handler cfm is greater than the sum of the terminal cfm's, and the air handler cfm is non-0 even when all terminal flows are 0. Any heating or cooling energy applied to the excess cfm is lost to the outdoors.
 
-If unequal leaks are specified, at present (July 1992) CSE will use the average of the two specifications for both leaks, as the modeled supply and return flows must be equal. A future version may allow unequal flows, making up the difference in exfiltration or infiltration to the zones.
+If unequal leaks are specified, CSE uses the average of the two specifications for both leaks, as the modeled supply and return flows must be equal. A future version may allow unequal flows, making up the difference in exfiltration or infiltration to the zones.
 
 ### ahSOLeak
 

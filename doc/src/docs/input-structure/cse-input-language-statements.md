@@ -163,7 +163,7 @@ Check on LIKE TYPE <name>, COPY TYPE <name>.... no such animals, 7-92 rob
 -->
 ### END and ENDxxxx
 
-END, optionally followed by an object name, can be used to unequivocally terminate an object. Further, as of July 1992 there is still available a specific word to terminate each type of object, such as ENDZONE to terminate a ZONE object. If the object name is given after END or ENDxxxx, an additional check is performed: if the name is not that of an object which has been begun and not terminated, an error message occurs. Generally, we have found it is not important to use END or ENDxxxx, especially since the member names in different classes are distinct.
+END, optionally followed by an object name, can be used to unequivocally terminate an object. In addition, a specific word is available to terminate each type of object, such as ENDZONE to terminate a ZONE object. If the object name is given after END or ENDxxxx, an additional check is performed: if the name is not that of an object which has been begun and not terminated, an error message occurs. Generally, we have found it is not important to use END or ENDxxxx, especially since the member names in different classes are distinct.
 
 ## Member Statements
 

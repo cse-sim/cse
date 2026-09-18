@@ -124,13 +124,11 @@ Boiler pump head loss (pressure). 0 may be specified to eliminate pump heat and 
   member_table({
     "units": "ft H2O",
     "legal_range": "*x* ≥ 0", 
-    "default": "114.45^*^",
+    "default": "114.45",
     "required": "No",
     "variability": "constant" 
   })
 }}
-
-^*^ may be temporary value for 10-31-92 version; prior value of 35 may be restored.
 
 ### blrpMotEff
 

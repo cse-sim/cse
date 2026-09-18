@@ -101,7 +101,7 @@ Specifies whether the potable-side outlet of the DHWHEATREC is connected to the 
 
 Type: choice
 
-Specifies the type of heat recovery device: Vertical, Horizontal, or SetEF.  Horizontal and Vertical derive effectiveness from wrCSARatedEF, flow rates, and water temperatures.  As of Feb. 2019, the same correlation is used for both Horizontal and Vertical, so these choices have no effect on results.  Choice SetEF uses wrCSARatedEF without modification as the effectiveness (note hourly variability).
+Specifies the type of heat recovery device: Vertical, Horizontal, or SetEF.  Horizontal and Vertical derive effectiveness from wrCSARatedEF, flow rates, and water temperatures.  CSE uses the same correlation for both, so these two choices have no effect on results.  Choice SetEF uses wrCSARatedEF without modification as the effectiveness (note hourly variability).
 
 {{
   member_table({

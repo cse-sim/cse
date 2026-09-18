@@ -1276,7 +1276,7 @@ Number of lines reserved at the bottom of each report page. repBotM determines t
 
 Type: int
 
-Characters per line for report headers and footers, user defined reports, and error messages. CSE writes simple ASCII files and assumes a fixed (not proportional) spaced printer font. Many of the built-in reports now (July 1992) assume a line width of 132 columns.
+Characters per line for report headers and footers, user defined reports, and error messages. CSE writes simple ASCII files and assumes a fixed (not proportional) spaced printer font. Built-in reports adapt to the specified line width, up to a maximum of 132 columns.
 
 {{
   member_table({
