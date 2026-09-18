@@ -4,11 +4,8 @@ Solar water heating system.
 
 - DHWSOLARSYS
     - DHWSOLARCOLLECTOR
-    - DHWSOLARTANK
 
-May have any number of solar collectors, but only one tank.
-
-May have no tank for direct system? What if system has multiple primary tanks?
+May have any number of solar collectors. The tank is built into DHWSOLARSYS itself (not a separate subobject), is always present, and there is exactly one per DHWSOLARSYS.
 
 ### swElecMtr
 
@@ -66,9 +63,11 @@ End use of pump energy; defaults to "DHW".
 
 Type: float
 
+Parasitic electricity use (e.g. controller standby power), recorded under *swEndUse* to the meter given by *swElecMtr*, if any.
+
 {{
   member_table({
-    "units": "",
+    "units": "W",
     "legal_range": "x ≥ 0", 
     "default": "0",
     "required": "No",
@@ -128,11 +127,13 @@ Heat transfer coefficient for the tank multiplied by area.
 
 Type: float
 
+Solar storage tank volume.
+
 {{
   member_table({
     "units": "gal",
-    "legal_range": "", 
-    "default": "",
+    "legal_range": "x > 0", 
+    "default": "1.5 gal per ft^2^ of total collector area",
     "required": "No",
     "variability": "constant" 
   })

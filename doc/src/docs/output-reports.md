@@ -119,7 +119,7 @@ Wbmi, Mixed air wet bulb temperature&comma; similarly.
 Tsup, Supply air dry bulb temperature to zone terminals -- after coil(s) and air handler supply duct leak and loss; (without in zone duct losses after terminals).
 WBsu, Supply air wet bulb temperature similarly.
 HrsOn, Hours during which the fan operated at least part of the time.
-FOn, Fraction of the time the fan was on during the hours it operated (HrsOn). CHECK FOR VAV&comma; IS IT FLOW OR TIME
+FOn, Fraction of the time the fan was on during the hours it operated (HrsOn); always 1.0 for VAV systems (continuously running&comma; variable-flow fan -- see VF for flow)&comma; and less than 1.0 only for constant-volume&comma; fan-cycling systems (ahFanCycles=YES).
 VF, Volumetric flow&comma; measured at mix point/supply fan/coils; includes air that leaks out of supply duct and is thus non-0 even when zone terminals are taking noflow
 Qheat, Heat energy added to air stream by heat coil&comma; if any&comma; MEASURED AT COIL not as delivered to zone (see Qload).
 Qsens&comma; Qlat&comma; Qcool, Sensible&comma; latent&comma; and total heat added to air stream&comma; (negative values) by cooling coil&comma; MEASURED AT COIL&comma; including heat cancelled by fan heat and duct losses&comma; and heat added to air lost through supply duct leak.

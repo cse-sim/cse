@@ -4277,7 +4277,7 @@ RECORD DHWSYS "DHWSYS" *RAT		// input / runtime DHW system
 							// energy inputs for current hour, Btuh
 							//   NOTE: values DO NOT include DHWHEATER use
   *h *e FLOAT ws_inElec;	//    electricity (note not kWh)
-  *h *e FLOAT ws_inFuel;	//	  fuel (for generality, always 0?)
+  *h *e FLOAT ws_inFuel;	//	  fuel (for generality, always 0)
   *declare "MTR* ws_pMtrElec; MTR* ws_pMtrFuel;"
 							// runtime pointers to meters, NULL if not accum'ing
 

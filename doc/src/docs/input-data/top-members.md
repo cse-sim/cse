@@ -74,14 +74,16 @@ Note that "warm-up" days (see wuDays) occur before the start day specified by be
 
 ### workDayMask
 
-Type: *int* TODO
+Type: int
+
+Bitmask specifying which days are considered "work days" (used for *$isWorkDay*, and passed through to OPK/ET). Bits: Sun=1, Mon=2, Tue=4, Wed=8, Thu=16, Fri=32, Sat=64, Holidays=128, heating design day=256, cooling design day=512.
 
 {{
   member_table({
     "units": "",
-    "legal_range": "", 
-    "default": "",
-    "required": "",
+    "legal_range": "sum of the day/condition bits above", 
+    "default": "830 (Mon-Fri plus heating and cooling design days)",
+    "required": "No",
     "variability": "constant" 
   })
 }}
@@ -699,7 +701,7 @@ The following are the terms determined from the weather file for internal use, a
 
 Type: string
 
-Weather file path name for simulation. The file should be in the current directory, in the directory CSE.EXE was read from, or in a directory on the operating system PATH.  Weather file formats supported are CSW, EPW, and ET1.  Only full-year weather files are supported.
+Weather file path name for simulation. The file should be in the current directory, in the directory the CSE executable was read from, or in a directory on the operating system PATH.  Weather file formats supported are CSW, EPW, and ET1.  Only full-year weather files are supported.
 
 Note: Backslash (\\) characters in path names must be doubled to work properly (e.g. "\\\\wthr\\\\mywthr.epw").  Forward slash (/) may be used in place of backslash without doubling.
 

@@ -38,7 +38,7 @@ Type: _choice_
 Air handler schedule; OFF or ON, hourly schedulable by using CSE expression.
 
 {{
-  csv_table("OFF, supply fan off; air handler not operating. Old date? Note: (future) Taylor setback/setup control in effect&comma; when implemented.
+  csv_table("OFF, supply fan off; air handler not operating.
 ON, supply fan runs&comma; at varying volume according to TERMINAL demand (except if _ahFanCycles_ = YES&comma; fan cycles on and off at full volume).")
 }}
 
@@ -1900,7 +1900,7 @@ Type of economizer. Choice of:
 {{
   csv_table("NONE, No economizer; outside air flow is the minimum.
 INTEGRATED, Coil and economizer operate independently.
-NONINTEGRATED, Coil does not run when economizer is using all outside air: simulates interlock in some equipment designed to prevent coil icing due to insufficient load&comma; right?
+NONINTEGRATED, Coil does not run when economizer is using all outside air.
 TWO_STAGE, Economizer is disabled when coil cycles on. _NOT IMPLEMENTED_: currently behaves the same as NONINTEGRATED.")
 }}
 

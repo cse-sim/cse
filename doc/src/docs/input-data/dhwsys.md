@@ -994,7 +994,7 @@ Name of METER object, if any, to which DHWSYS electrical energy use is recorded 
 
 Type: *mtrName*
 
-Name of METER object, if any, to which DHWSYS fuel energy use is recorded (under end use DHW). DHWSYS fuel use is usually (always?) 0, so the primary use of this input is to specify the default whFuelMtr choice for DHWHEATERs in this DHWSYS.
+Name of METER object, if any, to which DHWSYS fuel energy use is recorded (under end use DHW). DHWSYS fuel use is always 0, so the primary use of this input is to specify the default whFuelMtr choice for DHWHEATERs in this DHWSYS.
 
 {{
   member_table({

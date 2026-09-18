@@ -529,7 +529,7 @@ Name of adjacent ground-contact Floor SURFACE; used only for Wall SURFACEs when 
 
 Type: float
 
-Needed for foundation wall height, otherwise ignored. Maybe combine with sfDepthBG?
+Needed for foundation wall height, otherwise ignored.
 
 {{
   member_table({
