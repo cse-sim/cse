@@ -200,7 +200,7 @@ Surface exterior absorptivity.
     "units": "",
     "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "0.5",
-    "required": "Required if *sfExCnd* = AMBIENT or *sfExCnd* = SPECIFIEDT",
+    "required": "No",
     "variability": "monthly-hourly" 
   })
 }}
