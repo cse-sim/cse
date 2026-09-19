@@ -154,7 +154,7 @@ below.  Calculation methods are documented in RACM, Appendix B.
 {{
   csv_table("Configuration,                 whEF default,    Use
   whType=SMALLSTORAGE&comma; whHeatSrc=RESISTANCE or FUEL, 0.82, Derivation of whLDEF
-  whType=SMALLSTORAGE&comma; whHeatSrc=ASHP, 0.82, Derivation of whLDEFnote inappropriate default (deprecated&comma; use ASHPX)
+  whType=SMALLSTORAGE&comma; whHeatSrc=ASHP, 0.82, Derivation of whLDEF. Note: inappropriate default (deprecated&comma; use ASHPX)
   whType=SMALLSTORAGE&comma; whHeatSrc=ASHPX&comma; whASHPType=GENERIC, (req'd), Tank losses Overall efficiency
   whType=SMALLSTORAGE&comma; whHeatSrc=RESISTANCEX, (req'd), Tank losses Note: maximum whEF=0.98.
   whType=SMALLINSTANTANEOUS&comma; whHeatSrc=RESISTANCE or FUEL, 0.82, Annual efficiency = whEF*0.92
@@ -483,7 +483,7 @@ whASHPSrcZn and whASHPSrcT cannot both be specified.
   member_table({
     "units": "",
     "legal_range": "name of a ZONE", 
-    "default": "whZoneIf no zone is specified by input or default, heat extracted by ASHP has no effect.",
+    "default": "whZone. If no zone is specified by input or default, heat extracted by ASHP has no effect.",
     "required": "No",
     "variability": "constant" 
   })

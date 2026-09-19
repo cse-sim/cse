@@ -4,12 +4,9 @@ HOLIDAY objects define holidays. Holidays have no inherent effect, but input exp
 
 Examples and the list of default holidays are given after the member descriptions.
 
-<!--
-hdName is required in the program. WHY? 7-92.
--->
 ### hdName
 
-Name of holiday: <!-- if given,--> must follow the word HOLIDAY. <!-- Necessary only if the HOLIDAY object is referenced later with another statement, for example in a LIKE clause or with ALTER; however, we suggest always naming all objects for clearer error messages and future flexibility. -->
+Name of holiday: must follow the word HOLIDAY.
 
 {{
   member_table({

@@ -1,6 +1,6 @@
 # HEATPLANT
 
-A HEATPLANT contains one or more BOILER subobjects (Section 5.20.1) and supports one or more Hot Water (HW) coils in TERMINALs and/or AIRHANDLERs, and/or heat exchangers in HPLOOPs (HPLOOPs are not implemented as of September 1992.). There can be more than one HEATPLANT in a simulation.
+A HEATPLANT contains one or more BOILER subobjects (Section 5.20.1) and supports one or more Hot Water (HW) coils in TERMINALs and/or AIRHANDLERs. (CSE also reserves the concept of heat exchangers in HPLOOPs, but HPLOOP is not implemented and cannot be used.) There can be more than one HEATPLANT in a simulation.
 
 BOILERs, HW coils, and heat exchangers are modeled with simple heat-injection models. There is no explicit modeling of circulating hot water temperatures and flows; it is always assumed the temperature and flow at each load (HW coil or heat exchanger) are sufficient to allow the load to transfer any desired amount of heat up to its capacity. When the total heat demand exceeds the plant's capacity, the model reduces the capacity of each load until the plant is not overloaded. The reduced capacity is the same fraction of rated capacity for all loads on the HEATPLANT; any loads whose requested heat is less than the reduced capacity are unaffected.
 

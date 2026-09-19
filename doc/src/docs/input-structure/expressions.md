@@ -46,7 +46,7 @@ This section reviews how to enter ordinary non-varying numbers and other values.
     csv_table("*int*, optional - sign followed by digits. Don't use a decimal point if your intent is to give an *int* quantity -- the decimal point indicates a *float* to CSE. Hexadecimal and Octal values may be given by prefixing the value with `0x` and `0O` respectively (yes&comma; that really is a zero followed by an 'O').
   *float*, optional - sign&comma; digits&comma; and decimal point. Very large or small values can be entered by following the number with an \"e\" and a power of ten. Examples:<br>&nbsp;&nbsp;&nbsp;&nbsp;`1.0  1.  .1  -5534.6  123.e25  4.56e-23`<br> The decimal point indicates a float as opposed to an int.<br>Generally it doesn't matter as CSE converts ints to floats as required&comma; but be careful when dividing: CSE interprets \"2/3\" as integer two divided by integer 3&comma; which will produce an integer 0 before CSE notices any need to convert to *float*. If you mean .6666667&comma; say 2./3&comma; 2/3.&comma; or .6666667.
   *feet and inches*,  Feet and inches may be entered where a *float* number of feet is required by typing the feet (or a 0 if none)&comma; a single quote '&comma; then the inches. (Actually this is an operator meaning \"divide the following value by 12 and add it to the preceding value\"&comma; so expressions can work with it.) Examples:<br>&nbsp;&nbsp;&nbsp;&nbsp;`3'6  0'.5 (10+20)'(2+3)`
-  *string*,          \"Text\" -- desired characters enclosed in double quotes.<br>Maximum length 80 characters (make 132??). To put a \" within the \"'s&comma; precede it with a backslash. <br>Certain control codes can be represented with letters preceded with a backslash as follows:<br>&nbsp;&nbsp;&nbsp;&nbsp;`\\e    escape`<br>&nbsp;&nbsp;&nbsp;&nbsp;`\\t    tab`<br>&nbsp;&nbsp;&nbsp;&nbsp;`\\f    form feed`<br>&nbsp;&nbsp;&nbsp;&nbsp;`\\r    carriage return`<br>&nbsp;&nbsp;&nbsp;&nbsp;`\\n    newline or line feed`
+  *string*,          \"Text\" -- desired characters enclosed in double quotes.<br>Maximum length 300 characters. To put a \" within the \"'s&comma; precede it with a backslash. <br>Certain control codes can be represented with letters preceded with a backslash as follows:<br>&nbsp;&nbsp;&nbsp;&nbsp;`\\e    escape`<br>&nbsp;&nbsp;&nbsp;&nbsp;`\\t    tab`<br>&nbsp;&nbsp;&nbsp;&nbsp;`\\f    form feed`<br>&nbsp;&nbsp;&nbsp;&nbsp;`\\r    carriage return`<br>&nbsp;&nbsp;&nbsp;&nbsp;`\\n    newline or line feed`
   *object name*, Same as *string*&comma; or without quotes if name consists only of letters&comma; digits&comma; _&comma; and $&comma; begins with a non-digit&comma; and is different from all reserved words now in or later added to the language (see [Object Names][object-names]). Control character codes (ASCII 0-31) are not allowed.
   *choice*, Same as string; quotes optional on choice words valid for the member. Capitalization does not matter.
   *date*,Julian day of year (as *int* constant)&comma; or month abbreviation<br>&nbsp;&nbsp;&nbsp;&nbsp;`Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec`<br> followed by the *int* day of month. (Actually&comma; the month names are operators implemented to add the starting day of the month to the following *int* quantity).")
@@ -700,12 +700,15 @@ TODO: test psychrometric functions 7-22-2011
 :   Returns continuous control value, e.g. for lighting control
 
 **Syntax**
-:   *float* **contin**( *float* mpf, *float* mlf, *float* sp, *float* val)
+:   *float* **contin**( *float* minPowerFraction, *float* minLightingFraction, *float* setpoint, *float* illuminance)
 
 **Remark**
-:   **contin** is evaluated at runtime and returns a value in the range 0 – 1 ???
-
-<!-- TODO: complete documentation for contin()   7-26-2012 -->
+:   **contin** is evaluated at runtime and returns a value in the range *minPowerFraction* to 1,
+    for use as a fractional control value (e.g. of lighting power). *setpoint* and *illuminance*
+    are in the same units. If *setpoint* &lt;= 0, no lighting is needed and *minPowerFraction* is
+    returned. If *illuminance* &lt;= 0, full power (1) is returned. Otherwise, the power fraction
+    rises linearly from *minPowerFraction* (when the lighting deficit is at or below
+    *minLightingFraction*) to 1 (when *illuminance* reaches 0).
 
 ---
 

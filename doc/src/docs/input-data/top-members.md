@@ -74,14 +74,16 @@ Note that "warm-up" days (see wuDays) occur before the start day specified by be
 
 ### workDayMask
 
-Type: *int* TODO
+Type: int
+
+Bitmask specifying which days are considered "work days" (used for *$isWorkDay*, and passed through to OPK/ET). Bits: Sun=1, Mon=2, Tue=4, Wed=8, Thu=16, Fri=32, Sat=64, Holidays=128, heating design day=256, cooling design day=512.
 
 {{
   member_table({
     "units": "",
-    "legal_range": "", 
-    "default": "",
-    "required": "",
+    "legal_range": "sum of the day/condition bits above", 
+    "default": "830 (Mon-Fri plus heating and cooling design days)",
+    "required": "No",
     "variability": "constant" 
   })
 }}
@@ -140,7 +142,7 @@ Number of subhour ticks used per *nSubSteps* for DHWSYS simulation.
 
 Type: float
 
-Endtest convergence tolerance for internal iteration in CNE models (no effect for CSE models) Small values for the tolerance cause more accurate simulations but slower performance. The user may wish to use a high number during the initial design process (to quicken the runs) and then lower the tolerance for the final design (for better accuracy). Values other than .001 have not been explored.
+Endtest convergence tolerance for internal iteration when the zone is served by AIRHANDLER/TERMINAL objects (has no effect on zones served by RSYS). Small values for the tolerance cause more accurate simulations but slower performance. The user may wish to use a high number during the initial design process (to quicken the runs) and then lower the tolerance for the final design (for better accuracy). Values other than .001 have not been explored.
 
 {{
   member_table({
@@ -156,7 +158,7 @@ Endtest convergence tolerance for internal iteration in CNE models (no effect fo
 
 Type: float
 
-Specifies the convergence tolerance for humidity calculations in CNE models (no effect in for CSE models), relative to the tolerance for temperature calculations. A value of .0001 says that a humidity difference of .0001 is about as significant as a temperature difference of one degree. Note that this is multiplied internally by "tol"; to make an overall change in tolerances, change "tol" only.
+Specifies the convergence tolerance for humidity calculations when the zone is served by AIRHANDLER/TERMINAL objects (has no effect on zones served by RSYS), relative to the tolerance for temperature calculations. A value of .0001 says that a humidity difference of .0001 is about as significant as a temperature difference of one degree. Note that this is multiplied internally by "tol"; to make an overall change in tolerances, change "tol" only.
 
 {{
   member_table({
@@ -318,7 +320,7 @@ Allows the user to choose whether to calculate foundation conduction on hourly o
 
 Type: choice
 
-Developmental zone humidity computation method choice for CNE models (no effect for CSE models).
+Zone humidity computation method: selects between two different formulas used in the zone's latent/humidity balance calculation when the zone is served by AIRHANDLER/TERMINAL objects (see choices below). Has no effect on zones served by RSYS.
 
 {{
   csv_table("ROB,         Rob's backward difference method. Works well within limitations of backward difference approach.
@@ -699,7 +701,7 @@ The following are the terms determined from the weather file for internal use, a
 
 Type: string
 
-Weather file path name for simulation. The file should be in the current directory, in the directory CSE.EXE was read from, or in a directory on the operating system PATH.  Weather file formats supported are CSW, EPW, and ET1.  Only full-year weather files are supported.
+Weather file path name for simulation. The file should be in the current directory, in the directory the CSE executable was read from, or in a directory on the operating system PATH.  Weather file formats supported are CSW, EPW, and ET1.  Only full-year weather files are supported.
 
 Note: Backslash (\\) characters in path names must be doubled to work properly (e.g. "\\\\wthr\\\\mywthr.epw").  Forward slash (/) may be used in place of backslash without doubling.
 
@@ -1276,7 +1278,7 @@ Number of lines reserved at the bottom of each report page. repBotM determines t
 
 Type: int
 
-Characters per line for report headers and footers, user defined reports, and error messages. CSE writes simple ASCII files and assumes a fixed (not proportional) spaced printer font. Many of the built-in reports now (July 1992) assume a line width of 132 columns.
+Characters per line for report headers and footers, user defined reports, and error messages. CSE writes simple ASCII files and assumes a fixed (not proportional) spaced printer font. Built-in reports adapt to the specified line width, up to a maximum of 132 columns.
 
 {{
   member_table({
@@ -1431,7 +1433,7 @@ Deprecated method for specifying design days for cooling autosizing.  Design con
 
 Type: int
 
-Controls verbosity of screen remarks. Most possible remarks are generated during autosizing of CNE models. Little or no effect in CSE models. TODO: document options
+Controls verbosity of screen remarks. Most possible remarks are generated during autosizing of AIRHANDLER/TERMINAL-modeled zones; little or no effect on RSYS-modeled zones. TODO: document options
 
 {{
   member_table({

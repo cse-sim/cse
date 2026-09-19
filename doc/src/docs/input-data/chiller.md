@@ -275,13 +275,11 @@ Chiller primary pump head loss (pressure). 0 may be specified to eliminate pump 
   member_table({
     "units": "ft H2O",
     "legal_range": "*x* ≥ 0", 
-    "default": "57.22^*^",
+    "default": "57.22",
     "required": "No",
     "variability": "constant" 
   })
 }}
-
-^*^May be temporary default for 10-31-92 version; prior value (65) may be restored.
 
 ### chppMotEff
 
@@ -375,13 +373,11 @@ Chiller condenser pump head loss (pressure). 0 may be specified to eliminate pum
   member_table({
     "units": "ft H2O",
     "legal_range": "*x* ≥ 0", 
-    "default": "45.78^*^",
+    "default": "45.78",
     "required": "No",
     "variability": "constant" 
   })
 }}
-
-^*^May be temporary default for 10-31-92 version; prior value (45) may be restored.
 
 ### chcpMotEff
 

@@ -38,7 +38,7 @@ Type: _choice_
 Air handler schedule; OFF or ON, hourly schedulable by using CSE expression.
 
 {{
-  csv_table("OFF, supply fan off; air handler not operating. Old date? Note: (future) Taylor setback/setup control in effect&comma; when implemented.
+  csv_table("OFF, supply fan off; air handler not operating.
 ON, supply fan runs&comma; at varying volume according to TERMINAL demand (except if _ahFanCycles_ = YES&comma; fan cycles on and off at full volume).")
 }}
 
@@ -82,7 +82,7 @@ Supply temperature setpoint numeric value OR* choice of control method (WZ, CZ, 
 
 {{
   csv_table("_float_, A numeric value specifies the supply temperature setpoint. An expression can be used to make dependent on time&comma; weather&comma; etc.
-WZ, Warmest Zone: for cooling&comma; sets the supply temperature setpoint each sub??hour so that the control zone (see*ahWzCzns*) requiring the coolest supply temperature can meet its load with its VAV damper 90% of the way from its minimum opening to its maximum&comma; that is&comma; at a flow of: _tuVfMn_ + .9(_tuVfMxC_ - * tuVfMn*).
+WZ, Warmest Zone: for cooling&comma; sets the supply temperature setpoint each subhour so that the control zone (see *ahWzCzns*) requiring the coolest supply temperature can meet its load with its VAV damper 90% of the way from its minimum opening to its maximum&comma; that is&comma; at a flow of: _tuVfMn_ + .9(_tuVfMxC_ - * tuVfMn*).
 CZ, Coolest Zone: analogous to WZ&comma; but for heating
 RA, Supply temperature setpoint value is controlled by return air temperature (this cannot be done with a CSE expression without lagging a subhour). See _ahTsRaMn_ and _ahTsRaMx_.
 ZN, Causes air handler to switch between heating&comma; OFF&comma; and cooling as required by the load of a single zone. When the zone thermostat (modeled through the _tuTC_ and _tuTH_ inputs) calls for neither heating nor cooling&comma; the air handler shuts down&comma; including stopping its fan(s). Changes _ahFanCycles_ default to YES&comma; to simulate a constant volume&comma; fan cycling system.
@@ -247,7 +247,7 @@ Heating design supply temperature, for sizing coil vs fan.
 
 Type: _terminal name_
 
-Terminal monitored to determine whether to heat or cool under ZN and ZN2 supply temperature setpoint control. Development aid feature; believe there is no need to give this since ahTsSp = ZN or ZN2 should only be used with <!-- (is only allowed with??) --> one zone.
+Terminal monitored to determine whether to heat or cool under ZN and ZN2 supply temperature setpoint control. Not needed if the air handler serves only one terminal (ahCtu then defaults automatically); required if it serves more than one.
 
 {{
   member_table({
@@ -558,7 +558,7 @@ design or rated pressure.
   })
 }}
 
-_At most, one of the next three?? items may be defined: ??_ rework re rfanElecPwr
+_At most one of the next three items (rfanElecPwr, rfanEff, rfanShaftBhp) may be defined._
 
 ### rfanElecPwr
 
@@ -1398,13 +1398,13 @@ The following six members are used with DX cooling coils.
 
 Type: _float_
 
-Minimum (effective surface) temperature of coil (evaporator). Represents refrigerant setpoint, or cutout to prevent freezing. Coil model will reduce output to keep simulated coil from getting colder than this, even though it lets supply air get warmer than setpoint. Should default be 35??
+Minimum (effective surface) temperature of coil (evaporator). Represents refrigerant setpoint, or cutout to prevent freezing. Coil model will reduce output to keep simulated coil from getting colder than this, even though it lets supply air get warmer than setpoint.
 
 {{
   member_table({
     "units": "°F",
     "legal_range": "_x_ > 0", 
-    "default": "40°F",
+    "default": "35°F",
     "required": "No",
     "variability": "constant" 
   })
@@ -1430,7 +1430,7 @@ Exponent in power relationship expressing coil effectiveness as a function of re
 
 Type: _float_
 
-Fraction of air flow which does NOT flow through DX cooling coil, for better humidity control. Running less of the air through the coil lets the coil run colder, resulting in greater moisture removal right??.
+Fraction of air flow which does NOT flow through DX cooling coil, for better humidity control. Running less of the air through the coil lets the coil run colder, resulting in greater moisture removal.
 
 {{
   member_table({
@@ -1737,7 +1737,7 @@ Design (rating) condenser temperature (outdoor air temperature) for DX coils.
 
 Type: _float_
 
-Design (rating) (volumetric) air flow rate for DX or CHW cooling coil. The AHRI specification for this test condition for CHW coils is "450 cfm/ton or less", right??
+Design (rating) (volumetric) air flow rate for DX or CHW cooling coil. The AHRI specification for this test condition for CHW coils is "450 cfm/ton or less".
 
 {{
   member_table({
@@ -1900,8 +1900,8 @@ Type of economizer. Choice of:
 {{
   csv_table("NONE, No economizer; outside air flow is the minimum.
 INTEGRATED, Coil and economizer operate independently.
-NONINTEGRATED, Coil does not run when economizer is using all outside air: simulates interlock in some equipment designed to prevent coil icing due to insufficient load&comma; right?
-TWO_STAGE, Economizer is disabled when coil cycles on. _NOT IMPLEMENTED_ as of July 1992.")
+NONINTEGRATED, Coil does not run when economizer is using all outside air.
+TWO_STAGE, Economizer is disabled when coil cycles on. _NOT IMPLEMENTED_: currently behaves the same as NONINTEGRATED.")
 }}
 
 ### oaLimT
@@ -2185,7 +2185,7 @@ Name of meter, if any, to record energy used by auxiliary components of the heat
 
 _AhSOLeak_ and _ahRoLeak_ express air leaks in the common supply and return ducts, if any, that connect the air handler to the conditioned space. For leakage after the point where a duct branches off to an individual zone, see TERMINAL member _tuSRLeak_. These inputs model leaks in constant pressure (or vacuum) areas nearer the supply fan than the terminal VAV dampers; thus, they are constant volume regardless of flow to the zones. Hence, unless 0 leakage flows are specified, the air handler cfm is greater than the sum of the terminal cfm's, and the air handler cfm is non-0 even when all terminal flows are 0. Any heating or cooling energy applied to the excess cfm is lost to the outdoors.
 
-If unequal leaks are specified, at present (July 1992) CSE will use the average of the two specifications for both leaks, as the modeled supply and return flows must be equal. A future version may allow unequal flows, making up the difference in exfiltration or infiltration to the zones.
+If unequal leaks are specified, CSE uses the average of the two specifications for both leaks, as the modeled supply and return flows must be equal. A future version may allow unequal flows, making up the difference in exfiltration or infiltration to the zones.
 
 ### ahSOLeak
 
@@ -2261,7 +2261,7 @@ In CSE a heat pump is modeled as though it were separate heating and cooling coi
 
 When modeling an air source heat pump (ahhcType = AHP), these variables should be used to specify the crankcase heater, insofar as non-default inputs are desired.
 
-Appropriateness of use of these inputs when specifying a DX system without associated heat pump heating is not clear to me (Rob) as of 10-23-92; on the one hand, the DX compressor probably has a crankcase heater; on the other hand, the rest of the DX model is supposed to be complete in itself, and adding a crankcase heater here might produce excessive energy input; on the third hand, the DX model does not include any energy input when the compressor is idle; ... .
+<!-- Appropriateness of use of these inputs when specifying a DX system without associated heat pump heating is unclear; on the one hand, the DX compressor probably has a crankcase heater; on the other hand, the rest of the DX model is supposed to be complete in itself, and adding a crankcase heater here might produce excessive energy input; on the third hand, the DX model does not include any energy input when the compressor is idle; ... . -->
 
 ### cchCM
 

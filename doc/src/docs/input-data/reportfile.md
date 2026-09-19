@@ -4,7 +4,7 @@ REPORTFILE allows optional specification of different or additional files to rec
 
 By default, CSE generates several "reports" on each run showing the simulated HVAC energy use, the input statements specifying the run, any error or warning messages, etc. Different or additional reports can be specified using the REPORT object, described in Section 5.25, next.
 
-All CSE reports are written to text files as plain ASCII text. The files may be printed (on most printers other than postscript printers) by copying them to your printer with the COPY command. Since many built-in reports are over 80 characters wide; you may want to set your printer for "compressed" characters or a small font first. You may wish to examine the report file with a text editor or LIST program before printing it. (?? Improve printing discussion)
+All CSE reports are written to text files as plain ASCII text. Many built-in reports are over 80 characters wide.
 
 By default, the reports are output to a file with the same name as the input file and extension .REP, in the same directory as the input file. By default, this file is formatted into pages, and overwrites any existing file of the same name without warning. CSE automatically generates a REPORTFILE object called "Primary" for this report file, as though the following input had been given:
 

@@ -478,7 +478,7 @@ Name of a LOADMETER object, if any, to which zone heating and cooling loads are 
 
 Presence of an exhaust fan in a zone is indicated by specifying a non-zero design flow value (xfanVfDs).
 
-Zone exhaust fan model implementation is incomplete as of July, 2011. The current code calculates energy use but does not account for the effects of air transfer on room heat balance. IZXFER provides a more complete implementation.
+Zone exhaust fan model implementation is incomplete: the current code calculates fan energy use but does not account for the effects of the exhausted air on room heat balance. IZXFER provides a more complete implementation.
 
 ### xfanFOn
 
