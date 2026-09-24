@@ -2,9 +2,20 @@
 
 SHADE constructs a subobject associated with the current WINDOW that represents fixed shading devices (overhangs and/or fins). A window may have at most one SHADE and only windows in vertical surfaces may have SHADEs. A SHADE can describe an overhang, a left fin, and/or a right fin; absence of any of these is specified by omitting or giving 0 for its depth. SHADE geometry can vary on a monthly basis, allowing modeling of awnings or other seasonal shading strategies.
 
-<!--
-  ??Add figure showing shading geometry; describe overhangs and fins.
--->
+![Front elevation of a window with a SHADE overhang and fins](../assets/images/shade_geometry_elevation.svg){: style="max-width: 100%;" }
+/// caption
+Front elevation of a window with a SHADE overhang and fins
+///
+
+![Vertical section through a SHADE overhang](../assets/images/shade_geometry_section.svg){: style="max-width: 100%;" }
+/// caption
+Vertical section through a SHADE overhang
+///
+
+![Plan section through both SHADE fins](../assets/images/shade_geometry_plan.svg){: style="max-width: 100%;" }
+/// caption
+Plan section through both SHADE fins
+///
 ### shName
 
 Name of shade; follows the word "SHADE" if given.

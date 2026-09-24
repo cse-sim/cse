@@ -46,9 +46,9 @@ where:
 
 ## Locating Files
 
-As with any program, in order to invoke CSE, the directory containing CSE.EXE must be the current directory, or that directory must be on the operating system path, or you must type the directory path before CSE.
+As with any program, in order to invoke CSE, the directory containing the CSE executable must be the current directory, or that directory must be on the operating system path, or you must type the directory path before CSE.
 
-The CSE input file, named on the CSE command line, is located by searching, in order: the current directory; any directories given with the `-i` command line switch; the operating system `PATH`; and the directory containing CSE.EXE. Alternatively, the directory path to the file may be given directly on the command line.
+The CSE input file, named on the CSE command line, is located by searching, in order: the current directory; any directories given with the `-i` command line switch; the operating system `PATH`; and the directory containing the CSE executable. Alternatively, the directory path to the file may be given directly on the command line.
 
 A CSE simulation requires a weather file. The name of the weather file is given in the CSE input file (`wfName=` statement, see [Weather Data Items][top-weather-data-items]). Once the input file has been located, its directory is added to the search list, so the weather file is located using the same search order as the input file, plus the input file's own directory -- or the directory path to it may be given directly in the `wfName=` statement.
 
@@ -62,7 +62,7 @@ Output files created by default by CSE (error message file, primary report and e
 
 If any error or warning messages are generated, CSE puts them in a file with the same name and path as the input file and extension .ERR, as well as on the screen and, usually, in the primary (default) report file. The exception is errors in the command line: these appear only on the screen. If there are no error or warning messages, any prior file with this name is deleted.
 
-By default, CSE generates an output report file with the same name and path as the input file, and extension ".REP". This file may be examined with a text editor and/or copied to an ASCII printer. If any exports are specified, they go by default into a file with the same name and path as the input file and extension ".EXP".
+By default, CSE generates an output report file with the same name and path as the input file, and extension ".REP". If any exports are specified, they go by default into a file with the same name and path as the input file and extension ".EXP".
 
 In response to specifications in the input file, CSE can also generate additional report and export files with user-specified names. The default extensions for these are .REP and .CSV respectively and the default directory is the current directory; other paths and extensions may be specified. For more information on report and export files, see REPORTFILE and EXPORTFILE in "[Input Data][input-data]".
 

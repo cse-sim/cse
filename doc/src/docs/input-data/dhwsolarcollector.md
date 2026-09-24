@@ -1,6 +1,6 @@
 # DHWSOLARCOLLECTOR
 
-Solar Collector Array. May be multiple collectors on the same DHWSOLARSYS system. All inlets come from the DHWSOLARTANK.
+Solar Collector Array. May be multiple collectors on the same DHWSOLARSYS system. All inlets come from the DHWSOLARSYS tank.
 
 Uses SRCC Ratings.
 
@@ -230,11 +230,13 @@ Collector piping surround temperature.
 
 Type: float
 
+Solar collector loop pump power.
+
 {{
   member_table({
-    "units": "Btu/h",
+    "units": "W",
     "legal_range": "x ≥ 0", 
-    "default": "from *scPumpflow*",
+    "default": "10 W per gpm of collector loop flow (derived from *scOprMassFlow*)",
     "required": "No",
     "variability": "constant" 
   })

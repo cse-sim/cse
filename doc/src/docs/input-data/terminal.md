@@ -330,7 +330,7 @@ Heat setpoint priority. Lowest numbered priority is used first when there are eq
 
 Type: float
 
-Leakage of supply air to return, increasing supply volume and return temperature. Note that this is a fraction of current cfm, whereas air handler leak (before VAV dampers) is a fraction of *maximum* cfm. TfanOffLeak is added to this if terminal has a fan that is not running (future, 7-92).
+Leakage of supply air to return, increasing supply volume and return temperature. Note that this is a fraction of current cfm, whereas air handler leak (before VAV dampers) is a fraction of *maximum* cfm. TfanOffLeak is added to this whenever the terminal has a fan; the fan's actual run state is not currently factored in, so this backflow is effectively always applied rather than only when the fan is off.
 
 {{
   member_table({
@@ -348,7 +348,7 @@ Type: float
 
 Supply air to return plenum heat loss as a fraction of supply air to return air temperature difference. Not allowed if return is ducted (no plenum).
 
-*NOT IMPLEMENTED as of July 1992 -- Plenums are unimplemented.*
+*NOT IMPLEMENTED -- plenum returns are unimplemented, so the return is always considered ducted; giving this member produces an error.*
 
 {{
   member_table({
@@ -453,7 +453,7 @@ Name of HEATPLANT for HW coil; disallowed for other coil types.
 
 Presence of a terminal fan is indicated by specifying a tfanType value other than NONE.
 
-Terminal fans are *NOT IMPLEMENTED* as of July 1992.
+Terminal fan input (tfanType, etc.) is accepted and validated, but terminal fans are *NOT IMPLEMENTED*: fan energy use is never calculated, and the SERIES/PARALLEL behavior described below is not simulated.
 
 ### tfanType
 
@@ -464,7 +464,7 @@ Choice of:
 {{
   csv_table("NONE,         No fan in this TERMINAL (default); input for other terminal fan members disallowed.
   SERIES,       Fan runs whenever scheduled ON (see tfanSched&comma; next); if VAV cfm &lt; terminal fan cfm (tfanVfDs)&comma; the additional flow comes from the return air.
-  PARALLEL,     Fan runs when scheduled ON (see tfanSched) and terminal's simulated VAV cfm is less than tfanVfDs plus tuVfMn ?? plus tuVfMn??. Terminal fan cfm is added to VAV cfm from AIRHANDLER to get cfm to ZONE.")
+  PARALLEL,     Fan runs when scheduled ON (see tfanSched) and terminal's simulated VAV cfm is less than tfanVfDs plus tuVfMn. Terminal fan cfm is added to VAV cfm from AIRHANDLER to get cfm to ZONE.")
 }}
 
 

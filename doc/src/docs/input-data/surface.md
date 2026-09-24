@@ -200,7 +200,7 @@ Surface exterior absorptivity.
     "units": "",
     "legal_range": "0 ≤ *x* ≤ 1", 
     "default": "0.5",
-    "required": "Required if *sfExCnd* = AMBIENT or *sfExCnd* = SPECIFIEDT",
+    "required": "No",
     "variability": "monthly-hourly" 
   })
 }}
@@ -529,7 +529,7 @@ Name of adjacent ground-contact Floor SURFACE; used only for Wall SURFACEs when 
 
 Type: float
 
-Needed for foundation wall height, otherwise ignored. Maybe combine with sfDepthBG?
+Needed for foundation wall height, otherwise ignored.
 
 {{
   member_table({

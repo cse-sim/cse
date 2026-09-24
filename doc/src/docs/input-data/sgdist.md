@@ -27,7 +27,7 @@ Name of surface to which gain is targeted.
 If there is more than surface with the specified name: if one of the surfaces is in the current zone, it is used; otherwise, an error message is issued.
 
 <!--
-??Qualified naming scheme for referencing surfaces in other zones.  
+A qualified naming scheme for referencing surfaces in other zones is not implemented; see https://github.com/cse-sim/cse/issues/638.
 -->
 The specified surface must be modeled with the Delayed model. If gain is targeted to a Quick model surface, a warning message is issued and the gain is redirected to the air of the associated zone.
 
@@ -63,7 +63,7 @@ EXTERIOR,   Apply gain to exterior of surface")
 }}
 
 <!--
-  ??This can produce some strange arrangements; verify that energy balance can be properly defined in all cases.
+This can produce some strange arrangements; energy balance for this path is not covered by any test case. See https://github.com/cse-sim/cse/issues/680.
 -->
 
 ### sgFSO
