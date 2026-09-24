@@ -5073,7 +5073,7 @@
 </table>
 <h2 id="zone-exhaust-fan">ZONE Exhaust Fan<a class="headerlink" href="#zone-exhaust-fan" title="Permanent link">¶</a></h2>
 <p>Presence of an exhaust fan in a zone is indicated by specifying a non-zero design flow value (<a class="autorefs autorefs-internal" href="#xfanvfds">xfanVfDs</a>).</p>
-<p>Zone exhaust fan model implementation is incomplete as of July, 2011. The current code calculates energy use but does not account for the effects of air transfer on room heat balance. <a class="autorefs autorefs-internal" href="../izxfer/#izxfer">IZXFER</a> provides a more complete implementation.</p>
+<p>Zone exhaust fan model implementation is incomplete: the current code calculates fan energy use but does not account for the effects of the exhausted air on room heat balance. <a class="autorefs autorefs-internal" href="../izxfer/#izxfer">IZXFER</a> provides a more complete implementation.</p>
 <h3 id="xfanfon">xfanFOn<a class="headerlink" href="#xfanfon" title="Permanent link">¶</a></h3>
 <p>Type: float</p>
 <p>Exhaust fan on fraction. On/off control assumed, so electricity requirement is proportional to run time.</p>

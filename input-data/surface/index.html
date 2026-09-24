@@ -4569,7 +4569,7 @@ TODO: better sfModel desciptions
 <td></td>
 <td>0 ≤ <em>x</em> ≤ 1</td>
 <td>0.5</td>
-<td>Required if <em><a class="autorefs autorefs-internal" href="#sfexcnd">sfExCnd</a></em> = AMBIENT or <em><a class="autorefs autorefs-internal" href="#sfexcnd">sfExCnd</a></em> = SPECIFIEDT</td>
+<td>No</td>
 <td>monthly-hourly</td>
 </tr>
 </tbody>
@@ -5061,7 +5061,7 @@ TODO: better sfModel desciptions
 <p>Specifies 3 coefficients for an alternative inside surface forced convection model (applicable only for sfInHCModel=UNIFIED).  When given, the inside surface forced convection coefficient for this surface is derived as follows:</p>
 <div class="language-text highlight"><pre><span></span><code>  hcFrc = hConvF * (sfInHcFrcCoeffs[ 1] + scInHcFrcCoeffs[ 2] * ACH ^ sfInHcFrcCoeffs[ 3])
 </code></pre></div>
-<p>where hConvF is the convection adjustment factor (derived from <a class="autorefs autorefs-internal" href="../top-members/#elevation">elevation</a>, see Top <a class="autorefs autorefs-internal" href="../top-members/#hconvmod">hConvMod</a>) and ACH is the zone air change rate per hour from the prior simulation step (including heat pump water heater evaporator air flow).  This formulation is dangerously flexible, so caution is advised when selecting coefficient values.</p>
+<p>where hConvF is the convection adjustment factor (derived from elevation, see Top <a class="autorefs autorefs-internal" href="../top-members/#hconvmod">hConvMod</a>) and ACH is the zone air change rate per hour from the prior simulation step (including heat pump water heater evaporator air flow).  This formulation is dangerously flexible, so caution is advised when selecting coefficient values.</p>
 <p>The default hcFrc value (used when sfInHcFrCoeff is not provided) is hConvF * <a class="autorefs autorefs-internal" href="../zone/#znhcfrcf">znHcFrcF</a> * ACH ^ 0.8.</p>
 <div class="member-table-sibling"></div>
 <table>
@@ -5135,7 +5135,7 @@ TODO: better sfModel desciptions
 </table>
 <h3 id="sfheight">sfHeight<a class="headerlink" href="#sfheight" title="Permanent link">¶</a></h3>
 <p>Type: float</p>
-<p>Needed for foundation wall height, otherwise ignored. Maybe combine with <a class="autorefs autorefs-internal" href="#sfdepthbg">sfDepthBG</a>?</p>
+<p>Needed for foundation wall height, otherwise ignored.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>

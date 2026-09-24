@@ -5221,7 +5221,7 @@ Outputs
 <td>Start of run</td>
 <td><ul>
 <li>system design pressure, "H2O (inches of water), constant, used in defaulting power / efficiency.</li>
-<li>default: supply 3, r/r .75, tu .3, zx ???.</li>
+<li>default: supply 3, r/r .75, tu .3, zx .3.</li>
 <li>0 allowed 5-1-92 to eliminate fan heat for test/calibration purposes.</li>
 </ul></td>
 </tr>
@@ -5460,7 +5460,7 @@ only one of eff and shaftPwr may be given:
 <td>Start of subhour</td>
 <td><ul>
 <li>fan heat to air (Btuh) at vfDs (&amp; pressure): work done by fan, plus motor/drive inefficiency if in flow.</li>
-<li>Note work done by fan is modelled as HEAT ADDED TO AIR AT FAN per Chip/Niles (3-92, undocumented)</li>
+<li>Note work done by fan is modelled as HEAT ADDED TO AIR AT FAN (not otherwise documented)</li>
 <li>heat to air around motor (in return air etc) at design flow is: (inPower - airPower). this is 0 if motor in air flow.</li>
 </ul></td>
 </tr>
@@ -5518,7 +5518,11 @@ FAN runtime members, set by cnah.cpp:FAN::pute( cFlow, temp)
 <td>sfan.q</td>
 <td>number</td>
 <td>End of subhour</td>
-<td>heat (power) to air this subhour: airPower * relLoad.  Member needed in addition to c and dT??</td>
+<td><ul>
+<li>heat (power) to air this subhour: airPower * relLoad.  Overdefined (= c*dT), but</li>
+<li>stored as its own member for direct access when computing the air handler's fan heat</li>
+<li>result, and for use in probes.</li>
+</ul></td>
 </tr>
 <tr>
 <td>sfan.dT</td>
@@ -5650,7 +5654,7 @@ FAN runtime members, set by cnah.cpp:FAN::pute( cFlow, temp)
 <td>Start of run</td>
 <td><ul>
 <li>system design pressure, "H2O (inches of water), constant, used in defaulting power / efficiency.</li>
-<li>default: supply 3, r/r .75, tu .3, zx ???.</li>
+<li>default: supply 3, r/r .75, tu .3, zx .3.</li>
 <li>0 allowed 5-1-92 to eliminate fan heat for test/calibration purposes.</li>
 </ul></td>
 </tr>
@@ -5889,7 +5893,7 @@ only one of eff and shaftPwr may be given:
 <td>Start of subhour</td>
 <td><ul>
 <li>fan heat to air (Btuh) at vfDs (&amp; pressure): work done by fan, plus motor/drive inefficiency if in flow.</li>
-<li>Note work done by fan is modelled as HEAT ADDED TO AIR AT FAN per Chip/Niles (3-92, undocumented)</li>
+<li>Note work done by fan is modelled as HEAT ADDED TO AIR AT FAN (not otherwise documented)</li>
 <li>heat to air around motor (in return air etc) at design flow is: (inPower - airPower). this is 0 if motor in air flow.</li>
 </ul></td>
 </tr>
@@ -5947,7 +5951,11 @@ FAN runtime members, set by cnah.cpp:FAN::pute( cFlow, temp)
 <td>rfan.q</td>
 <td>number</td>
 <td>End of subhour</td>
-<td>heat (power) to air this subhour: airPower * relLoad.  Member needed in addition to c and dT??</td>
+<td><ul>
+<li>heat (power) to air this subhour: airPower * relLoad.  Overdefined (= c*dT), but</li>
+<li>stored as its own member for direct access when computing the air handler's fan heat</li>
+<li>result, and for use in probes.</li>
+</ul></td>
 </tr>
 <tr>
 <td>rfan.dT</td>
@@ -6090,7 +6098,7 @@ CCH inputs
 </table>
 <ul>
 <li>CCH setup time</li>
-<li>Rob used p not Niles' e for next 2, 10-92:</li>
+<li>Uses p not Niles' e for next 2:</li>
 <li>*r ENERGY e47Off    // energy input during off part of one cycle of ARI 47 degree cycling test, kWh. Niles eCchOffCyc47.</li>
 <li>*r ENERGY e47On // .. on ..  Niles eCchOnCyc47.</li>
 </ul>
@@ -6126,7 +6134,7 @@ CCH inputs
 <td>Start of run</td>
 <td><ul>
 <li>ditto 47 degree test. Niles pCch47. p17 and p47 always the same; p47 may be used in code as</li>
-<li>crankcase heater input in any test. ??clarify while coding.</li>
+<li>crankcase heater input in any test.</li>
 </ul></td>
 </tr>
 </tbody>
@@ -6221,7 +6229,7 @@ CCH runtime
 <li>coil type choice according to application, as follows.  constant.</li>
 <li>air handler cool coil: NONE (default), ELEC, DX, CHW, ...</li>
 <li>air handler heat coil: NONE (default), ELEC, HW, GAS, OIL, AHP, ...</li>
-<li>terminal heat coil: NONE (default if no local heat), ELEC (dflt if local heat), HW,  GAS,OIL??...</li>
+<li>terminal heat coil: NONE (default if no local heat), ELEC (dflt if local heat), HW.</li>
 <li>"ELEC COOL COIL" is a testing aid that cools with 100% efficiency &amp; capacity at any temp.</li>
 </ul></td>
 </tr>
@@ -6966,7 +6974,7 @@ AHHEATCOIL AHP runtime input members
 <li>coil type choice according to application, as follows.  constant.</li>
 <li>air handler cool coil: NONE (default), ELEC, DX, CHW, ...</li>
 <li>air handler heat coil: NONE (default), ELEC, HW, GAS, OIL, AHP, ...</li>
-<li>terminal heat coil: NONE (default if no local heat), ELEC (dflt if local heat), HW,  GAS,OIL??...</li>
+<li>terminal heat coil: NONE (default if no local heat), ELEC (dflt if local heat), HW.</li>
 <li>"ELEC COOL COIL" is a testing aid that cools with 100% efficiency &amp; capacity at any temp.</li>
 </ul></td>
 </tr>
@@ -7437,7 +7445,7 @@ re dx cool coil compressor cycling and energy consumption
 <td></td>
 <td><ul>
 <li>dx energy in for part load in dx compr-unloading range (minUnldPlr &lt;= plr &lt;= 1).</li>
-<li>(Adjusts full-load input (eirRat*capt): I claim eir in name is misnomer, rob 5-92).</li>
+<li>(Adjusts full-load input (eirRat*capt)).</li>
 <li>note for minFsldPlr &lt; plr &lt; minUnldPlr, input remains at minUnldPlr's;</li>
 <li>for plr &lt;= minUnldPlr, input does straight line to 0.</li>
 </ul></td>

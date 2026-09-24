@@ -4319,7 +4319,7 @@
 <td>Start of run</td>
 <td><ul>
 <li>run date &amp; time string, set by cncult2.cpp:topStarPrf2(), used in reports &amp; bin res file, 9-94.</li>
-<li>inputs for binary results files, for NREL, rob 11-93.  *r cuz settable from cmd line switches.</li>
+<li>inputs for binary results files, for NREL.  *r cuz settable from cmd line switches.</li>
 </ul></td>
 </tr>
 <tr>
@@ -4487,13 +4487,13 @@
 <td>Start of run</td>
 <td><ul>
 <li>hours west (fraction ok)</li>
-<li>also [elevation][elevation] is above (user-inputtable).</li>
+<li>also elevation is above (user-inputtable).</li>
 </ul></td>
 </tr>
 </tbody>
 </table>
 <ul>
-<li>[TOP][top-members]: setup: air properties approximated @[elevation][elevation], [refTemp][reftemp], [refRH][refrh], set in cucult2:topPsychro().</li>
+<li>[TOP][top-members]: setup: air properties approximated @elevation, [refTemp][reftemp], [refRH][refrh], set in cucult2:topPsychro().</li>
 <li>UNITS/FIELDS needed for floats for proper probe behavior ***</li>
 </ul>
 <div class="probe-table-sibling"></div>
@@ -4512,7 +4512,7 @@
 <td>number</td>
 <td>Start of run</td>
 <td><ul>
-<li>nominal atmospheric pressure at Top.[elevation][elevation] (in Hg)</li>
+<li>nominal atmospheric pressure at Top.elevation (in Hg)</li>
 <li>(constant for simulation)</li>
 </ul></td>
 </tr>
@@ -4592,7 +4592,7 @@
 <td><ul>
 <li>convective coefficient pressure modification factor</li>
 <li>=(.24 + .76*PresAtm/PresAtmSeaLevel)</li>
-<li>reduces convective coefficients as function of [elevation][elevation]</li>
+<li>reduces convective coefficients as function of elevation</li>
 <li>in some convection modelsPresAtmSeaLevel</li>
 <li>source = ASHRAE 1199-RP Barnaby et al. 2004</li>
 <li>and: enthalpy/lb is airSh * absTemp + 1061 * w.  (Btu/lb)</li>

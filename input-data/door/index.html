@@ -4535,7 +4535,7 @@
 <p>Specifies 3 coefficients for an alternative inside surface forced convection model (applicable only for <a class="autorefs autorefs-internal" href="#drinhcmodel">drInHcModel</a>=UNIFIED).  When given, the inside surface forced convection coefficient for this surface is derived as follows:</p>
 <div class="language-text highlight"><pre><span></span><code>  hcFrc = hConvF * (drInHcFrcCoeffs[ 1] + drInHcFrcCoeffs[ 2] * ACH ^ drInHcFrcCoeffs[ 3])
 </code></pre></div>
-<p>where hConvF is the convection adjustment factor (derived from <a class="autorefs autorefs-internal" href="../top-members/#elevation">elevation</a>, see Top <a class="autorefs autorefs-internal" href="../top-members/#hconvmod">hConvMod</a>) and ACH is the zone air change rate per hour from the prior simulation step (including heat pump water heater evaporator air flow).  This formulation is dangerously flexible, so caution is advised when selecting coefficient values.</p>
+<p>where hConvF is the convection adjustment factor (derived from elevation, see Top <a class="autorefs autorefs-internal" href="../top-members/#hconvmod">hConvMod</a>) and ACH is the zone air change rate per hour from the prior simulation step (including heat pump water heater evaporator air flow).  This formulation is dangerously flexible, so caution is advised when selecting coefficient values.</p>
 <p>The default hcFrc value (used when drInHcFrCoeff is not provided) is hConvF * <a class="autorefs autorefs-internal" href="../zone/#znhcfrcf">znHcFrcF</a> * ACH ^ 0.8.</p>
 <div class="member-table-sibling"></div>
 <table>

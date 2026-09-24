@@ -3943,7 +3943,7 @@
 
 
 <h1 id="dhwsolarcollector">DHWSOLARCOLLECTOR<a class="headerlink" href="#dhwsolarcollector" title="Permanent link">¶</a></h1>
-<p>Solar Collector Array. May be multiple collectors on the same <a class="autorefs autorefs-internal" href="../dhwsolarsys/#dhwsolarsys">DHWSOLARSYS</a> system. All inlets come from the DHWSOLARTANK.</p>
+<p>Solar Collector Array. May be multiple collectors on the same <a class="autorefs autorefs-internal" href="../dhwsolarsys/#dhwsolarsys">DHWSOLARSYS</a> system. All inlets come from the <a class="autorefs autorefs-internal" href="../dhwsolarsys/#dhwsolarsys">DHWSOLARSYS</a> tank.</p>
 <p>Uses SRCC Ratings.</p>
 <h3 id="scarea">scArea<a class="headerlink" href="#scarea" title="Permanent link">¶</a></h3>
 <p>Type: float</p>
@@ -4282,6 +4282,7 @@
 </table>
 <h3 id="scpumppwr">scPumpPwr<a class="headerlink" href="#scpumppwr" title="Permanent link">¶</a></h3>
 <p>Type: float</p>
+<p>Solar collector loop pump power.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -4295,9 +4296,9 @@
 </thead>
 <tbody>
 <tr>
-<td>Btu/h</td>
+<td>W</td>
 <td>x ≥ 0</td>
-<td>from <em>scPumpflow</em></td>
+<td>10 W per gpm of collector loop flow (derived from <em><a class="autorefs autorefs-internal" href="#scoprmassflow">scOprMassFlow</a></em>)</td>
 <td>No</td>
 <td>constant</td>
 </tr>

@@ -4481,7 +4481,7 @@ These words are used in following descriptions of contexts that can accept more 
 </tr>
 <tr>
 <td><em>string</em></td>
-<td>"Text" -- desired characters enclosed in double quotes.<br/>Maximum length 80 characters (make 132??). To put a " within the "'s, precede it with a backslash. <br/>Certain control codes can be represented with letters preceded with a backslash as follows:<br/>    <code>\e    escape</code><br/>    <code>\t    tab</code><br/>    <code>\f    form feed</code><br/>    <code>\r    carriage return</code><br/>    <code>\n    newline or line feed</code></td>
+<td>"Text" -- desired characters enclosed in double quotes.<br/>Maximum length 300 characters. To put a " within the "'s, precede it with a backslash. <br/>Certain control codes can be represented with letters preceded with a backslash as follows:<br/>    <code>\e    escape</code><br/>    <code>\t    tab</code><br/>    <code>\f    form feed</code><br/>    <code>\r    carriage return</code><br/>    <code>\n    newline or line feed</code></td>
 </tr>
 <tr>
 <td><em>object name</em></td>
@@ -5132,11 +5132,15 @@ returns "Sun 03-May falls on a weekend"</dd>
 <dt><strong>Function</strong></dt>
 <dd>Returns continuous control value, e.g. for lighting control</dd>
 <dt><strong>Syntax</strong></dt>
-<dd><em>float</em> <strong>contin</strong>( <em>float</em> mpf, <em>float</em> mlf, <em>float</em> sp, <em>float</em> val)</dd>
+<dd><em>float</em> <strong>contin</strong>( <em>float</em> minPowerFraction, <em>float</em> minLightingFraction, <em>float</em> setpoint, <em>float</em> illuminance)</dd>
 <dt><strong>Remark</strong></dt>
-<dd><strong>contin</strong> is evaluated at runtime and returns a value in the range 0 – 1 ???</dd>
+<dd><strong>contin</strong> is evaluated at runtime and returns a value in the range <em>minPowerFraction</em> to 1,
+for use as a fractional control value (e.g. of lighting power). <em>setpoint</em> and <em>illuminance</em>
+are in the same units. If <em>setpoint</em> &lt;= 0, no lighting is needed and <em>minPowerFraction</em> is
+returned. If <em>illuminance</em> &lt;= 0, full power (1) is returned. Otherwise, the power fraction
+rises linearly from <em>minPowerFraction</em> (when the lighting deficit is at or below
+<em>minLightingFraction</em>) to 1 (when <em>illuminance</em> reaches 0).</dd>
 </dl>
-<!-- TODO: complete documentation for contin()   7-26-2012 -->
 <hr/>
 <h3 id="stepped"><code>stepped</code><a class="headerlink" href="#stepped" title="Permanent link">¶</a></h3>
 <dl class="nested-dl">

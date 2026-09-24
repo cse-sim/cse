@@ -4790,7 +4790,7 @@ tuVfMxHC = SAME
 </table>
 <h3 id="tusrleak">tuSRLeak<a class="headerlink" href="#tusrleak" title="Permanent link">¶</a></h3>
 <p>Type: float</p>
-<p>Leakage of supply air to return, increasing supply volume and return temperature. Note that this is a fraction of current cfm, whereas air handler leak (before VAV dampers) is a fraction of <em>maximum</em> cfm. TfanOffLeak is added to this if terminal has a fan that is not running (future, 7-92).</p>
+<p>Leakage of supply air to return, increasing supply volume and return temperature. Note that this is a fraction of current cfm, whereas air handler leak (before VAV dampers) is a fraction of <em>maximum</em> cfm. TfanOffLeak is added to this whenever the terminal has a fan; the fan's actual run state is not currently factored in, so this backflow is effectively always applied rather than only when the fan is off.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -4815,7 +4815,7 @@ tuVfMxHC = SAME
 <h3 id="tusrloss">tuSRLoss<a class="headerlink" href="#tusrloss" title="Permanent link">¶</a></h3>
 <p>Type: float</p>
 <p>Supply air to return plenum heat loss as a fraction of supply air to return air temperature difference. Not allowed if return is ducted (no plenum).</p>
-<p><em>NOT IMPLEMENTED as of July 1992 -- Plenums are unimplemented.</em></p>
+<p><em>NOT IMPLEMENTED -- plenum returns are unimplemented, so the return is always considered ducted; giving this member produces an error.</em></p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -4980,7 +4980,7 @@ tuVfMxHC = SAME
 </table>
 <h2 id="terminal-fan">TERMINAL Fan<a class="headerlink" href="#terminal-fan" title="Permanent link">¶</a></h2>
 <p>Presence of a terminal fan is indicated by specifying a <a class="autorefs autorefs-internal" href="#tfantype">tfanType</a> value other than NONE.</p>
-<p>Terminal fans are <em>NOT IMPLEMENTED</em> as of July 1992.</p>
+<p>Terminal fan input (<a class="autorefs autorefs-internal" href="#tfantype">tfanType</a>, etc.) is accepted and validated, but terminal fans are <em>NOT IMPLEMENTED</em>: fan energy use is never calculated, and the SERIES/PARALLEL behavior described below is not simulated.</p>
 <h3 id="tfantype">tfanType<a class="headerlink" href="#tfantype" title="Permanent link">¶</a></h3>
 <p>Type: choice</p>
 <p>Choice of:</p>
@@ -5003,7 +5003,7 @@ tuVfMxHC = SAME
 </tr>
 <tr>
 <td>PARALLEL</td>
-<td>Fan runs when scheduled ON (see <a class="autorefs autorefs-internal" href="#tfansched">tfanSched</a>) and terminal's simulated VAV cfm is less than <a class="autorefs autorefs-internal" href="#tfanvfds">tfanVfDs</a> plus <a class="autorefs autorefs-internal" href="#tuvfmn">tuVfMn</a> ?? plus <a class="autorefs autorefs-internal" href="#tuvfmn">tuVfMn</a>??. Terminal fan cfm is added to VAV cfm from <a class="autorefs autorefs-internal" href="../airhandler/#airhandler">AIRHANDLER</a> to get cfm to <a class="autorefs autorefs-internal" href="../zone/#zone">ZONE</a>.</td>
+<td>Fan runs when scheduled ON (see <a class="autorefs autorefs-internal" href="#tfansched">tfanSched</a>) and terminal's simulated VAV cfm is less than <a class="autorefs autorefs-internal" href="#tfanvfds">tfanVfDs</a> plus <a class="autorefs autorefs-internal" href="#tuvfmn">tuVfMn</a>. Terminal fan cfm is added to VAV cfm from <a class="autorefs autorefs-internal" href="../airhandler/#airhandler">AIRHANDLER</a> to get cfm to <a class="autorefs autorefs-internal" href="../zone/#zone">ZONE</a>.</td>
 </tr>
 </tbody>
 </table>

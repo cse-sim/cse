@@ -3839,15 +3839,13 @@
 <ul>
 <li>DHWSOLARSYS<ul>
 <li>DHWSOLARCOLLECTOR</li>
-<li>DHWSOLARTANK</li>
 </ul>
 </li>
 </ul>
-<p>May have any number of solar collectors, but only one tank.</p>
-<p>May have no tank for direct system? What if system has multiple primary tanks?</p>
+<p>May have any number of solar collectors. The tank is built into DHWSOLARSYS itself (not a separate subobject), is always present, and there is exactly one per DHWSOLARSYS.</p>
 <h3 id="swelecmtr">swElecMtr<a class="headerlink" href="#swelecmtr" title="Permanent link">¶</a></h3>
 <p>Type: <a class="autorefs autorefs-internal" href="../meter/#mtrname">mtrName</a></p>
-<p>Name of <a class="autorefs autorefs-internal" href="../meter/#meter">METER</a> object, if any, to which DHWSOLARSYS electrical energy use is recorded (under end use ???).</p>
+<p>Name of <a class="autorefs autorefs-internal" href="../meter/#meter">METER</a> object, if any, to which DHWSOLARSYS electrical energy use is recorded (under end use given by <em><a class="autorefs autorefs-internal" href="#swenduse">swEndUse</a></em>, which defaults to "DHW").</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -3921,6 +3919,7 @@
 <p>End use of pump energy; defaults to "DHW".</p>
 <h3 id="swparelec">swParElec<a class="headerlink" href="#swparelec" title="Permanent link">¶</a></h3>
 <p>Type: float</p>
+<p>Parasitic electricity use (e.g. controller standby power), recorded under <em><a class="autorefs autorefs-internal" href="#swenduse">swEndUse</a></em> to the meter given by <em>swElecMtr</em>, if any.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -3934,7 +3933,7 @@
 </thead>
 <tbody>
 <tr>
-<td></td>
+<td>W</td>
 <td>x ≥ 0</td>
 <td>0</td>
 <td>No</td>
@@ -4016,6 +4015,7 @@
 </table>
 <h3 id="swtankvol">swTankVol<a class="headerlink" href="#swtankvol" title="Permanent link">¶</a></h3>
 <p>Type: float</p>
+<p>Solar storage tank volume.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -4030,8 +4030,8 @@
 <tbody>
 <tr>
 <td>gal</td>
-<td></td>
-<td></td>
+<td>x &gt; 0</td>
+<td>1.5 gal per ft<sup>2</sup> of total collector area</td>
 <td>No</td>
 <td>constant</td>
 </tr>

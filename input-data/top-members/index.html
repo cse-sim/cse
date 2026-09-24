@@ -5418,7 +5418,8 @@
 </tbody>
 </table>
 <h3 id="workdaymask">workDayMask<a class="headerlink" href="#workdaymask" title="Permanent link">¶</a></h3>
-<p>Type: <em>int</em> TODO</p>
+<p>Type: int</p>
+<p>Bitmask specifying which days are considered "work days" (used for <em>$isWorkDay</em>, and passed through to OPK/ET). Bits: Sun=1, Mon=2, Tue=4, Wed=8, Thu=16, Fri=32, Sat=64, Holidays=128, heating design day=256, cooling design day=512.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -5433,9 +5434,9 @@
 <tbody>
 <tr>
 <td></td>
-<td></td>
-<td></td>
-<td></td>
+<td>sum of the day/condition bits above</td>
+<td>830 (Mon-Fri plus heating and cooling design days)</td>
+<td>No</td>
 <td>constant</td>
 </tr>
 </tbody>
@@ -5515,7 +5516,7 @@
 </table>
 <h3 id="tol">tol<a class="headerlink" href="#tol" title="Permanent link">¶</a></h3>
 <p>Type: float</p>
-<p>Endtest convergence tolerance for internal iteration in CNE models (no effect for CSE models) Small values for the tolerance cause more accurate simulations but slower performance. The user may wish to use a high number during the initial design process (to quicken the runs) and then lower the tolerance for the final design (for better accuracy). Values other than .001 have not been explored.</p>
+<p>Endtest convergence tolerance for internal iteration when the zone is served by <a class="autorefs autorefs-internal" href="../airhandler/#airhandler">AIRHANDLER</a>/<a class="autorefs autorefs-internal" href="../terminal/#terminal">TERMINAL</a> objects (has no effect on zones served by <a class="autorefs autorefs-internal" href="../rsys/#rsys">RSYS</a>). Small values for the tolerance cause more accurate simulations but slower performance. The user may wish to use a high number during the initial design process (to quicken the runs) and then lower the tolerance for the final design (for better accuracy). Values other than .001 have not been explored.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -5539,7 +5540,7 @@
 </table>
 <h3 id="humtolf">humTolF<a class="headerlink" href="#humtolf" title="Permanent link">¶</a></h3>
 <p>Type: float</p>
-<p>Specifies the convergence tolerance for humidity calculations in CNE models (no effect in for CSE models), relative to the tolerance for temperature calculations. A value of .0001 says that a humidity difference of .0001 is about as significant as a temperature difference of one degree. Note that this is multiplied internally by "<a class="autorefs autorefs-internal" href="#tol">tol</a>"; to make an overall change in tolerances, change "<a class="autorefs autorefs-internal" href="#tol">tol</a>" only.</p>
+<p>Specifies the convergence tolerance for humidity calculations when the zone is served by <a class="autorefs autorefs-internal" href="../airhandler/#airhandler">AIRHANDLER</a>/<a class="autorefs autorefs-internal" href="../terminal/#terminal">TERMINAL</a> objects (has no effect on zones served by <a class="autorefs autorefs-internal" href="../rsys/#rsys">RSYS</a>), relative to the tolerance for temperature calculations. A value of .0001 says that a humidity difference of .0001 is about as significant as a temperature difference of one degree. Note that this is multiplied internally by "<a class="autorefs autorefs-internal" href="#tol">tol</a>"; to make an overall change in tolerances, change "<a class="autorefs autorefs-internal" href="#tol">tol</a>" only.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -5780,7 +5781,7 @@
 <!--NOTE: Technically, this can probably change hourly -->
 <h3 id="hummeth">humMeth<a class="headerlink" href="#hummeth" title="Permanent link">¶</a></h3>
 <p>Type: choice</p>
-<p>Developmental zone humidity computation method choice for CNE models (no effect for CSE models).</p>
+<p>Zone humidity computation method: selects between two different formulas used in the zone's latent/humidity balance calculation when the zone is served by <a class="autorefs autorefs-internal" href="../airhandler/#airhandler">AIRHANDLER</a>/<a class="autorefs autorefs-internal" href="../terminal/#terminal">TERMINAL</a> objects (see choices below). Has no effect on zones served by <a class="autorefs autorefs-internal" href="../rsys/#rsys">RSYS</a>.</p>
 <div class="no-header-table"></div>
 <table>
 <thead>
@@ -6390,7 +6391,7 @@
 </code></pre></div>
 <h3 id="wfname">wfName<a class="headerlink" href="#wfname" title="Permanent link">¶</a></h3>
 <p>Type: string</p>
-<p>Weather file path name for simulation. The file should be in the current directory, in the directory CSE.EXE was read from, or in a directory on the operating system PATH.  Weather file formats supported are CSW, EPW, and ET1.  Only full-year weather files are supported.</p>
+<p>Weather file path name for simulation. The file should be in the current directory, in the directory the CSE executable was read from, or in a directory on the operating system PATH.  Weather file formats supported are CSW, EPW, and ET1.  Only full-year weather files are supported.</p>
 <p>Note: Backslash (\) characters in path names must be doubled to work properly (e.g. "\\wthr\\mywthr.epw").  Forward slash (/) may be used in place of backslash without doubling.</p>
 <div class="member-table-sibling"></div>
 <table>
@@ -7316,7 +7317,7 @@ TODO: document wind speed modification
 </table>
 <h3 id="repcpl">repCPL<a class="headerlink" href="#repcpl" title="Permanent link">¶</a></h3>
 <p>Type: int</p>
-<p>Characters per line for report headers and footers, user defined reports, and error messages. CSE writes simple ASCII files and assumes a fixed (not proportional) spaced printer font. Many of the built-in reports now (July 1992) assume a line width of 132 columns.</p>
+<p>Characters per line for report headers and footers, user defined reports, and error messages. CSE writes simple ASCII files and assumes a fixed (not proportional) spaced printer font. Built-in reports adapt to the specified line width, up to a maximum of 132 columns.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -7540,7 +7541,7 @@ TODO: document wind speed modification
 <h2 id="top-debug-reporting">TOP Debug Reporting<a class="headerlink" href="#top-debug-reporting" title="Permanent link">¶</a></h2>
 <h3 id="verbose">verbose<a class="headerlink" href="#verbose" title="Permanent link">¶</a></h3>
 <p>Type: int</p>
-<p>Controls verbosity of screen remarks. Most possible remarks are generated during autosizing of CNE models. Little or no effect in CSE models. TODO: document options</p>
+<p>Controls verbosity of screen remarks. Most possible remarks are generated during autosizing of <a class="autorefs autorefs-internal" href="../airhandler/#airhandler">AIRHANDLER</a>/<a class="autorefs autorefs-internal" href="../terminal/#terminal">TERMINAL</a>-modeled zones; little or no effect on <a class="autorefs autorefs-internal" href="../rsys/#rsys">RSYS</a>-modeled zones. TODO: document options</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>

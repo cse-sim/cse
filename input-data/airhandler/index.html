@@ -6322,7 +6322,7 @@
 <tbody>
 <tr>
 <td>OFF</td>
-<td>supply fan off; air handler not operating. Old date? Note: (future) Taylor setback/setup control in effect, when implemented.</td>
+<td>supply fan off; air handler not operating.</td>
 </tr>
 <tr>
 <td>ON</td>
@@ -6397,7 +6397,7 @@
 </tr>
 <tr>
 <td>WZ</td>
-<td>Warmest Zone: for cooling, sets the supply temperature setpoint each sub??hour so that the control zone (see<em><a class="autorefs autorefs-internal" title="ahWzCzns, ahCzCzns" href="#ahwzczns-ahczczns">ahWzCzns</a></em>) requiring the coolest supply temperature can meet its load with its VAV damper 90% of the way from its minimum opening to its maximum, that is, at a flow of: <em>tuVfMn</em> + .9(<em>tuVfMxC</em> - * <a class="autorefs autorefs-internal" href="../terminal/#tuvfmn">tuVfMn</a>*).</td>
+<td>Warmest Zone: for cooling, sets the supply temperature setpoint each subhour so that the control zone (see <em><a class="autorefs autorefs-internal" title="ahWzCzns, ahCzCzns" href="#ahwzczns-ahczczns">ahWzCzns</a></em>) requiring the coolest supply temperature can meet its load with its VAV damper 90% of the way from its minimum opening to its maximum, that is, at a flow of: <em>tuVfMn</em> + .9(<em>tuVfMxC</em> - * <a class="autorefs autorefs-internal" href="../terminal/#tuvfmn">tuVfMn</a>*).</td>
 </tr>
 <tr>
 <td>CZ</td>
@@ -6694,7 +6694,7 @@ extra para to permit page break after frame
 </table>
 <h3 id="ahctu">ahCtu<a class="headerlink" href="#ahctu" title="Permanent link">¶</a></h3>
 <p>Type: <em>terminal name</em></p>
-<p>Terminal monitored to determine whether to heat or cool under ZN and ZN2 supply temperature setpoint control. Development aid feature; believe there is no need to give this since <a class="autorefs autorefs-internal" href="#ahtssp">ahTsSp</a> = ZN or ZN2 should only be used with <!-- (is only allowed with??) --> one zone.</p>
+<p>Terminal monitored to determine whether to heat or cool under ZN and ZN2 supply temperature setpoint control. Not needed if the air handler serves only one terminal (ahCtu then defaults automatically); required if it serves more than one.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -7150,7 +7150,7 @@ z = k_0 + k_1 \cdot (x - x_0)| + k_2 \cdot (x - x_0)|^2 + k_3 \cdot (x - x_0)|^3
 </tr>
 </tbody>
 </table>
-<p><em>At most, one of the next three?? items may be defined: ??</em> rework re <a class="autorefs autorefs-internal" href="#rfanelecpwr">rfanElecPwr</a></p>
+<p><em>At most one of the next three items (<a class="autorefs autorefs-internal" href="#rfanelecpwr">rfanElecPwr</a>, <a class="autorefs autorefs-internal" href="#rfaneff">rfanEff</a>, <a class="autorefs autorefs-internal" href="#rfanshaftbhp">rfanShaftBhp</a>) may be defined.</em></p>
 <h3 id="rfanelecpwr">rfanElecPwr<a class="headerlink" href="#rfanelecpwr" title="Permanent link">¶</a></h3>
 <p>Type: <em>float</em></p>
 <p>Fan input power per unit air flow (at design flow and pressure).</p>
@@ -8363,7 +8363,7 @@ z = k_0 + k_1 \cdot (x - x_0)| + k_2 \cdot (x - x_0)|^2 + k_3 \cdot (x - x_0)|^3
 <p>The following six members are used with DX cooling coils.</p>
 <h3 id="ahccmintevap">ahccMinTEvap<a class="headerlink" href="#ahccmintevap" title="Permanent link">¶</a></h3>
 <p>Type: <em>float</em></p>
-<p>Minimum (effective surface) temperature of coil (evaporator). Represents refrigerant setpoint, or cutout to prevent freezing. Coil model will reduce output to keep simulated coil from getting colder than this, even though it lets supply air get warmer than setpoint. Should default be 35??</p>
+<p>Minimum (effective surface) temperature of coil (evaporator). Represents refrigerant setpoint, or cutout to prevent freezing. Coil model will reduce output to keep simulated coil from getting colder than this, even though it lets supply air get warmer than setpoint.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -8379,7 +8379,7 @@ z = k_0 + k_1 \cdot (x - x_0)| + k_2 \cdot (x - x_0)|^2 + k_3 \cdot (x - x_0)|^3
 <tr>
 <td>°F</td>
 <td><em>x</em> &gt; 0</td>
-<td>40°F</td>
+<td>35°F</td>
 <td>No</td>
 <td>constant</td>
 </tr>
@@ -8411,7 +8411,7 @@ z = k_0 + k_1 \cdot (x - x_0)| + k_2 \cdot (x - x_0)|^2 + k_3 \cdot (x - x_0)|^3
 </table>
 <h3 id="ahccbypass">ahccBypass<a class="headerlink" href="#ahccbypass" title="Permanent link">¶</a></h3>
 <p>Type: <em>float</em></p>
-<p>Fraction of air flow which does NOT flow through DX cooling coil, for better humidity control. Running less of the air through the coil lets the coil run colder, resulting in greater moisture removal right??.</p>
+<p>Fraction of air flow which does NOT flow through DX cooling coil, for better humidity control. Running less of the air through the coil lets the coil run colder, resulting in greater moisture removal.</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -8863,7 +8863,7 @@ z = a + bx + cx^2+ dx^3
 </table>
 <h3 id="ahccvfr">ahccVfR<a class="headerlink" href="#ahccvfr" title="Permanent link">¶</a></h3>
 <p>Type: <em>float</em></p>
-<p>Design (rating) (volumetric) air flow rate for DX or CHW cooling coil. The AHRI specification for this test condition for CHW coils is "450 cfm/ton or less", right??</p>
+<p>Design (rating) (volumetric) air flow rate for DX or CHW cooling coil. The AHRI specification for this test condition for CHW coils is "450 cfm/ton or less".</p>
 <div class="member-table-sibling"></div>
 <table>
 <thead>
@@ -9118,11 +9118,11 @@ z = a + bx + cx^2+ dx^3
 </tr>
 <tr>
 <td>NONINTEGRATED</td>
-<td>Coil does not run when economizer is using all outside air: simulates interlock in some equipment designed to prevent coil icing due to insufficient load, right?</td>
+<td>Coil does not run when economizer is using all outside air.</td>
 </tr>
 <tr>
 <td>TWO_STAGE</td>
-<td>Economizer is disabled when coil cycles on. <em>NOT IMPLEMENTED</em> as of July 1992.</td>
+<td>Economizer is disabled when coil cycles on. <em>NOT IMPLEMENTED</em>: currently behaves the same as NONINTEGRATED.</td>
 </tr>
 </tbody>
 </table>
@@ -9539,7 +9539,7 @@ z = a + bx + cx^2+ dx^3
 </table>
 <h2 id="airhandler-leaks-and-losses">AIRHANDLER Leaks and Losses<a class="headerlink" href="#airhandler-leaks-and-losses" title="Permanent link">¶</a></h2>
 <p><em>AhSOLeak</em> and <em>ahRoLeak</em> express air leaks in the common supply and return ducts, if any, that connect the air handler to the conditioned space. For leakage after the point where a duct branches off to an individual zone, see <a class="autorefs autorefs-internal" href="../terminal/#terminal">TERMINAL</a> member <em>tuSRLeak</em>. These inputs model leaks in constant pressure (or vacuum) areas nearer the supply fan than the terminal VAV dampers; thus, they are constant volume regardless of flow to the zones. Hence, unless 0 leakage flows are specified, the air handler cfm is greater than the sum of the terminal cfm's, and the air handler cfm is non-0 even when all terminal flows are 0. Any heating or cooling energy applied to the excess cfm is lost to the outdoors.</p>
-<p>If unequal leaks are specified, at present (July 1992) CSE will use the average of the two specifications for both leaks, as the modeled supply and return flows must be equal. A future version may allow unequal flows, making up the difference in exfiltration or infiltration to the zones.</p>
+<p>If unequal leaks are specified, CSE uses the average of the two specifications for both leaks, as the modeled supply and return flows must be equal. A future version may allow unequal flows, making up the difference in exfiltration or infiltration to the zones.</p>
 <h3 id="ahsoleak">ahSOLeak<a class="headerlink" href="#ahsoleak" title="Permanent link">¶</a></h3>
 <p>Type: <em>float</em></p>
 <p>Supply duct leakage to outdoors, expressed as a fraction of supply fan design flow (<em>sfanVfDs</em>). Use 0 if the duct is indoors. A constant-cfm leak is modeled, as the pressure is constant when the fan is on.</p>
@@ -9641,7 +9641,7 @@ z = a + bx + cx^2+ dx^3
 <p>A "crankcase heater" is an electric resistance heater in the crankcase of the compressor of heat pumps and dx cooling coils. The function of the crankcase heater is to keep the compressor's oil warmer than the refrigerant when the compressor is not operating, in order to prevent refrigerant from condensing into and remaining in the oil, which impairs its lubricating properties and shortens the life of the compressor. Manufacturers have come up with a number of different methods for controlling the crankcase heater. The crankcase heater can consume a significant part of the heat pump's energy input; thus, it is important to model it.</p>
 <p>In CSE a heat pump is modeled as though it were separate heating and cooling coils. However, the crankcase heater may operate (or not, according to its control method) whether the heat pump is heating, or cooling, or, in particular, doing neither, so it is modeled as a separate part of the air handler, not associated particularly with heating or cooling.</p>
 <p>When modeling an air source heat pump (<a class="autorefs autorefs-internal" href="#ahhctype">ahhcType</a> = AHP), these variables should be used to specify the crankcase heater, insofar as non-default inputs are desired.</p>
-<p>Appropriateness of use of these inputs when specifying a DX system without associated heat pump heating is not clear to me (Rob) as of 10-23-92; on the one hand, the DX compressor probably has a crankcase heater; on the other hand, the rest of the DX model is supposed to be complete in itself, and adding a crankcase heater here might produce excessive energy input; on the third hand, the DX model does not include any energy input when the compressor is idle; ... .</p>
+<!-- Appropriateness of use of these inputs when specifying a DX system without associated heat pump heating is unclear; on the one hand, the DX compressor probably has a crankcase heater; on the other hand, the rest of the DX model is supposed to be complete in itself, and adding a crankcase heater here might produce excessive energy input; on the third hand, the DX model does not include any energy input when the compressor is idle; ... . -->
 <h3 id="cchcm">cchCM<a class="headerlink" href="#cchcm" title="Permanent link">¶</a></h3>
 <p>Type: <em>choice</em></p>
 <p>Crankcase heater presence and control method. Choice of:</p>

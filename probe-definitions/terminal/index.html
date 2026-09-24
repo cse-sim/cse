@@ -4220,7 +4220,7 @@ input, in addition to <a class="autorefs autorefs-internal" href="../../input-st
 <li>coil type choice according to application, as follows.  constant.</li>
 <li>air handler cool coil: NONE (default), ELEC, DX, CHW, ...</li>
 <li>air handler heat coil: NONE (default), ELEC, HW, GAS, OIL, AHP, ...</li>
-<li>terminal heat coil: NONE (default if no local heat), ELEC (dflt if local heat), HW,  GAS,OIL??...</li>
+<li>terminal heat coil: NONE (default if no local heat), ELEC (dflt if local heat), HW.</li>
 <li>"ELEC COOL COIL" is a testing aid that cools with 100% efficiency &amp; capacity at any temp.</li>
 </ul></td>
 </tr>
@@ -4835,16 +4835,6 @@ coil runtime members
 <td></td>
 <td><ul>
 <li>terminal fan FAN subrecord.  If tfan.fanType is NONE, other tfan inputs disallowed.</li>
-<li>the following terminal inputs are in tfan:</li>
-<li>FANTYCH [tfanType][tfantype]        // NONE (default), SERIES, or PARALLEL.  constant.  Fan source is return air.</li>
-<li>// parallel: fan runs when VAV flow low; tfan cfm is added to VAV cfm to get zone cfm.</li>
-<li>// series always runs; if VAV cfm &lt; tfan cfm, rest comes from RA.</li>
-<li>AFLOW_GZ [tfanVfDs][tfanvfds]       // terminal fan design flow (cfm actual air), RQD if fan present.</li>
-<li>// or default to terminal heat design flow? ??</li>
-<li>PRESAIR_GZ [tfanPress][tfanpress]   // tu fan external static pressure, .05 to 1.0 "H2O, constant, default .3.</li>
-<li>FRAC [tfanEff][tfaneff]     // tu fan/motor/drive combinded efficiency, constant, default .08. .08!?</li>
-<li>MTR tfanMtri        // MTR to which energy use is charged 4-11-92</li>
-<li>PYCUBIC2 [tfanCurvePy][tfancurvepy] // part-load energy consumption curve coefficients 6-92, default linear</li>
 <li>// other fan subrecord members for terminal fan are internally set as follows:</li>
 <li>//  vfMxF: 1.0;  motPos: INFLO;  shaftPwr: default from eff;</li>
 <li>//  motEff: 1.0: needn't differentiate fan eff from motEff under INFLO.</li>
@@ -4927,7 +4917,7 @@ coil runtime members
 <td>Start of run</td>
 <td><ul>
 <li>system design pressure, "H2O (inches of water), constant, used in defaulting power / efficiency.</li>
-<li>default: supply 3, r/r .75, tu .3, zx ???.</li>
+<li>default: supply 3, r/r .75, tu .3, zx .3.</li>
 <li>0 allowed 5-1-92 to eliminate fan heat for test/calibration purposes.</li>
 </ul></td>
 </tr>
@@ -5166,7 +5156,7 @@ only one of eff and shaftPwr may be given:
 <td>Start of subhour</td>
 <td><ul>
 <li>fan heat to air (Btuh) at vfDs (&amp; pressure): work done by fan, plus motor/drive inefficiency if in flow.</li>
-<li>Note work done by fan is modelled as HEAT ADDED TO AIR AT FAN per Chip/Niles (3-92, undocumented)</li>
+<li>Note work done by fan is modelled as HEAT ADDED TO AIR AT FAN (not otherwise documented)</li>
 <li>heat to air around motor (in return air etc) at design flow is: (inPower - airPower). this is 0 if motor in air flow.</li>
 </ul></td>
 </tr>
@@ -5224,7 +5214,11 @@ FAN runtime members, set by cnah.cpp:FAN::pute( cFlow, temp)
 <td>tfan.q</td>
 <td>number</td>
 <td>End of subhour</td>
-<td>heat (power) to air this subhour: airPower * relLoad.  Member needed in addition to c and dT??</td>
+<td><ul>
+<li>heat (power) to air this subhour: airPower * relLoad.  Overdefined (= c*dT), but</li>
+<li>stored as its own member for direct access when computing the air handler's fan heat</li>
+<li>result, and for use in probes.</li>
+</ul></td>
 </tr>
 <tr>
 <td>tfan.dT</td>

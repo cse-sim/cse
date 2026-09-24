@@ -4285,7 +4285,7 @@
 
 
 <h1 id="izxfer">IZXFER<a class="headerlink" href="#izxfer" title="Permanent link">¶</a></h1>
-<p>IZXFER constructs an object that represents an interzone or zone/ambient heat transfer due to conduction and/or air transfer. The air transfer modeled by IZXFER transfers heat only; humidity transfer is not modeled as of July 2011. Note that <a class="autorefs autorefs-internal" href="../surface/#surface">SURFACE</a> is the preferred way represent conduction between <a class="autorefs autorefs-internal" href="../zone/#zone">ZONEs</a>.</p>
+<p>IZXFER constructs an object that represents an interzone or zone/ambient heat transfer due to conduction and/or air transfer. The air transfer modeled by IZXFER transfers heat only; humidity transfer is not modeled. Note that <a class="autorefs autorefs-internal" href="../surface/#surface">SURFACE</a> is the preferred way represent conduction between <a class="autorefs autorefs-internal" href="../zone/#zone">ZONEs</a>.</p>
 <p>The AIRNET types are used in a multi-cell pressure balancing model that finds zone pressures that produce net 0 mass flow into each zone. The model operates in concert with the znType=CZM or znType=UZM to represent ventilation strategies. During each time step, the pressure balance is found for two modes that can be thought of as “VentOff” (or infiltration-only) and “VentOn” (or infiltration+ventilation). The zone model then determines the ventilation fraction required to hold the desired zone temperature (if possible). AIRNET modeling methods are documented in the CSE Engineering Documentation.</p>
 <p>Note that fan-driven types assume pressure-independent flow.  That is, the specified flow is included in the zone pressure balance but the modeled fan flow does not change with zone pressure.
 The assumption is that in realistic configurations, zone pressure will generally be close to ambient pressure.  Unbalanced fan ventilation in a zone without relief area will result in runtime termination due to excessively high or low pressure.</p>
@@ -4575,7 +4575,7 @@ The assumption is that in realistic configurations, zone pressure will generally
 </tr>
 </tbody>
 </table>
-<p>Give <a class="autorefs autorefs-internal" href="#izhconst">izHConst</a> for a conductive transfer between zones. Give <a class="autorefs autorefs-internal" href="#iznvtype">izNVType</a> other than NONE and the following variables for a convective (air) transfer between the zones or between a zone and outdoors. Both may be given if desired. Not known to work properly as of July 2011</p>
+<p>Give <a class="autorefs autorefs-internal" href="#izhconst">izHConst</a> for a conductive transfer between zones. Give <a class="autorefs autorefs-internal" href="#iznvtype">izNVType</a> other than NONE and the following variables for a convective (air) transfer between the zones or between a zone and outdoors. Both may be given if desired: <a class="autorefs autorefs-internal" href="#izhconst">izHConst</a> combines correctly with <a class="autorefs autorefs-internal" href="#iznvtype">izNVType</a>=ONEWAY or TWOWAY, but is currently ignored without warning when <a class="autorefs autorefs-internal" href="#iznvtype">izNVType</a> selects an AirNet type (e.g. AIRNETIZ, AIRNETEXT, AIRNETHORIZ)</p>
 <h3 id="izhconst">izHConst<a class="headerlink" href="#izhconst" title="Permanent link">¶</a></h3>
 <p>Type: float</p>
 <p>Conductance between zones.</p>

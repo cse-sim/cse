@@ -330,6 +330,24 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#comparison-with-energyplus" class="md-nav__link">
+    <span class="md-ellipsis">
+      Comparison with EnergyPlus
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validation-adoption" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation &amp; Adoption
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     <span class="md-ellipsis">
       Installation
@@ -3618,6 +3636,24 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#comparison-with-energyplus" class="md-nav__link">
+    <span class="md-ellipsis">
+      Comparison with EnergyPlus
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validation-adoption" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation &amp; Adoption
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     <span class="md-ellipsis">
       Installation
@@ -3675,12 +3711,47 @@
 <p><strong>Minute-resolution domestic hot water</strong> — DHW draws are simulated as discrete events at one-minute timesteps, enabling accurate evaluation of heat pump water heater controls and tank recovery dynamics that cannot be accurately represented in engines with coupled DHW timesteps.</p>
 </li>
 </ul>
+<h2 id="comparison-with-energyplus">Comparison with EnergyPlus<a class="headerlink" href="#comparison-with-energyplus" title="Permanent link">¶</a></h2>
+<p>EnergyPlus is a powerful, widely used simulation engine and a good fit for many applications, though not all. CSE was built with different priorities, and the tradeoffs that follow are worth noting.</p>
+<ul>
+<li>
+<p><strong>Runtime</strong> — For comparable annual simulations, CSE runs faster than EnergyPlus.<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup> Both engines have gotten faster since that comparison was published, but the relative advantage still makes CSE well suited to parametric sweeps and large compliance batch runs, where runtime differences compound across many simulations.</p>
+</li>
+<li>
+<p><strong>Architecture</strong> — CSE has utilized modern practices for object-oriented design from the beginning, rather than the global state variables EnergyPlus relies on.<sup id="fnref3:1"><a class="footnote-ref" href="#fn:1">1</a></sup> That structure makes CSE's codebase less error-prone and easier to extend safely; EnergyPlus's global-state design, by contrast, is not thread-safe.</p>
+</li>
+<li>
+<p><strong>Accuracy</strong> — In direct comparison, CSE and EnergyPlus track measured data from the Central Valley Research Homes project comparably.<sup id="fnref4:1"><a class="footnote-ref" href="#fn:1">1</a></sup> Neither tool shows a clear accuracy advantage; the differences between them are in runtime and architecture, not fidelity.</p>
+</li>
+<li>
+<p><strong>Scope &amp; focus</strong> — Both tools set out to be general-purpose building energy simulation engines, but their development has grown in different directions. CSE has concentrated on residential-scale modeling: domestic hot water, duct systems, envelope, and infiltration. EnergyPlus has grown a much broader library of commercial air and plant systems.</p>
+</li>
+</ul>
+<h2 id="validation-adoption">Validation &amp; Adoption<a class="headerlink" href="#validation-adoption" title="Permanent link">¶</a></h2>
+<p>CSE has been evaluated against ANSI/ASHRAE Standard 140 ("BESTEST") and serves as a reference program for the acceptance criteria of the standard's thermal fabric test cases, as well as for RESNET's HERS rating software accreditation testing. Beyond that baseline, CSE has a track record of adoption and validation across multiple contexts:</p>
+<ul>
+<li><strong>Official compliance engine</strong> — Within <a href="https://github.com/california-energy-commission/CBECC">CBECC</a>, the California Energy Commission's compliance software for Title 24, CSE performs the simulations for residential buildings (including multifamily dwelling units and common areas); non-residential buildings are modeled with EnergyPlus.</li>
+<li><strong>Utility program adoption</strong> — CSE was used by Big Ladder Software to model and calibrate advanced heat pump savings rates for the <a href="https://neea.org/resource/advanced-heat-pump-savings-rate-modeling/">Northwest Energy Efficiency Alliance (NEEA)</a>.</li>
+<li><strong>Peer-reviewed validation</strong> — CSE's algorithms are documented and validated against measured data from the Central Valley Research Homes project.<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></li>
+<li><strong>Cross-engine comparison</strong> — CSE has been directly compared against EnergyPlus for residential energy calculations.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></li>
+</ul>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">¶</a></h2>
 <p>Pre-built binaries are available on the <a href="https://github.com/cse-sim/cse/releases">CSE GitHub releases page</a>. Download the appropriate binary for your platform and place it in a directory on your system <code>PATH</code>.</p>
 <p>To build from source, see the <a href="https://github.com/cse-sim/cse">CSE repository</a> for build instructions.</p>
 <div class="admonition info">
 <p class="admonition-title">Single-Page Option</p>
 <p>The documentation is primarily a multi-page HTML site. You can also view the entire manual as a <a href="./single_page">single page</a>.</p>
+</div>
+<div class="footnote">
+<hr/>
+<ol>
+<li id="fn:1">
+<p>Kruis, N., M. Larson, B. Wilcox, and C.S. Barnaby (2019). "A Comparison of CSE and EnergyPlus for Residential Energy Calculations." Proceedings of the 16<sup>th</sup> IBPSA Conference, Rome, Italy. https://doi.org/10.26868/25222708.2019.210839 <a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">↩</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">↩</a><a class="footnote-backref" href="#fnref3:1" title="Jump back to footnote 1 in the text">↩</a><a class="footnote-backref" href="#fnref4:1" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:2">
+<p>Barnaby, C., B. Wilcox, and P. Niles (2013). "Development and Validation of the California Simulation Engine." Proceedings of Building Simulation 2013, Chambéry, France. <a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+</ol>
 </div>
 
 

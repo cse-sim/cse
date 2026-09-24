@@ -3601,7 +3601,7 @@ towerplant user inputs</p>
 <td>input time</td>
 <td><ul>
 <li>subscript of [METER][meter] object to which tower fan energy input will be posted,</li>
-<li>category "Aux" (Per Bruce, 8-92).  Cooling towers as modelled have no pumps</li>
+<li>category "Aux".  Cooling towers as modelled have no pumps</li>
 <li>and use no energy except to drive their fans. default none.</li>
 <li>If towStg is LEAD, the following two apply only to the lead tower; any additional towers are assumed to have ONESPEED fans.</li>
 </ul></td>
@@ -3621,7 +3621,7 @@ towerplant user inputs</p>
 <li>The rest of the [TOWERPLANT][towerplant] input variables apply to each tower in the group;</li>
 <li>the towers are assumed identical except for the single-speed fan on non-lead towers.</li>
 <li>The following two inputs permit computation of the tower fan electrical energy</li>
-<li>consumption (we only need bhp/eff, but Bruce/Steve say use two inputs):</li>
+<li>consumption (we only need bhp/eff, but two separate inputs are used):</li>
 </ul></td>
 </tr>
 <tr>
@@ -3750,7 +3750,6 @@ towerplant user inputs</p>
 <li>VARIABLE speed fan cubic curve coefficients, default 0,0,0,1</li>
 <li>The next 6 [TOWERPLANT][towerplant] members specify one-tower performance under a one set of conditions (the "design conditions").</li>
 <li>The conditions should be chosen to be representative of full load operating conditions.</li>
-<li>verify next 3 per tower?? &lt;--- issues2.txt memo sent to Bruce 10-92. *****</li>
 </ul></td>
 </tr><tr>
 <td colspan="4" style="border-top: 0px">
@@ -3798,7 +3797,7 @@ towerplant user inputs</p>
 <td>ctVfDs</td>
 <td>AFLOW_GZ</td>
 <td>Start of phase</td>
-<td>Design air flow volume rate through tower / full speed fan flow??, cfm, RQD.</td>
+<td>Design air flow volume rate through tower, cfm, RQD. Equal to full-speed fan flow.</td>
 </tr>
 <tr>
 <td>ctGpmDs</td>
@@ -3826,7 +3825,7 @@ towerplant user inputs</p>
 <li>Design leaving water temperature, F, default 85.</li>
 <li>The following 6 [TOWERPLANT][towerplant] members give another one-tower performance point, the "Off-design" point.</li>
 <li>Either give either all that don't have defaults, (and not [ctK][ctk]), or none ([ctK][ctk] may then be given).</li>
-<li>verify next 3 per tower?? &lt;--- issues2.txt memo sent to Bruce 10-92. ******</li>
+<li>Defaults added after review.</li>
 </ul></td>
 </tr>
 <tr>
