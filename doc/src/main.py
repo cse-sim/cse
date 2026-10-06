@@ -1,6 +1,19 @@
 import csv
+import logging
 from io import StringIO
 from pathlib import Path
+
+logger = logging.getLogger("mkdocs")
+
+POLYNOMIAL_FORMS = {
+    "linear": "a + b \\cdot {x}",
+    "cubic": "a + b \\cdot {x} + c \\cdot {x}^2 + d \\cdot {x}^3",
+    "biquadratic": "a + b \\cdot {x} + c \\cdot {x}^2 + d \\cdot {y} + e \\cdot {y}^2 + f \\cdot {x} \\cdot {y}",
+}
+
+# Jinja string literals process Python escape sequences, so "\text" arrives as a tab followed by "ext". No variable
+# name contains these control characters, so mapping them back to their escape sequences is unambiguous.
+ESCAPED_CONTROL_CHARACTERS = {"\a": "\\a", "\b": "\\b", "\f": "\\f", "\n": "\\n", "\r": "\\r", "\t": "\\t", "\v": "\\v"}
 
 
 def define_env(env):
@@ -75,3 +88,28 @@ def define_env(env):
         )
 
         return table
+
+    def math_variable(name, argument):
+        repaired = "".join(ESCAPED_CONTROL_CHARACTERS.get(character, character) for character in name)
+        restored = sorted(
+            {ESCAPED_CONTROL_CHARACTERS[character] for character in name if character in ESCAPED_CONTROL_CHARACTERS}
+        )
+        if restored:
+            logger.warning(
+                f"polynomial() in {env.page.file.src_path}: restored {', '.join(restored)} in {argument}={repaired!r}. "
+                "Double the backslash (e.g. \\\\text) so Jinja does not read it as an escape sequence."
+            )
+        if "\\" in repaired:
+            return repaired
+        # Multi-letter names would otherwise render as a product of single-letter variables.
+        if len(repaired.removeprefix("Δ")) == 1:
+            return repaired
+        return f"\\text{{{repaired}}}"
+
+    @env.macro
+    def polynomial(form, x="x", y="y", z="z"):
+        """Display equation for a polynomial curve input, with coefficients a, b, c, ... in CSE input order."""
+        if form not in POLYNOMIAL_FORMS:
+            raise ValueError(f"Unknown polynomial form {form!r}; expected one of {list(POLYNOMIAL_FORMS)}.")
+        x, y, z = (math_variable(name, argument) for name, argument in [(x, "x"), (y, "y"), (z, "z")])
+        return f"$$\n{z} = {POLYNOMIAL_FORMS[form].format(x=x, y=y)}\n$$"
