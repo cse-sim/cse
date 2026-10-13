@@ -851,9 +851,13 @@ Rated efficiency (output energy/input energy; 1/ahhcEirR) at full power
 
 ### ahhcPyEi
 
-Type: $k_0$, $k_1$, $k_2$, $k_3$
+Type: $a$, $b$, $c$, $d$
 
-Coefficients of cubic polynomial function of (subhour average) part-load-ratio (plrAv) to adjust the full-load furnace energy input for part load operation. Enter, separated by commas, in order, the constant part, the coefficient of plrAv, the coefficient of plrAv squared, and the coefficient of plrAv cubed. CSE will normalize the coefficients if necessary to make the polynomial value be 1.0 when the part load ratio is 1.0.
+Coefficients of cubic polynomial function of (subhour average) part-load-ratio ($PLR_{Av}$) to adjust the full-load furnace energy input for part load operation. This polynomial is of the form
+
+{{ polynomial("cubic", x="PLR_{Av}") }}
+
+where $z$ is the relative energy input. Enter, separated by commas, in order, the constant part, the coefficient of $PLR_{Av}$, the coefficient of $PLR_{Av}$ squared, and the coefficient of $PLR_{Av}$ cubed. CSE will normalize the coefficients if necessary to make the polynomial value be 1.0 when the part load ratio is 1.0.
 
 The default, from DOE2, is equivalent to:
 
@@ -862,7 +866,7 @@ The default, from DOE2, is equivalent to:
 which corresponds to the quadratic polynomial:
 
 $$
-\text{pyEi}(\text{plrAv}) = 0.01861 + 1.094209 \cdot \textbf{plrAv} - 0.112819 \cdot \textbf{plrAv}^2
+z = 0.01861 + 1.094209 \cdot PLR_{Av} - 0.112819 \cdot PLR_{Av}^2
 $$
 
 Note that the value of this polynomial adjusts the energy input, not the energy input ratio, for part load operation.
@@ -871,7 +875,7 @@ Note that the value of this polynomial adjusts the energy input, not the energy 
   member_table({
     "units": "",
     "legal_range": "", 
-    "default": "0.01861, 1.094209, -0.112819, 0.0.",
+    "default": "0.01861, 1.094209, -0.112819, 0.0",
     "required": "No",
     "variability": "constant" 
   })
