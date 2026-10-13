@@ -89,27 +89,22 @@ def define_env(env):
 
         return table
 
-    def math_variable(name, argument):
-        repaired = "".join(ESCAPED_CONTROL_CHARACTERS.get(character, character) for character in name)
+    def repaired_latex(latex, argument):
+        repaired = "".join(ESCAPED_CONTROL_CHARACTERS.get(character, character) for character in latex)
         restored = sorted(
-            {ESCAPED_CONTROL_CHARACTERS[character] for character in name if character in ESCAPED_CONTROL_CHARACTERS}
+            {ESCAPED_CONTROL_CHARACTERS[character] for character in latex if character in ESCAPED_CONTROL_CHARACTERS}
         )
         if restored:
             logger.warning(
                 f"polynomial() in {env.page.file.src_path}: restored {', '.join(restored)} in {argument}={repaired!r}. "
                 "Double the backslash (e.g. \\\\text) so Jinja does not read it as an escape sequence."
             )
-        if "\\" in repaired:
-            return repaired
-        # Multi-letter names would otherwise render as a product of single-letter variables.
-        if len(repaired.removeprefix("Δ")) == 1:
-            return repaired
-        return f"\\text{{{repaired}}}"
+        return repaired
 
     @env.macro
     def polynomial(form, x="x", y="y", z="z"):
         """Display equation for a polynomial curve input, with coefficients a, b, c, ... in CSE input order."""
         if form not in POLYNOMIAL_FORMS:
             raise ValueError(f"Unknown polynomial form {form!r}; expected one of {list(POLYNOMIAL_FORMS)}.")
-        x, y, z = (math_variable(name, argument) for name, argument in [(x, "x"), (y, "y"), (z, "z")])
+        x, y, z = (repaired_latex(latex, argument) for latex, argument in [(x, "x"), (y, "y"), (z, "z")])
         return f"$$\n{z} = {POLYNOMIAL_FORMS[form].format(x=x, y=y)}\n$$"
