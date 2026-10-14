@@ -72,9 +72,9 @@ Type: $a$, $b$, $c$, $d$
 
 Coefficients of cubic polynomial function of part load ratio ($PLR$, load/capacity) to adjust full-load energy input for part load operation. This polynomial is of the form
 
-{{ polynomial("cubic", x="PLR") }}
+{{ polynomial("cubic", x="PLR", name="blrPyEi") }}
 
-where $z$ is the relative energy input. Up to four floats may be given, separated by commas, lowest order (i.e. constant term) coefficient first. If the given coefficients result in a polynomial whose value is not 1.0 when the input variable, part load ratio, is 1.0, a warning message will be printed and the coefficients will be normalized to produce value 1.0 at input 1.0.
+Up to four floats may be given, separated by commas, lowest order (i.e. constant term) coefficient first. If the given coefficients result in a polynomial whose value is not 1.0 when the input variable, part load ratio, is 1.0, a warning message will be printed and the coefficients will be normalized to produce value 1.0 at input 1.0.
 
 {{
   member_table({

@@ -102,9 +102,11 @@ def define_env(env):
         return repaired
 
     @env.macro
-    def polynomial(form, x="x", y="y", z="z"):
-        """Display equation for a polynomial curve input, with coefficients a, b, c, ... in CSE input order."""
+    def polynomial(form, name, x="x", y="y"):
+        """Display equation for a polynomial curve input, written as a function of the input's name, with
+        coefficients a, b, c, ... in CSE input order."""
         if form not in POLYNOMIAL_FORMS:
             raise ValueError(f"Unknown polynomial form {form!r}; expected one of {list(POLYNOMIAL_FORMS)}.")
-        x, y, z = (repaired_latex(latex, argument) for latex, argument in [(x, "x"), (y, "y"), (z, "z")])
-        return f"$$\n{z} = {POLYNOMIAL_FORMS[form].format(x=x, y=y)}\n$$"
+        x, y = (repaired_latex(latex, argument) for latex, argument in [(x, "x"), (y, "y")])
+        arguments = f"{x}, {y}" if "{y}" in POLYNOMIAL_FORMS[form] else x
+        return f"$$\n\\text{{{name}}}({arguments}) = {POLYNOMIAL_FORMS[form].format(x=x, y=y)}\n$$"

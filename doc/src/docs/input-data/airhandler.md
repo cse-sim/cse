@@ -417,16 +417,15 @@ Type: $a$, $b$, $c$, $d$, $x_0$
 
 $a$ through $d$ are the coefficients of a cubic polynomial for the curve relating fan relative energy consumption to relative air flow above the minimum flow $x_0$. Up to five _floats_ may be given, separated by commas. 0 is used for any omitted trailing values. The values are used as follows:
 
-{{ polynomial("cubic", x="\\Delta x") }}
+{{ polynomial("cubic", x="\\Delta x", name="sfanCurvePy") }}
 
 where:
 
 - $x$ is the relative fan air flow (as fraction of _sfanVfDs_; 0 ≤ $x$ ≤ 1);
 - $x_0$ is the minimum relative air flow (default 0);
 - $\Delta x = \max(x - x_0,\ 0)$ is the relative air flow above the minimum (0 when $x \le x_0$);
-- $z$ is the relative energy consumption.
 
-If $z$ is not 1.0 for $x$ = 1.0, a warning message is displayed and the coefficients are normalized by dividing by the polynomial's value for $x$ = 1.0.
+If the polynomial's value is not 1.0 for $x$ = 1.0, a warning message is displayed and the coefficients are normalized by dividing by that value.
 
 {{
   member_table({
@@ -612,16 +611,15 @@ Type: $a$, $b$, $c$, $d$, $x_0$
 
 $a$ through $d$ are the coefficients of a cubic polynomial for the curve relating fan relative energy consumption to relative air flow above the minimum flow $x_0$. Up to five _floats_ may be given, separated by commas. 0 is used for any omitted trailing values. The values are used as follows:
 
-{{ polynomial("cubic", x="\\Delta x") }}
+{{ polynomial("cubic", x="\\Delta x", name="rfanCurvePy") }}
 
 where:
 
 - $x$ is the relative fan air flow (as fraction of _rfanVfDs_; 0 ≤ $x$ ≤ 1);
 - $x_0$ is the minimum relative air flow (default 0);
 - $\Delta x = \max(x - x_0,\ 0)$ is the relative air flow above the minimum (0 when $x \le x_0$);
-- $z$ is the relative energy consumption.
 
-If $z$ is not 1.0 for $x$ = 1.0, a warning message is displayed and the coefficients are normalized by dividing by the polynomial's value for $x$ = 1.0.
+If the polynomial's value is not 1.0 for $x$ = 1.0, a warning message is displayed and the coefficients are normalized by dividing by that value.
 
 {{
   member_table({
@@ -855,9 +853,9 @@ Type: $a$, $b$, $c$, $d$
 
 Coefficients of cubic polynomial function of (subhour average) part-load-ratio ($PLR_{Av}$) to adjust the full-load furnace energy input for part load operation. This polynomial is of the form
 
-{{ polynomial("cubic", x="PLR_{Av}") }}
+{{ polynomial("cubic", x="PLR_{Av}", name="ahhcPyEi") }}
 
-where $z$ is the relative energy input. Enter, separated by commas, in order, the constant part, the coefficient of $PLR_{Av}$, the coefficient of $PLR_{Av}$ squared, and the coefficient of $PLR_{Av}$ cubed. CSE will normalize the coefficients if necessary to make the polynomial value be 1.0 when the part load ratio is 1.0.
+Enter, separated by commas, in order, the constant part, the coefficient of $PLR_{Av}$, the coefficient of $PLR_{Av}$ squared, and the coefficient of $PLR_{Av}$ cubed. CSE will normalize the coefficients if necessary to make the polynomial value be 1.0 when the part load ratio is 1.0.
 
 The default, from DOE2, is equivalent to:
 
@@ -866,7 +864,7 @@ The default, from DOE2, is equivalent to:
 which corresponds to the quadratic polynomial:
 
 $$
-z = 0.01861 + 1.094209 \cdot PLR_{Av} - 0.112819 \cdot PLR_{Av}^2
+\text{ahhcPyEi}(PLR_{Av}) = 0.01861 + 1.094209 \cdot PLR_{Av} - 0.112819 \cdot PLR_{Av}^2
 $$
 
 Note that the value of this polynomial adjusts the energy input, not the energy input ratio, for part load operation.

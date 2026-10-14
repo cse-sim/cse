@@ -74,9 +74,7 @@ Type: $a$, $b$, $c$, $d$, $e$, $f$
 
 Coefficients of bi-quadratic polynomial function of supply ($T_s$) and condenser ($T_{cnd}$) temperatures that specifies how capacity varies with these temperatures. This polynomial is of the form
 
-{{ polynomial("biquadratic", x="T_s", y="T_{cnd}") }}
-
-where $z$ is the relative capacity.
+{{ polynomial("biquadratic", x="T_s", y="T_{cnd}", name="chPyCapT") }}
 
 Up to six *float* values may be entered, separated by commas; CSE will use zero for omitted trailing values. If the polynomial does not evaluate to 1.0 when $T_s$ is *chTsDs* and $T_{cnd}$ is *chTcndDs*, a warning message will be issued and the coefficients will be adjusted (normalized) to make the value 1.0.
 
@@ -130,9 +128,7 @@ Type: $a$, $b$, $c$, $d$, $e$, $f$
 
 Coefficients of bi-quadratic polynomial function of supply ($T_s$) and condenser ($T_{cnd}$) temperatures that specifies how energy input varies with these temperatures. This polynomial is of the form
 
-{{ polynomial("biquadratic", x="T_s", y="T_{cnd}") }}
-
-where $z$ is the relative energy input.
+{{ polynomial("biquadratic", x="T_s", y="T_{cnd}", name="chPyEirT") }}
 
 Up to six *float* values may be entered, separated by commas; CSE will use zero for omitted trailing values. If the polynomial does not evaluate to 1.0 when $T_s$ is *chTsDs* and $T_{cnd}$ is *chTcndDs*, a warning message will be issued and the coefficients will be adjusted (normalized) to make the value 1.0.
 
@@ -167,9 +163,7 @@ Type: $a$, $b$, $c$, $d$
 
 Coefficients of cubic polynomial function of part load ratio ($PLR$) that specifies how energy input varies with $PLR$ in the compressor unloading region (see above). This polynomial is of the form
 
-{{ polynomial("cubic", x="PLR") }}
-
-where $z$ is the relative energy input.
+{{ polynomial("cubic", x="PLR", name="chPyEirUl") }}
 
 Up to four *float* values may be entered, separated by commas; CSE will use zero for omitted trailing values. If the polynomial does not evaluate to 1.0 when $PLR$ is 1.0, a warning message will be issued and the coefficients will be adjusted (normalized) to make the value 1.0.
 
