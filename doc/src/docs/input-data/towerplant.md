@@ -168,26 +168,24 @@ Motor (and drive, if any) efficiency for tower fans.
   })
 }}
 
-The next four items specify the coefficients of polynomial curves relating fan power consumption to average speed (cfm) for the various fan types. For the non-variable speed cases CSE uses linear polynomials of the form
+The next four items specify the coefficients of polynomial curves relating fan power consumption to average speed (cfm) for the various fan types. Each curve's value is the power consumption as a fraction of full speed power consumption, and its variable $x$ is the average speed as a fraction of full speed. For the non-variable speed cases CSE uses linear polynomials. The linear relationship reflects the fact that the fans cycle to match partial loads. A non-0 value may be given for the constant part $a$ to reflect start-stop losses. For the two speed fan, separate polynomials are used for low and high speed operation; the default coefficients assume power input varies with the cube of speed, that is, at low speed (*ctLoSpd*) the relative power input is *ctLoSpd*^3^. For the variable speed case a cubic polynomial is used.
 
-$$
-p = a + b \cdot \text{spd}
-$$
-
-where *p* is the power consumption as a fraction of full speed power consumption, and *spd* is the average speed as a fraction of full speed. The linear relationship reflects the fact that the fans cycle to match partial loads. A non-0 value may be given for the constant part *a* to reflect start-stop losses. For the two speed fan, separate polynomials are used for low and high speed operation; the default coefficients assume power input varies with the cube of speed, that is, at low speed (*ctLoSpd*) the relative power input is *ctLoSpd3*. For the variable speed case a cubic polynomial is used.
-
-For each linear polynomial, two *float* expressions are given, separated by a comma. The first expression is the constant, *a*. The second expression is the coefficient of the average speed, *b*. Except for *ctFcLo*, *a* and *b* should add up to 1, to make the relative power consumption 1 when *spd* is 1; otherwise, CSE will issue a warning message and normalize them.
+For each linear polynomial, two *float* expressions are given, separated by a comma. The first expression is the constant, $a$. The second expression is the coefficient of the average speed, $b$. Except for *ctFcLo*, $a$ and $b$ should add up to 1, to make the relative power consumption 1 when $x$ is 1; otherwise, CSE will issue a warning message and normalize them.
 
 ### ctFcOne
 
-Type: *a, b*
+Type: $a$, $b$
 
-Coefficients of linear fan power consumption polynomial $p = a + b \cdot \text{spd}$ for ONESPEED fan. For the one-speed case, the relative average speed *spd* is the fraction of the time the fan is on.
+Coefficients of linear fan power consumption polynomial for ONESPEED fan:
+
+{{ polynomial("linear", x="x", name="ctFcOne") }}
+
+For the one-speed case, the relative average speed $x$ is the fraction of the time the fan is on.
 
 {{
   member_table({
     "units": "",
-    "legal_range": "*a + b = 1.0*", 
+    "legal_range": "$a + b = 1.0$", 
     "default": "0, 1",
     "required": "No",
     "variability": "constant" 
@@ -196,14 +194,16 @@ Coefficients of linear fan power consumption polynomial $p = a + b \cdot \text{s
 
 ### ctFcLo
 
-Type: *a, b*
+Type: $a$, $b$
 
-Coefficients of linear fan power consumption polynomial $p = a + b \cdot \text{spd}$ for low speed of TWOSPEED fan, when *spd* ≤ *ctLoSpd*.
+Coefficients of linear fan power consumption polynomial for low speed of TWOSPEED fan, when $x$ ≤ *ctLoSpd*:
+
+{{ polynomial("linear", x="x", name="ctFcLo") }}
 
 {{
   member_table({
     "units": "",
-    "legal_range": "*a + b = 1.0*", 
+    "legal_range": "$a + b = 1.0$", 
     "default": "0, *ctLoSpd^2^*",
     "required": "No",
     "variability": "constant" 
@@ -212,14 +212,16 @@ Coefficients of linear fan power consumption polynomial $p = a + b \cdot \text{s
 
 ### ctFcHi
 
-Type: *a, b*
+Type: $a$, $b$
 
-Coefficients of linear fan power consumption polynomial $p = a + b \cdot \text{spd}$ for high speed of TWOSPEED fan, when *spd* &gt; *ctLoSpd*.
+Coefficients of linear fan power consumption polynomial for high speed of TWOSPEED fan, when $x$ > *ctLoSpd*:
+
+{{ polynomial("linear", x="x", name="ctFcHi") }}
 
 {{
   member_table({
     "units": "",
-    "legal_range": "*a + b = 1.0*", 
+    "legal_range": "$a + b = 1.0$", 
     "default": "*-ctLoSpd^2^ - ctLoSpd, ctLoSpd^2^ + ctLoSpd + 1*",
     "required": "No",
     "variability": "constant" 
@@ -228,14 +230,16 @@ Coefficients of linear fan power consumption polynomial $p = a + b \cdot \text{s
 
 ### ctFcVar
 
-Type: *a, b, c, d*
+Type: $a$, $b$, $c$, $d$
 
-For VARIABLE speed fan, four *float* values for coefficients of cubic fan power consumption polynomial of the form $p = a + b \cdot \text{spd} + c \cdot \text{spd}^2 + d \cdot \text{spd}^3$.
+For VARIABLE speed fan, four *float* values for coefficients of cubic fan power consumption polynomial:
+
+{{ polynomial("cubic", x="x", name="ctFcVar") }}
 
 {{
   member_table({
     "units": "",
-    "legal_range": "*a + b + c + d = 1.0*", 
+    "legal_range": "$a + b + c + d = 1.0$", 
     "default": "0, 0, 0, 1",
     "required": "No",
     "variability": "constant" 
