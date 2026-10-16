@@ -200,10 +200,12 @@ Coefficients of linear fan power consumption polynomial for low speed of TWOSPEE
 
 {{ polynomial("linear", x="x", name="ctFcLo") }}
 
+Because the low speed curve is not used at full speed, it is not normalized; instead, its value at *ctLoSpd* must equal that of *ctFcHi*, or CSE reports an error.
+
 {{
   member_table({
     "units": "",
-    "legal_range": "$a + b = 1.0$", 
+    "legal_range": "*ctFcLo*(*ctLoSpd*) = *ctFcHi*(*ctLoSpd*)", 
     "default": "0, *ctLoSpd^2^*",
     "required": "No",
     "variability": "constant" 
