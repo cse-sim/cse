@@ -167,7 +167,7 @@ SHGC diffuse multiplier, applied to gtSHGC to determine transmissivity for diffu
     "units": "fraction",
     "legal_range": "*0* ≤ *x* ≤ *1*", 
     "default": "*none*",
-    "required": "Yes",
+    "required": "If *gtModel* is SHGC",
     "variability": "constant" 
   })
 }}
@@ -176,14 +176,14 @@ SHGC diffuse multiplier, applied to gtSHGC to determine transmissivity for diffu
 
 Type: float
 
-SHGC diffuse multiplier, applied to qtSHGC to determine transmissivity for diffuse radiation reflected back out the window. Misnamed as a reflectance. Assume equal to DMSHGC if no other data available.
+SHGC diffuse multiplier, applied to gtSHGC to determine transmissivity for diffuse radiation reflected back out the window. Misnamed as a reflectance. Assume equal to DMSHGC if no other data available.
 
 {{
   member_table({
     "units": "fraction",
     "legal_range": "*0* ≤ *x* ≤ *1*", 
     "default": "*none*",
-    "required": "Yes",
+    "required": "If *gtModel* is SHGC",
     "variability": "constant" 
   })
 }}
