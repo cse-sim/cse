@@ -136,24 +136,22 @@ Framing multiplier used if none given in window, for example .9 if frame and mul
 
 ### gtPySHGC 
 
-Type: *float*
+Type: $a$, $b$, $c$, $d$
 
-Four float values separated by commas. Coefficients for incidence angle SHGC multiplier polynomial applied to gtSHGC to determine beam transmissivity at angles of incidence other than 90 degrees. The values are coefficients for first through fourth powers of the cosine of the incidence angle; there is no constant part. An error message will be issued if the coefficients do not add to one. They are used in the following computation:
+Three or four float values separated by commas. Coefficients for incidence angle SHGC multiplier polynomial applied to *gtSHGC* to determine beam transmissivity at angles of incidence other than 90 degrees. The values are coefficients for first through fourth powers of the cosine of the incidence angle; there is no constant part. An error message will be issued if the coefficients do not add to one. They are used as follows:
 
-angle = incidence angle of beam radiation, measured from normal to glass.
+$$
+\text{gtPySHGC}(\theta) = a \cdot \cos\theta + b \cdot \cos^2\theta + c \cdot \cos^3\theta + d \cdot \cos^4\theta
+$$
 
-cosI = cos(angle)
-
-angMult = a\*cosI + b\*cosI^2^ + c\*cosI^3^ + d\*cosI^4^
-
-beamXmisvty = gtSHGCO * angMult (shades open)
+where $\theta$ is the incidence angle of beam radiation, measured from normal to glass. The beam transmissivity is *gtSHGC* times $\text{gtPySHGC}(\theta)$, further multiplied by the shades-open and shades-closed SHGC multipliers (*gtSMSO* and *gtSMSC*, or the window's *wnSMSO* and *wnSMSC*), with the zone's shade closure (*znSC*) determining how much of each applies.
 
 {{
   member_table({
-    "units": "float",
-    "legal_range": "*any*", 
+    "units": "",
+    "legal_range": "$a + b + c + d = 1.0$", 
     "default": "*none*",
-    "required": "Yes",
+    "required": "If *gtModel* is SHGC",
     "variability": "constant" 
   })
 }}
