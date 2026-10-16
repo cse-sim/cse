@@ -303,11 +303,11 @@ static const char* awStrToZF(		// safe c-string copy with truncate
 #define FCGET( s) s
 #endif		// FORTRAN_TRANSITION
 //-----------------------------------------------------------------------------
-static std::string stringFmtV( const char* fmt, va_list ap=NULL)
+static std::string stringFmtV( const char* fmt, va_list ap=va_NULL)
 {
 	static const int maxLen = 2000;
 	char buf[ maxLen];
-	if (ap)
+	if (ap != va_NULL)
 	{	int fRet = vsnprintf( buf, maxLen, fmt, ap);
 		fmt = fRet >= 0 ? buf : "?? stringFmtV vsnprintf failure.";
 	}
@@ -322,7 +322,7 @@ static std::string stringFmt( const char* fmt, ...)
 static bool MessageV(
 	AWMSGTY msgTy,		// message type
 	const char* fmt,
-	va_list ap=NULL)
+	va_list ap=va_NULL)
 {
 	std::string msg = stringFmtV( fmt, ap);
 	if (pMsgCallBackFunc)
@@ -347,7 +347,7 @@ static bool AddMsgV(		// add message to array of messages
 	std::vector< std::string> &msgs,		// array of messages
 	const char* what,			// context for message
 	const char* fmt,			// message (vsprintf'd if !ap)
-	va_list ap=NULL)			// optional args for fmt
+	va_list ap=va_NULL)			// optional args for fmt
 // add message to array
 // returns false (handy in some contexts)
 {

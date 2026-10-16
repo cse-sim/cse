@@ -23,6 +23,8 @@ enum LINESTAT
 extern int VrErr;		// set/used/cleared in rmkerr.cpp and cse.cpp.
 extern int VrLog;		// ..
 
+extern va_list va_NULL;	// global "null" va_list for use as default arg
+
 ///////////////////////////////////////////////////////////////////////////////
 // MSGORHANDLE: Generalized message text
 //       holds either a pointer to a message or handle for MsgFind()
@@ -163,7 +165,7 @@ RC DbFileOpen( const char *_dbFName);
 int DbGetVrh();
 int DbPrintf( DWORD oMsk, const char* fmt, ...);
 int DbPrintf( const char* fmt, ...);
-int DbVprintf( const char* fmt, va_list ap=NULL);
+int DbVprintf( const char* fmt, va_list ap=va_NULL);
 //--------------------------------------------------------------------------
 template< typename T> void VDbPrintf( 		// debug print vector
 	DWORD oMsk,			// mask: print iff corres bit(s) on in dbgMsk
