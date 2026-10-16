@@ -348,6 +348,55 @@ WDHR& WDHR::Copy(
 		memcpy( (char *)this, (const char*)&wdhr, sizeof( WDHR));
 	return* this;
 }	// WDHR::Copy
+//-----------------------------------------------------------------------------
+RC WDHR::wd_Validate(	// (partial) validation of weather data
+	std::string& msgs,
+	int options /*=0*/) const		// option bits
+									//  1: do NOT check IRHoriz
+// returns RCOK iff no issues found (msgs empty)
+//      else RCxxx and msg text
+{
+	RC rc{ RCOK };
+
+	msgs.clear();
+
+	auto checkRange = [&msgs](const char* what, float v, float vMin, float vMax)
+	{	if (v < vMin || v > vMax)
+		{
+			if (!msgs.empty())
+				msgs.append(std::string("\n"));
+			msgs.append(strtprintf("    %s = %0.2f, should be in range %0.2f - %0.2f",
+				what, v, vMin, vMax));
+		}
+	};
+
+	checkRange("tDb", wd_db, -100.f, 150.f);
+
+	checkRange("tWb", wd_wb, -100.f, wd_db);
+
+	checkRange("tDp", wd_taDp, -100.f, wd_db);
+
+	// irradiance: 800 Btuh/ft2 = 2500 W/m2 approx
+	checkRange("glRad", wd_glrad, 0.f, 800.f);
+
+	checkRange("bmRad", wd_bmrad, 0.f, 500.f);
+
+	checkRange("dfRad", wd_dfrad, 0.f, 220.f);
+
+	if (!(options & 1))
+		checkRange("IRHoriz", wd_irHoriz, 15.f, 200.f);
+
+	checkRange("cldCvr", wd_cldCvr, 0.f, 10.f);
+
+	checkRange("wndSpd", wd_wndSpd, 0.f, 150.f);
+
+	checkRange("wndDir", wd_wndDir, 0.f, 360.f);
+
+	rc = msgs.length() > 0;
+
+	return rc;
+
+}	// WDHR::wd_Validate
 //----------------------------------------------------------------------------
 RC WDHR::wd_Unpack(		// single-hour unpack
 	int iHr,				// hour of day (0-23)
@@ -1921,7 +1970,7 @@ RC WFILE::wf_PackedOpen(	// open BSGS or BSGSdemo or ET or ... packed weather fi
 // sets isLeap if leap year file (future ET1 files)
 {
 // open file
-	if (!wfName || yac->open( wfName, "weather file", IGN, wrAccess) != RCOK)
+	if (!wfName || yac->open( wfName, "Weather file", IGN, wrAccess) != RCOK)
 		return RCBAD;							// if failed
 
 // read header
@@ -2685,7 +2734,7 @@ RC WFILE::wf_EPWOpen(	// open EnergyPlus weather file
 	wf_Init();
 
 // open file
-	if (yac->open( wfName, "weather file", IGN) != RCOK)	// attempt open, no message. yacam.cpp.
+	if (yac->open( wfName, "Weather file", IGN) != RCOK)	// attempt open, no message. yacam.cpp.
 		return RCBAD;
 
 	RC rc = RCOK;
@@ -3137,6 +3186,19 @@ x			printf( "mismatch\n");
 		fprintf(pF, "%d,%d,%d,%d,%0.1f,%0.1f,%0.1f,%0.1f\n", yr, m, d, h, osc, tsc, wd_tSky, tSkyIR);
 #endif
 	}
+
+	// (partial) validation
+	// check values read from file against plausible ranges
+	int validateOptions = Top.skyModelLW != C_SKYMODLWCH_IRHORIZ;	// don't check irhoriz unless used
+	std::string msgs;
+	RC rcVal = wd_Validate( msgs, validateOptions);
+	if (rcVal != RCOK)
+	{
+		pWF->yac->errFlLn( "Reading data for mon=%d day=%d hr=%d\n%s",m,d,h,msgs.c_str());
+		// rc |= rcVal;  NO! allow entire year to be scanned before stopping run
+		//               if any messages, errorCount check will stop run before simulation
+	}
+
 	return rc;
 }		// WDHR::wd_EPWReadHr
 #undef _C

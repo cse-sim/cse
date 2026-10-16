@@ -854,6 +854,7 @@ RECORD WDHR "wfdata sub" *SUBSTRUCT	// hourly data substructure for WFDATA
     *declare "WDHR& Copy( const WDHR& wd, int options=0);"
     *declare "void wd_WriteCSV( const char* dateStr, const WDHR& wdx, int iHr) const;"
 	*declare "RC wd_WfReader( BOO nextHour, WFILE* pWF);"
+    *declare "RC wd_Validate( std::string& msgs, int options=0) const;"
 	*declare "void wd_Adjust( int iHrST);"
 	*declare "void wd_SetSolarValues( int jDayST, int iHrST);"
     *declare "int wd_SunupBegEnd( int iHr, float& hrBeg, float& hrEnd) const;"

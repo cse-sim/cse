@@ -67,13 +67,10 @@ RC YACAM::open( 	// open file for reading, return RCOK if ok
 
 // copy pathName to heap
 	mPathName = new char[ strlen(pathName)+1];
-	if (!mPathName)
-		return RCBAD;		// memory full. msg?
 	strcpy( mPathName, pathName);
 
 // copy 'what' to object
-	strncpy( mWhat, what, sizeof(mWhat)-1);
-	mWhat[ sizeof(mWhat)-1] = '\0';
+	strncpy0( mWhat, what, sizeof(mWhat));
 
 // indicate empty buffer, init line count, etc
 	bufN = bufI = 0;
@@ -944,24 +941,24 @@ RC YACAM::errFl( MSGORHANDLE s, ...)		// error message "%s <mWhat> <mPathName>".
 {
 	va_list ap;
 	va_start( ap, s);
-	char buf[300];
+	char buf[3000];
 	msgI( WRN, buf, sizeof( buf), NULL, s, ap);	// retrieve error text if s is handle, format args into it to form text to insert in our msg
 	return err( mErOp, 			// conditionally issue message (may prefix "Error: "), rmkerr.cpp or errdmy.cpp.
 				"%s %s %s",
-				buf,  mWhat,  mPathName ? mPathName : "bug") ;
+				buf,  mWhat,  pathName()) ;
 }
 //----------------------------------------------------------------------------
 RC YACAM::errFlLn( MSGORHANDLE s, ...)	// error message "%s in <mWhat> <mPathName> near line <mLineMo>". returns RCBAD.
 {
 	va_list ap;
 	va_start( ap, s);
-	char buf[300];
+	char buf[3000];
 	msgI( WRN, buf, sizeof( buf), NULL, s, ap);	// retrieve disk text if s is handle
 												// format args into it to form text to insert in our msg
 	return err( 						// conditionally issue message, rmkerr.cpp or errdmy.cpp.
 			   mErOp,					// ERR, WRN, ...
 			   MH_I0118,		// "%s '%s' (near line %d):\n  %s"
-			   mWhat,  mPathName ? mPathName : "bug",  mLineNo,  buf );
+			   mWhat,  pathName(), mLineNo, buf);
 }
 #if 0 // TODO (MP) The methods below are not used but have been modified to fit c standard file io.
 //---------------------------------------------------------------------------
@@ -981,8 +978,7 @@ RC YACAM::create( 	// create file to be written, return RCOK if ok
 	strcpy(mPathName, pathName);
 
 	// copy 'what' to object
-	strncpy(mWhat, what, sizeof(mWhat) - 1);
-	mWhat[sizeof(mWhat) - 1] = '\0';
+	strncpy0(mWhat, what, sizeof(mWhat));
 
 	// indicate empty buffer etc
 	mFilO = -1L;  		// file offset of buffer contents: -1 indicates no buffer contents
