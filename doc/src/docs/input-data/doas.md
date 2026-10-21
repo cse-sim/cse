@@ -93,22 +93,19 @@ Fan shaft brake horsepower at design flow and pressure.
 
 ### oaSupFanCurvePy
 
-Type: $k_0$, $k_1$, $k_2$, $k_3$, $x_0$
+Type: $a$, $b$, $c$, $d$, $x_0$
 
-$k_0$ through $k_3$ are the coefficients of a cubic polynomial for the curve relating fan relative energy consumption to relative air flow above the minimum flow $x_0$. Up to five *floats* may be given, separated by commas. 0 is used for any omitted trailing values. The values are used as follows:
+$a$ through $d$ are the coefficients of a cubic polynomial for the curve relating fan relative energy consumption to relative air flow above the minimum flow $x_0$. Up to five *floats* may be given, separated by commas. 0 is used for any omitted trailing values. The values are used as follows:
 
-$$
-z = k_0 + k_1 \cdot (x - x_0)|  +  k_2 \cdot (x - x_0)|^2 + k_3 \cdot (x - x_0)|^3
-$$
+{{ polynomial("cubic", x="\\Delta x", name="oaSupFanCurvePy") }}
 
 where:
 
 -   $x$ is the relative fan air flow (as fraction of oaSupFanVfDs; 0 ≤ $x$ ≤ 1);
 -   $x_0$ is the minimum relative air flow (default 0);
--   $(x - x_0)|$ is the "positive difference", i.e. $(x - x_0)$ if $x > x_0$; else 0;
--   $z$ is the relative energy consumption.
+-   $\Delta x = \max(x - x_0,\ 0)$ is the relative air flow above the minimum (0 when $x \le x_0$);
 
-If $z$ is not 1.0 for $x$ = 1.0, a warning message is displayed and the coefficients are normalized by dividing by the polynomial's value for $x$ = 1.0.
+If the polynomial's value is not 1.0 for $x$ = 1.0, a warning message is displayed and the coefficients are normalized by dividing by that value.
 
 {{
   member_table({
@@ -274,22 +271,19 @@ Fan shaft brake horsepower at design flow and pressure.
 
 ### oaExhFanCurvePy
 
-Type: $k_0$, $k_1$, $k_2$, $k_3$, $x_0$
+Type: $a$, $b$, $c$, $d$, $x_0$
 
-$k_0$ through $k_3$ are the coefficients of a cubic polynomial for the curve relating fan relative energy consumption to relative air flow above the minimum flow $x_0$. Up to five *floats* may be given, separated by commas. 0 is used for any omitted trailing values. The values are used as follows:
+$a$ through $d$ are the coefficients of a cubic polynomial for the curve relating fan relative energy consumption to relative air flow above the minimum flow $x_0$. Up to five *floats* may be given, separated by commas. 0 is used for any omitted trailing values. The values are used as follows:
 
-$$
-z = k_0 + k_1 \cdot (x - x_0)|  +  k_2 \cdot (x - x_0)|^2 + k_3 \cdot (x - x_0)|^3
-$$
+{{ polynomial("cubic", x="\\Delta x", name="oaExhFanCurvePy") }}
 
 where:
 
 -   $x$ is the relative fan air flow (as fraction of oaExhFanVfDs; 0 ≤ $x$ ≤ 1);
 -   $x_0$ is the minimum relative air flow (default 0);
--   $(x - x_0)|$ is the "positive difference", i.e. $(x - x_0)$ if $x > x_0$; else 0;
--   $z$ is the relative energy consumption.
+-   $\Delta x = \max(x - x_0,\ 0)$ is the relative air flow above the minimum (0 when $x \le x_0$);
 
-If $z$ is not 1.0 for $x$ = 1.0, a warning message is displayed and the coefficients are normalized by dividing by the polynomial's value for $x$ = 1.0.
+If the polynomial's value is not 1.0 for $x$ = 1.0, a warning message is displayed and the coefficients are normalized by dividing by that value.
 
 {{
   member_table({

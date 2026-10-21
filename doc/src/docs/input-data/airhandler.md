@@ -413,22 +413,19 @@ Fan shaft brake horsepower at design flow and pressure.
 
 ### sfanCurvePy
 
-Type: $k_0$, $k_1$, $k_2$, $k_3$, $x_0$
+Type: $a$, $b$, $c$, $d$, $x_0$
 
-$k_0$ through $k_3$ are the coefficients of a cubic polynomial for the curve relating fan relative energy consumption to relative air flow above the minimum flow $x_0$. Up to five _floats_ may be given, separated by commas. 0 is used for any omitted trailing values. The values are used as follows:
+$a$ through $d$ are the coefficients of a cubic polynomial for the curve relating fan relative energy consumption to relative air flow above the minimum flow $x_0$. Up to five _floats_ may be given, separated by commas. 0 is used for any omitted trailing values. The values are used as follows:
 
-$$
-z = k_0 + k_1 \cdot (x - x_0)| + k_2 \cdot (x - x_0)|^2 + k_3 \cdot (x - x_0)|^3
-$$
+{{ polynomial("cubic", x="\\Delta x", name="sfanCurvePy") }}
 
 where:
 
-- $x$ is the relative fan air flow (as fraction of _sfanVfDs_; 0 ≤ x ≤ 1);
+- $x$ is the relative fan air flow (as fraction of _sfanVfDs_; 0 ≤ $x$ ≤ 1);
 - $x_0$ is the minimum relative air flow (default 0);
-- $(x - x_0)|$ is the "positive difference", i.e. $(x - x_0)$ if $x > x_0$; else 0;
-- $z$ is the relative energy consumption.
+- $\Delta x = \max(x - x_0,\ 0)$ is the relative air flow above the minimum (0 when $x \le x_0$);
 
-If $z$ is not 1.0 for $x$ = 1.0, a warning message is displayed and the coefficients are normalized by dividing by the polynomial's value for $x$ = 1.0.
+If the polynomial's value is not 1.0 for $x$ = 1.0, a warning message is displayed and the coefficients are normalized by dividing by that value.
 
 {{
   member_table({
@@ -610,22 +607,19 @@ Fan shaft brake horsepower at design flow and pressure.
 
 ### rfanCurvePy
 
-Type: $k_0$, $k_1$, $k_2$, $k_3$, $x_0$
+Type: $a$, $b$, $c$, $d$, $x_0$
 
-$k_0$ through $k_3$ are the coefficients of a cubic polynomial for the curve relating fan relative energy consumption to relative air flow above the minimum flow $x_0$. Up to five _floats_ may be given, separated by commas. 0 is used for any omitted trailing values. The values are used as follows:
+$a$ through $d$ are the coefficients of a cubic polynomial for the curve relating fan relative energy consumption to relative air flow above the minimum flow $x_0$. Up to five _floats_ may be given, separated by commas. 0 is used for any omitted trailing values. The values are used as follows:
 
-$$
-z = k_0 + k_1 \cdot (x - x_0)| + k_2 \cdot (x - x_0)|^2 + k_3 \cdot (x - x_0)|^3
-$$
+{{ polynomial("cubic", x="\\Delta x", name="rfanCurvePy") }}
 
 where:
 
-- $x$ is the relative fan air flow (as fraction of _rfanVfDs_; 0 ≤ x ≤ 1);
+- $x$ is the relative fan air flow (as fraction of _rfanVfDs_; 0 ≤ $x$ ≤ 1);
 - $x_0$ is the minimum relative air flow (default 0);
-- $(x - x_0)|$ is the "positive difference", i.e. $(x - x_0)$ if $x > x_0$; else 0;
-- $z$ is the relative energy consumption.
+- $\Delta x = \max(x - x_0,\ 0)$ is the relative air flow above the minimum (0 when $x \le x_0$);
 
-If $z$ is not 1.0 for $x$ = 1.0, a warning message is displayed and the coefficients are normalized by dividing by the polynomial's value for $x$ = 1.0.
+If the polynomial's value is not 1.0 for $x$ = 1.0, a warning message is displayed and the coefficients are normalized by dividing by that value.
 
 {{
   member_table({
@@ -855,9 +849,13 @@ Rated efficiency (output energy/input energy; 1/ahhcEirR) at full power
 
 ### ahhcPyEi
 
-Type: $k_0$, $k_1$, $k_2$, $k_3$
+Type: $a$, $b$, $c$, $d$
 
-Coefficients of cubic polynomial function of (subhour average) part-load-ratio (plrAv) to adjust the full-load furnace energy input for part load operation. Enter, separated by commas, in order, the constant part, the coefficient of plrAv, the coefficient of plrAv squared, and the coefficient of plrAv cubed. CSE will normalize the coefficients if necessary to make the polynomial value be 1.0 when the part load ratio is 1.0.
+Coefficients of cubic polynomial function of (subhour average) part-load-ratio ($PLR_{Av}$) to adjust the full-load furnace energy input for part load operation. This polynomial is of the form
+
+{{ polynomial("cubic", x="PLR_{Av}", name="ahhcPyEi") }}
+
+Enter, separated by commas, in order, the constant part, the coefficient of $PLR_{Av}$, the coefficient of $PLR_{Av}$ squared, and the coefficient of $PLR_{Av}$ cubed. CSE will normalize the coefficients if necessary to make the polynomial value be 1.0 when the part load ratio is 1.0.
 
 The default, from DOE2, is equivalent to:
 
@@ -866,7 +864,7 @@ The default, from DOE2, is equivalent to:
 which corresponds to the quadratic polynomial:
 
 $$
-\text{pyEi}(\text{plrAv}) = 0.01861 + 1.094209 \cdot \textbf{plrAv} - 0.112819 \cdot \textbf{plrAv}^2
+\text{ahhcPyEi}(PLR_{Av}) = 0.01861 + 1.094209 \cdot PLR_{Av} - 0.112819 \cdot PLR_{Av}^2
 $$
 
 Note that the value of this polynomial adjusts the energy input, not the energy input ratio, for part load operation.
@@ -875,7 +873,7 @@ Note that the value of this polynomial adjusts the energy input, not the energy 
   member_table({
     "units": "",
     "legal_range": "", 
-    "default": "0.01861, 1.094209, -0.112819, 0.0.",
+    "default": "0.01861, 1.094209, -0.112819, 0.0",
     "required": "No",
     "variability": "constant" 
   })
@@ -1505,7 +1503,7 @@ Type: _float_
   })
 }}
 
-The following four inputs specify polynomials to approximate functions giving DX coil capacity and power (energy) input as functions of entering temperatures, relative (to ahccVfR) flow, and relative load (plr). In each case several _float_ values may be given, for use as coefficients of the polynomial. The values are ordered from constant to coefficient of highest power. If fewer than the maximum number of values are given, zeroes are used for the trailing (high order) coefficients.
+The following four inputs specify polynomials to approximate functions giving DX coil capacity and power (energy) input as functions of entering air wetbulb and outdoor drybulb temperatures, relative (to ahccVfR) flow, and relative load ($PLR$). In each case several _float_ values may be given, for use as coefficients of the polynomial. The values are ordered from constant to coefficient of highest power. If fewer than the maximum number of values are given, zeroes are used for the trailing (high order) coefficients.
 
 Examples:
 
@@ -1515,31 +1513,19 @@ Examples:
 
         pydxEirUl = .9, 1.11, .023, -.00345;
 
-If the polynomial does not evaluate to 1.0 when its inputs are equal to the rating conditions (1.0 for relative flows and plr), CSE will normalize your coefficients by dividing them by the non-1.0 value.
-
-Some of the polynomials are biquadratic polynomials whose variables are the entering air wetbulb and drybulb temperatures. These are of the form
-
-$$
-z = a + bx + cx^2 + dy + ey^2 + fxy
-$$
-
-where a through f are user-inputtable coefficients, x is the entering wetbulb temperature, y is the entering drybulb temperature, and the polynomial value, z, is a factor by which the coil's capacity, power input, etc. at rated conditions is multiplied to adjust it for the actual entering air temperatures.
-
-Other polynomials are cubic polynomials whose variable is the air flow or load as a fraction of full flow or load.. These are of the form
-
-$$
-z = a + bx + cx^2+ dx^3
-$$
-
-where a, b, c, and d are user-inputtable coefficients, $x$ is the variable, and the value $z$ is a factor by which the coil's capacity, power input, etc. at rated conditions is multiplied to adjust it for the actual flow or load.
+If the polynomial does not evaluate to 1.0 when its inputs are equal to the rating conditions (1.0 for relative flows and $PLR$), CSE will normalize your coefficients by dividing them by the non-1.0 value.
 
 The default values for the polynomial coefficients are the DOE2 PTAC values.
 
 ### pydxCaptT
 
-Type: a, b, c, d, e, f
+Type: $a$, $b$, $c$, $d$, $e$, $f$
 
-Coefficients of biquadratic polynomial function of entering air wetbulb and condenser temperatures whose value is used to adjust _ahccCaptRat_ for the actual entering air temperatures. The condenser temperature is the outdoor drybulb, but not less than 70. See discussion in preceding paragraphs.
+Coefficients of biquadratic polynomial function of entering air wetbulb ($T_{ewb}$) and outdoor drybulb ($T_{odb}$) temperatures whose value is used to adjust _ahccCaptRat_ for the actual temperatures:
+
+{{ polynomial("biquadratic", x="T_{ewb}", y="T_{odb}", name="pydxCaptT") }}
+
+If $T_{odb}$ is less than 70, 70 is used. See discussion in preceding paragraphs.
 
 {{
   member_table({
@@ -1553,9 +1539,13 @@ Coefficients of biquadratic polynomial function of entering air wetbulb and cond
 
 ### pydxCaptF
 
-Type: a=a, b, c, d
+Type: $a$, $b$, $c$, $d$
 
-Coefficients of cubic polynomial function of relative flow (entering air cfm/_ahccVfR_) whose value is used to adjust _ahccCaptRat_ for the actual flow. See discussion in preceding paragraphs.
+Coefficients of cubic polynomial function of relative flow ($x$, entering air cfm/_ahccVfR_) whose value is used to adjust _ahccCaptRat_ for the actual flow:
+
+{{ polynomial("cubic", x="x", name="pydxCaptF") }}
+
+See discussion in preceding paragraphs.
 
 {{
   member_table({
@@ -1585,9 +1575,13 @@ Upper limit for value of pydxCaptF.
 
 ### pydxEirT
 
-Type: _a, b, c, d, e, f_
+Type: $a$, $b$, $c$, $d$, $e$, $f$
 
-Coefficients of biquadratic polynomial function of entering air wetbulb and condenser temperatures whose value is used to adjust _ahccEirR_ for the actual entering air temperatures. The condenser temperature is the outdoor air drybulb, but not less than 70. If the entering air wetbulb is less than 60, 60 is used, in this function only. See discussion in preceding paragraphs.
+Coefficients of biquadratic polynomial function of entering air wetbulb ($T_{ewb}$) and outdoor drybulb ($T_{odb}$) temperatures whose value is used to adjust _ahccEirR_ for the actual temperatures:
+
+{{ polynomial("biquadratic", x="T_{ewb}", y="T_{odb}", name="pydxEirT") }}
+
+If $T_{odb}$ is less than 70, 70 is used. If $T_{ewb}$ is less than 60, 60 is used, in this function only. See discussion in preceding paragraphs.
 
 {{
   member_table({
@@ -1601,9 +1595,13 @@ Coefficients of biquadratic polynomial function of entering air wetbulb and cond
 
 ### pydxEirUl
 
-Type: _a, b, c, d_
+Type: $a$, $b$, $c$, $d$
 
-Coefficients of cubic polynomial function of part load ratio used to adjust energy input to part load conditions, in the compressor unloading part load region (1 ≥ plr ≥ _ahccMinUnldPlr_) as described above. See discussion of polynomials in preceding paragraphs.
+Coefficients of cubic polynomial function of part load ratio ($PLR$) used to adjust energy input to part load conditions, in the compressor unloading part load region (1 ≥ $PLR$ ≥ _ahccMinUnldPlr_) as described above:
+
+{{ polynomial("cubic", x="PLR", name="pydxEirUl") }}
+
+See discussion of polynomials in preceding paragraphs.
 
 This polynomial adjusts the full load energy input to part load, not the ratio of input to output, despite the "Eir" in its name.
 
