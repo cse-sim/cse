@@ -1008,6 +1008,12 @@ RC FC topSf2()
 	
 	// loop over surfaces (walls/floors/ceilings), doors, and windows
 	SFI* sf;			// door, window, or surface
+
+	// clear below grade walls associated with each floor
+	//   topSf2 is called again on re-setup (e.g. after autosizing); walls are re-added below
+	RLUP( SfiB, sf)
+		sf->sf_sharedFndWalls.clear();
+
 	int floorBGCount = 0;	// count of below grade floors
 	for (int ib=0; SFIAncs[ ib]; ib++)
 	{	RLUP( *SFIAncs[ ib], sf)

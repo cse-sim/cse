@@ -1,0 +1,37 @@
+
+
+Error Messages for Run 001: Kiva crawlspace walls with autosizing
+
+---------------
+Info: Zone 'Conditioned Above Grade': Temp control outcomes
+            Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
+    Heating        21.0              -1.83             -4.07              14.1
+    Cooling         0.0               0.00              0.00               0.0
+---------------
+Warning: Zone 'Attic': Condensation occurred in 619 subhours of run.
+    Total condensation heat = 609.57 kBtu.
+---------------
+
+
+
+! Log for Run 001: Kiva crawlspace walls with autosizing
+
+! CSE 1.0.0+fix-kiva-walls-after-autosizing.e5f78895.1 for Windows 64-bit (MSVC)
+
+
+
+! CSE 1.0.0+fix-kiva-walls-after-autosizing.e5f78895.1 for Windows 64-bit (MSVC) run(s) done: Wed 14-Oct-26  10:42:56 pm
+
+! Executable:   d:\a\cse\cse\build\cse.exe
+!               14-Oct-26  10:42 pm   (VS 14.29    4378112 bytes)  (HPWH 2.0.0)
+! Command line: -x!  -b -t1 1ZKivaCrawlspaceAutosize
+! Input file:   D:\a\cse\cse\test\1ZKivaCrawlspaceAutosize.cse
+! Report file:  D:\a\cse\cse\test\1ZKivaCrawlspaceAutosize.rep
+
+! Timing info --
+
+!                Input:  Time = 0.10     Calls = 2         T/C = 0.0500
+!           AutoSizing:  Time = 2.19     Calls = 1         T/C = 2.1900
+!           Simulation:  Time = 4.15     Calls = 1         T/C = 4.1470
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0000
+!                Total:  Time = 6.44     Calls = 1         T/C = 6.4370
