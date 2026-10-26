@@ -328,14 +328,14 @@ Heating operating fan power. For most rsTypes, heating air flow is calculated fr
 
 Type: float
 
-For rsType=ASHP or rsType=ASHPPM, Heating Seasonal Performance Factor (HSPF).
+For rsType=ASHP, Heating Seasonal Performance Factor (HSPF). Ignored for rsType=ASHPPM, whose heating performance is given by rsPerfMapHtg.
 
 {{
   member_table({
     "units": "Btu/Wh",
     "legal_range": "*x* > 0", 
     "default": "*none*",
-    "required": "Yes if rsType=ASHP or rsType=ASHPPM",
+    "required": "Yes if rsType=ASHP",
     "variability": "constant" 
   })
 }}
@@ -704,14 +704,14 @@ Type: float
 
 Type: float
 
-Cooling rated Seasonal Energy Efficiency Ratio (SEER).
+Cooling rated Seasonal Energy Efficiency Ratio (SEER). Ignored for rsType=ASHPPM, ACPM, ACPMFURNACE, ACPMRESISTANCE, or ACPMCOMBINEDHEATDHW, whose cooling performance is given by rsPerfMapClg.
 
 {{
   member_table({
     "units": "Btu/Wh",
     "legal_range": "*x* > 0", 
     "default": "*none*",
-    "required": "Yes",
+    "required": "Yes, except for performance map types",
     "variability": "constant" 
   })
 }}

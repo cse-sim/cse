@@ -1,5 +1,14 @@
 
 
+Error Messages for Run 001:
+
+---------------
+perfmap3.cse(110): Info: 
+  RSYS 'Sys1': 'rsSEER' is ignored when rsType=ACPMResistance
+---------------
+
+
+
 HVAC Cooling Info
 
  Sys # System                    Cap95   SEER  EER95 SEERnfX EERnfX  CdC vfPerTon fanSFPC fanElecC
@@ -581,7 +590,7 @@ RSYS hours for Thu 15-Jan
 
 ! Log for Run 001:
 
-! CSE 0.927.0+64bit-regression.4616e24a.291 for Windows 64-bit (MSVC)
+! CSE 1.0.0+perf-map-ratings-optional.23248798.4 for Windows 64-bit (MSVC)
 
 
 
@@ -736,6 +745,10 @@ Input for Run 001:
            dsLeakF = 0.0332*DUCTF
         
          DELETE Report  "eb"
+-----------------------
+???     perfmap3.cse(110): Info: 
+???       RSYS 'Sys1': 'rsSEER' is ignored when rsType=ACPMResistance
+-----------------------
          
          
 #       #define SYSINFCOOL( s) REPORT rpType = UDT  rpFreq=Year  rpTitle="HVAC Cooling Info"   \
@@ -1005,6 +1018,15 @@ Input for Run 001:
         
         
         RUN
+
+
+
+Error Messages for Run 001:
+
+---------------
+perfmap3.cse(110): Info: 
+  RSYS 'Sys1': 'rsSEER' is ignored when rsType=ACPMFurnace
+---------------
 
 
 
@@ -1589,7 +1611,7 @@ RSYS hours for Thu 15-Jan
 
 ! Log for Run 002:
 
-! CSE 0.927.0+64bit-regression.4616e24a.291 for Windows 64-bit (MSVC)
+! CSE 1.0.0+perf-map-ratings-optional.23248798.4 for Windows 64-bit (MSVC)
 
 
 
@@ -1599,6 +1621,10 @@ Input for Run 002:
         ALTER RSYS "Sys1" rsType = ACPMFurnace rsAFUE=.9
         
         RUN
+-----------------------
+???     perfmap3.cse(110): Info: 
+???       RSYS 'Sys1': 'rsSEER' is ignored when rsType=ACPMFurnace
+-----------------------
 
 
 
@@ -1616,6 +1642,9 @@ perfmap3.cse(110): Info:
 ---------------
 perfmap3.cse(110): Info: RSYS 'Sys1': 
     'rsCapNomH' is ignored when rsType=ACPM (heating not available)
+---------------
+perfmap3.cse(110): Info: 
+  RSYS 'Sys1': 'rsSEER' is ignored when rsType=ACPM
 ---------------
 
 
@@ -2201,7 +2230,7 @@ RSYS hours for Thu 15-Jan
 
 ! Log for Run 003:
 
-! CSE 0.927.0+64bit-regression.4616e24a.291 for Windows 64-bit (MSVC)
+! CSE 1.0.0+perf-map-ratings-optional.23248798.4 for Windows 64-bit (MSVC)
 
 
 
@@ -2227,6 +2256,9 @@ Input for Run 003:
 ???     perfmap3.cse(110): Info: RSYS 'Sys1': 
 ???         'rsCapNomH' is ignored when rsType=ACPM (heating not available)
 -----------------------
+???     perfmap3.cse(110): Info: 
+???       RSYS 'Sys1': 'rsSEER' is ignored when rsType=ACPM
+-----------------------
         
         
         
@@ -2234,18 +2266,18 @@ Input for Run 003:
 
 
 
-! CSE 0.927.0+64bit-regression.4616e24a.291 for Windows 64-bit (MSVC) run(s) done: Mon 03-Aug-26   1:06:46 pm
+! CSE 1.0.0+perf-map-ratings-optional.23248798.4 for Windows 64-bit (MSVC) run(s) done: Mon 26-Oct-26   5:01:14 pm
 
-! Executable:   d:\cse\builds\cse-msvc-64.exe
-!               03-Aug-26   1:03 pm   (VS 14.29    5271040 bytes)  (HPWH 1.26.0+HEAD.11240a73.553)
-! Command line: -x!  -t1 perfmap3
-! Input file:   D:\cse\test\perfmap3.cse
-! Report file:  D:\cse\test\perfmap3.rep
+! Executable:   d:\a\cse\cse\build\cse.exe
+!               26-Oct-26   5:00 pm   (VS 14.29    4378624 bytes)  (HPWH 2.0.0)
+! Command line: -x!  -b -t1 perfmap3
+! Input file:   D:\a\cse\cse\test\perfmap3.cse
+! Report file:  D:\a\cse\cse\test\perfmap3.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 3         T/C = 0.0160
+!                Input:  Time = 0.10     Calls = 3         T/C = 0.0333
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 0.37     Calls = 3         T/C = 0.1240
-!              Reports:  Time = 0.01     Calls = 3         T/C = 0.0023
-!                Total:  Time = 0.43     Calls = 1         T/C = 0.4320
+!           Simulation:  Time = 0.84     Calls = 3         T/C = 0.2800
+!              Reports:  Time = 0.00     Calls = 3         T/C = 0.0013
+!                Total:  Time = 0.95     Calls = 1         T/C = 0.9450

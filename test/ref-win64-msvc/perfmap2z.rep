@@ -3,6 +3,12 @@
 Error Messages for Run 001: T24 Analysis  /  Proposed  /  Plan 1-2025.ribd25  
 
 ---------------
+perfmap2z.cse(2840): Info: 
+  RSYS 'rsys-HVAC System 1': 'rsHSPF' is ignored when rsType=ASHPPM
+---------------
+perfmap2z.cse(2840): Info: 
+  RSYS 'rsys-HVAC System 1': 'rsSEER' is ignored when rsType=ASHPPM
+---------------
 Info: Zone '2nd Floor-zn': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
     Heating         0.0               0.00              0.00               0.0
@@ -484,7 +490,7 @@ Hourly Energy (kBtu + into 2nd Floor-zn, except E = Energy Consumed, * = last su
 
 ! Log for Run 001: T24 Analysis  /  Proposed  /  Plan 1-2025.ribd25  /  C:/Com
 
-! CSE 0.927.0+64bit-regression.6c1f03bf.263.dirty for Windows 64-bit (MSVC)
+! CSE 1.0.0+perf-map-ratings-optional.23248798.4 for Windows 64-bit (MSVC)
 
 
 
@@ -3376,6 +3382,13 @@ Input for Run 001:
               dsLeakF = 0.02905
         
         PVARRAY   "pvarray 1"  
+-----------------------
+???     perfmap2z.cse(2840): Info: 
+???       RSYS 'rsys-HVAC System 1': 'rsHSPF' is ignored when rsType=ASHPPM
+-----------------------
+???     perfmap2z.cse(2840): Info: 
+???       RSYS 'rsys-HVAC System 1': 'rsSEER' is ignored when rsType=ASHPPM
+-----------------------
            pvDCSysSize = 2.581818               // Rated array output, kW
            pvModuleType = "Standard"
            pvArrayType = "FixedOpenRack"
@@ -4228,18 +4241,18 @@ Input for Run 001:
 
 
 
-! CSE 0.927.0+64bit-regression.6c1f03bf.263.dirty for Windows 64-bit (MSVC) run(s) done: Thu 23-Jul-26  11:28:08 am
+! CSE 1.0.0+perf-map-ratings-optional.23248798.4 for Windows 64-bit (MSVC) run(s) done: Mon 26-Oct-26   5:01:28 pm
 
-! Executable:   d:\cse\builds\cse-msvc-64.exe
-!               23-Jul-26  11:02 am   (VS 14.29    5264384 bytes)  (HPWH 1.26.0+HEAD.11240a73.553)
-! Command line: -x!  -t1 perfmap2z
-! Input file:   D:\cse\test\perfmap2z.cse
-! Report file:  D:\CSE\TEST\PERFMAP2Z.REP
+! Executable:   d:\a\cse\cse\build\cse.exe
+!               26-Oct-26   5:00 pm   (VS 14.29    4378624 bytes)  (HPWH 2.0.0)
+! Command line: -x!  -b -t1 perfmap2z
+! Input file:   D:\a\cse\cse\test\perfmap2z.cse
+! Report file:  D:\a\cse\cse\test\perfmap2z.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.07     Calls = 1         T/C = 0.0750
+!                Input:  Time = 0.06     Calls = 1         T/C = 0.0580
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 4.75     Calls = 1         T/C = 4.7530
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0060
-!                Total:  Time = 4.84     Calls = 1         T/C = 4.8370
+!           Simulation:  Time = 13.73    Calls = 1         T/C = 13.7340
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
+!                Total:  Time = 13.79    Calls = 1         T/C = 13.7950
