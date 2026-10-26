@@ -980,7 +980,7 @@ endPERFORMANCEMAP
 
 RSYS   "Sys1"
    rsType = ASHPPM
-   rsSEER = 14
+   // rsSEER and rsHSPF not needed: performance maps specify cooling and heating performance
    rsVfPerTon = 350
    rsFanPwrH = 0.58
    rsFanPwrC = 0.58
@@ -988,7 +988,6 @@ RSYS   "Sys1"
    AUTOSIZE rsCap47
    AUTOSIZE rsCapAuxH
    // rsCapC default from rsCap47
-   rsHSPF = 8.7
 
    rsFChgH = .98
    rsFChgC = .96
