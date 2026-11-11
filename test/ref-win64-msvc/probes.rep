@@ -91,32 +91,32 @@ Day 36.109      0      0      0      0      0      0      0      0      0 36.109
 
 Hourly User-defined Report, Mon 10-Jun
 
-  Hr Top.tDbOHr    tz  tzlh   fxt fxt%3  gain
- --- ---------- ----- ----- ----- ----- -----
-   1     69.8   72.50 73.93 73.00  1.00     0
-   2     68.72  70.83 72.50 72.00     0 -1000
-   3     65.84  69.21 70.83 70.00  1.00     0
-   4     64.76  67.56 69.21 69.00     0 -1000
-   5     62.78  66.73 67.56 67.00  1.00     0
-   6     62.24  65.79 66.73 66.00     0 -1000
-   7     63.5   67.12 65.79 65.00  2.00  1000
-   8     68.54  68.93 67.12 67.00  1.00     0
-   9     72.5   72.14 68.93 68.00  2.00  1000
-  10     76.28  73.30 72.14 72.00     0 -1000
-  11     79.34  75.53 73.30 73.00  1.00     0
-  12     82.4   77.23 75.53 75.00     0 -1000
-  13     85.1   80.34 77.23 77.00  2.00  1000
-  14     87.08  82.89 80.34 80.00  2.00  1000
-  15     87.26  84.60 82.89 82.00  1.00     0
-  16     87.98  86.10 84.60 84.00     0 -1000
-  17     87.62  88.65 86.10 86.00  2.00  1000
-  18     86.9   89.00 88.65 88.00  1.00     0
-  19     85.82  88.99 89.00 89.00  2.00  1000
-  20     83.84  87.39 88.99 88.00  1.00     0
-  21     81.32  85.10 87.39 87.00     0 -1000
-  22     75.92  82.77 85.10 85.00  1.00     0
-  23     75.56  80.90 82.77 82.00  1.00     0
-  24     72.5   79.30 80.90 80.00  2.00  1000
+  Hr Top.tDbOHr    tz  tzlh   fxt fxt%3  gain  znTH tz-znTH znTH-tz
+ --- ---------- ----- ----- ----- ----- ----- ----- ------- -------
+   1     69.8   72.50 73.93 73.00  1.00     0 64.96    7.54   -7.54
+   2     68.72  70.83 72.50 72.00     0 -1000 64.92    5.91   -5.91
+   3     65.84  69.21 70.83 70.00  1.00     0 64.88    4.33   -4.33
+   4     64.76  67.56 69.21 69.00     0 -1000 64.83    2.72   -2.72
+   5     62.78  66.73 67.56 67.00  1.00     0 64.79    1.94   -1.94
+   6     62.24  65.79 66.73 66.00     0 -1000 64.75    1.04   -1.04
+   7     63.5   67.12 65.79 65.00  2.00  1000 64.71    2.41   -2.41
+   8     68.54  68.93 67.12 67.00  1.00     0 64.67    4.26   -4.26
+   9     72.5   72.14 68.93 68.00  2.00  1000 64.62    7.51   -7.51
+  10     76.28  73.30 72.14 72.00     0 -1000 64.58    8.71   -8.71
+  11     79.34  75.53 73.30 73.00  1.00     0 64.54   10.99  -10.99
+  12     82.4   77.23 75.53 75.00     0 -1000 64.50   12.73  -12.73
+  13     85.1   80.34 77.23 77.00  2.00  1000 64.46   15.88  -15.88
+  14     87.08  82.89 80.34 80.00  2.00  1000 64.42   18.47  -18.47
+  15     87.26  84.60 82.89 82.00  1.00     0 64.38   20.22  -20.22
+  16     87.98  86.10 84.60 84.00     0 -1000 64.33   21.77  -21.77
+  17     87.62  88.65 86.10 86.00  2.00  1000 64.29   24.36  -24.36
+  18     86.9   89.00 88.65 88.00  1.00     0 64.25   24.75  -24.75
+  19     85.82  88.99 89.00 89.00  2.00  1000 64.21   24.78  -24.78
+  20     83.84  87.39 88.99 88.00  1.00     0 64.17   23.22  -23.22
+  21     81.32  85.10 87.39 87.00     0 -1000 64.12   20.98  -20.98
+  22     75.92  82.77 85.10 85.00  1.00     0 64.08   18.69  -18.69
+  23     75.56  80.90 82.77 82.00  1.00     0 64.04   16.86  -16.86
+  24     72.5   79.30 80.90 80.00  2.00  1000 64.00   15.30  -15.30
 
 
 
@@ -400,7 +400,7 @@ Subhourly User-defined Report, Mon 10-Jun
 
 ! Log for Run 001:
 
-! CSE 0.927.0+64bit-regression.6c1f03bf.263.dirty for Windows 64-bit (MSVC)
+! CSE 1.0.0+fix-expression-probe-stack.1678d097.6 for Windows 64-bit (MSVC)
 
 
 
@@ -859,6 +859,9 @@ Input for Run 001:
             reportcol colVal=fix( @zone[1].tzlh)  colHead="fxt" colWid=5  colDec=2
             reportcol colVal=fix( @zone[1].tzlh)%3  colHead="fxt%3" colWid=5  colDec=2
             reportcol colVal=@znres[1].H.qsig  colHead="gain" colWid=5  colDec=0
+            reportcol colVal=@zone[1].znTH  colHead="znTH" colWid=5  colDec=2
+            reportcol colVal=@zone[1].tz - @zone[1].znTH  colHead="tz-znTH" colWid=7  colDec=2
+            reportcol colVal=@zone[1].znTH - @zone[1].tz  colHead="znTH-tz" colWid=7  colDec=2
         ENDREPORT
         
             REPORT
@@ -916,18 +919,18 @@ Input for Run 001:
 
 
 
-! CSE 0.927.0+64bit-regression.6c1f03bf.263.dirty for Windows 64-bit (MSVC) run(s) done: Thu 23-Jul-26  11:03:17 am
+! CSE 1.0.0+fix-expression-probe-stack.1678d097.6 for Windows 64-bit (MSVC) run(s) done: Wed 11-Nov-26   4:53:12 pm
 
-! Executable:   d:\cse\builds\cse-msvc-64.exe
-!               23-Jul-26  11:02 am   (VS 14.29    5264384 bytes)  (HPWH 1.26.0+HEAD.11240a73.553)
-! Command line: -x!  -t1 probes
-! Input file:   D:\cse\test\probes.cse
-! Report file:  D:\CSE\TEST\PROBES.REP
+! Executable:   d:\a\cse\cse\build\cse.exe
+!               11-Nov-26   4:53 pm   (VS 14.29    4378624 bytes)  (HPWH 2.0.0)
+! Command line: -x!  -b -t1 probes
+! Input file:   D:\a\cse\cse\test\probes.cse
+! Report file:  D:\a\cse\cse\test\probes.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.01     Calls = 1         T/C = 0.0140
+!                Input:  Time = 0.05     Calls = 1         T/C = 0.0520
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 0.40     Calls = 1         T/C = 0.3990
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0040
-!                Total:  Time = 0.42     Calls = 1         T/C = 0.4180
+!           Simulation:  Time = 1.46     Calls = 1         T/C = 1.4620
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0020
+!                Total:  Time = 1.52     Calls = 1         T/C = 1.5160
