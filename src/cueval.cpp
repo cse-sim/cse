@@ -1108,13 +1108,13 @@ w	 case PSRATLOD1S: POINT; *--SPI = (SI)*(CH*)v; break; 	// 1 byte, extend sign
 			//--- expression data loads: used when (immediate input) locn already containing expr is probed. 12-91.
 		case PSEXPLOD4:     			// 4-byte load (INT, float)
 			h = *IPU++;			// fetch inline expression # (handle)
-			if (exInfo( h, NULL, NULL, reinterpret_cast<NANDAT *>(&p)))	 	// get expression value / if bad expr #
+			if (exInfo( h, NULL, NULL, &vND))	 	// get expression value / if bad expr #
 				goto badExprH;			// issue "bad expr #" msg (h)
-			if (ISNANDLE(p))				// if VALUE of expr is UNSET (other NAN not expected in expr tbl)
+			if (ISNANDLE(vND))				// if VALUE of expr is UNSET (other NAN not expected in expr tbl)
 				/* DON'T evaluate it now from here without a way to reorder later evaluations,
 				   because stale values would be used on iterations after the first (unless constant). **** */
 				goto unsExprH; 			// issue errmsg for unset expr (h), below
-			*--SPP = p;				// ok, stack value
+			*--SPL = vND;				// ok, stack value
 			break;
 		case PSEXPLODS:			// string (incRef it)
 			h = *IPU++;			// fetch inline expression # (handle)

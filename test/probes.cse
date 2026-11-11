@@ -451,6 +451,9 @@ REPORT rpType=UDT rpfreq=HOUR rpDayBeg=Jun 10
     reportcol colVal=fix( @zone[1].tzlh)  colHead="fxt" colWid=5  colDec=2
     reportcol colVal=fix( @zone[1].tzlh)%3  colHead="fxt%3" colWid=5  colDec=2
     reportcol colVal=@znres[1].H.qsig  colHead="gain" colWid=5  colDec=0
+    reportcol colVal=@zone[1].znTH  colHead="znTH" colWid=5  colDec=2
+    reportcol colVal=@zone[1].tz - @zone[1].znTH  colHead="tz-znTH" colWid=7  colDec=2
+    reportcol colVal=@zone[1].znTH - @zone[1].tz  colHead="znTH-tz" colWid=7  colDec=2
 ENDREPORT
 
     REPORT
