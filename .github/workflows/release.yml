@@ -22,7 +22,7 @@ jobs:
             compiler: msvc
             publish_docs: true
           - os: macos
-            os_ver: "14"
+            os_ver: "26"
             arch: "64"
             compiler: clang
           - os: ubuntu
