@@ -148,48 +148,48 @@ Trig functions for Wed 01-Jul
 
 Probes for Fri 01-May
 
- Hr    GN1    GN2
- -- ------ ------
-  1 121.00  60.50
-  2 121.00  60.50
-  3 121.00  40.33
-  4 121.00  30.25
-  5 121.00  24.20
-  6 121.00  20.17
-  7 121.00  17.29
-  8 121.00  17.29
-  9 121.00  17.29
- 10 121.00  17.29
- 11 121.00  17.29
- 12 121.00  17.29
- 13 121.00  17.29
- 14 121.00  17.29
- 15 121.00  17.29
- 16 121.00  17.29
- 17 121.00  17.29
- 18 121.00  17.29
- 19 121.00  17.29
- 20 121.00  17.29
- 21 121.00  17.29
- 22 121.00  17.29
- 23 121.00  17.29
- 24 121.00  17.29
+ Hr    GN1    GN2 ownTI
+ -- ------ ------ ------
+  1 121.00  60.50 Trig
+  2 121.00  60.50 OneOff
+  3 121.00  40.33 Trig
+  4 121.00  30.25 OneOff
+  5 121.00  24.20 Trig
+  6 121.00  20.17 OneOff
+  7 121.00  17.29 Trig
+  8 121.00  17.29 OneOff
+  9 121.00  17.29 Trig
+ 10 121.00  17.29 OneOff
+ 11 121.00  17.29 Trig
+ 12 121.00  17.29 OneOff
+ 13 121.00  17.29 Trig
+ 14 121.00  17.29 OneOff
+ 15 121.00  17.29 Trig
+ 16 121.00  17.29 OneOff
+ 17 121.00  17.29 Trig
+ 18 121.00  17.29 OneOff
+ 19 121.00  17.29 Trig
+ 20 121.00  17.29 OneOff
+ 21 121.00  17.29 Trig
+ 22 121.00  17.29 OneOff
+ 23 121.00  17.29 Trig
+ 24 121.00  17.29 OneOff
 
 
 
 ! Log for Run 001: Expression tests
 
-! CSE 0.925.0+concat.50b7623b.21.dirty for Win32 console
+! CSE 1.0.0+fix-expression-probe-stack.6d05bc0e.8.dirty for Windows 64-bit (MSVC)
 
 
 Expression Coverage
 
 PSNUL                   0
-PSEND              334935
-PSKON2               7225
+PSEND              343863
+PSKON2              16153
 PSKON4             678947
-PSPKONN              7086
-PSLOD2             322153
+PSPKONN             16014
+PSLOD2             331081
 PSLOD4             116064
 PSRLOD2                 0
 PSRLOD4                 0
@@ -220,9 +220,9 @@ PSIADD                372
 PSISUB                372
 PSIMUL                372
 PSIDIV                372
-PSIMOD               1116
+PSIMOD              10044
 PSIDEC                  0
-PSIINC             303925
+PSIINC             312853
 PSINOT               1117
 PSIONC                372
 PSILSH                372
@@ -282,11 +282,11 @@ PSDBW2H              8928
 PSFILEINFO              4
 PSNOP                3506
 PSCONCAT             2299
-PSJMP                3400
+PSJMP               12328
 PSPJZ                4837
 PSJZP                   0
 PSJNZP                  0
-PSDISP                372
+PSDISP               9300
 PSDISP1              1488
 PSCALA                  0
 PSRETA                  0
@@ -295,14 +295,13 @@ PSSELFAI                0
 PSIPRN                  0
 PSFPRN                  0
 PSSPRN                  0
-PSRATRN              1927
-PSRATROS                0
-PSRATLOD2             372
+PSRATRN             10855
+PSRATROS             8928
+PSRATLOD2            9300
 PSRATLOD4               0
 PSRATLODD               0
 PSRATLODL               0
-PSRATLODA               0
-PSRATLODS            1555
+PSRATLODS           10483
 PSEXPLOD4            9300
 PSEXPLODS               0
 PSIMPLODNNR             0
@@ -333,8 +332,8 @@ Input for Run 001: Expression tests
         DELETE REPORT EB
         
         
-        REPORT rpType=UDT rpFreq=Year rpTitle="Some one-off tests"
-        	REPORTCOL colHead = "FtIn" colVal = 1' 6 == 1.5 ? "Yes" : "No"  colWid=4
+        REPORT OneOff rpType=UDT rpFreq=Year rpTitle="Some one-off tests"
+        	REPORTCOL FtIn colHead = "FtIn" colVal = 1' 6 == 1.5 ? "Yes" : "No"  colWid=4
         	REPORTCOL colHead = "LT" colVal = 4.01+.5 < min( 6, abs( -5)) ? "Yes" : "No"  colWid=4
         	REPORTCOL colHead = "LE" colVal = sqrt( 16) <= max( 4.1, -2, 3) ? "Yes" : "No"  colWid=4
         	REPORTCOL colHead = "EQ" colVal = sqrt( 16) == ToFloat( 4) ? "Yes" : "No"  colWid=4
@@ -418,7 +417,7 @@ Input for Run 001: Expression tests
         // Trig functions.  No check for tan( PI/2) -- HA calc is a little inaccurate, so no overflow
 #       #define HA (($hour-12)*PI/12)
 #       #define HAD (($hour-12)*15)
-        REPORT rpType=UDT rpFreq=Hour rpDayBeg=jul 1 rpTitle="Trig functions"
+        REPORT Trig rpType=UDT rpFreq=Hour rpDayBeg=jul 1 rpTitle="Trig functions"
         	REPORTCOL colHead = "Day" colVal=$dayOfYear colWid=3
         	REPORTCOL colHead = "Hr" colVal=$hour colWid=2
         	REPORTCOL colHead = "HrAng" colVal = HA colWid=6 colDec=4			// hour angle: radians relative to solar noon (+ afternoon)
@@ -428,7 +427,7 @@ Input for Run 001: Expression tests
         	REPORTCOL colHead = "C+SHA" colVal = pow( sin( HA),2)+pow( cos( HA),2) colWid=7 colDec=4
         	REPORTCOL colHead = "TanHA" colVal = tan( HA) colWid=7 colDec=4
         	REPORTCOL colHead = "S/C HA" colVal = sin( HA) / cos( HA) colWid=7 colDec=4
-        	REPORTCOL colHead = "asinHA" colVal = asin( sin( HA)) colWid=7 colDec=4
+        	REPORTCOL asinHA colHead = "asinHA" colVal = asin( sin( HA)) colWid=7 colDec=4
         	REPORTCOL colHead = "acosHA" colVal = acos( cos( HA)) colWid=7 colDec=4
         	REPORTCOL colHead = "atanHA" colVal = atan( tan( HA)) colWid=7 colDec=4
         	REPORTCOL colHead = "atan2HA" colVal = atan2( sin( HA),cos( HA)) colWid=7 colDec=4
@@ -450,6 +449,7 @@ Input for Run 001: Expression tests
         	REPORTCOL colHead = "Hr" colVal=$hour colWid=2
         	REPORTCOL colHead = "GN1"  colVal=@GAIN[ "GN1"].gnPower colWid=6 colDec=2
         	REPORTCOL colHead = "GN2"  colVal=@GAIN[ 2].gnPower colWid=6 colDec=2
+        	REPORTCOL colHead = "ownTI" colVal=@REPORT[ @REPORTCOL[ choose( $hour%2, "FtIn", "AsinHA")].ownTI].name colWid=6
         ENDREPORT
         
         RUN
@@ -458,18 +458,18 @@ Input for Run 001: Expression tests
 
 
 
-! CSE 0.925.0+concat.50b7623b.21.dirty for Win32 console run(s) done: Tue 20-May-25   4:4 pm
+! CSE 1.0.0+fix-expression-probe-stack.6d05bc0e.8.dirty for Windows 64-bit (MSVC) run(s) done: Thu 12-Nov-26   1:29:47 pm
 
-! Executable:   d:\cse\builds\cse.exe
-!               20-May-25   1:1 pm   (VS 14.29    3350016 bytes)  (HPWH 1.25.0+main.cc0bb806.445)
+! Executable:   d:\cse\builds\cse-msvc-64.exe
+!               12-Nov-26   1:04 pm   (VS 14.29    5275648 bytes)  (HPWH 1.26.0+HEAD.1970ca51.589)
 ! Command line: -x!  -t1 expressions
 ! Input file:   D:\cse\test\expressions.cse
-! Report file:  D:\CSE\TEST\EXPRESSIONS.REP
+! Report file:  D:\cse\test\expressions.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.05     Calls = 1         T/C = 0.0540
+!                Input:  Time = 0.02     Calls = 1         T/C = 0.0170
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 0.20     Calls = 1         T/C = 0.1960
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
-!                Total:  Time = 0.26     Calls = 1         T/C = 0.2560
+!           Simulation:  Time = 0.07     Calls = 1         T/C = 0.0650
+!              Reports:  Time = 0.05     Calls = 1         T/C = 0.0530
+!                Total:  Time = 0.14     Calls = 1         T/C = 0.1370

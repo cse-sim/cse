@@ -1360,7 +1360,7 @@ static RC exEvUp( 	// evaluate expression.  If ok and changed, store and increme
 		isChanged = ex->ext_v == UNSET;
 		if (!isChanged)
 		{
-			const char* s1 = *reinterpret_cast<const CULSTR*>(&ex->ext_v);	// AsCULSTR((const void*)ex->ext_v).CStr();
+			const char* s1 = *reinterpret_cast<const CULSTR*>(&ex->ext_v);
 			isChanged = strcmp(s1, pS);
 		}
 		if (isChanged)
@@ -1368,6 +1368,7 @@ static RC exEvUp( 	// evaluate expression.  If ok and changed, store and increme
 			// printf("\nSet: %s from %p", pS, pS);
 			AsCULSTR(&ex->ext_v).Set(pS);
 		}
+
 		// delete pS;
 		// move pS to CULSTR?
 		// else				// new value same as old
