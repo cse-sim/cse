@@ -1247,11 +1247,14 @@ RC exEvEvf( 			// evaluate expressions and do their updates
 						   Do reorder this expr, so its err msg comes last: probable original order. */
 
 					// move this expr to end of evaluation order list, so it will be retried later to see if its inputs have been set
+					// if already at end, leave in place: it is retried next (reordering is now off, so its error message is issued)
 
-					exTab[hm1].ext_nx = exTab[h].ext_nx;   				// unlink
-					exTab[exTail].ext_nx = h;
-					exTab[h].ext_nx = 0;
-					exTail = h; 	// link to end
+					if (h != exTail)
+					{	exTab[hm1].ext_nx = exTab[h].ext_nx;   				// unlink
+						exTab[exTail].ext_nx = h;
+						exTab[h].ext_nx = 0;
+						exTail = h; 	// link to end
+					}
 					continue;   						// proceed to new next expr exTab[hm1].ext_nx using same hm1
 				}
 			}
