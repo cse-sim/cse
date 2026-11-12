@@ -4369,7 +4369,7 @@ LOCAL void FC drefRes()
 		}
 		TI* p = (TI *)((char *)e			// field location: where to store reference subscript: record location,
 				+ b->fir[drfp->fn].fi_off);	//  plus field offset
-		UCH* fs = (UCH *)e + b->sOff;		// field status byte location for field
+		UCH* fs = (UCH *)e + b->sOff + drfp->fn;	// field status byte location for field
 		const char* ms=NULL;
 		if (ratLuDefO( drfp->toB, drfp->toName, drfp->defO,
 				NULL,
