@@ -1480,45 +1480,45 @@ Subhourly User-defined Report, Sat 10-Jan
 
 Daily User-defined Report, Jan
 
- Mon Day ChName                         DayUse
- --- --- ------------------------------ --------
- Jan   1 dhwsys-OneBedroomZone1 DU      DU=1H4
- Jan   2 dhwsys-OneBedroomZone1 DU      DU=1D6
- Jan   3 dhwsys-OneBedroomZone1 DU      DU=2E6
- Jan   4 dhwsys-OneBedroomZone1 DU      DU=1E2
- Jan   5 dhwsys-OneBedroomZone1 DU      DU=6D0
- Jan   6 dhwsys-OneBedroomZone1 DU      DU=2D5
- Jan   7 dhwsys-OneBedroomZone1 DU      DU=1D0
- Jan   8 dhwsys-OneBedroomZone1 DU      DU=1D2
- Jan   9 dhwsys-OneBedroomZone1 DU      DU=2D1
- Jan  10 dhwsys-OneBedroomZone1 DU      DU=1E5
- Jan  11 dhwsys-OneBedroomZone1 DU      DU=2E9
- Jan  12 dhwsys-OneBedroomZone1 DU      DU=1D8
- Jan  13 dhwsys-OneBedroomZone1 DU      DU=3D5
- Jan  14 dhwsys-OneBedroomZone1 DU      DU=1D1
- Jan  15 dhwsys-OneBedroomZone1 DU      DU=1D3
- Jan  16 dhwsys-OneBedroomZone1 DU      DU=3D3
- Jan  17 dhwsys-OneBedroomZone1 DU      DU=1E4
- Jan  18 dhwsys-OneBedroomZone1 DU      DU=1E9
- Jan  19 dhwsys-OneBedroomZone1 DU      DU=2H6
- Jan  20 dhwsys-OneBedroomZone1 DU      DU=2D0
- Jan  21 dhwsys-OneBedroomZone1 DU      DU=1D4
- Jan  22 dhwsys-OneBedroomZone1 DU      DU=1D5
- Jan  23 dhwsys-OneBedroomZone1 DU      DU=1D9
- Jan  24 dhwsys-OneBedroomZone1 DU      DU=1E3
- Jan  25 dhwsys-OneBedroomZone1 DU      DU=1E6
- Jan  26 dhwsys-OneBedroomZone1 DU      DU=1D7
- Jan  27 dhwsys-OneBedroomZone1 DU      DU=2D2
- Jan  28 dhwsys-OneBedroomZone1 DU      DU=1D4
- Jan  29 dhwsys-OneBedroomZone1 DU      DU=1D5
- Jan  30 dhwsys-OneBedroomZone1 DU      DU=1D6
- Jan  31 dhwsys-OneBedroomZone1 DU      DU=3E8
+ Mon Day ChName                         CentName                       DayUse
+ --- --- ------------------------------ ------------------------------ --------
+ Jan   1 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1H4
+ Jan   2 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D6
+ Jan   3 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=2E6
+ Jan   4 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1E2
+ Jan   5 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=6D0
+ Jan   6 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=2D5
+ Jan   7 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D0
+ Jan   8 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D2
+ Jan   9 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=2D1
+ Jan  10 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1E5
+ Jan  11 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=2E9
+ Jan  12 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D8
+ Jan  13 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=3D5
+ Jan  14 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D1
+ Jan  15 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D3
+ Jan  16 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=3D3
+ Jan  17 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1E4
+ Jan  18 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1E9
+ Jan  19 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=2H6
+ Jan  20 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=2D0
+ Jan  21 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D4
+ Jan  22 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D5
+ Jan  23 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D9
+ Jan  24 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1E3
+ Jan  25 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1E6
+ Jan  26 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D7
+ Jan  27 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=2D2
+ Jan  28 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D4
+ Jan  29 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D5
+ Jan  30 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D6
+ Jan  31 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=3E8
 
 
 
 ! Log for Run 001:
 
-! CSE 1.0.0+fix-expression-probe-stack.6d05bc0e.8.dirty for Windows 64-bit (MSVC)
+! CSE 1.0.0+fix-expression-probe-stack.f5acd349.11 for Windows 64-bit (MSVC)
 
 
 
@@ -6690,7 +6690,7 @@ Input for Run 001:
         ReportCol colHead="Mon" colVal=@Top.monStr colWid=3
         ReportCol colHead="Day" colVal=$dayOfMonth colWid=3
         ReportCol colHead="ChName" colVal=@DHWSYS[ 2].name colWid=30 
-        // ReportCol colHead="CentName" colVal=@DHWSYS[ choose( 0, @DHWSYS[2].centralDHWSYSi)].name colWid=30
+        ReportCol colHead="CentName" colVal=@DHWSYS[ @DHWSYS[2].centralDHWSYSi].name colWid=30
         Reportcol colHead="DayUse" colVal=concat("DU=",@DHWSYS[ 2].dayUseName) colWid=8
         
         RUN
@@ -6712,18 +6712,18 @@ Input for Run 001:
 
 
 
-! CSE 1.0.0+fix-expression-probe-stack.6d05bc0e.8.dirty for Windows 64-bit (MSVC) run(s) done: Thu 12-Nov-26  12:35:38 pm
+! CSE 1.0.0+fix-expression-probe-stack.f5acd349.11 for Windows 64-bit (MSVC) run(s) done: Thu 12-Nov-26   2:29:18 pm
 
 ! Executable:   d:\cse\builds\cse-msvc-64.exe
-!               12-Nov-26  11:27 am   (VS 14.29    5275648 bytes)  (HPWH 1.26.0+HEAD.1970ca51.589)
+!               12-Nov-26   2:27 pm   (VS 14.29    5275648 bytes)  (HPWH 1.26.0+HEAD.1970ca51.589)
 ! Command line: -x!  -t1 dhwloop32U
 ! Input file:   D:\cse\test\DHWLoop32U.cse
 ! Report file:  D:\cse\test\DHWLoop32U.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.23     Calls = 1         T/C = 0.2300
+!                Input:  Time = 0.23     Calls = 1         T/C = 0.2270
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 1.95     Calls = 1         T/C = 1.9500
+!           Simulation:  Time = 1.90     Calls = 1         T/C = 1.9020
 !              Reports:  Time = 0.01     Calls = 1         T/C = 0.0100
-!                Total:  Time = 2.19     Calls = 1         T/C = 2.1930
+!                Total:  Time = 2.14     Calls = 1         T/C = 2.1410

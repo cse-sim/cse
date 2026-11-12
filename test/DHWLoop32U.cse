@@ -5164,7 +5164,7 @@ REPORT rpType=UDT rpFreq=Day rpDayBeg=Jan 1 rpDayEnd=Jan 31
 ReportCol colHead="Mon" colVal=@Top.monStr colWid=3
 ReportCol colHead="Day" colVal=$dayOfMonth colWid=3
 ReportCol colHead="ChName" colVal=@DHWSYS[ 2].name colWid=30 
-// ReportCol colHead="CentName" colVal=@DHWSYS[ choose( 0, @DHWSYS[2].centralDHWSYSi)].name colWid=30
+ReportCol colHead="CentName" colVal=@DHWSYS[ @DHWSYS[2].centralDHWSYSi].name colWid=30
 Reportcol colHead="DayUse" colVal=concat("DU=",@DHWSYS[ 2].dayUseName) colWid=8
 
 RUN
