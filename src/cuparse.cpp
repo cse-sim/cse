@@ -1238,7 +1238,7 @@ RC FC expTy(
 			if (wanTy & TYSI)	// test for TYSI before TYFL
 			{
 				EE(emit(PSINTSI))		// convert INT to SI.  konstize below converts constant if constant.
-				parSp->ty = TYINT;
+				parSp->ty = TYSI;
 			}
 			else if (wanTy & TYFL)		// includes wanTy==TYNC
 			{
@@ -2375,6 +2375,14 @@ LOCAL RC FC fcnArgs( 		// parse args for regular-case built-in function, and som
 
 			CSE_E( expTy( PRCOM, aWanTy, f->id, uAN+nA0) )	// parse an expr of type.  Makes parStk frame.
 
+			// built-in fcn codes for "numeric" args handle only SI (op1) and float (op2):
+			//   float any 32-bit INT arg, else SI code would be applied to 4-byte value.
+			if (aWanTy == TYNUM && parSp->ty == TYINT)
+			{
+				CSE_E( cnvPrevSf( 0, PSFLOAT4, 0) )	// append INT-to-float conversion
+				parSp->ty = TYFL;
+			}
+
 			// check/pass separator
 
 			toke();				// next token / set tokTy
@@ -3010,14 +3018,14 @@ LOCAL RC FC tconv( 		// generate type conversions to make last n expressions com
 	if (havTys & (TYFL|TYCH|TYSTR))
 	{
 		wanTy &= ~(TYSI|TYINT);				// make expTy float any addl SI args for caller
-		if (havTys & TYSI)
+		if (havTys & (TYSI|TYINT))
 		{
 			for (int i = 0; i < n; i++)		// loop n most recent parStk frames
 			{
 				PARSTK* pspe = parSp - i;
 				if (pspe->ty==TYSI || pspe->ty == TYINT)		// if integer, float it
 				{
-					if (cnvPrevSf( i, PSFLOAT2, 0))	// insert conversion op after ith expr back (or just float it if constant)
+					if (cnvPrevSf( i, pspe->ty == TYINT ? PSFLOAT4 : PSFLOAT2, 0))	// insert conversion op after ith expr back (or just float it if constant)
 						return RCBAD;		// error, code buffer full, etc
 					// can't konstize here: eg select a select arg cond-value pair is not a value, might jmp yonder.
 					pspe->ty = TYFL;

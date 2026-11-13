@@ -169,11 +169,14 @@ ZONE Z1	znModel = CZM znArea=ACEIL znVol=ACEIL*8 znCair=1000 znAzm=0
     xfanVfDs = 1000
     xfanMtr = MTRELEC
 
-    GAIN Internal
+    GAIN Int1
         gnMeter=MTRELEC
         gnEndUse=Lit
         gnPower= 1000*(fix(@ZONE[ 1].tzlh)%3-1.)
-  
+
+    GAIN Int2 gnMeter=MTRELEC gnEndUse=Rcp
+        gnPower= 10.*@Znres[ choose($hour%2, @Zone[1].name, @Zone[2].name)].prior.H.tAir
+
 	SURFACE "CbJ"     sfType=Ceiling sfCon=Cins sfArea=(1-CeilFF) * ACEIL;
 		sfModel = forward_difference sfExCnd=ADJZN sfAdjZn=Attic
 		sfExHcModel = Unified sfInHcModel = Unified
@@ -446,11 +449,18 @@ MATERIAL   "Gypbd"  matCond=.0926   matSpHt=0.26   matDens=50            // JA T
 REPORT rpType=UDT rpfreq=HOUR rpDayBeg=Jun 10
     reportcol colVal=$Hour   colHead="Hr"  colWid=3
     reportcol colVal=@Top.tDbOHr       colHead="Top.tDbOHr"
-    reportcol colVal=@zone[1].tz    colHead="tz"   colWid=5  colDec=2
-    reportcol colVal=@zone[1].tzlh  colHead="tzlh" colWid=5  colDec=2
+    reportcol colVal=@zone[1].tz    colHead="z1 tz"   colWid=7  colDec=2
+    reportcol colVal=@zone[1].tzlh  colHead="z1 tzlh" colWid=7  colDec=2
     reportcol colVal=fix( @zone[1].tzlh)  colHead="fxt" colWid=5  colDec=2
     reportcol colVal=fix( @zone[1].tzlh)%3  colHead="fxt%3" colWid=5  colDec=2
     reportcol colVal=@znres[1].H.qsig  colHead="gain" colWid=5  colDec=0
+    reportcol colVal=@zone[1].znTH  colHead="znTH" colWid=5  colDec=2
+    reportcol colVal=@zone[1].tz - @zone[1].znTH  colHead="tz-znTH" colWid=7  colDec=2
+    reportcol colVal=@zone[1].znTH - @zone[1].tz  colHead="znTH-tz" colWid=7  colDec=2
+    reportcol colVal=@znres[1].prior.H.tAir    colHead="z1 tap"   colWid=7  colDec=2
+    reportcol colVal=@znres["Attic"].prior.H.tAir  colHead="at tap" colWid=7  colDec=2
+    reportcol colVal=@gain[ "Int1"].gnPower   colHead="gain1"  colWid=7 colDec=2
+    reportcol colVal=@gain[ "Int2"].gnPower   colHead="gain2"  colWid=7 colDec=2
 ENDREPORT
 
     REPORT

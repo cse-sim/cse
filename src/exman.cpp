@@ -1247,11 +1247,14 @@ RC exEvEvf( 			// evaluate expressions and do their updates
 						   Do reorder this expr, so its err msg comes last: probable original order. */
 
 					// move this expr to end of evaluation order list, so it will be retried later to see if its inputs have been set
+					// if already at end, leave in place: it is retried next (reordering is now off, so its error message is issued)
 
-					exTab[hm1].ext_nx = exTab[h].ext_nx;   				// unlink
-					exTab[exTail].ext_nx = h;
-					exTab[h].ext_nx = 0;
-					exTail = h; 	// link to end
+					if (h != exTail)
+					{	exTab[hm1].ext_nx = exTab[h].ext_nx;   				// unlink
+						exTab[exTail].ext_nx = h;
+						exTab[h].ext_nx = 0;
+						exTail = h; 	// link to end
+					}
 					continue;   						// proceed to new next expr exTab[hm1].ext_nx using same hm1
 				}
 			}
@@ -1360,7 +1363,7 @@ static RC exEvUp( 	// evaluate expression.  If ok and changed, store and increme
 		isChanged = ex->ext_v == UNSET;
 		if (!isChanged)
 		{
-			const char* s1 = *reinterpret_cast<const CULSTR*>(&ex->ext_v);	// AsCULSTR((const void*)ex->ext_v).CStr();
+			const char* s1 = *reinterpret_cast<const CULSTR*>(&ex->ext_v);
 			isChanged = strcmp(s1, pS);
 		}
 		if (isChanged)
@@ -1368,6 +1371,7 @@ static RC exEvUp( 	// evaluate expression.  If ok and changed, store and increme
 			// printf("\nSet: %s from %p", pS, pS);
 			AsCULSTR(&ex->ext_v).Set(pS);
 		}
+
 		// delete pS;
 		// move pS to CULSTR?
 		// else				// new value same as old

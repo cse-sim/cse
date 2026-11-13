@@ -193,12 +193,12 @@ PSRATROS,	// rat record by default owner and name: ratN inline, 0 or default own
 #ifdef wanted				// not wanted 12-91: there are no UCH or CH values in records.
 w  PSRATLOD1U,	// rat load 1 unsigned byte: fetchs UCH, converts to 2 bytes w/o sign extend
 w  PSRATLOD1S,	// rat load 1 signed byte: fetchs char, converts to 2 bytes, extending sign.
+w  PSRATLODA,	// rat load char array: makes dm copy, leaves ptr in stack
 #endif
 PSRATLOD2,	// rat load 2 bytes: fetches SI/USI.
 PSRATLOD4,	// rat load 4 bytes: fetches float/INT/UINT
 PSRATLODD,	// rat load double: converts it float.
 PSRATLODL,	// rat load INT: converts it float.
-PSRATLODA,	// rat load char array: makes dm copy, leaves ptr in stack
 PSRATLODS,	// rat load string: loads CULSTR from record, duplicates.
 
 // expression data access: used when an expr references (probes) an input data location already containing an expression.

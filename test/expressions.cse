@@ -7,6 +7,7 @@ nSubSteps=6
 wfName = "CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
 
 doCoverage = Yes
+dbgFlag = 72
 
 // some data to probe
 GAIN GN1 gnPower=$dayOfYear
@@ -15,8 +16,8 @@ GAIN GN2 gnPower=$dayOfYear/brkt( 2, $hour, 7)
 DELETE REPORT EB
 
 
-REPORT rpType=UDT rpFreq=Year rpTitle="Some one-off tests"
-	REPORTCOL colHead = "FtIn" colVal = 1' 6 == 1.5 ? "Yes" : "No"  colWid=4
+REPORT OneOff rpType=UDT rpFreq=Year rpTitle="Some one-off tests"
+	REPORTCOL FtIn colHead = "FtIn" colVal = 1' 6 == 1.5 ? "Yes" : "No"  colWid=4
 	REPORTCOL colHead = "LT" colVal = 4.01+.5 < min( 6, abs( -5)) ? "Yes" : "No"  colWid=4
 	REPORTCOL colHead = "LE" colVal = sqrt( 16) <= max( 4.1, -2, 3) ? "Yes" : "No"  colWid=4
 	REPORTCOL colHead = "EQ" colVal = sqrt( 16) == ToFloat( 4) ? "Yes" : "No"  colWid=4
@@ -100,7 +101,7 @@ ENDREPORT
 // Trig functions.  No check for tan( PI/2) -- HA calc is a little inaccurate, so no overflow
 #define HA (($hour-12)*PI/12)
 #define HAD (($hour-12)*15)
-REPORT rpType=UDT rpFreq=Hour rpDayBeg=jul 1 rpTitle="Trig functions"
+REPORT Trig rpType=UDT rpFreq=Hour rpDayBeg=jul 1 rpTitle="Trig functions"
 	REPORTCOL colHead = "Day" colVal=$dayOfYear colWid=3
 	REPORTCOL colHead = "Hr" colVal=$hour colWid=2
 	REPORTCOL colHead = "HrAng" colVal = HA colWid=6 colDec=4			// hour angle: radians relative to solar noon (+ afternoon)
@@ -110,7 +111,7 @@ REPORT rpType=UDT rpFreq=Hour rpDayBeg=jul 1 rpTitle="Trig functions"
 	REPORTCOL colHead = "C+SHA" colVal = pow( sin( HA),2)+pow( cos( HA),2) colWid=7 colDec=4
 	REPORTCOL colHead = "TanHA" colVal = tan( HA) colWid=7 colDec=4
 	REPORTCOL colHead = "S/C HA" colVal = sin( HA) / cos( HA) colWid=7 colDec=4
-	REPORTCOL colHead = "asinHA" colVal = asin( sin( HA)) colWid=7 colDec=4
+	REPORTCOL asinHA colHead = "asinHA" colVal = asin( sin( HA)) colWid=7 colDec=4
 	REPORTCOL colHead = "acosHA" colVal = acos( cos( HA)) colWid=7 colDec=4
 	REPORTCOL colHead = "atanHA" colVal = atan( tan( HA)) colWid=7 colDec=4
 	REPORTCOL colHead = "atan2HA" colVal = atan2( sin( HA),cos( HA)) colWid=7 colDec=4
@@ -128,10 +129,22 @@ REPORT rpType=UDT rpFreq=Hour rpDayBeg=jul 1 rpTitle="Trig functions"
 	REPORTCOL colHead = "atan2HAD" colVal = atan2d( sind( HAD),cosd( HAD)) colWid=8 colDec=4
 ENDREPORT
 
+REPORT Conv rpType=UDT rpFreq=Hour rpDayBeg=jul 1 rpTitle="Conversions functions"
+	REPORTCOL colHead = "Day" colVal=$dayOfYear colWid=3
+	REPORTCOL colHead = "Hr" colVal=$hour colWid=2
+	REPORTCOL colHead = "HrAng" colVal = HA colWid=6 colDec=4			// hour angle: radians relative to solar noon (+ afternoon)
+	REPORTCOL colHead = "HrAngD" colVal = HAD colWid=6 colDec=4			// hour angle: degrees relative to solar noon (+ afternoon)
+	REPORTCOL colHead = "FixHA" colVal = fix(HAD) colWid=6
+	REPORTCOL colHead = "FltHr" colVal = toFloat($hour) colWid=6 colDec=2
+	REPORTCOL colHead = "FltDbF" colVal = toFloat(@TOP.dbgflag) colWid=6 colDec=2
+ENDREPORT
+
+
 REPORT rpType=UDT rpFreq=Hour rpDayBeg=may 1 rpTitle="Probes"
 	REPORTCOL colHead = "Hr" colVal=$hour colWid=2
 	REPORTCOL colHead = "GN1"  colVal=@GAIN[ "GN1"].gnPower colWid=6 colDec=2
 	REPORTCOL colHead = "GN2"  colVal=@GAIN[ 2].gnPower colWid=6 colDec=2
+	REPORTCOL colHead = "ownTI" colVal=@REPORT[ @REPORTCOL[ choose( $hour%2, "FtIn", "AsinHA")].ownTI].name colWid=6
 ENDREPORT
 
 RUN
