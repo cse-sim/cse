@@ -7,6 +7,7 @@ nSubSteps=6
 wfName = "CA_SACRAMENTO-EXECUTIVE-AP_724830S_STYP20.epw"
 
 doCoverage = Yes
+dbgFlag = 72
 
 // some data to probe
 GAIN GN1 gnPower=$dayOfYear
@@ -127,6 +128,17 @@ REPORT Trig rpType=UDT rpFreq=Hour rpDayBeg=jul 1 rpTitle="Trig functions"
 	REPORTCOL colHead = "atanHAD" colVal = atand( tan( HA)) colWid=7 colDec=4
 	REPORTCOL colHead = "atan2HAD" colVal = atan2d( sind( HAD),cosd( HAD)) colWid=8 colDec=4
 ENDREPORT
+
+REPORT Conv rpType=UDT rpFreq=Hour rpDayBeg=jul 1 rpTitle="Conversions functions"
+	REPORTCOL colHead = "Day" colVal=$dayOfYear colWid=3
+	REPORTCOL colHead = "Hr" colVal=$hour colWid=2
+	REPORTCOL colHead = "HrAng" colVal = HA colWid=6 colDec=4			// hour angle: radians relative to solar noon (+ afternoon)
+	REPORTCOL colHead = "HrAngD" colVal = HAD colWid=6 colDec=4			// hour angle: degrees relative to solar noon (+ afternoon)
+	REPORTCOL colHead = "FixHA" colVal = fix(HAD) colWid=6
+	REPORTCOL colHead = "FltHr" colVal = toFloat($hour) colWid=6 colDec=2
+	REPORTCOL colHead = "FltDbF" colVal = toFloat(@TOP.dbgflag) colWid=6 colDec=2
+ENDREPORT
+
 
 REPORT rpType=UDT rpFreq=Hour rpDayBeg=may 1 rpTitle="Probes"
 	REPORTCOL colHead = "Hr" colVal=$hour colWid=2
