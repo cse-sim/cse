@@ -1238,7 +1238,7 @@ RC FC expTy(
 			if (wanTy & TYSI)	// test for TYSI before TYFL
 			{
 				EE(emit(PSINTSI))		// convert INT to SI.  konstize below converts constant if constant.
-				parSp->ty = TYINT;
+				parSp->ty = TYSI;
 			}
 			else if (wanTy & TYFL)		// includes wanTy==TYNC
 			{
