@@ -720,51 +720,6 @@ char* FC strsave(		// update a copy of a string in heap
 	strcpy( p, s);
 	return p;
 }		// strsave
-//-----------------------------------------------------------------------------
-#if 0	// out of service, fix if needed, 3-28-10
-x#ifdef __cplusplus  // BC++ or any C++
-x//========================================================================
-xRC FC strpsave( 	// Save a copy of a string, set pointer, return error code: alternate call for strsave
-x
-x    char * &p,   	// pointer to be set to saved string
-x    const char *s,	// string to save
-x    int erOp )		// error action (IGN, WRN, ABT, etc, cnglob.h) plus: DMFREEOLD bit: free existing memory if p not NULL
-x
-x	// to free the string, use dmfree(p)
-x
-x// returns RCOK ok, else other (non-0) value (if not ABT), message already issued (if not IGN).
-x{
-xRC rc;
-x
-x    rc = dmal( DMPP( p), strlen(s)+1, erop);   	// dmpak.c
-x    if (rc==RCOK)					// rc == RCOK expected from dmpal
-x       strcpy( p, s);
-x    return rc;
-x}		// strpsave
-x#else
-x-// ====================================================================
-x-RC FC strpsave( 	/* Save a copy of a string given pointer to where to store pointer */
-x-
-x-    char **pp,   	// pointer to pointer to be set to saved string
-x-    const char *s,	// string to save
-x-    int erOp )		/* error action (IGN, WRN, ABT, etc, cnglob.h) plus:
-x-			   DMFREEOLD bit: free existing memory if pointer *p not NULL */
-x-
-x-	/* saved string may be accessed *pp. */
-x-
-x-	/* to free the string, use dmpfree(pp) */
-x-
-x-// returns RCOK ok, else other (non-0) value (if not ABT), message already issued (if not IGN).
-x-{
-x-RC rc;
-x-
-x-    rc = dmal( *(void **)pp, strlen(s)+1, erop);	// dmpak.c
-x-    if (rc == RCOK)					// rc == RCOK expected from dmal
-x-       strcpy( *pp, s);
-x-    return rc;
-x-}		/* strpsave */
-x#endif
-#endif	// 3-28-10
 // ====================================================================
 char * FC strtemp(		// allocate n+1 bytes in temp string buffer (Tmpstr[])
 	int n )		// number of bytes needed, less 1 (1 added here eg for null)

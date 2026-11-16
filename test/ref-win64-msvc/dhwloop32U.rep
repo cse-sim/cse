@@ -1478,9 +1478,47 @@ Subhourly User-defined Report, Sat 10-Jan
 
 
 
+Daily User-defined Report, Jan
+
+ Mon Day ChName                         CentName                       DayUse
+ --- --- ------------------------------ ------------------------------ --------
+ Jan   1 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1H4
+ Jan   2 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D6
+ Jan   3 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=2E6
+ Jan   4 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1E2
+ Jan   5 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=6D0
+ Jan   6 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=2D5
+ Jan   7 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D0
+ Jan   8 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D2
+ Jan   9 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=2D1
+ Jan  10 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1E5
+ Jan  11 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=2E9
+ Jan  12 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D8
+ Jan  13 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=3D5
+ Jan  14 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D1
+ Jan  15 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D3
+ Jan  16 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=3D3
+ Jan  17 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1E4
+ Jan  18 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1E9
+ Jan  19 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=2H6
+ Jan  20 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=2D0
+ Jan  21 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D4
+ Jan  22 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D5
+ Jan  23 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D9
+ Jan  24 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1E3
+ Jan  25 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1E6
+ Jan  26 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D7
+ Jan  27 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=2D2
+ Jan  28 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D4
+ Jan  29 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D5
+ Jan  30 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=1D6
+ Jan  31 dhwsys-OneBedroomZone1 DU      dhwsys-DHWHeatpump             DU=3E8
+
+
+
 ! Log for Run 001:
 
-! CSE 0.927.0+64bit-regression.2b09c6a5.314 for Windows 64-bit (MSVC)
+! CSE 1.0.0+fix-expression-probe-stack.f5acd349.11 for Windows 64-bit (MSVC)
 
 
 
@@ -6641,19 +6679,23 @@ Input for Run 001:
 #       ReportCol colHead="tOut" colVal=@DHWLoopHEATER[h].HPWH.tOut colDec=2 colWid=7 \
 #       ReportCol colHead="tUse" colVal=@DHWSys[s].tUse colDec=2 colWid=7 \
 #       ReportCol colHead="fMixUse" colVal=@DHWLoopHEATER[h].HPWH.fMixUse colDec=3 colWid=7 \
-#       ReportCol colHead="fMixRL" colVal=@DHWLoopHEATER[h].HPWH.fMixRL colDec=3 colWid=7 \
-#       
+#       ReportCol colHead="fMixRL" colVal=@DHWLoopHEATER[h].HPWH.fMixRL colDec=3 colWid=7
+        
         REPORT rpType=UDT rpFreq=Subhour rpDayBeg=Jan 10 rpDayEnd=Jan 10
         ReportCol colHead="Hr" colVal=$hour colWid=2
         ReportCol colHead="Sh" colVal=@top.iSubhr colWid=2
         DETCOLS(1,1,1)
         
+        REPORT rpType=UDT rpFreq=Day rpDayBeg=Jan 1 rpDayEnd=Jan 31
+        ReportCol colHead="Mon" colVal=@Top.monStr colWid=3
+        ReportCol colHead="Day" colVal=$dayOfMonth colWid=3
+        ReportCol colHead="ChName" colVal=@DHWSYS[ 2].name colWid=30 
+        ReportCol colHead="CentName" colVal=@DHWSYS[ @DHWSYS[2].centralDHWSYSi].name colWid=30
+        Reportcol colHead="DayUse" colVal=concat("DU=",@DHWSYS[ 2].dayUseName) colWid=8
         
+        RUN
         
-        
-        
-         RUN
-         $EOF
+        $EOF
 -----------------------
 ???     DHWLoop32U.cse(5161): Warning: 
 ???       reportCol of report [DHWLoop32U.cse(5158)]: 
@@ -6670,18 +6712,18 @@ Input for Run 001:
 
 
 
-! CSE 0.927.0+64bit-regression.2b09c6a5.314 for Windows 64-bit (MSVC) run(s) done: Wed 19-Aug-26  11:40:52 am
+! CSE 1.0.0+fix-expression-probe-stack.f5acd349.11 for Windows 64-bit (MSVC) run(s) done: Thu 12-Nov-26   2:29:18 pm
 
 ! Executable:   d:\cse\builds\cse-msvc-64.exe
-!               19-Aug-26  11:38 am   (VS 14.29    5275136 bytes)  (HPWH 1.26.0+HEAD.c1a1597c.580)
+!               12-Nov-26   2:27 pm   (VS 14.29    5275648 bytes)  (HPWH 1.26.0+HEAD.1970ca51.589)
 ! Command line: -x!  -t1 dhwloop32U
 ! Input file:   D:\cse\test\DHWLoop32U.cse
 ! Report file:  D:\cse\test\DHWLoop32U.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.26     Calls = 1         T/C = 0.2550
+!                Input:  Time = 0.23     Calls = 1         T/C = 0.2270
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 1.98     Calls = 1         T/C = 1.9820
-!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0090
-!                Total:  Time = 2.25     Calls = 1         T/C = 2.2490
+!           Simulation:  Time = 1.90     Calls = 1         T/C = 1.9020
+!              Reports:  Time = 0.01     Calls = 1         T/C = 0.0100
+!                Total:  Time = 2.14     Calls = 1         T/C = 2.1410
