@@ -3,6 +3,12 @@
 Error Messages for Run 001: Import test with autosizing
 
 ---------------
+import.cse(1294): Info: 
+  RSYS 'rsys-HVAC System': 'rsHSPF' is ignored when rsType=ASHPPM
+---------------
+import.cse(1294): Info: 
+  RSYS 'rsys-HVAC System': 'rsSEER' is ignored when rsType=ASHPPM
+---------------
 import.cse(1354): Warning: 
   importFile 'Unused': S0575: Unused IMPORTFILE: no IMPORT()s from it found.
 ---------------
@@ -10,7 +16,7 @@ import.cse(1354): Warning:
   importFile 'Unused': S0575: Unused IMPORTFILE: no IMPORT()s from it found.
 ---------------
 Warning: Zone 'Attic-atc': Condensation occurred in 1308 subhours of run.
-    Total condensation heat = 135.343 kBtu.
+    Total condensation heat = 135.342 kBtu.
 ---------------
 
 
@@ -32,7 +38,7 @@ Oct -317.0 22.086  0.282      0      0      0      0  7.964 0.0405      0      0
 Nov -74.74      0 82.688  2.908      0      0      0      0 14.127      0      0  3.087      0 30.702 151.91  7.113 39.154      0      0      0 36.075      0      0 13.887 -456.4
 Dec 282.14      0 236.57 17.865      0      0      0      0 41.010      0      0  1.506      0 32.803 160.90  7.593 39.971      0      0      0 38.596      0      0 21.488 -316.2
 
-Yr   -3025 411.76 861.58 40.143      0      0      0 138.63 148.78      0      0 11.639      0 321.69 1680.9 74.457 491.80      0      0      0 388.99      0      0 226.18  -7821
+Yr   -3025 411.76 861.58 40.143      0      0      0 138.63 148.78      0      0 11.640      0 321.69 1680.9 74.457 491.80      0      0      0 388.99      0      0 226.18  -7821
 
 
 
@@ -41,7 +47,7 @@ Battery/PV Output for Mon 29-Jun
  Hr  Load kW    PV kW   Bat kW  Grid kW    Bat kWh    LS kW     TDV Fuel     Note
  -- -------- -------- -------- --------   -------- --------     --------     --------------------
   0    0.363        0   -0.363        0      7.122    0.363      164.605     8.75676
-  1    0.300        0   -0.300        0      6.807    0.300      164.605     8.6515
+  1    0.300        0   -0.300 -0.00000      6.807    0.300      164.605     8.6515
   2    0.258        0   -0.258        0      6.535    0.258      164.605     8.6515
   3    0.237        0   -0.237 -0.00000      6.286    0.237      164.605     8.74769
   4    0.218        0   -0.218        0      6.057    0.218      164.605     8.74769
@@ -60,7 +66,7 @@ Battery/PV Output for Mon 29-Jun
  17    1.623   -1.293   -0.330        0     13.152    0.330      164.605     4.49102
  18    1.694   -0.449   -1.245        0     11.842    1.245      164.605     8.04377
  19    1.596   -0.111   -1.485        0     10.278    1.485      164.605     8.40027
- 20    1.277  -0.0157   -1.261 -0.00000      8.951    1.261      164.605     8.40027
+ 20    1.277  -0.0157   -1.261        0      8.951    1.261      164.605     8.40027
  21    0.984        0   -0.984        0      7.915    0.984      164.605     8.40027
  22    0.745        0   -0.745        0      7.131    0.745      164.605     8.40027
  23    0.562        0   -0.562        0      6.540    0.562      164.605     8.40027
@@ -70,7 +76,7 @@ Battery/PV Output for Tue 30-Jun
 
  Hr  Load kW    PV kW   Bat kW  Grid kW    Bat kWh    LS kW     TDV Fuel     Note
  -- -------- -------- -------- --------   -------- --------     --------     --------------------
-  0    0.406        0   -0.406        0      6.112    0.406      164.605     8.40027
+  0    0.406        0   -0.406 -0.00000      6.112    0.406      164.605     8.40027
   1    0.328        0   -0.328        0      5.766    0.328      164.605     8.41322
   2    0.281        0   -0.281        0      5.471    0.281      164.605     8.41322
   3    0.256        0   -0.256        0      5.202    0.256      164.605     8.41322
@@ -89,8 +95,8 @@ Battery/PV Output for Tue 30-Jun
  16    1.445   -2.058   -2.100   -2.714      9.184   -0.614      164.605     Discharge 2.14.187
  17    1.581   -1.285   -1.900   -1.604      7.184    0.296      164.605   Discharge 1.9 ??4.4077
  18    1.585   -0.525   -1.060 -0.00000      6.069    1.060      164.605     4.91788
- 19    1.411   -0.171   -1.241 -0.00000      4.762    1.241      164.605     15.1629
- 20    1.112 -0.00861   -1.103        0      3.601    1.103      164.605     12.5894
+ 19    1.411   -0.171   -1.241        0      4.762    1.241      164.605     15.1629
+ 20    1.112 -0.00861   -1.103 -0.00000      3.601    1.103      164.605     12.5894
  21    0.849        0   -0.849        0      2.707    0.849      164.605     8.06656
  22    0.622        0   -0.622        0      2.053    0.622      164.605     7.97037
  23    0.442        0   -0.442        0      1.588    0.442      164.605     8.06656
@@ -100,8 +106,8 @@ Battery/PV Output for Wed 01-Jul
 
  Hr  Load kW    PV kW   Bat kW  Grid kW    Bat kWh    LS kW     TDV Fuel     Note
  -- -------- -------- -------- --------   -------- --------     --------     --------------------
-  0    0.324        0   -0.324        0      1.247    0.324      164.605     7.97037
-  1    0.266        0   -0.266        0      0.967    0.266      164.305     8.10478
+  0    0.324        0   -0.324 -0.00000      1.247    0.324      164.605     7.97037
+  1    0.266        0   -0.266 -0.00000      0.967    0.266      164.305     8.10478
   2    0.232        0   -0.232        0      0.722    0.232      164.305     8.00859
   3    0.214        0   -0.214        0      0.497    0.214      164.305     8.10478
   4    0.206        0   -0.206        0      0.281    0.206      164.305     8.10478
@@ -120,16 +126,16 @@ Battery/PV Output for Wed 01-Jul
  17    1.224   -1.331    0.107        0     12.112   -0.107      164.305     4.187
  18    1.269   -0.464   -0.805        0     11.264    0.805      164.305     TDV=4.43957
  19    1.178   -0.126   -1.052        0     10.157    1.052      164.305     6.81562
- 20    0.965  -0.0168   -0.949 -0.00000      9.159    0.949      164.305     7.98132
+ 20    0.965  -0.0168   -0.949        0      9.159    0.949      164.305     7.98132
  21    0.772        0   -0.772        0      8.346    0.772      164.305     7.98132
- 22    0.580        0   -0.580 -0.00000      7.735    0.580      164.305     7.98132
+ 22    0.580        0   -0.580        0      7.735    0.580      164.305     7.98132
  23    0.423        0   -0.423        0      7.290    0.423      164.305     7.98132
 
 
 
 ! Log for Run 001: Import test with autosizing
 
-! CSE 0.927.0+64bit-regression.4616e24a.291 for Windows 64-bit (MSVC)
+! CSE 1.0.0+perf-map-ratings-optional.23248798.4 for Windows 64-bit (MSVC)
 
 
 
@@ -1466,6 +1472,13 @@ Input for Run 001:
               dsLeakF = 0.0249
         
         PVARRAY   "pvarray 1"  
+-----------------------
+???     import.cse(1294): Info: 
+???       RSYS 'rsys-HVAC System': 'rsHSPF' is ignored when rsType=ASHPPM
+-----------------------
+???     import.cse(1294): Info: 
+???       RSYS 'rsys-HVAC System': 'rsSEER' is ignored when rsType=ASHPPM
+-----------------------
            pvDCSysSize = 10                     // Rated array output, kW
            pvModuleType = "Standard"
            pvArrayType = "FixedOpenRack"
@@ -1532,18 +1545,18 @@ Input for Run 001:
 
 
 
-! CSE 0.927.0+64bit-regression.4616e24a.291 for Windows 64-bit (MSVC) run(s) done: Mon 03-Aug-26   1:08:35 pm
+! CSE 1.0.0+perf-map-ratings-optional.23248798.4 for Windows 64-bit (MSVC) run(s) done: Mon 26-Oct-26   5:02:02 pm
 
-! Executable:   d:\cse\builds\cse-msvc-64.exe
-!               03-Aug-26   1:03 pm   (VS 14.29    5271040 bytes)  (HPWH 1.26.0+HEAD.11240a73.553)
-! Command line: -x!  -t1 import
-! Input file:   D:\cse\test\import.cse
-! Report file:  D:\cse\test\import.rep
+! Executable:   d:\a\cse\cse\build\cse.exe
+!               26-Oct-26   5:00 pm   (VS 14.29    4378624 bytes)  (HPWH 2.0.0)
+! Command line: -x!  -b -t1 import
+! Input file:   D:\a\cse\cse\test\import.cse
+! Report file:  D:\a\cse\cse\test\import.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.07     Calls = 2         T/C = 0.0370
-!           AutoSizing:  Time = 0.13     Calls = 1         T/C = 0.1340
-!           Simulation:  Time = 1.86     Calls = 1         T/C = 1.8600
-!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0030
-!                Total:  Time = 2.07     Calls = 1         T/C = 2.0730
+!                Input:  Time = 0.09     Calls = 2         T/C = 0.0440
+!           AutoSizing:  Time = 0.37     Calls = 1         T/C = 0.3700
+!           Simulation:  Time = 5.22     Calls = 1         T/C = 5.2170
+!              Reports:  Time = 0.00     Calls = 1         T/C = 0.0010
+!                Total:  Time = 5.68     Calls = 1         T/C = 5.6770

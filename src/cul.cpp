@@ -4369,13 +4369,13 @@ LOCAL void FC drefRes()
 		}
 		TI* p = (TI *)((char *)e			// field location: where to store reference subscript: record location,
 				+ b->fir[drfp->fn].fi_off);	//  plus field offset
-		UCH* fs = (UCH *)e + b->sOff;		// field status byte location for field
-		const char* ms=NULL;
+		UCH* fs = (UCH *)e + b->sOff + drfp->fn;	// field status byte location for field
+		const char* ms{ nullptr };
+		record* refdE{ nullptr };
 		if (ratLuDefO( drfp->toB, drfp->toName, drfp->defO,
-				NULL,
-				&e, &ms ) != RCOK )	// local.  Note e reuse.
-									// look up name in basAnc's records
-									//   resolving eg same surf name in 2 zones by dflt owner.
+				nullptr,
+				&refdE, &ms ) != RCOK )	// look up name in basAnc's records
+											//   resolving eg same surf name in 2 zones by dflt owner.
 		{
 			*p = 0;				// not found. store 0.
 			*fs |= FsERR;    	// say errMsg has been issued re this field: suppress some addl msgs, 12-91.
@@ -4385,7 +4385,7 @@ LOCAL void FC drefRes()
 		}
 		else				// entry found
 		{
-			*p =  e->ss;			// store entry's subscript
+			*p =  refdE->ss;		// store entry's subscript
 			*fs |= FsVAL;			// say 'value has been stored' in field's field status byte
 		}
 	}

@@ -1842,7 +1842,7 @@ RECORD DVRI "dvri" *RAT *hideall	// Date-dependent Virtual Report Info -- at run
     *r float rpBtuSf	// energy (Btu) scale factor
     *s INT rpCond 		// condition: if given, report lines omitted when FALSE (INT used to hold NAN for expression)
     *r SI rpCondGiven	// nz if user-given condition: may be reflected in title (when 0, rpCond is TRUE).
-    *r CULSTR rpTitle 	// title, for UDT, in dm
+    *r CULSTR rpTitle 	// title, for UDT
     *r SI rpCpl			// chars per line, inputtable for UDT's
     *r RPTHDCH rpHeader	// table header or export header yes/no/col (default yes)
     *r NOYESCH rpFooter	// table footer (summary line) or export footer (just blank line) yes/no (default yes)

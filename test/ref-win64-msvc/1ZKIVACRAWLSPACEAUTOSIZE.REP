@@ -3,6 +3,18 @@
 Error Messages for Run 001: Kiva crawlspace walls with autosizing
 
 ---------------
+1ZKivaCrawlspaceAutosize.cse(641): Info: 
+  RSYS 'HVAC System': 'rsHSPF' is ignored when rsType=ASHPPM
+---------------
+1ZKivaCrawlspaceAutosize.cse(641): Info: 
+  RSYS 'HVAC System': 'rsSEER' is ignored when rsType=ASHPPM
+---------------
+1ZKivaCrawlspaceAutosize.cse(641): Info: 
+  RSYS 'HVAC System': 'rsHSPF' is ignored when rsType=ASHPPM
+---------------
+1ZKivaCrawlspaceAutosize.cse(641): Info: 
+  RSYS 'HVAC System': 'rsSEER' is ignored when rsType=ASHPPM
+---------------
 Info: Zone 'Conditioned Above Grade': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
     Heating        21.0              -1.83             -4.07              14.1
@@ -16,22 +28,22 @@ Warning: Zone 'Attic': Condensation occurred in 619 subhours of run.
 
 ! Log for Run 001: Kiva crawlspace walls with autosizing
 
-! CSE 1.0.0+fix-kiva-walls-after-autosizing.e5f78895.1 for Windows 64-bit (MSVC)
+! CSE 1.0.0+perf-map-ratings-optional.23248798.4 for Windows 64-bit (MSVC)
 
 
 
-! CSE 1.0.0+fix-kiva-walls-after-autosizing.e5f78895.1 for Windows 64-bit (MSVC) run(s) done: Wed 14-Oct-26  10:42:56 pm
+! CSE 1.0.0+perf-map-ratings-optional.23248798.4 for Windows 64-bit (MSVC) run(s) done: Mon 26-Oct-26   5:01:06 pm
 
 ! Executable:   d:\a\cse\cse\build\cse.exe
-!               14-Oct-26  10:42 pm   (VS 14.29    4378112 bytes)  (HPWH 2.0.0)
+!               26-Oct-26   5:00 pm   (VS 14.29    4378624 bytes)  (HPWH 2.0.0)
 ! Command line: -x!  -b -t1 1ZKivaCrawlspaceAutosize
 ! Input file:   D:\a\cse\cse\test\1ZKivaCrawlspaceAutosize.cse
 ! Report file:  D:\a\cse\cse\test\1ZKivaCrawlspaceAutosize.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.10     Calls = 2         T/C = 0.0500
-!           AutoSizing:  Time = 2.19     Calls = 1         T/C = 2.1900
-!           Simulation:  Time = 4.15     Calls = 1         T/C = 4.1470
+!                Input:  Time = 0.08     Calls = 2         T/C = 0.0390
+!           AutoSizing:  Time = 1.70     Calls = 1         T/C = 1.7000
+!           Simulation:  Time = 3.76     Calls = 1         T/C = 3.7580
 !              Reports:  Time = 0.00     Calls = 1         T/C = 0.0000
-!                Total:  Time = 6.44     Calls = 1         T/C = 6.4370
+!                Total:  Time = 5.54     Calls = 1         T/C = 5.5360

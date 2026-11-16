@@ -3644,7 +3644,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 001:
 
-! CSE 0.927.0+64bit-regression.6c1f03bf.263.dirty for Windows 64-bit (MSVC)
+! CSE 1.0.0+perf-map-ratings-optional.23248798.4 for Windows 64-bit (MSVC)
 
 
 
@@ -6244,8 +6244,10 @@ Input for Run 001:
 
 
 
-Error Messages for Run 002:
+Error Messages for Run 001:
 
+---------------
+chdhw.cse(6664): Info: RSYS 'rsys1': 'rsSEER' is ignored when rsType=ACPMCombinedHeatDHW
 ---------------
 Info: Zone 'Zone1-zn': Temp control outcomes
             Miss setpoint (hr)  Avg Excursion (F) Max Excursion (F)  Miss > 1.0 F tol (hr)
@@ -9888,7 +9890,7 @@ RSYS cooling subhour details for Wed 01-Jul
 
 ! Log for Run 002:
 
-! CSE 0.927.0+64bit-regression.6c1f03bf.263.dirty for Windows 64-bit (MSVC)
+! CSE 1.0.0+perf-map-ratings-optional.23248798.4 for Windows 64-bit (MSVC)
 
 
 
@@ -9908,6 +9910,9 @@ Input for Run 001:
         ALTER RSYS "rsys1" rsType=ACPMCOMBINEDHEATDHW rsPerfMapClg = "PMClg"
         
         PERFORMANCEMAP "PMClg"
+-----------------------
+???     chdhw.cse(6664): Info: RSYS 'rsys1': 'rsSEER' is ignored when rsType=ACPMCombinedHeatDHW
+-----------------------
         
             PMGRIDAXIS "ClgDBT" pmGXType = "DBT" pmGXValues = 60, 82, 95, 115 pmGXRefValue = 95
             PMGRIDAXIS "ClgSpeed" pmGXType = "Speed" pmGXValues = 1, 2, 3 pmGXRefValue = 2
@@ -9935,18 +9940,18 @@ Input for Run 001:
 
 
 
-! CSE 0.927.0+64bit-regression.6c1f03bf.263.dirty for Windows 64-bit (MSVC) run(s) done: Thu 23-Jul-26  11:48:06 am
+! CSE 1.0.0+perf-map-ratings-optional.23248798.4 for Windows 64-bit (MSVC) run(s) done: Mon 26-Oct-26   5:02:04 pm
 
-! Executable:   d:\cse\builds\cse-msvc-64.exe
-!               23-Jul-26  11:02 am   (VS 14.29    5264384 bytes)  (HPWH 1.26.0+HEAD.11240a73.553)
-! Command line: -x!  -t1 chdhw
-! Input file:   D:\cse\test\chdhw.cse
-! Report file:  D:\CSE\TEST\CHDHW.REP
+! Executable:   d:\a\cse\cse\build\cse.exe
+!               26-Oct-26   5:00 pm   (VS 14.29    4378624 bytes)  (HPWH 2.0.0)
+! Command line: -x!  -b -t1 chdhw
+! Input file:   D:\a\cse\cse\test\chdhw.cse
+! Report file:  D:\a\cse\cse\test\chdhw.rep
 
 ! Timing info --
 
-!                Input:  Time = 0.28     Calls = 2         T/C = 0.1415
+!                Input:  Time = 0.68     Calls = 2         T/C = 0.3395
 !           AutoSizing:  Time = 0.00     Calls = 0         T/C = 0.0000
-!           Simulation:  Time = 3.95     Calls = 2         T/C = 1.9725
-!              Reports:  Time = 0.02     Calls = 2         T/C = 0.0080
-!                Total:  Time = 4.25     Calls = 1         T/C = 4.2480
+!           Simulation:  Time = 10.58    Calls = 2         T/C = 5.2895
+!              Reports:  Time = 0.01     Calls = 2         T/C = 0.0055
+!                Total:  Time = 11.27    Calls = 1         T/C = 11.2700
