@@ -174,7 +174,7 @@ For each linear polynomial, two *float* expressions are given, separated by a co
 
 ### ctFcOne
 
-Type: $a$, $b$
+Type: Up to 2 _floats_ separated by commas ($a$, $b$)
 
 Coefficients of linear fan power consumption polynomial for ONESPEED fan:
 
@@ -194,7 +194,7 @@ For the one-speed case, the relative average speed $x$ is the fraction of the ti
 
 ### ctFcLo
 
-Type: $a$, $b$
+Type: Up to 2 _floats_ separated by commas ($a$, $b$)
 
 Coefficients of linear fan power consumption polynomial for low speed of TWOSPEED fan, when $x$ ≤ *ctLoSpd*:
 
@@ -214,7 +214,7 @@ Because the low speed curve is not used at full speed, it is not normalized; ins
 
 ### ctFcHi
 
-Type: $a$, $b$
+Type: Up to 2 _floats_ separated by commas ($a$, $b$)
 
 Coefficients of linear fan power consumption polynomial for high speed of TWOSPEED fan, when $x$ > *ctLoSpd*:
 
@@ -232,7 +232,7 @@ Coefficients of linear fan power consumption polynomial for high speed of TWOSPE
 
 ### ctFcVar
 
-Type: $a$, $b$, $c$, $d$
+Type: Up to 4 _floats_ separated by commas ($a$, $b$, $c$, $d$)
 
 For VARIABLE speed fan, four *float* values for coefficients of cubic fan power consumption polynomial:
 

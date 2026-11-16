@@ -70,7 +70,7 @@ Design condenser temperature: temperature of secondary water entering chiller co
 
 ### chPyCapT
 
-Type: $a$, $b$, $c$, $d$, $e$, $f$
+Type: Up to 6 _floats_ separated by commas ($a$, $b$, $c$, $d$, $e$, $f$)
 
 Coefficients of bi-quadratic polynomial function of supply ($T_s$) and condenser ($T_{cnd}$) temperatures that specifies how capacity varies with these temperatures. This polynomial is of the form
 
@@ -124,7 +124,7 @@ Alternate input for COP: Full-load Energy Input Ratio (electrical input energy d
 
 ### chPyEirT
 
-Type: $a$, $b$, $c$, $d$, $e$, $f$
+Type: Up to 6 _floats_ separated by commas ($a$, $b$, $c$, $d$, $e$, $f$)
 
 Coefficients of bi-quadratic polynomial function of supply ($T_s$) and condenser ($T_{cnd}$) temperatures that specifies how energy input varies with these temperatures. This polynomial is of the form
 
@@ -159,7 +159,7 @@ These plr regions are similar to those for a DX coil & compressor in an AIRHANDL
 
 ### chPyEirUl
 
-Type: $a$, $b$, $c$, $d$
+Type: Up to 4 _floats_ separated by commas ($a$, $b$, $c$, $d$)
 
 Coefficients of cubic polynomial function of part load ratio ($PLR$) that specifies how energy input varies with $PLR$ in the compressor unloading region (see above). This polynomial is of the form
 

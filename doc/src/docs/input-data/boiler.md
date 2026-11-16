@@ -68,7 +68,7 @@ Boiler Energy Input Ratio: alternate method of specifying efficiency.
 
 ### blrPyEi
 
-Type: $a$, $b$, $c$, $d$
+Type: Up to 4 _floats_ separated by commas ($a$, $b$, $c$, $d$)
 
 Coefficients of cubic polynomial function of part load ratio ($PLR$, load/capacity) to adjust full-load energy input for part load operation. This polynomial is of the form
 

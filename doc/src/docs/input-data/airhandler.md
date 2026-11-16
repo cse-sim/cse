@@ -849,7 +849,7 @@ Rated efficiency (output energy/input energy; 1/ahhcEirR) at full power
 
 ### ahhcPyEi
 
-Type: $a$, $b$, $c$, $d$
+Type: Up to 4 _floats_ separated by commas ($a$, $b$, $c$, $d$)
 
 Coefficients of cubic polynomial function of (subhour average) part-load-ratio ($PLR_{Av}$) to adjust the full-load furnace energy input for part load operation. This polynomial is of the form
 
@@ -1519,7 +1519,7 @@ The default values for the polynomial coefficients are the DOE2 PTAC values.
 
 ### pydxCaptT
 
-Type: $a$, $b$, $c$, $d$, $e$, $f$
+Type: Up to 6 _floats_ separated by commas ($a$, $b$, $c$, $d$, $e$, $f$)
 
 Coefficients of biquadratic polynomial function of entering air wetbulb ($T_{ewb}$) and outdoor drybulb ($T_{odb}$) temperatures whose value is used to adjust _ahccCaptRat_ for the actual temperatures:
 
@@ -1539,7 +1539,7 @@ If $T_{odb}$ is less than 70, 70 is used. See discussion in preceding paragraphs
 
 ### pydxCaptF
 
-Type: $a$, $b$, $c$, $d$
+Type: Up to 4 _floats_ separated by commas ($a$, $b$, $c$, $d$)
 
 Coefficients of cubic polynomial function of relative flow ($x$, entering air cfm/_ahccVfR_) whose value is used to adjust _ahccCaptRat_ for the actual flow:
 
@@ -1575,7 +1575,7 @@ Upper limit for value of pydxCaptF.
 
 ### pydxEirT
 
-Type: $a$, $b$, $c$, $d$, $e$, $f$
+Type: Up to 6 _floats_ separated by commas ($a$, $b$, $c$, $d$, $e$, $f$)
 
 Coefficients of biquadratic polynomial function of entering air wetbulb ($T_{ewb}$) and outdoor drybulb ($T_{odb}$) temperatures whose value is used to adjust _ahccEirR_ for the actual temperatures:
 
@@ -1595,7 +1595,7 @@ If $T_{odb}$ is less than 70, 70 is used. If $T_{ewb}$ is less than 60, 60 is us
 
 ### pydxEirUl
 
-Type: $a$, $b$, $c$, $d$
+Type: Up to 4 _floats_ separated by commas ($a$, $b$, $c$, $d$)
 
 Coefficients of cubic polynomial function of part load ratio ($PLR$) used to adjust energy input to part load conditions, in the compressor unloading part load region (1 ≥ $PLR$ ≥ _ahccMinUnldPlr_) as described above:
 

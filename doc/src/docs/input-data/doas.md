@@ -93,7 +93,7 @@ Fan shaft brake horsepower at design flow and pressure.
 
 ### oaSupFanCurvePy
 
-Type: $a$, $b$, $c$, $d$, $x_0$
+Type: Up to 5 _floats_ separated by commas ($a$, $b$, $c$, $d$, $x_0$)
 
 $a$ through $d$ are the coefficients of a cubic polynomial for the curve relating fan relative energy consumption to relative air flow above the minimum flow $x_0$. Up to five *floats* may be given, separated by commas. 0 is used for any omitted trailing values. The values are used as follows:
 
@@ -271,7 +271,7 @@ Fan shaft brake horsepower at design flow and pressure.
 
 ### oaExhFanCurvePy
 
-Type: $a$, $b$, $c$, $d$, $x_0$
+Type: Up to 5 _floats_ separated by commas ($a$, $b$, $c$, $d$, $x_0$)
 
 $a$ through $d$ are the coefficients of a cubic polynomial for the curve relating fan relative energy consumption to relative air flow above the minimum flow $x_0$. Up to five *floats* may be given, separated by commas. 0 is used for any omitted trailing values. The values are used as follows:
 

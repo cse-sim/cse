@@ -136,7 +136,7 @@ Framing multiplier used if none given in window, for example .9 if frame and mul
 
 ### gtPySHGC 
 
-Type: $a$, $b$, $c$, $d$
+Type: Up to 4 _floats_ separated by commas ($a$, $b$, $c$, $d$)
 
 Three or four float values separated by commas. Coefficients for incidence angle SHGC multiplier polynomial applied to *gtSHGC* to determine beam transmissivity at angles of incidence other than 90 degrees. The values are coefficients for first through fourth powers of the cosine of the incidence angle; there is no constant part. An error message will be issued if the coefficients do not add to one. They are used as follows:
 
