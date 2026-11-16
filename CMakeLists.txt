@@ -3,6 +3,12 @@ cmake_minimum_required(VERSION 3.16.0) # 3.16 required for target_precompile_hea
 # MSVC runtime library flags are selected by an abstraction.
 cmake_policy(SET CMP0091 NEW) # MSVC runtime library flags are selected by an abstraction.
 
+# Oldest macOS version the built executables will run on. Must be set before project().
+# Checks the host because APPLE is not defined until project().
+if(CMAKE_HOST_APPLE)
+  set(CMAKE_OSX_DEPLOYMENT_TARGET "14.0" CACHE STRING "Minimum macOS version for built executables")
+endif()
+
 project(CSE)
 
 # target_link_libraries() allows use with targets in other directories. Set to new in 3.13 or higher.

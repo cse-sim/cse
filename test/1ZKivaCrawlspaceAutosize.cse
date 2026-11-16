@@ -1,0 +1,694 @@
+// 1ZKivaCrawlspaceAutosize.cse
+// Single-family house over a vented crawlspace modeled with Kiva, including below grade crawlspace walls, run with
+// autosizing. Regression test for duplicate below grade walls on re-setup after autosizing, which caused "The weights
+// of associated Kiva instances do not add to unity".
+// Derived from a Modelkit-composed input (NEEA advanced heat pump study). Design conditions are for Boise, ID.
+
+    runTitle = "Kiva crawlspace walls with autosizing"
+    wfName = "CTZ12S13b.CSW"
+    ebTolHour = 0.001
+    ebTolDay = 0.001
+    ebTolMon = 0.001
+    ebTolSubHr = 0.001
+    jan1DOW = "THU"
+    skyModel = "anisotropic"
+    bldgAzm = 0
+    dt = "YES"
+    nSubSteps = 10
+    wuDays = 30
+    awTrigSlr = 0.1
+    anTolAbs = 0.005
+    anTolRel = 0.0005
+    doAutoSize = "YES"
+    auszTol = 0.01
+    awTrigT = 3
+    awTrigH = 0.3
+    DELETE REPORT "eb"
+    DELETE REPORT "Inp"
+METER   "Electric Meter"
+METER   "Gas Meter"
+heatDsTDbO = 2.6599999999999966
+heatDsTWbO = 2.6599999999999966
+DESCOND "Cooling Design Day"
+    dcDay = Jul 21
+    dcDB = 98.06
+    dcMCDBR = 30.059999999999995
+    dcMCWB = 64.22
+    dcMCWBR = 30.059999999999995
+    dcWindSpeed = 9.395148
+    dcTauB = 0.398
+    dcTauD = 2.125
+coolDsCond = "Cooling Design Day"
+CONSTRUCTION   "Exterior Wall Cavity"
+  LAYER lrMat = "Drywall" lrThk = 0'0.5
+  LAYER lrMat = "Exterior Wall Cavity Insulation" lrThk = 0'3.5
+  LAYER lrMat = "Wood" lrThk = 0'0.5
+CONSTRUCTION   "Exterior Wall Frame"
+  LAYER lrMat = "Drywall" lrThk = 0'0.5
+  LAYER lrMat = "Wood" lrThk = 0'3.5
+  LAYER lrMat = "Wood" lrThk = 0'0.5
+MATERIAL   "Exterior Wall Cavity Insulation"
+    matDens = 1.5
+    matSpHt = 0.2
+    matCond = 0.03006872852233677
+    matCondCT = 0.003254
+CONSTRUCTION   "Interior Wall Cavity"
+  LAYER lrMat = "Drywall" lrThk = 0'0.5
+  LAYER lrMat = "Interior Wall Cavity Insulation" lrThk = 0'3.5
+  LAYER lrMat = "Drywall" lrThk = 0'0.5
+CONSTRUCTION   "Interior Wall Frame"
+  LAYER lrMat = "Drywall" lrThk = 0'0.5
+  LAYER lrMat = "Wood" lrThk = 0'3.5
+  LAYER lrMat = "Drywall" lrThk = 0'0.5
+MATERIAL   "Interior Wall Cavity Insulation"
+    matDens = 1.5
+    matSpHt = 0.2
+    matCond = 0.2916666666666667
+    matCondCT = 0.003254
+CONSTRUCTION   "Insulated Roof Cavity"
+  LAYER lrMat = "Drywall" lrThk = 0'0.5
+  LAYER lrMat = "Insulated Roof Cavity Insulation" lrThk = 0'3.5
+  LAYER lrMat = "Asphalt Shingles" lrThk = 0'0.5
+CONSTRUCTION   "Insulated Roof Frame"
+  LAYER lrMat = "Drywall" lrThk = 0'0.5
+  LAYER lrMat = "Wood" lrThk = 0'3.5
+  LAYER lrMat = "Asphalt Shingles" lrThk = 0'0.5
+MATERIAL   "Insulated Roof Cavity Insulation"
+    matDens = 1.5
+    matSpHt = 0.2
+    matCond = 0.02604166666666667
+    matCondCT = 0.003254
+CONSTRUCTION   "Uninsulated Roof"
+  LAYER lrMat = "Wood" lrThk = 0'0.5
+  LAYER lrMat = "Asphalt Shingles" lrThk = 0'0.5
+CONSTRUCTION   "Ceiling Cavity"
+  LAYER lrMat = "Drywall" lrThk = 0'0.5
+  LAYER lrMat = "Fiberglass Insulation" lrThk = 0'3.0156671999999993
+CONSTRUCTION   "Ceiling Frame"
+  LAYER lrMat = "Drywall" lrThk = 0'0.5
+  LAYER lrMat = "Wood" lrThk = 0'3.0156671999999993
+CONSTRUCTION   "Framed Floor Cavity"
+  LAYER lrMat = "Carpet" lrThk = 0'0.5
+  LAYER lrMat = "Framed Floor Cavity Insulation" lrThk = 0'9.25
+  LAYER lrMat = "Drywall" lrThk = 0'0.5
+CONSTRUCTION   "Framed Floor Frame"
+  LAYER lrMat = "Carpet" lrThk = 0'0.5
+  LAYER lrMat = "Wood" lrThk = 0'9.25
+  LAYER lrMat = "Drywall" lrThk = 0'0.5
+MATERIAL   "Framed Floor Cavity Insulation"
+    matDens = 1.5
+    matSpHt = 0.2
+    matCond = 0.025694444444444443
+    matCondCT = 0.003254
+CONSTRUCTION   "Interior Floor Cavity"
+  LAYER lrMat = "Carpet" lrThk = 0'0.5
+  LAYER lrMat = "Interior Floor Cavity Insulation" lrThk = 0'9.5
+  LAYER lrMat = "Drywall" lrThk = 0'0.5
+CONSTRUCTION   "Interior Floor Frame"
+  LAYER lrMat = "Carpet" lrThk = 0'0.5
+  LAYER lrMat = "Wood" lrThk = 0'9.5
+  LAYER lrMat = "Drywall" lrThk = 0'0.5
+MATERIAL   "Interior Floor Cavity Insulation"
+    matDens = 1.5
+    matSpHt = 0.2
+    matCond = 0.7916666666666666
+    matCondCT = 0.003254
+CONSTRUCTION   "Ground Floor"
+  LAYER lrMat = "Carpet" lrThk = 0'0.5
+  LAYER lrMat = "Concrete" lrThk = 0'4
+CONSTRUCTION   "Foundation Wall"
+  LAYER lrMat = "Concrete" lrThk = 0'8
+CONSTRUCTION   "Uncovered Ground Floor"
+  LAYER lrMat = "Concrete" lrThk = 0'4
+CONSTRUCTION   "Foundation Wall Interior"
+  LAYER lrMat = "Drywall" lrThk = 0'0.5
+  LAYER lrMat = "Foundation Wall Interior Framed Cavity" lrThk = 0'3.5
+MATERIAL   "Foundation Wall Interior Framed Cavity"
+    matDens = 9.875
+    matSpHt = 0.36835443037974686
+    matCond = 0.2391675
+FOUNDATION "Vented Crawlspace Foundation"
+    fdWlHtAbvGrd = 0.67
+    fdWlDpBlwSlb = 0.8
+    fdWlCon = "Foundation Wall"
+GLAZETYPE "Exterior Window"
+    gtModel = ASHWAT
+    gtUNFRC = 0.49
+    gtSHGC = 0.6
+    gtFMult = 0.85
+    gtNGlz = 2
+    gtDirtLoss = 0.1
+    gtExShd = "None"
+    gtInShd = "DrapeMed"
+    gtU = 0.49
+GLAZETYPE "Skylight"
+    gtModel = ASHWAT
+    gtUNFRC = 0.49
+    gtSHGC = 0.6
+    gtFMult = 0.85
+    gtNGlz = 2
+    gtDirtLoss = 0.1
+    gtExShd = "None"
+    gtInShd = "None"
+    gtU = 0.49
+MATERIAL   "Wood"
+    matDens = 35
+    matSpHt = 0.39
+    matCond = 0.08167
+    matCondCT = 0.0012
+MATERIAL   "Drywall"
+    matDens = 40
+    matSpHt = 0.27
+    matCond = 0.09167
+    matCondCT = 0.000122
+MATERIAL   "Fiberglass Insulation"
+    matDens = 1.5
+    matSpHt = 0.2
+    matCond = 0.022438
+    matCondCT = 0.003254
+MATERIAL   "Rigid Insulation"
+    matDens = 1.5
+    matSpHt = 0.35
+    matCond = 0.016666
+    matCondCT = 0.00175
+MATERIAL   "Concrete"
+    matDens = 144
+    matSpHt = 0.2
+    matCond = 1
+MATERIAL  "Asphalt Shingles"
+    matDens = 69.92
+    matSpHt = 0.301
+    matCond = 0.02311
+MATERIAL   "Carpet"
+    matDens = 12.3
+    matSpHt = 0.34
+    matCond = 0.02
+IZXFER "Conditioned Above Grade High Upwind Wall Leak"
+    izNVType = "AIRNETEXT"
+    izZn1 = "Conditioned Above Grade"
+    izALo = 0.06455680000000001
+    izHD = 7.34
+    izCpr = 0.6
+    izNVEff = 1
+    izExp = 0.65
+IZXFER "Conditioned Above Grade High Side Wall Leak"
+    izNVType = "AIRNETEXT"
+    izZn1 = "Conditioned Above Grade"
+    izALo = 0.12911360000000002
+    izHD = 7.34
+    izCpr = -0.65
+    izNVEff = 1
+    izExp = 0.65
+IZXFER "Conditioned Above Grade High Downwind Wall Leak"
+    izNVType = "AIRNETEXT"
+    izZn1 = "Conditioned Above Grade"
+    izALo = 0.06455680000000001
+    izHD = 7.34
+    izCpr = -0.3
+    izNVEff = 1
+    izExp = 0.65
+IZXFER "Conditioned Above Grade Low Upwind Wall Leak"
+    izNVType = "AIRNETEXT"
+    izZn1 = "Conditioned Above Grade"
+    izALo = 0.06455680000000001
+    izHD = 3.34
+    izCpr = 0.6
+    izNVEff = 1
+    izExp = 0.65
+IZXFER "Conditioned Above Grade Low Side Wall Leak"
+    izNVType = "AIRNETEXT"
+    izZn1 = "Conditioned Above Grade"
+    izALo = 0.12911360000000002
+    izHD = 3.34
+    izCpr = -0.65
+    izNVEff = 1
+    izExp = 0.65
+IZXFER "Conditioned Above Grade Low Downwind Wall Leak"
+    izNVType = "AIRNETEXT"
+    izZn1 = "Conditioned Above Grade"
+    izALo = 0.06455680000000001
+    izHD = 3.34
+    izCpr = -0.3
+    izNVEff = 1
+    izExp = 0.65
+IZXFER "Conditioned Above Grade Interzonal Floor Leak to Crawlspace"
+    izNVType = "AIRNETIZ"
+    izZn1 = "Conditioned Above Grade"
+    izZn2 = "Crawlspace"
+    izALo = 0.25822720000000005
+    izHD = 1.34
+    izNVEff = 1
+    izExp = 0.65
+IZXFER "Conditioned Above Grade Interzonal Ceiling Leak to Attic"
+    izNVType = "AIRNETIZ"
+    izZn1 = "Conditioned Above Grade"
+    izZn2 = "Attic"
+    izALo = 0.5164544000000001
+    izHD = 9.34
+    izNVEff = 1
+    izExp = 0.65
+IZXFER "Attic Roof Leak"
+    izNVType = "AIRNETEXT"
+    izZn1 = "Attic"
+    izALo = 0.5594922666666667
+    izHD = 17.34
+    izNVEff = 1
+    izExp = 0.65
+IZXFER "Crawlspace Upwind Wall Leak"
+    izNVType = "AIRNETEXT"
+    izZn1 = "Crawlspace"
+    izALo = 0.034999999999999996
+    izHD = 0.67
+    izCpr = 0.6
+    izNVEff = 1
+    izExp = 0.65
+IZXFER "Crawlspace Side Wall Leak"
+    izNVType = "AIRNETEXT"
+    izZn1 = "Crawlspace"
+    izALo = 0.06999999999999999
+    izHD = 0.67
+    izCpr = -0.65
+    izNVEff = 1
+    izExp = 0.65
+IZXFER "Crawlspace Downwind Wall Leak"
+    izNVType = "AIRNETEXT"
+    izZn1 = "Crawlspace"
+    izALo = 0.034999999999999996
+    izHD = 0.67
+    izCpr = -0.3
+    izNVEff = 1
+    izExp = 0.65
+IZXFER "Crawlspace Upwind Vent"
+    izNVType = "AIRNETEXT"
+    izZn1 = "Crawlspace"
+    izALo = 3.3333333333333335
+    izHD = 0.8366666666666667
+    izCpr = 0.6
+    izNVEff = 0.6
+    izExp = 0.65
+IZXFER "Crawlspace Side Vent"
+    izNVType = "AIRNETEXT"
+    izZn1 = "Crawlspace"
+    izALo = 6.666666666666667
+    izHD = 0.8366666666666667
+    izCpr = -0.65
+    izNVEff = 0.6
+    izExp = 0.65
+IZXFER "Crawlspace Downwind Vent"
+    izNVType = "AIRNETEXT"
+    izZn1 = "Crawlspace"
+    izALo = 3.3333333333333335
+    izHD = 0.8366666666666667
+    izCpr = -0.3
+    izNVEff = 0.6
+    izExp = 0.65
+#define WEEKDAY_IS_OCCUPIED select($hour > 8 && $hour <= 17, 0, default 1)
+#define WEEKEND_IS_OCCUPIED 1  // Always occupied on weekends
+#define IS_OCCUPIED select($isWeekend, WEEKEND_IS_OCCUPIED, default WEEKDAY_IS_OCCUPIED)
+#define IS_COOLING_SEASON  (@weather.taDbAvg07 > 60)  // Cooling season if July average outdoor temp is above 60F
+ZONE "Conditioned Above Grade"
+    znModel = "CZM"
+    znArea = 2000.0
+    znVol = 16000.0
+    znEaveZ = 9.34
+    znCeilingHt = 8.0
+    znFloorZ = 1.34
+    znCAir = 4000.0
+    znSC = select( $radDiff >1., 0.5, default 0.8 )
+    znHIRatio = 10
+    infAC = 0
+    infELA = 0
+    infShld = 4
+    znTD = select( $dsDay==1, 77, $dsDay==2, 99, IS_COOLING_SEASON, 68, default 77 )
+    znTH = select( $dsDay==1, 70, $dsDay==2, 60, default select(IS_OCCUPIED, 72.0, default 67.0))
+    znTC = select( $dsDay==1, 83, $dsDay==2, 75, default select(IS_OCCUPIED, 75, default 75))
+    znRSys = "HVAC System"
+  GAIN   "Conditioned Above Grade Interior Lighting"
+    gnMeter = "Electric Meter"
+    gnEndUse = "Lit"
+    gnPower = 4253.315068493151 * select( $dsDay==1, 0., default hourval( .023,.019,.015,.017,.021,.031,.042,.041,.034,.029,.027,.025,.021,.021,.021,.026,.031,.044,.084,.117,.113,.096,.063,.039)) * choose1( $month,  1.19,1.11,1.02,.93,.84,.8,.82,.88,.98,1.07,1.16,1.2)
+    gnFrRad = 0.2
+  GAIN   "Conditioned Above Grade People"
+    gnPower = 20418.84816753927 * select( $dsDay==1, 0., default hourval(0.035,0.035,0.035,0.035,0.035,0.059,0.082,0.055,0.027,0.014,0.014,0.014,0.014,0.014,0.019,0.027,0.041,0.055,0.068,0.082,0.082,0.07,0.053,0.035)  * choose1($month, 1.19,1.11,1.02,0.93,0.84,0.8,0.82,0.88,0.98,1.07,1.16,1.21))
+    gnFrRad = 0.3
+    gnFrLat = 0.427
+  GAIN   "Conditioned Above Grade TV"
+    gnMeter = "Electric Meter"
+    gnEndUse = "Rcp"
+    gnPower = 3368.999452054794 * select( $dsDay==1, 0., $ISWEHOL, hourval( .035,.027,.022,.021,.020,.020,.022,.029,.037,.043,.042,.039,.040,.042,.045,.048,.051,.052,.056,.061,.065,.069,.064,.050), Default hourval( .035,.026,.023,.022,.021,.021,.025,.032,.038,.040,.038,.038,.041,.042,.042,.041,.044,.049,.056,.064,.070,.074,.067,.051)) * choose1( $month, 1.032,.991,.986,.99,.971,.971,1.002,1.013,1.008,1.008,1.02,1.008)
+    gnFrRad = 0.4
+  GAIN   "Conditioned Above Grade Set Top Box"
+    gnMeter = "Electric Meter"
+    gnEndUse = "Rcp"
+    gnPower = 2376.2476712328767 * select( $dsDay==1, 0., $ISWEHOL, hourval( .035,.027,.022,.021,.020,.020,.022,.029,.037,.043,.042,.039,.040,.042,.045,.048,.051,.052,.056,.061,.065,.069,.064,.050), Default hourval( .035,.026,.023,.022,.021,.021,.025,.032,.038,.040,.038,.038,.041,.042,.042,.041,.044,.049,.056,.064,.070,.074,.067,.051)) * choose1( $month, 1.032,.991,.986,.99,.971,.971,1.002,1.013,1.008,1.008,1.02,1.008)
+    gnFrRad = 0.2
+  GAIN   "Conditioned Above Grade Computers"
+    gnMeter = "Electric Meter"
+    gnEndUse = "Rcp"
+    gnPower = 2292.116164383561 * select( $dsDay==1, 0., $ISWEHOL, hourval( .036,.034,.033,.033,.032,.033,.033,.035,.038,.042,.044,.045,.046,.047,.047,.048,.049,.049,.048,.048,.048,.047,.044,.041), Default hourval( .036,.033,.032,.032,.031,.032,.034,.036,.039,.043,.045,.045,.046,.046,.046,.047,.048,.049,.049,.049,.049,.048,.044,.041)) * choose1( $month, 0.98,0.87,0.89,1.11,1.14,0.99,1.05,1.01,0.96,0.97,0.99,1.04)
+    gnFrRad = 0.2
+  GAIN   "Conditioned Above Grade MELs"
+    gnMeter = "Electric Meter"
+    gnEndUse = "Rcp"
+    gnPower = 10906.247671232877 * select( $dsDay==1, 0., default hourval( .037,.035,.034,.034,.032,.036,.042,.044,.037,.032,.033,.033,.032,.033,.035,.037,.044,.053,.058,.060,.062,.060,.052,.045)) * choose1( $month,  1.19,1.11,1.02,.93,.84,.8,.82,.88,.98,1.07,1.16,1.2)
+    gnFrRad = 0.3
+    gnFrLat = 0.03
+  GAIN   "Conditioned Above Grade Refrigerator"
+    gnMeter = "Electric Meter"
+    gnEndUse = "Refr"
+    gnPower = 220.06621004566207 * ( select( $isWeHol, hourval( -0.3467,-0.2779,-0.2844,-0.2954,-0.4680,-0.5127,-0.7110,-0.5662,0.0463,-0.2995,-0.2388,-0.2646,-0.2905,-0.2730,-0.3306,-0.0031,-0.4356,-0.2580,0.2384,0.1176,-0.0458,-0.0596,-0.5300,0.0197 ), default hourval( -0.5436,-0.3646,-0.4044,-0.3871,-0.5341,-0.7521,-0.3747,0.0041,-0.1293,-0.4644,-0.4800,-0.4351,-0.2195,-0.3301,-0.0919,-0.1686,-0.4819,-0.4731,-0.2223,0.0604,-0.1466,-0.3214,-0.4113,-0.7701) ) + select( $isWeHol, hourval( 0.0171,0.0156,0.0155,0.0154,0.0175,0.0181,0.0212,0.0201,0.0130,0.0176,0.0165,0.0171,0.0177,0.0176,0.0182,0.0139,0.0197,0.0180,0.0121,0.0135,0.0154,0.0150,0.0205,0.0129), default hourval( 0.0195,0.0167,0.0169,0.0165,0.0183,0.0218,0.0178,0.0136,0.0151,0.0189,0.0188,0.0183,0.0156,0.0169,0.0137,0.0149,0.0197,0.0208,0.0184,0.0144,0.0166,0.0184,0.0188,0.0229) ) * @znRes["Conditioned Above Grade"].prior.H.tAir)
+    gnFrRad = 0
+  GAIN   "Conditioned Above Grade Cooking"
+    gnMeter = "Electric Meter"
+    gnEndUse = "Cook"
+    gnPower = 113.69438356164382 * select( $dsDay==1, 0., $ISWEHOL, hourval( .005,.004,.003,.003,.003,.005,.010,.027,.048,.048,.046,.055,.063,.059,.062,.068,.091,.139,.129,.072,.032,.014,.009,.005), Default hourval( .005,.004,.004,.004,.004,.014,.019,.025,.026,.022,.021,.029,.035,.032,.034,.052,.115,.193,.180,.098,.042,.020,.012,.010)) * choose1( $month, 1.094,1.065,1.074,0.889,0.891,0.935,0.993,0.92,0.923,0.92,1.128,1.168)
+    gnFrZn = 0.9
+    gnFrRad = 0
+    gnFrLat = 0.67
+  SURFACE "Conditioned Above Grade North Exterior Wall Frame"
+    sfType = Wall
+    sfCon = "Exterior Wall Frame"
+    sfArea = 89.44271909999159
+    sfAzm = 0
+    sfTilt = 90
+    sfExCnd = Ambient
+    sfModel = Forward_Difference
+  SURFACE "Conditioned Above Grade North Exterior Wall Cavity"
+    sfType = Wall
+    sfCon = "Exterior Wall Cavity"
+    sfArea = 268.3281572999748
+    sfAzm = 0
+    sfTilt = 90
+    sfExCnd = Ambient
+    sfModel = Forward_Difference
+  WINDOW "Conditioned Above Grade North Exterior Wall Window"
+    wnHeight = 5.0
+    wnWidth = 12.879751550398788
+    wnMult = 1
+    wnGt = "Exterior Window"
+  SURFACE "Conditioned Above Grade East Exterior Wall Frame"
+    sfType = Wall
+    sfCon = "Exterior Wall Frame"
+    sfArea = 89.44271909999158
+    sfAzm = 90
+    sfTilt = 90
+    sfExCnd = Ambient
+    sfModel = Forward_Difference
+  SURFACE "Conditioned Above Grade East Exterior Wall Cavity"
+    sfType = Wall
+    sfCon = "Exterior Wall Cavity"
+    sfArea = 268.32815729997475
+    sfAzm = 90
+    sfTilt = 90
+    sfExCnd = Ambient
+    sfModel = Forward_Difference
+  WINDOW "Conditioned Above Grade East Exterior Wall Window"
+    wnHeight = 5.0
+    wnWidth = 12.879751550398788
+    wnMult = 1
+    wnGt = "Exterior Window"
+  SURFACE "Conditioned Above Grade South Exterior Wall Frame"
+    sfType = Wall
+    sfCon = "Exterior Wall Frame"
+    sfArea = 89.44271909999159
+    sfAzm = 180
+    sfTilt = 90
+    sfExCnd = Ambient
+    sfModel = Forward_Difference
+  SURFACE "Conditioned Above Grade South Exterior Wall Cavity"
+    sfType = Wall
+    sfCon = "Exterior Wall Cavity"
+    sfArea = 268.3281572999748
+    sfAzm = 180
+    sfTilt = 90
+    sfExCnd = Ambient
+    sfModel = Forward_Difference
+  WINDOW "Conditioned Above Grade South Exterior Wall Window"
+    wnHeight = 5.0
+    wnWidth = 12.879751550398788
+    wnMult = 1
+    wnGt = "Exterior Window"
+  SURFACE "Conditioned Above Grade West Exterior Wall Frame"
+    sfType = Wall
+    sfCon = "Exterior Wall Frame"
+    sfArea = 89.44271909999158
+    sfAzm = 270
+    sfTilt = 90
+    sfExCnd = Ambient
+    sfModel = Forward_Difference
+  SURFACE "Conditioned Above Grade West Exterior Wall Cavity"
+    sfType = Wall
+    sfCon = "Exterior Wall Cavity"
+    sfArea = 268.32815729997475
+    sfAzm = 270
+    sfTilt = 90
+    sfExCnd = Ambient
+    sfModel = Forward_Difference
+  WINDOW "Conditioned Above Grade West Exterior Wall Window"
+    wnHeight = 5.0
+    wnWidth = 12.879751550398788
+    wnMult = 1
+    wnGt = "Exterior Window"
+  SURFACE "Conditioned Above Grade  Ceiling Frame"
+    sfType = Ceiling
+    sfCon = "Ceiling Frame"
+    sfArea = 400.0
+    sfAdjZn = "Attic"
+    sfAzm = 0
+    sfTilt = 0
+    sfExCnd = AdjZn
+    sfModel = Forward_Difference
+  SURFACE "Conditioned Above Grade  Ceiling Cavity"
+    sfType = Ceiling
+    sfCon = "Ceiling Cavity"
+    sfArea = 1600.0
+    sfAdjZn = "Attic"
+    sfAzm = 0
+    sfTilt = 0
+    sfExCnd = AdjZn
+    sfModel = Forward_Difference
+  SURFACE "Conditioned Above Grade Floor Over Crawlspace Frame"
+    sfType = Floor
+    sfCon = "Framed Floor Frame"
+    sfArea = 400.0
+    sfAdjZn = "Crawlspace"
+    sfExCnd = AdjZn
+    sfModel = Forward_Difference
+  SURFACE "Conditioned Above Grade Floor Over Crawlspace Cavity"
+    sfType = Floor
+    sfCon = "Framed Floor Cavity"
+    sfArea = 1600.0
+    sfAdjZn = "Crawlspace"
+    sfExCnd = AdjZn
+    sfModel = Forward_Difference
+#define WEEKDAY_IS_OCCUPIED select($hour > 8 && $hour <= 17, 0, default 1)
+#define WEEKEND_IS_OCCUPIED 1  // Always occupied on weekends
+#define IS_OCCUPIED select($isWeekend, WEEKEND_IS_OCCUPIED, default WEEKDAY_IS_OCCUPIED)
+#define IS_COOLING_SEASON  (@weather.taDbAvg07 > 60)  // Cooling season if July average outdoor temp is above 60F
+ZONE "Attic"
+    znModel = "UZM"
+    znArea = 2000.0
+    znVol = 18633.899812498246
+    znEaveZ = 18.656949906249125
+    znCeilingHt = 9.316949906249123
+    znFloorZ = 9.34
+    znCAir = 0.01
+    znSC = select( $radDiff >1., 0.5, default 0.8 )
+    znHIRatio = 10
+    infAC = 0
+    infELA = 0
+    infShld = 4
+  SURFACE "Attic North Uninsulated Roof"
+    sfType = Ceiling
+    sfCon = "Uninsulated Roof"
+    sfArea = 541.6666666666667
+    sfAzm = 0
+    sfTilt = 0.39479111969976155
+    sfExCnd = Ambient
+    sfModel = Forward_Difference
+  SURFACE "Attic East Uninsulated Roof"
+    sfType = Ceiling
+    sfCon = "Uninsulated Roof"
+    sfArea = 541.6666666666665
+    sfAzm = 90
+    sfTilt = 0.39479111969976155
+    sfExCnd = Ambient
+    sfModel = Forward_Difference
+  SURFACE "Attic South Uninsulated Roof"
+    sfType = Ceiling
+    sfCon = "Uninsulated Roof"
+    sfArea = 541.6666666666667
+    sfAzm = 180
+    sfTilt = 0.39479111969976155
+    sfExCnd = Ambient
+    sfModel = Forward_Difference
+  SURFACE "Attic West Uninsulated Roof"
+    sfType = Ceiling
+    sfCon = "Uninsulated Roof"
+    sfArea = 541.6666666666665
+    sfAzm = 270
+    sfTilt = 0.39479111969976155
+    sfExCnd = Ambient
+    sfModel = Forward_Difference
+#define WEEKDAY_IS_OCCUPIED select($hour > 8 && $hour <= 17, 0, default 1)
+#define WEEKEND_IS_OCCUPIED 1  // Always occupied on weekends
+#define IS_OCCUPIED select($isWeekend, WEEKEND_IS_OCCUPIED, default WEEKDAY_IS_OCCUPIED)
+#define IS_COOLING_SEASON  (@weather.taDbAvg07 > 60)  // Cooling season if July average outdoor temp is above 60F
+ZONE "Crawlspace"
+    znModel = "UZM"
+    znArea = 2000.0
+    znVol = 4000.0
+    znEaveZ = 0.6699999999999999
+    znCeilingHt = 2.0
+    znFloorZ = -1.33
+    znCAir = 0.01
+    znSC = select( $radDiff >1., 0.5, default 0.8 )
+    znHIRatio = 10
+    infAC = 0
+    infELA = 0
+    infShld = 4
+  SURFACE "Crawlspace North Foundation Wall"
+    sfType = Wall
+    sfArea = 89.44271909999159
+    sfAzm = 0
+    sfTilt = 90
+    sfHeight = 2.0
+    sfFndFloor = "Crawlspace Ground Floor"
+    sfExCnd = Ground
+    sfModel = Kiva
+  SURFACE "Crawlspace East Foundation Wall"
+    sfType = Wall
+    sfArea = 89.44271909999158
+    sfAzm = 90
+    sfTilt = 90
+    sfHeight = 2.0
+    sfFndFloor = "Crawlspace Ground Floor"
+    sfExCnd = Ground
+    sfModel = Kiva
+  SURFACE "Crawlspace South Foundation Wall"
+    sfType = Wall
+    sfArea = 89.44271909999159
+    sfAzm = 180
+    sfTilt = 90
+    sfHeight = 2.0
+    sfFndFloor = "Crawlspace Ground Floor"
+    sfExCnd = Ground
+    sfModel = Kiva
+  SURFACE "Crawlspace West Foundation Wall"
+    sfType = Wall
+    sfArea = 89.44271909999158
+    sfAzm = 270
+    sfTilt = 90
+    sfHeight = 2.0
+    sfFndFloor = "Crawlspace Ground Floor"
+    sfExCnd = Ground
+    sfModel = Kiva
+  SURFACE "Crawlspace Ground Floor"
+    sfType = Floor
+    sfArea = 2000.0
+    sfFnd = "Vented Crawlspace Foundation"
+    sfExpPerim = 178.88543819998318
+    sfExCnd = Ground
+    sfModel = Kiva
+PERFORMANCEMAP "HVAC System Heating Performance Map"
+  PMGRIDAXIS "HVAC System Heating Performance Map Outdoor Drybulb Temperatures"
+    pmGXType = "Outdoor Drybulb Temperature"
+    pmGXValues = -10.0, 5.0, 17.0, 47.0
+    pmGXRefValue = 47.0
+  PMGRIDAXIS "HVAC System Heating Performance Map Speeds"
+    pmGXType = "Speed"
+    pmGXValues = 1, 2, 3
+    pmGXRefValue = 2
+  PMLOOKUPDATA "HVAC System Heating Performance Map Capacity Ratio"
+    pmLUType = "Capacity Ratio"
+    pmLUValues =
+    0.155, 0.488, 0.489,
+    0.217, 0.691, 0.693,
+    0.251, 0.741, 0.785,
+    0.340, 1.000, 1.096
+  PMLOOKUPDATA "HVAC System Heating Performance Map COP"
+    pmLUType = "COP"
+    pmLUValues =
+    1.449, 1.498, 1.498,
+    1.867, 1.904, 1.904,
+    2.383, 2.331, 2.257,
+    3.806, 3.303, 3.142
+PERFORMANCEMAP "HVAC System Cooling Performance Map"
+  PMGRIDAXIS "HVAC System Cooling Performance Map Outdoor Drybulb Temperatures"
+    pmGXType = "Outdoor Drybulb Temperature"
+    pmGXValues = 40.0, 47.5, 82.0, 95.0, 125.0
+    pmGXRefValue = 95.0
+  PMGRIDAXIS "HVAC System Cooling Performance Map Speeds"
+    pmGXType = "Speed"
+    pmGXValues = 1, 2, 3
+    pmGXRefValue = 2
+  PMLOOKUPDATA "HVAC System Cooling Performance Map Capacity Ratio"
+    pmLUType = "Capacity Ratio"
+    pmLUValues =
+    0.288, 1.242, 1.384,
+    0.275, 1.209, 1.348,
+    0.214, 1.057, 1.182,
+    0.191, 1.000, 1.120,
+    0.138, 0.868, 0.976
+  PMLOOKUPDATA "HVAC System Cooling Performance Map COP"
+    pmLUType = "COP"
+    pmLUValues =
+    14.510, 16.528, 15.650,
+    13.841, 16.088, 15.243,
+    5.382, 4.122, 3.834,
+    4.041, 3.079, 2.862,
+    2.135, 1.799, 1.675
+RSYS "HVAC System"
+    rsType = "ASHPPM"
+    rsCapC = 54000
+    rsFxCapC = 1.0
+    rsSEER = 15.8
+    rsVfPerTon = 400.0
+    rsPerfMapClg = "HVAC System Cooling Performance Map"
+    rsFanPwrC = 0.281
+    rsCdC = 0.4
+    rsCap47 = 55239.61986854097
+    rsTypeAuxH = RESISTANCE
+    AUTOSIZE rsCapAuxH
+    rsCtrlAuxH = "CYCLE"
+    rsDefrostModel = "REVCYCLEAUX"
+    rsFxCapAuxH = 1.0
+    rsFxCapH = 1.0
+    rsHSPF = 8.5
+    rsPerfMapHtg = "HVAC System Heating Performance Map"
+    rsFanPwrH = 0.292
+    rsASHPLockOutT = -10.0
+    rsCdH = 0.4
+    rsFanMotTy = "BPM"
+    rsParElec = ($tdboHrAv < 50.0) * (1.-@RSYSRes["HVAC System"].prior.H.hrsOn) * @RSYS["HVAC System"].capNomC * 0.0008333333333333334 + ($tdboHrAv < 32.0 && $tdboHrAv >= -10.0) * 150.0
+    rsElecMtr = "Electric Meter"
+    rsFuelMtr = "Gas Meter"
+DUCTSEG   "SupplyDuct-HVAC System"
+    dsTy = "SUPPLY"
+    dsInArea = 540.0
+    dsDiameter = 0.666667
+    dsAdjZn = "Attic"
+    dsInsulR = 8
+    dsLeakF = 0.029249999999999998
+DUCTSEG   "ReturnDuct-HVAC System"
+    dsTy = "RETURN"
+    dsInArea = 100.0
+    dsDiameter = 1.333333
+    dsAdjZn = "Attic"
+    dsInsulR = 8
+    dsLeakF = 0.02075
+ALTER RSYS "HVAC System"
+    rsCapAuxHFactor = ($tdboHrAv < 20.0) && ((@zone["Conditioned Above Grade"].tzls < @zone["Conditioned Above Grade"].znTH - 0.1) && (@zone["Conditioned Above Grade"].tzlsDelta/(@Top.subhrDur*4.0) < 1.0)) || ($tdboHrAv < @rsys["HVAC System"].ASHPLockOutT)
+#define  HWUSEF_WD  hourval( 0.014, 0.008, 0.009, 0.011, 0.020, 0.044, 0.089, 0.107, 0.089, 0.066, 0.052, 0.038, 0.036, 0.033, 0.032, 0.026, 0.042, 0.048, 0.052, 0.047, 0.042, 0.039, 0.036, 0.022 )
+#define  HWUSEF_WE  hourval( 0.018, 0.010, 0.009, 0.008, 0.015, 0.023, 0.026, 0.047, 0.077, 0.083, 0.074, 0.061, 0.051, 0.043, 0.039, 0.039, 0.052, 0.058, 0.056, 0.052, 0.047, 0.044, 0.040, 0.028 )
+#define  ShwrFLOWF  1
+#define  ShwrDRAINHREFF  0
+#define  CwshHOTF  0.22
+#define  CwshUSEF  2.03
+#define  FaucHOTF  0.5
+#define  FaucFlowF  1
+#define  BathFLOWF  1
+#define  BathDRAINHREFF  0
+#define  DwshFLOWF  1
+RUN
+$EOF

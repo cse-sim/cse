@@ -268,7 +268,9 @@ static COVINFO coverageInfo[] =
 	OPINFO(PSRATLOD4),
 	OPINFO(PSRATLODD),
 	OPINFO(PSRATLODL),
-	OPINFO(PSRATLODA),
+#ifdef wanted
+w	OPINFO(PSRATLODA),
+#endif
 	OPINFO(PSRATLODS),
 	OPINFO(PSEXPLOD4),
 	OPINFO(PSEXPLODS),
@@ -1003,8 +1005,8 @@ jmp:
 			// uses idx, lo, hi, set in PSDISP_ case.
 			// default default for PSDISP.
 			ms = strtprintf( MH_R0215, 		// "In choose() or similar fcn, \n"
-			idx, lo, hi );	//   "    dispatch index %d is not in range %d to %d \n"
-			//   "    and no default given."
+					idx, lo, hi );			//   "    dispatch index %d is not in range %d to %d \n"
+											//   "    and no default given."
 			goto breakbreak;
 
 		case PSSELFAI: 	// issue "no true condition" message: default default for select()
@@ -1068,9 +1070,10 @@ jmp:
 			// these take rec ptr in stack (from PSRATRN/S), field number inline.
 			// macro gets ptr from stk, adds member offset for inline field number
 #define POINT  e = (record*)*SPP++;  v = (char *)e + e->b->fir[ *IPU++ ].fi_off
-#ifdef wanted				// not wanted 12-91: there are no UCH or CH values in records.
-w	 case PSRATLOD1U: POINT; *--SPU = (USI)*(UCH*)v; break;	// 1 unsigned byte
-w	 case PSRATLOD1S: POINT; *--SPI = (SI)*(CH*)v; break; 	// 1 byte, extend sign
+#ifdef wanted				// there are no UCH, CH, or char [] values in records.
+w	case PSRATLOD1U: POINT; *--SPU = (USI)*(UCH*)v; break; // 1 unsigned byte
+w	case PSRATLOD1S: POINT; *--SPI = (SI)*(CH*)v; break; // 1 byte, extend sign
+w	case PSRATLODA: POINT; 	*--SPP = strsave((const char*)v); break; // char[], put in dm. NAN not expected.
 #endif
 		case PSRATLOD2:
 			if ((rc = cuRm2Get(&i,&ms,pBadH)) != RCOK) 	// 2 bytes: SI [or USI].  1st check/fetch 2 bytes
@@ -1086,10 +1089,6 @@ w	 case PSRATLOD1S: POINT; *--SPI = (SI)*(CH*)v; break; 	// 1 byte, extend sign
 			POINT;
 			*--SPF = (float)*(INT *)v;			// int: convert to float.
 			break;  /*lint +e70 */				//   add UNSET ck if need found.
-		case PSRATLODA:
-			POINT;
-			* --SPP = strsave( (const char*)v);
-			break;  	// char[], put in dm. NAN not expected.
 
 		case PSRATLODS:		// CULSTR: 4 byte value
 			{	if ((rc = cuRmGet(vND,&ms,pBadH)) != RCOK)		// 1st fetch/check/fix 4 bytes.
@@ -1108,23 +1107,23 @@ w	 case PSRATLOD1S: POINT; *--SPI = (SI)*(CH*)v; break; 	// 1 byte, extend sign
 			//--- expression data loads: used when (immediate input) locn already containing expr is probed. 12-91.
 		case PSEXPLOD4:     			// 4-byte load (INT, float)
 			h = *IPU++;			// fetch inline expression # (handle)
-			if (exInfo( h, NULL, NULL, reinterpret_cast<NANDAT *>(&p)))	 	// get expression value / if bad expr #
+			if (exInfo( h, NULL, NULL, &vND))	 	// get expression value / if bad expr #
 				goto badExprH;			// issue "bad expr #" msg (h)
-			if (ISNANDLE(p))				// if VALUE of expr is UNSET (other NAN not expected in expr tbl)
+			if (ISNANDLE(vND))				// if VALUE of expr is UNSET (other NAN not expected in expr tbl)
 				/* DON'T evaluate it now from here without a way to reorder later evaluations,
 				   because stale values would be used on iterations after the first (unless constant). **** */
 				goto unsExprH; 			// issue errmsg for unset expr (h), below
-			*--SPP = p;				// ok, stack value
+			*--SPL = vND;				// ok, stack value
 			break;
-		case PSEXPLODS:			// string (incRef it)
+		case PSEXPLODS:			// string
 			h = *IPU++;			// fetch inline expression # (handle)
-			if (exInfo( h, NULL, NULL, reinterpret_cast<NANDAT*>(&p)))	 	// get expression value / if bad expr #
+			if (exInfo( h, NULL, NULL, &vND))	 	// get expression value / if bad expr #
 			{
 badExprH:
 				ms = strtprintf( MH_R0220, h);	// "cuEvalI internal error: bad expression number 0x%x"
 				goto breakbreak;
 			}
-			if (ISNANDLE(p))				// if VALUE of expr is UNSET (other NAN not expected in expr tbl)
+			if (ISNANDLE(vND))				// if VALUE of expr is UNSET (other NAN not expected in expr tbl)
 			{
 unsExprH:
 				ms = strtprintf( MH_R0230,	// "%s has not been evaluated yet." 11-92
@@ -1134,8 +1133,13 @@ unsExprH:
 					*pBadH = h;						// return uneval'd expr # (0 if UNSET)
 				goto breakbreak;
 			}
-			*--SPP = p ? p : strsave("");			//   stack pointer, supplying dm "" for NULL ptr
-			dmIncRef( DMPP( p));					//   ++ ref count of copied ptr, nop if NULL
+			{
+				char* t = strtmp((reinterpret_cast<CULSTR*>(&vND))->CStr());
+				// printf(t);
+				// *--SPP = (void *)t;
+				*--SPCC = t;	// top of stack points to result in TmpStr
+								//   exEvUp() copies to permanent CULSTR
+			}
 			break;
 
 			//--- fetch data from fields of current record of import files. Records are read periodically elsewhere. 1-94.

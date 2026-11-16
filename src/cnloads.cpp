@@ -2206,15 +2206,16 @@ RC RSYS::rs_CkFHeating()
 				// other defaults derived in rs_TopRSys1()
 			}
 			else
-			{	// ASHP (non-hydronic, non-pkgroom): only HSPF required
+			{	// ASHP (non-hydronic, non-pkgroom): only HSPF required (except ASHPPM)
 				//   capacities defaulted from cooling cap95
 				//   COPs defaulted from HSPF
 				//   if both COP47 and COP17 are specified, HSPF is not used
 
-				rc |= requireN(whenTy, RSYS_HSPF, 0);
-
 				if (rs_IsASHPPM())
 				{
+					// heating performance is fully specified by the performance map
+					rc |= ignoreN(whenTy, RSYS_HSPF, 0);
+
 					require(whenTy, RSYS_PERFMAPHTGI);
 
 					rc |= disallowN( whenTy,
@@ -2224,6 +2225,8 @@ RC RSYS::rs_CkFHeating()
 				}
 				else
 				{
+					rc |= requireN(whenTy, RSYS_HSPF, 0);
+
 					if (IsAusz(RSYS_CAP47))
 						rc |= disallowN("when rsCap47 is AUTOSIZE",
 						RSYS_CAP17, RSYS_CAP35, 0);
@@ -2313,6 +2316,9 @@ RC RSYS::rs_CkFCooling()
 
 		rc |= ignoreX(whenTy, RSYS_SEER, PM_ClgFNs);
 	}
+	else if (rs_IsPMClg())
+		// cooling performance is fully specified by the performance map
+		rc |= ignoreN(whenTy, RSYS_SEER, 0);
 	else
 		rc |= requireN(whenTy, RSYS_SEER, 0);
 
@@ -4802,6 +4808,23 @@ RC RSYS::rs_SetupASHP()		// set ASHP defaults and derived parameters
 float RSYS::rs_CapRat1747() const
 // returns ratio cap17 / cap47
 {
+	if (rs_IsASHPPM())
+	{	// performance map: ratio of rated-speed capacities
+		//   rs_HSPF is not used (or required) for ASHPPM
+		//   uses capacity ratios, since reference capacity (rs_cap47) may not be known yet (autosizing)
+		double capRat17, capRat47, inpRat;
+		if (rs_pPMACCESS[0])
+		{	float speedF = rs_pPMACCESS[0]->pa_GetSpeedF(PMSPEED::RATED);
+			if (rs_pPMACCESS[0]->pa_GetCapInpRatios(17.f, speedF, capRat17, inpRat) == RCOK
+			 && rs_pPMACCESS[0]->pa_GetCapInpRatios(47.f, speedF, capRat47, inpRat) == RCOK
+			 && capRat47 > 0.)
+				return capRat17 / capRat47;
+		}
+
+		oer("rs_CapRat1747() bad call -- heating performance map not available");
+		return 1.f;		// neutral value (cap17 = cap47)
+	}
+
 	// multi-segment model from Abram Conant, 5-31-2013
 	//  includes HSPF < 7.5
 	float capRat =
