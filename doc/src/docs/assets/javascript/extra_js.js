@@ -10,8 +10,9 @@ document$.subscribe(function () {
   });
 });
 
-document$.subscribe(({ body }) => {
-  renderMathInElement(body, {
+// Support: with navigation.instant, document$ emits the fetched page after its content has been moved into the live page, so render the live document.body instead.
+document$.subscribe(() => {
+  renderMathInElement(document.body, {
     delimiters: [
       { left: "$$", right: "$$", display: true },
       { left: "$", right: "$", display: false },

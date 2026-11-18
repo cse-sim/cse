@@ -1,6 +1,19 @@
 import csv
+import logging
 from io import StringIO
 from pathlib import Path
+
+logger = logging.getLogger("mkdocs")
+
+POLYNOMIAL_FORMS = {
+    "linear": "a + b \\cdot {x}",
+    "cubic": "a + b \\cdot {x} + c \\cdot {x}^2 + d \\cdot {x}^3",
+    "biquadratic": "a + b \\cdot {x} + c \\cdot {x}^2 + d \\cdot {y} + e \\cdot {y}^2 + f \\cdot {x} \\cdot {y}",
+}
+
+# Jinja string literals process Python escape sequences, so "\text" arrives as a tab followed by "ext". No variable
+# name contains these control characters, so mapping them back to their escape sequences is unambiguous.
+ESCAPED_CONTROL_CHARACTERS = {"\a": "\\a", "\b": "\\b", "\f": "\\f", "\n": "\\n", "\r": "\\r", "\t": "\\t", "\v": "\\v"}
 
 
 def define_env(env):
@@ -75,3 +88,25 @@ def define_env(env):
         )
 
         return table
+
+    def repaired_latex(latex, argument):
+        repaired = "".join(ESCAPED_CONTROL_CHARACTERS.get(character, character) for character in latex)
+        restored = sorted(
+            {ESCAPED_CONTROL_CHARACTERS[character] for character in latex if character in ESCAPED_CONTROL_CHARACTERS}
+        )
+        if restored:
+            logger.warning(
+                f"polynomial() in {env.page.file.src_path}: restored {', '.join(restored)} in {argument}={repaired!r}. "
+                "Double the backslash (e.g. \\\\text) so Jinja does not read it as an escape sequence."
+            )
+        return repaired
+
+    @env.macro
+    def polynomial(form, name, x="x", y="y"):
+        """Display equation for a polynomial curve input, written as a function of the input's name, with
+        coefficients a, b, c, ... in CSE input order."""
+        if form not in POLYNOMIAL_FORMS:
+            raise ValueError(f"Unknown polynomial form {form!r}; expected one of {list(POLYNOMIAL_FORMS)}.")
+        x, y = (repaired_latex(latex, argument) for latex, argument in [(x, "x"), (y, "y")])
+        arguments = f"{x}, {y}" if "{y}" in POLYNOMIAL_FORMS[form] else x
+        return f"$$\n\\text{{{name}}}({arguments}) = {POLYNOMIAL_FORMS[form].format(x=x, y=y)}\n$$"

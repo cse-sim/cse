@@ -24,12 +24,12 @@ The next four inputs allow specification of the CHILLER's capacity (amount of he
 
 Type: float
 
-Chiller design capacity, that is, the capacity at *chTsDs* and *chTcndDs* (next).
+Chiller design capacity, that is, the capacity at *chTsDs* and *chTcndDs* (next). Either a positive or a negative value may be entered.  Internally, capacity is always <0 (positive input is negated), so the value accessed via a probe will be negative. However, capacity is reported as a positive value in some error messages.
 
 {{
   member_table({
     "units": "Btuh",
-    "legal_range": "*x* ≠ 0", 
+    "legal_range": "*x* ≠ 0 (<0 internally)", 
     "default": "*none*",
     "required": "Yes",
     "variability": "constant" 
@@ -70,15 +70,13 @@ Design condenser temperature: temperature of secondary water entering chiller co
 
 ### chPyCapT
 
-Type: *a, b, c, d, e, f*
+Type: Up to 6 _floats_ separated by commas ($a$, $b$, $c$, $d$, $e$, $f$)
 
-Coefficients of bi-quadratic polynomial function of supply (ts) and condenser (tcnd) temperatures that specifies how capacity varies with these temperatures. This polynomial is of the form
+Coefficients of bi-quadratic polynomial function of supply ($T_s$) and condenser ($T_{cnd}$) temperatures that specifies how capacity varies with these temperatures. This polynomial is of the form
 
-$$
-a + b \cdot ts + c \cdot ts^2 + d \cdot tcnd + e \cdot tcnd^2 + f \cdot ts \cdot tcnd
-$$
+{{ polynomial("biquadratic", x="T_s", y="T_{cnd}", name="chPyCapT") }}
 
-Up to six *float* values may be entered, separated by commas; CSE will use zero for omitted trailing values. If the polynomial does not evaluate to 1.0 when ts is chTsDs and tcnd is chTcndDs, a warning message will be issued and the coefficients will be adjusted (normalized) to make the value 1.0.
+Up to six *float* values may be entered, separated by commas; CSE will use zero for omitted trailing values. If the polynomial does not evaluate to 1.0 when $T_s$ is *chTsDs* and $T_{cnd}$ is *chTcndDs*, a warning message will be issued and the coefficients will be adjusted (normalized) to make the value 1.0.
 
 {{
   member_table({
@@ -126,15 +124,13 @@ Alternate input for COP: Full-load Energy Input Ratio (electrical input energy d
 
 ### chPyEirT
 
-Type: *a, b, c, d, e, f*
+Type: Up to 6 _floats_ separated by commas ($a$, $b$, $c$, $d$, $e$, $f$)
 
-Coefficients of bi-quadratic polynomial function of supply (ts) and condenser (tcnd) temperatures that specifies how energy input varies with these temperatures. This polynomial is of the form
+Coefficients of bi-quadratic polynomial function of supply ($T_s$) and condenser ($T_{cnd}$) temperatures that specifies how energy input varies with these temperatures. This polynomial is of the form
 
-$$
-a + b \cdot ts + c \cdot ts^2 + d \cdot tcnd + e \cdot tcnd^2 + f \cdot ts \cdot tcnd
-$$
+{{ polynomial("biquadratic", x="T_s", y="T_{cnd}", name="chPyEirT") }}
 
-Up to six *float* values may be entered, separated by commas; CSE will use zero for omitted trailing values. If the polynomial does not evaluate to 1.0 when ts is chTsDs and tcnd is chTcndDs, a warning message will be issued and the coefficients will be adjusted (normalized) to make the value 1.0.
+Up to six *float* values may be entered, separated by commas; CSE will use zero for omitted trailing values. If the polynomial does not evaluate to 1.0 when $T_s$ is *chTsDs* and $T_{cnd}$ is *chTcndDs*, a warning message will be issued and the coefficients will be adjusted (normalized) to make the value 1.0.
 
 {{
   member_table({
@@ -163,15 +159,13 @@ These plr regions are similar to those for a DX coil & compressor in an AIRHANDL
 
 ### chPyEirUl
 
-Type: *a, b, c, d*
+Type: Up to 4 _floats_ separated by commas ($a$, $b$, $c$, $d$)
 
-Coefficients of cubic polynomial function of part load ratio (plr) that specifies how energy input varies with plr in the compressor unloading region (see above). This polynomial is of the form
+Coefficients of cubic polynomial function of part load ratio ($PLR$) that specifies how energy input varies with $PLR$ in the compressor unloading region (see above). This polynomial is of the form
 
-$$
-a + b \cdot plr + c \cdot plr^2 + d \cdot plr^3
-$$
+{{ polynomial("cubic", x="PLR", name="chPyEirUl") }}
 
-Up to four *float* values may be entered, separated by commas; CSE will use zero for omitted trailing values. If the polynomial does not evaluate to 1.0 when plr is 1.0, a warning message will be issued and the coefficients will be adjusted (normalized) to make the value 1.0.
+Up to four *float* values may be entered, separated by commas; CSE will use zero for omitted trailing values. If the polynomial does not evaluate to 1.0 when $PLR$ is 1.0, a warning message will be issued and the coefficients will be adjusted (normalized) to make the value 1.0.
 
 {{
   member_table({
