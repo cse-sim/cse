@@ -24,12 +24,12 @@ The next four inputs allow specification of the CHILLER's capacity (amount of he
 
 Type: float
 
-Chiller design capacity, that is, the capacity at *chTsDs* and *chTcndDs* (next).
+Chiller design capacity, that is, the capacity at *chTsDs* and *chTcndDs* (next). Either a positive or a negative value may be entered.  Internally, capacity is always <0 (positive input is negated), so the value accessed via a probe will be negative. However, capacity is reported as a positive value in some error messages.
 
 {{
   member_table({
     "units": "Btuh",
-    "legal_range": "*x* ≠ 0", 
+    "legal_range": "*x* ≠ 0 (<0 internally)", 
     "default": "*none*",
     "required": "Yes",
     "variability": "constant" 

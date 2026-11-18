@@ -80,7 +80,7 @@ Up to four floats may be given, separated by commas, lowest order (i.e. constant
   member_table({
     "units": "",
     "legal_range": "", 
-    "default": ".082597, .996764, 0.79361, 0.",
+    "default": ".082597, .996764, -0.079361, 0.",
     "required": "No",
     "variability": "constant" 
   })
