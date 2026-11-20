@@ -35,7 +35,6 @@
 
 #include "messages.h"	// decls for this file
 
-
 /*------------------------- SEMI-PUBLIC VARIABLES --------------------------*/
 // defined in msgtbl.cpp, public but declared and refd ONLY in this file (and msgw.cpp)
 extern MSGTBL msgTbl[];		// message table
@@ -153,8 +152,8 @@ RC msgI(			// retrieve message text, format args: inner function
 	int* pMLen,			// NULL or ptr for return of message strlen
 	MSGORHANDLE mOrH,	// msg text OR message handle
 						//   mOrH.IsNull(): return ""
-	va_list ap/*=NULL*/) // printf-style values are reqd by msg text
-						//   NULL: no formatting (vsprintf not called)
+	va_list ap/*=va_NULL*/) // printf-style values are reqd by msg text
+						//  va_NULL: no formatting (vsprintf not called)
 
 // resolves mOrH to full message text (if required) and formats message
 
@@ -179,7 +178,7 @@ RC msgI(			// retrieve message text, format args: inner function
 
 	size_t mLen{ 0 };
 	bool tooLong;
-	if (ap)
+	if (ap != va_NULL)
 	{	mLen = vsnprintf (mBuf, mBufSz - 1, pMsg, ap);	// format final msg in mBuf
 		tooLong = mLen < 0;
 		if (tooLong)

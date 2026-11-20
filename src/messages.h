@@ -29,13 +29,12 @@ struct MSGTBL
 //  MSGTBL msgTbl[]  or  MSGTBL msgTbl*;		message table, or offset table for texts on disk
 //  SI     msgTblCount;	number of entries in msgTbl
 
-
 /*------------------------- FUNCTION DECLARATIONS -------------------------*/
 // messages.cpp
 void FC msgClean();
 RC msgInit( int erOp);
 const char* msg( char *mBuf, MSGORHANDLE mOrH, ...);			// ALSO DECL IN cnglob.h
-RC msgI( int erOp, char* mBuf, size_t mBufSz, int* pMLen, MSGORHANDLE mOrH, va_list ap=NULL);
+RC msgI( int erOp, char* mBuf, size_t mBufSz, int* pMLen, MSGORHANDLE mOrH, va_list ap=va_NULL);
 const char* msgSec( SEC sec);
 
 // messages.h end

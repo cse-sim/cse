@@ -7,6 +7,8 @@
 
 #include "cnglob.h"
 
+va_list va_NULL = {};	// global "null" va_list for use as default
+
 /*------------------------------- OPTIONS ---------------------------------*/
 #if !defined( NOVRR)	// Not defined for regular use in cse.exe
 						//  def'd on compiler cmd line to eliminate virtual report dependency
@@ -1178,15 +1180,11 @@ int DbPrintf(			// conditional debug printf
 //----------------------------------------------------------------
 int DbVprintf(					// vprintf-to-debug
 	const char* fmt,		// printf-style format
-	va_list ap /*=NULL*/)	// arg list (NULL = no format)
+	va_list ap /*=va_NULL*/)	// arg list (NULL = no format)
 // returns # of chars written
 {
-	if (ap)
+	if (ap != va_NULL)
 		fmt = strtvprintf( fmt, ap);	// format
-
-#if 0
-	printf(fmt);
-#endif
 
 	int nChars = 0;
 #if defined( VR_DEBUGPRINT) && defined( VRR)
