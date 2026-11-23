@@ -1310,7 +1310,8 @@ const char* basAnc::getChoiTx( 	// return text of given value for a choice data 
 	USI fdTy = fir[fn].fi_fdTy;				// get field type (sFdtab subscript) from rat's "Fields In Record" table
 	USI dt = sFdtab[fdTy].dtype;			// get data type from small Fields info Table
 
-	chan &= ~NCNAN;					// clear special bits in nchoice value to make checks work
+	if (dt & DTBCHOICN)				// choicb values are plain indices and may exceed 0x7f
+		chan &= ~NCNAN;				// clear special bits in nchoice value to make checks work
 	if (options & 1)
 	{	// added 3-1-94 as insurance -- no choicn calls at present.
 		if (chan==0)  					// if unset
