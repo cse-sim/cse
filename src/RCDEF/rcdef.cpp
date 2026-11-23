@@ -939,6 +939,8 @@ LOCAL void Do_Dtypes(                      // do data types
 
 				if (nchoices >= MAXDTC)
 					rcderr( "Discarding choices in excess of %d.", MAXDTC);
+				else if (choicn && nchoices >= 0x7f)		// choicn index shares hi word with NCNAN (0x7f80)
+					rcderr( "choicn %s: more than %d choices not supported.", dtnames[val], 0x7f);
 				else
 				{
 					// check/fill choice's slot in Dttab entry

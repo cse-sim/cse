@@ -47,7 +47,9 @@ inline DTTAB& GetDttab(USI dt) { return *(DTTAB *)(Dttab+((dt)&DTBMASK)); }
 
 //- function for accessing text for a choice. for choicn 'chan' is CHN(value). CHN, NCNAN: cnglob.h.
 //   but, to access with checks, use ::getChoiTx( dt, chan).
-inline const char* GetChoiceText( USI dt, USI chan) { return GetDttab(dt).choicbs[(chan & ~NCNAN) - 1]; }
+//   NCNAN bits are stripped only for choicn; choicb values are plain indices and may exceed 0x7f.
+inline const char* GetChoiceText( USI dt, USI chan)
+{	return GetDttab(dt).choicbs[((dt & DTBCHOICN) ? (chan & ~NCNAN) : chan) - 1]; }
 
 //-- expr() data types --   each type is different bit so can represent groups of types and test with 'and'.  Data type USI.
 #define TYSI    0x01		// 16-bit integer (or BOOlean)
